@@ -333,8 +333,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
         const { data, error } = await supabaseClient
-            .from("players")
-            .insert([
+    .from("players")
+    .select("*")
+    .limit(1);
+
+console.log("Test result:", data);
+console.log("Test error:", error);
+
+if (error) {
+    alert("ERROR: " + error.message);
+    return;
+}
+
+alert("SUCCESS! The players table can be accessed.");
                 {
                     first_name: firstName,
                     last_name: lastName,
