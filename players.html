@@ -3,488 +3,162 @@
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Players | Hoop Hub PH</title>
 
-    <title>Players | Hoop Hub PH</title>
+<style>
 
-    <style>
+body{
+    font-family:Arial,sans-serif;
+    background:#f5f5f5;
+    margin:0;
+}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+header{
+    background:#111;
+    color:white;
+    padding:20px;
+    text-align:center;
+}
 
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f5f5f5;
-            color: #222;
-        }
+header span{
+    color:#ff6b00;
+}
 
-        /* NAVIGATION */
+.container{
+    max-width:1100px;
+    margin:auto;
+    padding:40px 20px;
+}
 
-        header {
-            background: #111;
-            color: white;
-            padding: 18px 8%;
+h2{
+    margin-bottom:30px;
+}
 
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+#playersList{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    gap:20px;
+}
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
+.player-card{
 
-        .logo span {
-            color: #ff6b00;
-        }
+    background:white;
 
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 25px;
-            font-weight: bold;
-            font-size: 14px;
-        }
+    border-radius:12px;
 
-        nav a:hover {
-            color: #ff6b00;
-        }
+    padding:20px;
 
-        /* HERO */
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
 
-        .hero {
-            background: #111;
-            color: white;
+}
 
-            text-align: center;
+.player-card h3{
 
-            padding: 70px 20px;
-        }
+    margin-bottom:10px;
 
-        .hero h1 {
-            font-size: 45px;
-            margin-bottom: 15px;
-        }
+}
 
-        .hero h1 span {
-            color: #ff6b00;
-        }
+.player-card p{
 
-        .hero p {
-            color: #ccc;
-            font-size: 18px;
-        }
+    margin:6px 0;
 
-        /* MAIN */
+}
 
-        .section {
-            padding: 60px 8%;
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .section-title h2 {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-
-        .section-title p {
-            color: #666;
-        }
-
-        /* PLAYERS */
-
-        .players {
-            display: grid;
-
-            grid-template-columns:
-                repeat(auto-fit, minmax(250px, 1fr));
-
-            gap: 25px;
-        }
-
-        .player-card {
-            background: white;
-
-            padding: 30px;
-
-            border-radius: 10px;
-
-            text-align: center;
-
-            box-shadow:
-                0 5px 20px rgba(0,0,0,0.08);
-        }
-
-        .player-photo {
-            width: 100px;
-            height: 100px;
-
-            background: #111;
-
-            color: #ff6b00;
-
-            border-radius: 50%;
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            margin: 0 auto 20px;
-
-            font-size: 45px;
-        }
-
-        .player-card h3 {
-            margin-bottom: 10px;
-        }
-
-        .player-card p {
-            color: #666;
-
-            margin-bottom: 15px;
-        }
-
-        .player-info {
-            font-size: 14px;
-
-            line-height: 1.8;
-
-            margin-bottom: 20px;
-        }
-
-        .player-info strong {
-            color: #ff6b00;
-        }
-
-        .view-button {
-            display: inline-block;
-
-            background: #ff6b00;
-
-            color: white;
-
-            padding: 12px 20px;
-
-            border-radius: 5px;
-
-            text-decoration: none;
-
-            font-weight: bold;
-        }
-
-        /* FOOTER */
-
-        footer {
-            background: #111;
-
-            color: white;
-
-            text-align: center;
-
-            padding: 30px;
-
-            margin-top: 50px;
-        }
-
-        footer p {
-            color: #aaa;
-
-            margin-top: 10px;
-        }
-
-        /* MOBILE */
-
-        @media (max-width: 768px) {
-
-            header {
-                flex-direction: column;
-
-                gap: 15px;
-            }
-
-            nav a {
-                margin: 0 7px;
-
-                font-size: 12px;
-            }
-
-            .hero h1 {
-                font-size: 35px;
-            }
-
-        }
-
-    </style>
+</style>
 
 </head>
 
-
 <body>
 
+<header>
 
-    <!-- NAVIGATION -->
+<h1>HOOP HUB <span>PH</span></h1>
 
-    <header>
+</header>
 
-        <div class="logo">
+<div class="container">
 
-            HOOP <span>HUB PH</span>
+<h2>Players Directory</h2>
+
+<div id="playersList">
+
+Loading players...
+
+</div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL = "https://tkrsyiwffqkgfyooewsf.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
+
+const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+async function loadPlayers() {
+
+    const playersList = document.getElementById("playersList");
+
+    playersList.innerHTML = "Loading players...";
+
+    const { data, error } = await supabase
+        .from("players")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+
+        playersList.innerHTML =
+            "<h3>Unable to load players.</h3>";
+
+        console.error(error);
+
+        return;
+    }
+
+    if (data.length === 0) {
+
+        playersList.innerHTML =
+            "<h3>No players have been added yet.</h3>";
+
+        return;
+
+    }
+
+    playersList.innerHTML = "";
+
+    data.forEach(player => {
+
+        playersList.innerHTML += `
+
+        <div class="player-card">
+
+            <h3>${player.first_name} ${player.last_name}</h3>
+
+            <p><strong>Position:</strong> ${player.position}</p>
+
+            <p><strong>Jersey:</strong> #${player.jersey_number}</p>
+
+            <p><strong>Height:</strong> ${player.height}</p>
 
         </div>
 
+        `;
 
-        <nav>
+    });
 
-            <a href="index.html">
-                Home
-            </a>
+}
 
-            <a href="leagues.html">
-                Leagues
-            </a>
+loadPlayers();
 
-            <a href="teams.html">
-                Teams
-            </a>
-
-            <a href="players.html">
-                Players
-            </a>
-
-            <a href="#">
-                Tournaments
-            </a>
-
-        </nav>
-
-    </header>
-
-
-    <!-- HERO -->
-
-    <section class="hero">
-
-        <h1>
-
-            DISCOVER <span>PLAYERS</span>
-
-        </h1>
-
-        <p>
-
-            Discover basketball players
-            from leagues and teams across the Philippines.
-
-        </p>
-
-    </section>
-
-
-    <!-- PLAYERS -->
-
-    <section class="section">
-
-
-        <div class="section-title">
-
-            <h2>
-                FEATURED PLAYERS
-            </h2>
-
-            <p>
-                Explore players competing in Philippine basketball.
-            </p>
-
-        </div>
-
-
-        <div class="players">
-
-
-            <!-- PLAYER 1 -->
-
-            <div class="player-card">
-
-                <div class="player-photo">
-                    🏀
-                </div>
-
-                <h3>
-                    Juan Dela Cruz
-                </h3>
-
-                <p>
-                    Point Guard
-                </p>
-
-                <div class="player-info">
-
-                    <strong>
-                        Team:
-                    </strong>
-
-                    Quezon City Warriors
-
-                    <br>
-
-                    <strong>
-                        Location:
-                    </strong>
-
-                    Quezon City
-
-                    <br>
-
-                    <strong>
-                        Division:
-                    </strong>
-
-                    Open Division
-
-                </div>
-
-              <a href="player1.html" class="view-button">
-    VIEW PROFILE
-</a>
-
-            </div>
-
-
-            <!-- PLAYER 2 -->
-
-            <div class="player-card">
-
-                <div class="player-photo">
-                    🏀
-                </div>
-
-                <h3>
-                    Mark Santos
-                </h3>
-
-                <p>
-                    Shooting Guard
-                </p>
-
-                <div class="player-info">
-
-                    <strong>
-                        Team:
-                    </strong>
-
-                    Manila Ballers
-
-                    <br>
-
-                    <strong>
-                        Location:
-                    </strong>
-
-                    Manila
-
-                    <br>
-
-                    <strong>
-                        Division:
-                    </strong>
-
-                    Amateur
-
-                </div>
-
-                <a href="#" class="view-button">
-                    VIEW PROFILE
-                </a>
-
-            </div>
-
-
-            <!-- PLAYER 3 -->
-
-            <div class="player-card">
-
-                <div class="player-photo">
-                    🏀
-                </div>
-
-                <h3>
-                    Carlo Reyes
-                </h3>
-
-                <p>
-                    Small Forward
-                </p>
-
-                <div class="player-info">
-
-                    <strong>
-                        Team:
-                    </strong>
-
-                    Metro Hoopers
-
-                    <br>
-
-                    <strong>
-                        Location:
-                    </strong>
-
-                    Pasig City
-
-                    <br>
-
-                    <strong>
-                        Division:
-                    </strong>
-
-                    Open Division
-
-                </div>
-
-                <a href="#" class="view-button">
-                    VIEW PROFILE
-                </a>
-
-            </div>
-
-
-        </div>
-
-    </section>
-
-
-    <!-- FOOTER -->
-
-    <footer>
-
-        <h3>
-            🏀 HOOP HUB PH
-        </h3>
-
-        <p>
-            Connecting Philippine basketball,
-            one community at a time.
-        </p>
-
-        <p>
-            © 2026 Hoop Hub PH.
-            All rights reserved.
-        </p>
-
-    </footer>
-
-
+</script>
 </body>
 
 </html>
