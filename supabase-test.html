@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Supabase Test | Hoop Hub PH</title>
+
+</head>
+
+<body>
+
+    <h1>Hoop Hub PH Database Test</h1>
+
+    <p id="status">
+        Connecting to database...
+    </p>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <script>
+
+        const SUPABASE_URL = "https://tkrsyiwffqkgfyooewsf.supabase.co/rest/v1/";
+
+        const SUPABASE_KEY = "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
+
+
+        const supabaseClient = window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+
+        async function testConnection() {
+
+            const { data, error } =
+                await supabaseClient
+                .from("players")
+                .select("*")
+                .limit(1);
+
+
+            const status =
+                document.getElementById("status");
+
+
+            if (error) {
+
+                status.textContent =
+                    "Connection error: " + error.message;
+
+                console.error(error);
+
+                return;
+
+            }
+
+
+            status.textContent =
+                "SUCCESS! Hoop Hub PH is connected to Supabase.";
+
+            console.log(data);
+
+        }
+
+
+        testConnection();
+
+    </script>
+
+</body>
+
+</html>
