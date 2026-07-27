@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Teams | Hoop Hub PH</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f5f5;
+            color: #222;
+        }
+
+        /* NAVIGATION */
+
+        header {
+            background: #111;
+            color: white;
+            padding: 18px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #ff6b00;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 25px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        nav a:hover {
+            color: #ff6b00;
+        }
+
+        /* HERO */
+
+        .hero {
+            background: #111;
+            color: white;
+            text-align: center;
+            padding: 70px 20px;
+        }
+
+        .hero h1 {
+            font-size: 45px;
+            margin-bottom: 15px;
+        }
+
+        .hero h1 span {
+            color: #ff6b00;
+        }
+
+        .hero p {
+            color: #ccc;
+            font-size: 18px;
+        }
+
+        /* MAIN SECTION */
+
+        .section {
+            padding: 60px 8%;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-title h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .section-title p {
+            color: #666;
+        }
+
+        /* TEAM CARDS */
+
+        .teams {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(260px, 1fr));
+
+            gap: 25px;
+        }
+
+        .team-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+
+            box-shadow:
+                0 5px 20px rgba(0,0,0,0.08);
+
+            text-align: center;
+        }
+
+        .team-logo {
+            width: 90px;
+            height: 90px;
+
+            background: #111;
+            color: #ff6b00;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin: 0 auto 20px;
+
+            font-size: 40px;
+        }
+
+        .team-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .team-card p {
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .team-info {
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .team-info strong {
+            color: #ff6b00;
+        }
+
+        .view-button {
+            display: inline-block;
+
+            background: #ff6b00;
+            color: white;
+
+            padding: 12px 20px;
+
+            border-radius: 5px;
+
+            text-decoration: none;
+
+            font-weight: bold;
+        }
+
+        /* ORGANIZER CTA */
+
+        .register {
+            background: #ff6b00;
+            color: white;
+
+            text-align: center;
+
+            padding: 70px 20px;
+        }
+
+        .register h2 {
+            font-size: 35px;
+            margin-bottom: 15px;
+        }
+
+        .register p {
+            margin-bottom: 25px;
+        }
+
+        .register a {
+            display: inline-block;
+
+            background: white;
+            color: #ff6b00;
+
+            padding: 15px 30px;
+
+            border-radius: 5px;
+
+            text-decoration: none;
+
+            font-weight: bold;
+        }
+
+        /* FOOTER */
+
+        footer {
+            background: #111;
+            color: white;
+
+            text-align: center;
+
+            padding: 30px;
+        }
+
+        footer p {
+            color: #aaa;
+            margin-top: 10px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 768px) {
+
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav a {
+                margin: 0 7px;
+                font-size: 12px;
+            }
+
+            .hero h1 {
+                font-size: 35px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- NAVIGATION -->
+
+    <header>
+
+        <div class="logo">
+
+            HOOP <span>HUB PH</span>
+
+        </div>
+
+
+        <nav>
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a href="leagues.html">
+                Leagues
+            </a>
+
+            <a href="teams.html">
+                Teams
+            </a>
+
+            <a href="#">
+                Players
+            </a>
+
+            <a href="#">
+                Tournaments
+            </a>
+
+        </nav>
+
+    </header>
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <h1>
+
+            DISCOVER <span>TEAMS</span>
+
+        </h1>
+
+        <p>
+
+            Explore basketball teams and organizations
+            across the Philippines.
+
+        </p>
+
+    </section>
+
+
+    <!-- TEAMS -->
+
+    <section class="section">
+
+
+        <div class="section-title">
+
+            <h2>
+                FEATURED TEAMS
+            </h2>
+
+            <p>
+                Discover teams competing in Philippine basketball.
+            </p>
+
+        </div>
+
+
+        <div class="teams">
+
+
+            <!-- TEAM 1 -->
+
+            <div class="team-card">
+
+                <div class="team-logo">
+                    🏀
+                </div>
+
+                <h3>
+                    Quezon City Warriors
+                </h3>
+
+                <p>
+                    Competitive community basketball team.
+                </p>
+
+                <div class="team-info">
+
+                    <strong>
+                        📍 Location:
+                    </strong>
+
+                    Quezon City
+
+                    <br>
+
+                    <strong>
+                        🏆 Division:
+                    </strong>
+
+                    Open Division
+
+                    <br>
+
+                    <strong>
+                        👨‍🏫 Coach:
+                    </strong>
+
+                    Coach Juan
+
+                </div>
+
+                <a href="#" class="view-button">
+                    VIEW TEAM
+                </a>
+
+            </div>
+
+
+            <!-- TEAM 2 -->
+
+            <div class="team-card">
+
+                <div class="team-logo">
+                    🏀
+                </div>
+
+                <h3>
+                    Manila Ballers
+                </h3>
+
+                <p>
+                    Amateur basketball team competing
+                    in local leagues.
+                </p>
+
+                <div class="team-info">
+
+                    <strong>
+                        📍 Location:
+                    </strong>
+
+                    Manila
+
+                    <br>
+
+                    <strong>
+                        🏆 Division:
+                    </strong>
+
+                    Amateur
+
+                    <br>
+
+                    <strong>
+                        👨‍🏫 Coach:
+                    </strong>
+
+                    Coach Mark
+
+                </div>
+
+                <a href="#" class="view-button">
+                    VIEW TEAM
+                </a>
+
+            </div>
+
+
+            <!-- TEAM 3 -->
+
+            <div class="team-card">
+
+                <div class="team-logo">
+                    🏀
+                </div>
+
+                <h3>
+                    Metro Hoopers
+                </h3>
+
+                <p>
+                    Local basketball team looking
+                    for competitive tournaments.
+                </p>
+
+                <div class="team-info">
+
+                    <strong>
+                        📍 Location:
+                    </strong>
+
+                    Pasig City
+
+                    <br>
+
+                    <strong>
+                        🏆 Division:
+                    </strong>
+
+                    Open Division
+
+                    <br>
+
+                    <strong>
+                        👨‍🏫 Coach:
+                    </strong>
+
+                    Coach Carlo
+
+                </div>
+
+                <a href="#" class="view-button">
+                    VIEW TEAM
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- TEAM REGISTRATION -->
+
+    <section class="register">
+
+        <h2>
+            HAVE A BASKETBALL TEAM?
+        </h2>
+
+        <p>
+
+            Create your team profile and showcase
+            your players and achievements.
+
+        </p>
+
+        <a href="#">
+            REGISTER YOUR TEAM
+        </a>
+
+    </section>
+
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <h3>
+            🏀 HOOP HUB PH
+        </h3>
+
+        <p>
+            Connecting Philippine basketball,
+            one community at a time.
+        </p>
+
+        <p>
+            © 2026 Hoop Hub PH.
+            All rights reserved.
+        </p>
+
+    </footer>
+
+
+</body>
+
+</html>
