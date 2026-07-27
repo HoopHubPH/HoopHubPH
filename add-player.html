@@ -314,6 +314,8 @@ async function savePlayer(event) {
 
     event.preventDefault();
 
+    console.log("Supabase session:", await supabaseClient.auth.getSession());
+
 
     const firstName =
         document.getElementById("firstName").value.trim();
