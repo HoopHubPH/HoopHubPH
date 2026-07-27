@@ -304,6 +304,7 @@ const SUPABASE_URL = "https://tkrsyiwffqkgfyooewsf.supabase.co";
 
 const SUPABASE_KEY = "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
 
+
 const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
@@ -313,8 +314,6 @@ const supabaseClient = window.supabase.createClient(
 async function savePlayer(event) {
 
     event.preventDefault();
-
-    console.log("Supabase session:", await supabaseClient.auth.getSession());
 
 
     const firstName =
@@ -337,7 +336,13 @@ async function savePlayer(event) {
         document.getElementById("height").value.trim();
 
 
-    console.log("Attempting to save player...");
+    console.log("Attempting to save:", {
+        firstName,
+        lastName,
+        position,
+        jerseyNumber,
+        height
+    });
 
 
     const { data, error } = await supabaseClient
@@ -367,7 +372,10 @@ async function savePlayer(event) {
     }
 
 
-    console.log("Player successfully saved:", data);
+    console.log(
+        "Player successfully saved:",
+        data
+    );
 
 
     alert(
@@ -375,63 +383,11 @@ async function savePlayer(event) {
     );
 
 
-    document.getElementById("playerForm").reset();
+    document
+        .getElementById("playerForm")
+        .reset();
 
 }
-
-</script>
-
-        const { data, error } = await supabaseClient
-    .from("players")
-    .select("*")
-    .limit(1);
-
-console.log("Test result:", data);
-console.log("Test error:", error);
-
-if (error) {
-    alert("ERROR: " + error.message);
-    return;
-}
-
-alert("SUCCESS! The players table can be accessed.");
-                {
-                    first_name: firstName,
-                    last_name: lastName,
-                    position: position,
-                    jersey_number: parseInt(jerseyNumber),
-                    height: height
-                }
-            ])
-            .select();
-
-
-        if (error) {
-
-            console.error("Supabase error:", error);
-
-            alert(
-                "ERROR: " + error.message
-            );
-
-            return;
-
-        }
-
-
-        console.log("Player saved:", data);
-
-
-        alert(
-            "Player successfully added to Hoop Hub PH!"
-        );
-
-
-        playerForm.reset();
-
-    });
-
-});
 
 </script>
     
