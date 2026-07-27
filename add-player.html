@@ -146,7 +146,7 @@
     </p>
 
 
-    <form id="playerForm">
+    <form id="playerForm" onsubmit="savePlayer(event)">
 
 
         <div class="row">
@@ -296,41 +296,54 @@ document.addEventListener("DOMContentLoaded", function() {
     const playerForm = document.getElementById("playerForm");
 
 
-    playerForm.addEventListener("submit", async function(event) {
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-        event.preventDefault();
+<script>
 
-        console.log("Save Player button clicked!");
+const SUPABASE_URL = "https://tkrsyiwffqkgfyooewsf.supabase.co";
 
+const SUPABASE_KEY = "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
 
-        const firstName =
-            document.getElementById("firstName").value.trim();
-
-
-        const lastName =
-            document.getElementById("lastName").value.trim();
-
-
-        const position =
-            document.getElementById("position").value;
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 
 
-        const jerseyNumber =
-            document.getElementById("jerseyNumber").value;
+async function savePlayer(event) {
+
+    event.preventDefault();
+
+    alert("The Save Player button is working!");
 
 
-        const height =
-            document.getElementById("height").value.trim();
+    const firstName =
+        document.getElementById("firstName").value.trim();
+
+    const lastName =
+        document.getElementById("lastName").value.trim();
+
+    const position =
+        document.getElementById("position").value;
+
+    const jerseyNumber =
+        document.getElementById("jerseyNumber").value;
+
+    const height =
+        document.getElementById("height").value.trim();
 
 
-        console.log("Player information:", {
-            firstName,
-            lastName,
-            position,
-            jerseyNumber,
-            height
-        });
+    console.log("Player information:", {
+        firstName,
+        lastName,
+        position,
+        jerseyNumber,
+        height
+    });
 
+}
+
+</script>
 
         const { data, error } = await supabaseClient
     .from("players")
