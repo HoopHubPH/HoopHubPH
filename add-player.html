@@ -314,32 +314,66 @@ async function savePlayer(event) {
 
     event.preventDefault();
 
-    alert("The Save Player button is working!");
-
 
     const firstName =
         document.getElementById("firstName").value.trim();
 
+
     const lastName =
         document.getElementById("lastName").value.trim();
+
 
     const position =
         document.getElementById("position").value;
 
+
     const jerseyNumber =
         document.getElementById("jerseyNumber").value;
+
 
     const height =
         document.getElementById("height").value.trim();
 
 
-    console.log("Player information:", {
-        firstName,
-        lastName,
-        position,
-        jerseyNumber,
-        height
-    });
+    console.log("Attempting to save player...");
+
+
+    const { data, error } = await supabaseClient
+        .from("players")
+        .insert([
+            {
+                first_name: firstName,
+                last_name: lastName,
+                position: position,
+                jersey_number: parseInt(jerseyNumber),
+                height: height
+            }
+        ])
+        .select();
+
+
+    if (error) {
+
+        console.error("Supabase error:", error);
+
+        alert(
+            "ERROR: " + error.message
+        );
+
+        return;
+
+    }
+
+
+    console.log("Player successfully saved:", data);
+
+
+    alert(
+        "Player successfully added to Hoop Hub PH!"
+    );
+
+
+    document.getElementById("playerForm").reset();
 
 }
 
