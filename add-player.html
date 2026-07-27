@@ -277,78 +277,103 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-   
-    <script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function() {
 
     const SUPABASE_URL = "https://tkrsyiwffqkgfyooewsf.supabase.co/rest/v1/";
 
     const SUPABASE_KEY = "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
 
+
     const supabaseClient = window.supabase.createClient(
-        SUPABASE_URL,"https://tkrsyiwffqkgfyooewsf.supabase.co/rest/v1/";
-        SUPABASE_KEY"sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
+        SUPABASE_URL,
+        SUPABASE_KEY
     );
-        const playerForm = document.getElementById("playerForm");
-
-playerForm.addEventListener("submit", async function(event) {
-
-    event.preventDefault();
-
-    const firstName =
-        document.getElementById("firstName").value.trim();
-
-    const lastName =
-        document.getElementById("lastName").value.trim();
-
-    const position =
-        document.getElementById("position").value;
-
-    const jerseyNumber =
-        document.getElementById("jerseyNumber").value;
-
-    const height =
-        document.getElementById("height").value.trim();
 
 
-    const { data, error } = await supabaseClient
-        .from("players")
-        .insert([
-            {
-                first_name: firstName,
-                last_name: lastName,
-                position: position,
-                jersey_number: parseInt(jerseyNumber),
-                height: height
-            }
-        ])
-        .select();
+    const playerForm = document.getElementById("playerForm");
 
 
-    if (error) {
+    playerForm.addEventListener("submit", async function(event) {
 
-        console.error(error);
+        event.preventDefault();
+
+        console.log("Save Player button clicked!");
+
+
+        const firstName =
+            document.getElementById("firstName").value.trim();
+
+
+        const lastName =
+            document.getElementById("lastName").value.trim();
+
+
+        const position =
+            document.getElementById("position").value;
+
+
+        const jerseyNumber =
+            document.getElementById("jerseyNumber").value;
+
+
+        const height =
+            document.getElementById("height").value.trim();
+
+
+        console.log("Player information:", {
+            firstName,
+            lastName,
+            position,
+            jerseyNumber,
+            height
+        });
+
+
+        const { data, error } = await supabaseClient
+            .from("players")
+            .insert([
+                {
+                    first_name: firstName,
+                    last_name: lastName,
+                    position: position,
+                    jersey_number: parseInt(jerseyNumber),
+                    height: height
+                }
+            ])
+            .select();
+
+
+        if (error) {
+
+            console.error("Supabase error:", error);
+
+            alert(
+                "ERROR: " + error.message
+            );
+
+            return;
+
+        }
+
+
+        console.log("Player saved:", data);
+
 
         alert(
-            "There was an error saving the player: " +
-            error.message
+            "Player successfully added to Hoop Hub PH!"
         );
 
-        return;
 
-    }
+        playerForm.reset();
 
-
-    alert(
-        "Player successfully added to Hoop Hub PH!"
-    );
-
-
-    playerForm.reset();
+    });
 
 });
 
 </script>
-
     
 </body>
 
