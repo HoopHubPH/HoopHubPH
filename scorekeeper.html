@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Scorekeeper | Hoop Hub PH</title>
+
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f5f5;
+    color: #222;
+}
+
+/* HEADER */
+
+header {
+    background: #111;
+    color: white;
+    padding: 18px 8%;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+}
+
+.logo span {
+    color: #ff6b00;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 25px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+nav a:hover {
+    color: #ff6b00;
+}
+
+/* HERO */
+
+.hero {
+    background: #111;
+    color: white;
+
+    text-align: center;
+
+    padding: 50px 20px;
+}
+
+.hero h1 {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+.hero h1 span {
+    color: #ff6b00;
+}
+
+.hero p {
+    color: #ccc;
+}
+
+/* CONTAINER */
+
+.container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* GAME SELECT */
+
+.game-selector {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    margin-bottom: 25px;
+}
+
+.game-selector h2 {
+    margin-bottom: 15px;
+}
+
+.game-selector input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.load-button {
+    background: #ff6b00;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* SCOREBOARD */
+
+.scoreboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-bottom: 25px;
+}
+
+.team-control {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+.team-control h2 {
+    margin-bottom: 15px;
+}
+
+.score {
+    font-size: 70px;
+    font-weight: bold;
+    color: #ff6b00;
+    margin-bottom: 20px;
+}
+
+/* BUTTONS */
+
+.button-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.score-button {
+    background: #111;
+    color: white;
+    border: none;
+
+    padding: 15px 20px;
+
+    border-radius: 6px;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.score-button:hover {
+    background: #ff6b00;
+}
+
+/* GAME CONTROLS */
+
+.controls {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+
+    margin-bottom: 25px;
+
+    text-align: center;
+}
+
+.controls h2 {
+    margin-bottom: 20px;
+}
+
+.control-group {
+    margin-bottom: 25px;
+}
+
+.control-group h3 {
+    margin-bottom: 12px;
+}
+
+.control-button {
+    background: #ff6b00;
+    color: white;
+
+    border: none;
+
+    padding: 12px 18px;
+
+    margin: 5px;
+
+    border-radius: 6px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+/* FOULS AND TIMEOUTS */
+
+.stats-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+
+    margin-bottom: 25px;
+}
+
+.stat-control {
+    background: white;
+    padding: 25px;
+
+    border-radius: 12px;
+
+    text-align: center;
+
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+.stat-number {
+    font-size: 40px;
+    font-weight: bold;
+    color: #ff6b00;
+
+    margin: 15px;
+}
+
+/* STATUS */
+
+#statusMessage {
+    text-align: center;
+
+    padding: 15px;
+
+    background: #e8f5e9;
+
+    color: #2e7d32;
+
+    border-radius: 8px;
+
+    margin-bottom: 25px;
+
+    display: none;
+}
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+
+    header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    nav a {
+        margin: 0 7px;
+        font-size: 12px;
+    }
+
+    .scoreboard {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-controls {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<a href="index.html" class="logo">
+
+HOOP <span>HUB PH</span>
+
+</a>
+
+
+<nav>
+
+<a href="index.html">Home</a>
+
+<a href="leagues.html">Leagues</a>
+
+<a href="teams.html">Teams</a>
+
+<a href="players.html">Players</a>
+
+<a href="tournaments.html">Tournaments</a>
+
+</nav>
+
+</header>
+
+
+<section class="hero">
+
+<h1>
+
+LIVE GAME <span>SCOREKEEPER</span>
+
+</h1>
+
+<p>
+
+Control the live basketball game.
+
+</p>
+
+</section>
+
+
+<div class="container">
+
+
+<div class="game-selector">
+
+<h2>Game ID</h2>
+
+<input
+type="number"
+id="gameId"
+value="1"
+placeholder="Enter Game ID"
+>
+
+<button
+class="load-button"
+onclick="loadGame()">
+
+LOAD GAME
+
+</button>
+
+</div>
+
+
+<div id="statusMessage"></div>
+
+
+<div class="scoreboard">
+
+
+<!-- HOME TEAM -->
+
+<div class="team-control">
+
+<h2 id="homeTeam">
+
+Home Team
+
+</h2>
+
+<div
+class="score"
+id="homeScore">
+
+0
+
+</div>
+
+
+<div class="button-row">
+
+<button
+class="score-button"
+onclick="updateScore('home', 1)">
+
++1
+
+</button>
+
+
+<button
+class="score-button"
+onclick="updateScore('home', 2)">
+
++2
+
+</button>
+
+
+<button
+class="score-button"
+onclick="updateScore('home', 3)">
+
++3
+
+</button>
+
+
+<button
+class="score-button"
+onclick="updateScore('home', -1)">
+
+-1
+
+</button>
+
+</div>
+
+</div>
+
+
+
+<!-- AWAY TEAM -->
+
+<div class="team-control">
+
+<h2 id="awayTeam">
+
+Away Team
+
+</h2>
+
+<div
+class="score"
+id="awayScore">
+
+0
+
+</div>
+
+
+<div class="button-row">
+
+<button
+class="score-button"
+onclick="updateScore('away', 1)">
+
++1
+
+</button>
+
+
+<button
+class="score-button"
+onclick="updateScore('away', 2)">
+
++2
+
+</button>
+
+
+<button
+class="score-button"
+onclick="updateScore('away', 3)">
+
++3
+
+</button>
+
+
+<button
+class="score-button"
+onclick="updateScore('away', -1)">
+
+-1
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- GAME CONTROLS -->
+
+<div class="controls">
+
+<h2>Game Controls</h2>
+
+
+<div class="control-group">
+
+<h3>Game Status</h3>
+
+<button
+class="control-button"
+onclick="updateGame({status:'Live'})">
+
+LIVE
+
+</button>
+
+
+<button
+class="control-button"
+onclick="updateGame({status:'Halftime'})">
+
+HALFTIME
+
+</button>
+
+
+<button
+class="control-button"
+onclick="updateGame({status:'Final'})">
+
+FINAL
+
+</button>
+
+</div>
+
+
+<div class="control-group">
+
+<h3>Period</h3>
+
+<button
+class="control-button"
+onclick="updateGame({period:'1st Quarter'})">
+
+1ST
+
+</button>
+
+
+<button
+class="control-button"
+onclick="updateGame({period:'2nd Quarter'})">
+
+2ND
+
+</button>
+
+
+<button
+class="control-button"
+onclick="updateGame({period:'3rd Quarter'})">
+
+3RD
+
+</button>
+
+
+<button
+class="control-button"
+onclick="updateGame({period:'4th Quarter'})">
+
+4TH
+
+</button>
+
+</div>
+
+</div>
+
+
+
+<!-- FOULS -->
+
+<div class="stats-controls">
+
+
+<div class="stat-control">
+
+<h2>Home Fouls</h2>
+
+<div
+class="stat-number"
+id="homeFouls">
+
+0
+
+</div>
+
+
+<button
+class="control-button"
+onclick="updateStat('home_fouls', 1)">
+
++ FOUL
+
+</button>
+
+
+<button
+class="control-button"
+onclick="updateStat('home_fouls', -1)">
+
+- FOUL
+
+</button>
+
+</div>
+
+
+
+<div class="stat-control">
+
+<h2>Away Fouls</h2>
+
+<div
+class="stat-number"
+id="awayFouls">
+
+0
+
+</div>
+
+
+<button
+class="control-button"
+onclick="updateStat('away_fouls', 1)">
+
++ FOUL
+
+</button>
+
+
+<button
+class="control-button"
+onclick="updateStat('away_fouls', -1)">
+
+- FOUL
+
+</button>
+
+</div>
+
+</div>
+
+
+
+<!-- TIMEOUTS -->
+
+<div class="stats-controls">
+
+
+<div class="stat-control">
+
+<h2>Home Timeouts</h2>
+
+<div
+class="stat-number"
+id="homeTimeouts">
+
+5
+
+</div>
+
+
+<button
+class="control-button"
+onclick="updateStat('home_timeouts', -1)">
+
+USE TIMEOUT
+
+</button>
+
+</div>
+
+
+
+<div class="stat-control">
+
+<h2>Away Timeouts</h2>
+
+<div
+class="stat-number"
+id="awayTimeouts">
+
+5
+
+</div>
+
+
+<button
+class="control-button"
+onclick="updateStat('away_timeouts', -1)">
+
+USE TIMEOUT
+
+</button>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+/* SUPABASE */
+
+const SUPABASE_URL =
+"https://tkrsyiwffqkgfyooewsf.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
+
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+/* CURRENT GAME */
+
+let currentGame = null;
+
+
+/* LOAD GAME */
+
+async function loadGame() {
+
+const gameId =
+Number(document.getElementById("gameId").value);
+
+
+const {
+data,
+error
+} = await supabaseClient
+
+.from("games")
+
+.select("*")
+
+.eq("id", gameId)
+
+.single();
+
+
+if (error) {
+
+showStatus(
+"Error loading game: " +
+error.message
+);
+
+console.error(error);
+
+return;
+
+}
+
+
+currentGame = data;
+
+
+document.getElementById("homeTeam")
+.textContent =
+data.home_team || "Home Team";
+
+
+document.getElementById("awayTeam")
+.textContent =
+data.away_team || "Away Team";
+
+
+refreshDisplay();
+
+showStatus(
+"Game loaded successfully."
+);
+
+}
+
+
+/* REFRESH DISPLAY */
+
+function refreshDisplay() {
+
+if (!currentGame) return;
+
+
+document.getElementById("homeScore")
+.textContent =
+currentGame.home_score ?? 0;
+
+
+document.getElementById("awayScore")
+.textContent =
+currentGame.away_score ?? 0;
+
+
+document.getElementById("homeFouls")
+.textContent =
+currentGame.home_fouls ?? 0;
+
+
+document.getElementById("awayFouls")
+.textContent =
+currentGame.away_fouls ?? 0;
+
+
+document.getElementById("homeTimeouts")
+.textContent =
+currentGame.home_timeouts ?? 5;
+
+
+document.getElementById("awayTimeouts")
+.textContent =
+currentGame.away_timeouts ?? 5;
+
+}
+
+
+/* UPDATE SCORE */
+
+async function updateScore(team, amount) {
+
+if (!currentGame) {
+
+showStatus(
+"Please load a game first."
+);
+
+return;
+
+}
+
+
+let column;
+
+
+if (team === "home") {
+
+column = "home_score";
+
+} else {
+
+column = "away_score";
+
+}
+
+
+let newScore =
+Number(currentGame[column] || 0)
++ amount;
+
+
+if (newScore < 0) {
+
+newScore = 0;
+
+}
+
+
+const updateData = {};
+
+updateData[column] = newScore;
+
+
+const {
+data,
+error
+} = await supabaseClient
+
+.from("games")
+
+.update(updateData)
+
+.eq("id", currentGame.id)
+
+.select()
+
+.single();
+
+
+if (error) {
+
+showStatus(
+"Error updating score: " +
+error.message
+);
+
+console.error(error);
+
+return;
+
+}
+
+
+currentGame = data;
+
+refreshDisplay();
+
+
+showStatus(
+"Score updated successfully."
+);
+
+}
+
+
+/* UPDATE GAME */
+
+async function updateGame(changes) {
+
+if (!currentGame) {
+
+showStatus(
+"Please load a game first."
+);
+
+return;
+
+}
+
+
+const {
+data,
+error
+} = await supabaseClient
+
+.from("games")
+
+.update(changes)
+
+.eq("id", currentGame.id)
+
+.select()
+
+.single();
+
+
+if (error) {
+
+showStatus(
+"Error updating game: " +
+error.message
+);
+
+console.error(error);
+
+return;
+
+}
+
+
+currentGame = data;
+
+refreshDisplay();
+
+
+showStatus(
+"Game updated successfully."
+);
+
+}
+
+
+/* UPDATE FOULS / TIMEOUTS */
+
+async function updateStat(column, amount) {
+
+if (!currentGame) {
+
+showStatus(
+"Please load a game first."
+);
+
+return;
+
+}
+
+
+let newValue =
+Number(currentGame[column] || 0)
++ amount;
+
+
+if (newValue < 0) {
+
+newValue = 0;
+
+}
+
+
+const updateData = {};
+
+updateData[column] = newValue;
+
+
+const {
+data,
+error
+} = await supabaseClient
+
+.from("games")
+
+.update(updateData)
+
+.eq("id", currentGame.id)
+
+.select()
+
+.single();
+
+
+if (error) {
+
+showStatus(
+"Error updating game: " +
+error.message
+);
+
+console.error(error);
+
+return;
+
+}
+
+
+currentGame = data;
+
+refreshDisplay();
+
+
+showStatus(
+"Updated successfully."
+);
+
+}
+
+
+/* STATUS MESSAGE */
+
+function showStatus(message) {
+
+const status =
+document.getElementById(
+"statusMessage"
+);
+
+status.textContent =
+message;
+
+status.style.display =
+"block";
+
+setTimeout(function() {
+
+status.style.display =
+"none";
+
+}, 3000);
+
+}
+
+
+/* AUTO LOAD */
+
+loadGame();
+
+</script>
+
+
+</body>
+
+</html>
