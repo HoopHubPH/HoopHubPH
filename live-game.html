@@ -778,17 +778,42 @@
 
 
         const {
-            data,
-            error
-        } = await supabaseClient
+    data,
+    error
+} = await supabaseClient
+    .from("games")
+    .select("*")
+    .eq("id", GAME_ID);
 
-            .from("games")
+console.log("GAME DATA:", data);
+console.log("GAME ERROR:", error);
 
-            .select("*")
+if (error) {
+    console.error("Supabase Error:", error);
 
-            .eq("id", GAME_ID)
+    loading.style.display = "none";
 
-            .single();
+    errorMessage.textContent =
+        "Unable to load game: " + error.message;
+
+    errorMessage.style.display = "block";
+
+    return;
+}
+
+if (!data || data.length === 0) {
+
+    loading.style.display = "none";
+
+    errorMessage.textContent =
+        "No game found with ID: " + GAME_ID;
+
+    errorMessage.style.display = "block";
+
+    return;
+}
+
+const game = data[0];
 
 
 
