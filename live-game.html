@@ -796,17 +796,20 @@
            ERROR
         ========================= */
 
-        if (error) {
+      if (error) {
 
-            console.error(error);
+    console.error("GAME ERROR:", error);
 
-            loading.style.display = "none";
+    loading.style.display = "none";
 
-            errorMessage.style.display = "block";
+    errorMessage.style.display = "block";
 
-            return;
+    errorMessage.textContent =
+        "Unable to load game: " + error.message;
 
-        }
+    return;
+
+}
 
 
 
