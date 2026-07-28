@@ -112,7 +112,7 @@ Loading players...
 const SUPABASE_URL = "https://tkrsyiwffqkgfyooewsf.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
 
-const supabase = window.supabase.createClient(
+const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
@@ -123,7 +123,7 @@ async function loadPlayers() {
 
     playersList.innerHTML = "Loading players...";
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
         .from("players")
         .select("*")
         .order("created_at", { ascending: false });
