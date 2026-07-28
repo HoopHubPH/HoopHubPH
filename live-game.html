@@ -761,186 +761,155 @@
     /* =========================
        LOAD GAME
     ========================= */
+async function loadGame() {
 
-    async function loadGame() {
+    const loading =
+        document.getElementById("loading");
 
+    const gameCard =
+        document.getElementById("gameCard");
 
-        const loading =
-            document.getElementById("loading");
-
-
-        const gameCard =
-            document.getElementById("gameCard");
-
-
-        const errorMessage =
-            document.getElementById("errorMessage");
+    const errorMessage =
+        document.getElementById("errorMessage");
 
 
-        const {
-    data,
-    error
-} = await supabaseClient
-    .from("games")
-    .select("*")
-    .eq("id", GAME_ID);
+    // GET GAME FROM SUPABASE
 
-console.log("GAME DATA:", data);
-console.log("GAME ERROR:", error);
-
-if (error) {
-    console.error("Supabase Error:", error);
-
-    loading.style.display = "none";
-
-    errorMessage.textContent =
-        "Unable to load game: " + error.message;
-
-    errorMessage.style.display = "block";
-
-    return;
-}
-       console.log("GAME DATA FROM SUPABASE:", data);
-
-if (!data || data.length === 0) {
-
-    loading.style.display = "none";
-
-    errorMessage.textContent =
-        "No game found with ID: " + GAME_ID;
-
-    errorMessage.style.display = "block";
-
-    return;
-}
-
-const game = data[0];
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("games")
+        .select("*")
+        .eq("id", GAME_ID);
 
 
+    // SHOW DATABASE RESPONSE IN CONSOLE
 
-        /* =========================
-           ERROR
-        ========================= */
-
-      if (error) {
-
-    console.error("GAME ERROR:", error);
-
-    loading.style.display = "none";
-
-    errorMessage.style.display = "block";
-
-    errorMessage.textContent =
-        "Unable to load game: " + error.message;
-
-    return;
-
-}
+    console.log("GAME DATA:", data);
+    console.log("GAME ERROR:", error);
 
 
+    // CHECK FOR DATABASE ERROR
 
-        /* =========================
-           HIDE LOADING
-        ========================= */
+    if (error) {
+
+        console.error(
+            "Supabase Error:",
+            error
+        );
 
         loading.style.display = "none";
 
-        errorMessage.style.display = "none";
+        errorMessage.textContent =
+            "Unable to load game: " +
+            error.message;
 
-        gameCard.style.display = "block";
+        errorMessage.style.display = "block";
 
-
-
-        /* =========================
-           DISPLAY TEAM NAMES
-        ========================= */
-
-        document.getElementById("homeTeam")
-            .textContent =
-            data.home_team || "Home Team";
-
-
-        document.getElementById("awayTeam")
-            .textContent =
-            data.away_team || "Away Team";
-
-
-
-        /* =========================
-           DISPLAY SCORE
-        ========================= */
-
-        document.getElementById("homeScore")
-            .textContent =
-            data.home_score ?? 5;
-
-
-        document.getElementById("awayScore")
-            .textContent =
-            data.away_score ?? 0;
-
-
-
-        /* =========================
-           DISPLAY PERIOD
-        ========================= */
-
-        document.getElementById("period")
-            .textContent =
-            data.period || "1st Quarter";
-
-
-
-        /* =========================
-           DISPLAY GAME CLOCK
-        ========================= */
-
-        document.getElementById("gameClock")
-            .textContent =
-            data.game_clock || "10:00";
-
-
-
-        /* =========================
-           DISPLAY FOULS
-        ========================= */
-
-        document.getElementById("homeFouls")
-            .textContent =
-            data.home_fouls ?? 0;
-
-
-        document.getElementById("awayFouls")
-            .textContent =
-            data.away_fouls ?? 0;
-
-
-
-        /* =========================
-           DISPLAY TIMEOUTS
-        ========================= */
-
-        document.getElementById("homeTimeouts")
-            .textContent =
-            data.home_timeouts ?? 5;
-
-
-        document.getElementById("awayTimeouts")
-            .textContent =
-            data.away_timeouts ?? 5;
-
-
-
-        /* =========================
-           DISPLAY STATUS
-        ========================= */
-
-        document.getElementById("gameStatus")
-            .textContent =
-            (data.status || "Scheduled").toUpperCase();
-
-
+        return;
     }
+
+
+    // CHECK IF GAME EXISTS
+
+    if (!data || data.length === 0) {
+
+        loading.style.display = "none";
+
+        errorMessage.textContent =
+            "No game found with ID: " +
+            GAME_ID;
+
+        errorMessage.style.display = "block";
+
+        return;
+    }
+
+
+    // GET THE FIRST GAME FROM THE ARRAY
+
+    const game = data[0];
+
+
+    // HIDE LOADING
+
+    loading.style.display = "none";
+
+    errorMessage.style.display = "none";
+
+    gameCard.style.display = "block";
+
+
+    // TEAM NAMES
+
+    document.getElementById("homeTeam")
+        .textContent =
+        game.home_team || "Home Team";
+
+
+    document.getElementById("awayTeam")
+        .textContent =
+        game.away_team || "Away Team";
+
+
+    // SCORE
+
+    document.getElementById("homeScore")
+        .textContent =
+        game.home_score ?? 0;
+
+
+    document.getElementById("awayScore")
+        .textContent =
+        game.away_score ?? 0;
+
+
+    // PERIOD
+
+    document.getElementById("period")
+        .textContent =
+        game.period || "1st Quarter";
+
+
+    // GAME CLOCK
+
+    document.getElementById("gameClock")
+        .textContent =
+        game.game_clock || "10:00";
+
+
+    // FOULS
+
+    document.getElementById("homeFouls")
+        .textContent =
+        game.home_fouls ?? 0;
+
+
+    document.getElementById("awayFouls")
+        .textContent =
+        game.away_fouls ?? 0;
+
+
+    // TIMEOUTS
+
+    document.getElementById("homeTimeouts")
+        .textContent =
+        game.home_timeouts ?? 5;
+
+
+    document.getElementById("awayTimeouts")
+        .textContent =
+        game.away_timeouts ?? 5;
+
+
+    // GAME STATUS
+
+    document.getElementById("gameStatus")
+        .textContent =
+        (game.status || "Scheduled").toUpperCase();
+
+}
 
 
 
