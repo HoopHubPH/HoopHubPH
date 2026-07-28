@@ -108,6 +108,21 @@
             background: #e65f00;
         }
 
+        .back-btn {
+    display: inline-block;
+    margin-bottom: 25px;
+    padding: 10px 16px;
+    background: #111;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.back-btn:hover {
+    background: #333;
+}
+
         @media (max-width: 600px) {
 
             .container {
@@ -138,6 +153,10 @@
 
 
 <div class="container">
+
+    <a href="players.html" class="back-btn">
+    ← Back to Players Directory
+</a>
 
     <h2>Add New Player</h2>
 
@@ -328,8 +347,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
-});
-</script>
 
 
 </script>
