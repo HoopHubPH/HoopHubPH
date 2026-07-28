@@ -112,6 +112,65 @@
             color: #666;
         }
 
+        ```css
+/* CREATE TEAM FORM */
+
+.team-form {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,0.08);
+}
+
+.team-form input {
+    width: 100%;
+
+    padding: 14px;
+
+    margin-bottom: 15px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 5px;
+
+    font-size: 15px;
+}
+
+.team-form input:focus {
+    outline: none;
+
+    border-color: #ff6b00;
+}
+
+.create-team-button {
+    width: 100%;
+
+    background: #ff6b00;
+
+    color: white;
+
+    border: none;
+
+    padding: 14px;
+
+    border-radius: 5px;
+
+    font-weight: bold;
+
+    font-size: 15px;
+
+    cursor: pointer;
+}
+
+.create-team-button:hover {
+    background: #111;
+}
+```
+
         /* TEAM CARDS */
 
         .teams {
@@ -313,6 +372,114 @@
 
 
     <!-- TEAMS -->
+    ```html
+<!-- CREATE TEAM -->
+
+<section class="section">
+
+    <div class="section-title">
+
+        <h2>
+            CREATE A TEAM
+        </h2>
+
+        <p>
+            Register your basketball team on Hoop Hub PH.
+        </p>
+
+    </div>
+
+
+    <div class="team-form">
+
+        <input
+            type="text"
+            id="teamName"
+            placeholder="Team Name"
+        >
+
+
+        <input
+            type="text"
+            id="teamLocation"
+            placeholder="Team Location"
+        >
+
+
+        <input
+            type="text"
+            id="teamLogo"
+            placeholder="Team Logo URL"
+        >
+
+
+        <button
+            onclick="createTeam()"
+            class="create-team-button"
+        >
+            CREATE TEAM
+        </button>
+        ```javascript
+/* TEAM MESSAGE */
+
+function showTeamMessage(
+    message,
+    type
+) {
+
+    const messageElement =
+        document.getElementById(
+            "teamMessage"
+        );
+
+
+    messageElement.textContent =
+        message;
+
+
+    messageElement.style.display =
+        "block";
+
+
+    if (type === "success") {
+
+        messageElement.style.color =
+            "#2e7d32";
+
+    } else {
+
+        messageElement.style.color =
+            "#d32f2f";
+
+    }
+
+
+    setTimeout(function() {
+
+        messageElement.style.display =
+            "none";
+
+    }, 4000);
+
+}
+```
+
+
+
+        <p
+            id="teamMessage"
+            style="
+                margin-top:15px;
+                display:none;
+                font-weight:bold;
+            "
+        ></p>
+
+    </div>
+
+</section>
+```
+
 
     <section class="section">
 
@@ -405,6 +572,122 @@ window.supabase.createClient(
 SUPABASE_URL,
 SUPABASE_KEY
 );
+    ```javascript
+/* CREATE TEAM */
+
+async function createTeam() {
+
+    const name =
+        document.getElementById(
+            "teamName"
+        ).value.trim();
+
+
+    const location =
+        document.getElementById(
+            "teamLocation"
+        ).value.trim();
+
+
+    const logo =
+        document.getElementById(
+            "teamLogo"
+        ).value.trim();
+
+
+    /* CHECK TEAM NAME */
+
+    if (!name) {
+
+        showTeamMessage(
+            "Please enter a team name.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    /* INSERT TEAM INTO SUPABASE */
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+    .from("teams")
+
+    .insert({
+
+        name: name,
+
+        location:
+            location || null,
+
+        logo:
+            logo || null
+
+    })
+
+    .select()
+
+    .single();
+
+
+    /* HANDLE ERROR */
+
+    if (error) {
+
+        console.error(
+            "Error creating team:",
+            error
+        );
+
+
+        showTeamMessage(
+            "Error creating team: " +
+            error.message,
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    /* SUCCESS */
+
+    showTeamMessage(
+        "Team created successfully!",
+        "success"
+    );
+
+
+    /* CLEAR FORM */
+
+    document.getElementById(
+        "teamName"
+    ).value = "";
+
+
+    document.getElementById(
+        "teamLocation"
+    ).value = "";
+
+
+    document.getElementById(
+        "teamLogo"
+    ).value = "";
+
+
+    /* RELOAD TEAM LIST */
+
+    loadTeams();
+
+}
+```
+
 
 
 /* LOAD TEAMS */
