@@ -330,156 +330,14 @@
         </div>
 
 
-        <div class="teams">
+        <div class="teams" id="teamsContainer">
 
 
-            <!-- TEAM 1 -->
+            <div class="teams" id="teamsContainer">
 
-            <div class="team-card">
+    <p>Loading teams...</p>
 
-                <div class="team-logo">
-                    🏀
-                </div>
-
-                <h3>
-                    Quezon City Warriors
-                </h3>
-
-                <p>
-                    Competitive community basketball team.
-                </p>
-
-                <div class="team-info">
-
-                    <strong>
-                        📍 Location:
-                    </strong>
-
-                    Quezon City
-
-                    <br>
-
-                    <strong>
-                        🏆 Division:
-                    </strong>
-
-                    Open Division
-
-                    <br>
-
-                    <strong>
-                        👨‍🏫 Coach:
-                    </strong>
-
-                    Coach Juan
-
-                </div>
-
-                <a href="team1.html" class="view-button">
-    VIEW TEAM
-</a>
-
-            </div>
-
-
-            <!-- TEAM 2 -->
-
-            <div class="team-card">
-
-                <div class="team-logo">
-                    🏀
-                </div>
-
-                <h3>
-                    Manila Ballers
-                </h3>
-
-                <p>
-                    Amateur basketball team competing
-                    in local leagues.
-                </p>
-
-                <div class="team-info">
-
-                    <strong>
-                        📍 Location:
-                    </strong>
-
-                    Manila
-
-                    <br>
-
-                    <strong>
-                        🏆 Division:
-                    </strong>
-
-                    Amateur
-
-                    <br>
-
-                    <strong>
-                        👨‍🏫 Coach:
-                    </strong>
-
-                    Coach Mark
-
-                </div>
-
-                <a href="#" class="view-button">
-                    VIEW TEAM
-                </a>
-
-            </div>
-
-
-            <!-- TEAM 3 -->
-
-            <div class="team-card">
-
-                <div class="team-logo">
-                    🏀
-                </div>
-
-                <h3>
-                    Metro Hoopers
-                </h3>
-
-                <p>
-                    Local basketball team looking
-                    for competitive tournaments.
-                </p>
-
-                <div class="team-info">
-
-                    <strong>
-                        📍 Location:
-                    </strong>
-
-                    Pasig City
-
-                    <br>
-
-                    <strong>
-                        🏆 Division:
-                    </strong>
-
-                    Open Division
-
-                    <br>
-
-                    <strong>
-                        👨‍🏫 Coach:
-                    </strong>
-
-                    Coach Carlo
-
-                </div>
-
-                <a href="#" class="view-button">
-                    VIEW TEAM
-                </a>
-
-            </div>
+</div>
 
 
         </div>
@@ -529,6 +387,197 @@
 
     </footer>
 
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+/* SUPABASE CONNECTION */
+
+const SUPABASE_URL =
+"https://tkrsyiwffqkgfyooewsf.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+/* LOAD TEAMS */
+
+async function loadTeams() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+    .from("teams")
+
+    .select("*")
+
+    .order("id", {
+        ascending: true
+    });
+
+
+    if (error) {
+
+        console.error(
+            "Error loading teams:",
+            error
+        );
+
+        document.getElementById(
+            "teamsContainer"
+        ).innerHTML = `
+
+            <p>
+                Unable to load teams.
+            </p>
+
+        `;
+
+        return;
+
+    }
+
+
+    const container =
+        document.getElementById(
+            "teamsContainer"
+        );
+
+
+    container.innerHTML = "";
+
+
+    /* NO TEAMS */
+
+    if (!data || data.length === 0) {
+
+        container.innerHTML = `
+
+            <p>
+                No teams registered yet.
+            </p>
+
+        `;
+
+        return;
+
+    }
+
+
+    /* DISPLAY TEAMS */
+
+    data.forEach(team => {
+
+        const card =
+            document.createElement(
+                "div"
+            );
+
+        card.className =
+            "team-card";
+
+
+        /* TEAM LOGO */
+
+        let logoHTML;
+
+
+        if (team.logo) {
+
+            logoHTML = `
+
+                <img
+                    src="${team.logo}"
+                    alt="${team.name}"
+                    style="
+                        width:90px;
+                        height:90px;
+                        object-fit:contain;
+                        border-radius:50%;
+                    "
+                >
+
+            `;
+
+        } else {
+
+            logoHTML = `
+
+                <div class="team-logo">
+                    🏀
+                </div>
+
+            `;
+
+        }
+
+
+        /* TEAM CARD */
+
+        card.innerHTML = `
+
+            ${logoHTML}
+
+            <h3>
+                ${team.name}
+            </h3>
+
+            <p>
+                Basketball team registered
+                on Hoop Hub PH.
+            </p>
+
+            <div class="team-info">
+
+                <strong>
+                    📍 Location:
+                </strong>
+
+                ${team.location || "Not provided"}
+
+                <br>
+
+                <strong>
+                    🆔 Team ID:
+                </strong>
+
+                ${team.id}
+
+            </div>
+
+            <a
+                href="team.html?id=${team.id}"
+                class="view-button"
+            >
+                VIEW TEAM
+            </a>
+
+        `;
+
+
+        container.appendChild(
+            card
+        );
+
+    });
+
+}
+
+
+/* RUN WHEN PAGE LOADS */
+
+loadTeams();
+
+</script>
 
 </body>
 
