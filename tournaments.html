@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tournaments | Hoop Hub PH</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f5f5;
+            color: #222;
+        }
+
+        /* NAVIGATION */
+
+        header {
+            background: #111;
+            color: white;
+            padding: 18px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: #ff6b00;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 25px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        nav a:hover {
+            color: #ff6b00;
+        }
+
+        /* HERO */
+
+        .hero {
+            background: #111;
+            color: white;
+            text-align: center;
+            padding: 70px 20px;
+        }
+
+        .hero h1 {
+            font-size: 45px;
+            margin-bottom: 15px;
+        }
+
+        .hero h1 span {
+            color: #ff6b00;
+        }
+
+        .hero p {
+            color: #ccc;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        /* MAIN SECTION */
+
+        .section {
+            padding: 60px 8%;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-title h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .section-title p {
+            color: #666;
+        }
+
+        /* TOURNAMENT CARDS */
+
+        .tournaments {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(280px, 1fr));
+
+            gap: 25px;
+        }
+
+        .tournament-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+
+            box-shadow:
+                0 5px 20px rgba(0,0,0,0.08);
+
+            transition: transform 0.3s;
+        }
+
+        .tournament-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .tournament-icon {
+            width: 70px;
+            height: 70px;
+
+            background: #111;
+            color: #ff6b00;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin-bottom: 20px;
+
+            font-size: 32px;
+        }
+
+        .tournament-card h3 {
+            margin-bottom: 12px;
+            font-size: 21px;
+        }
+
+        .tournament-card p {
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        /* TOURNAMENT INFO */
+
+        .tournament-info {
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .tournament-info strong {
+            color: #ff6b00;
+        }
+
+        /* STATUS */
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 5px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        /* BUTTON */
+
+        .view-button {
+            display: inline-block;
+
+            background: #ff6b00;
+            color: white;
+
+            padding: 12px 20px;
+
+            border-radius: 5px;
+
+            text-decoration: none;
+
+            font-weight: bold;
+        }
+
+        .view-button:hover {
+            background: #e65f00;
+        }
+
+        /* ORGANIZER CTA */
+
+        .register {
+            background: #ff6b00;
+            color: white;
+
+            text-align: center;
+
+            padding: 70px 20px;
+        }
+
+        .register h2 {
+            font-size: 35px;
+            margin-bottom: 15px;
+        }
+
+        .register p {
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .register a {
+            display: inline-block;
+
+            background: white;
+            color: #ff6b00;
+
+            padding: 15px 30px;
+
+            border-radius: 5px;
+
+            text-decoration: none;
+
+            font-weight: bold;
+        }
+
+        /* FOOTER */
+
+        footer {
+            background: #111;
+            color: white;
+
+            text-align: center;
+
+            padding: 30px;
+        }
+
+        footer p {
+            color: #aaa;
+            margin-top: 10px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 768px) {
+
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav {
+                text-align: center;
+            }
+
+            nav a {
+                margin: 0 7px;
+                font-size: 12px;
+            }
+
+            .hero h1 {
+                font-size: 35px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- NAVIGATION -->
+
+    <header>
+
+        <a href="index.html" class="logo">
+            HOOP <span>HUB PH</span>
+        </a>
+
+
+        <nav>
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a href="leagues.html">
+                Leagues
+            </a>
+
+            <a href="teams.html">
+                Teams
+            </a>
+
+            <a href="players.html">
+                Players
+            </a>
+
+            <a href="tournaments.html">
+                Tournaments
+            </a>
+
+        </nav>
+
+    </header>
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <h1>
+            BASKETBALL <span>TOURNAMENTS</span>
+        </h1>
+
+        <p>
+            Discover basketball tournaments and competitions
+            happening across the Philippines.
+        </p>
+
+    </section>
+
+
+    <!-- TOURNAMENT DIRECTORY -->
+
+    <section class="section">
+
+
+        <div class="section-title">
+
+            <h2>
+                FEATURED TOURNAMENTS
+            </h2>
+
+            <p>
+                Find your next basketball competition.
+            </p>
+
+        </div>
+
+
+        <div class="tournaments">
+
+
+            <!-- TOURNAMENT 1 -->
+
+            <div class="tournament-card">
+
+                <div class="tournament-icon">
+                    🏆
+                </div>
+
+                <h3>
+                    Hoop Hub PH Summer Cup
+                </h3>
+
+                <p>
+                    A competitive community basketball
+                    tournament for local teams.
+                </p>
+
+                <span class="status">
+                    REGISTRATION OPEN
+                </span>
+
+                <div class="tournament-info">
+
+                    <strong>
+                        📍 Location:
+                    </strong>
+
+                    Quezon City
+
+                    <br>
+
+                    <strong>
+                        📅 Date:
+                    </strong>
+
+                    June 2026
+
+                    <br>
+
+                    <strong>
+                        🏀 Category:
+                    </strong>
+
+                    Open Division
+
+                    <br>
+
+                    <strong>
+                        👥 Teams:
+                    </strong>
+
+                    16 Teams
+
+                </div>
+
+                <a href="#" class="view-button">
+                    VIEW TOURNAMENT
+                </a>
+
+            </div>
+
+
+            <!-- TOURNAMENT 2 -->
+
+            <div class="tournament-card">
+
+                <div class="tournament-icon">
+                    🏀
+                </div>
+
+                <h3>
+                    Manila Open Basketball Cup
+                </h3>
+
+                <p>
+                    An amateur basketball tournament
+                    featuring competitive teams from Manila.
+                </p>
+
+                <span class="status">
+                    REGISTRATION OPEN
+                </span>
+
+                <div class="tournament-info">
+
+                    <strong>
+                        📍 Location:
+                    </strong>
+
+                    Manila
+
+                    <br>
+
+                    <strong>
+                        📅 Date:
+                    </strong>
+
+                    July 2026
+
+                    <br>
+
+                    <strong>
+                        🏀 Category:
+                    </strong>
+
+                    Amateur
+
+                    <br>
+
+                    <strong>
+                        👥 Teams:
+                    </strong>
+
+                    24 Teams
+
+                </div>
+
+                <a href="#" class="view-button">
+                    VIEW TOURNAMENT
+                </a>
+
+            </div>
+
+
+            <!-- TOURNAMENT 3 -->
+
+            <div class="tournament-card">
+
+                <div class="tournament-icon">
+                    🏆
+                </div>
+
+                <h3>
+                    Metro Manila Invitational
+                </h3>
+
+                <p>
+                    A city-wide basketball tournament
+                    bringing together competitive teams.
+                </p>
+
+                <span class="status">
+                    COMING SOON
+                </span>
+
+                <div class="tournament-info">
+
+                    <strong>
+                        📍 Location:
+                    </strong>
+
+                    Metro Manila
+
+                    <br>
+
+                    <strong>
+                        📅 Date:
+                    </strong>
+
+                    August 2026
+
+                    <br>
+
+                    <strong>
+                        🏀 Category:
+                    </strong>
+
+                    Open Division
+
+                    <br>
+
+                    <strong>
+                        👥 Teams:
+                    </strong>
+
+                    32 Teams
+
+                </div>
+
+                <a href="#" class="view-button">
+                    VIEW TOURNAMENT
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- ORGANIZER CTA -->
+
+    <section class="register">
+
+        <h2>
+            ARE YOU A TOURNAMENT ORGANIZER?
+        </h2>
+
+        <p>
+            List your tournament on Hoop Hub PH
+            and connect with basketball teams and players.
+        </p>
+
+        <a href="#">
+            REGISTER YOUR TOURNAMENT
+        </a>
+
+    </section>
+
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <h3>
+            🏀 HOOP HUB PH
+        </h3>
+
+        <p>
+            Connecting Philippine basketball,
+            one community at a time.
+        </p>
+
+        <p>
+            © 2026 Hoop Hub PH.
+            All rights reserved.
+        </p>
+
+    </footer>
+
+
+</body>
+
+</html>
