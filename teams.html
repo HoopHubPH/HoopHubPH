@@ -1,40 +1,41 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Teams | Hoop Hub PH</title>
+<title>Teams | Hoop Hub PH</title>
 
-    <style>
+<style>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f5f5f5;
-            color: #222;
-        }
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f5f5;
+    color: #222;
+}
 
-        /* NAVIGATION */
+/* NAVIGATION */
 
-        header {
-            background: #111;
-            color: white;
-            padding: 18px 8%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+header {
+    background: #111;
+    color: white;
+    padding: 18px 8%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-        .logo {
+.logo {
     font-size: 24px;
     font-weight: bold;
     color: white;
@@ -53,66 +54,61 @@
     color: #ff6b00;
 }
 
-        .logo span {
-            color: #ff6b00;
-        }
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 25px;
+    font-weight: bold;
+    font-size: 14px;
+}
 
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 25px;
-            font-weight: bold;
-            font-size: 14px;
-        }
+nav a:hover {
+    color: #ff6b00;
+}
 
-        nav a:hover {
-            color: #ff6b00;
-        }
+/* HERO */
 
-        /* HERO */
+.hero {
+    background: #111;
+    color: white;
+    text-align: center;
+    padding: 70px 20px;
+}
 
-        .hero {
-            background: #111;
-            color: white;
-            text-align: center;
-            padding: 70px 20px;
-        }
+.hero h1 {
+    font-size: 45px;
+    margin-bottom: 15px;
+}
 
-        .hero h1 {
-            font-size: 45px;
-            margin-bottom: 15px;
-        }
+.hero h1 span {
+    color: #ff6b00;
+}
 
-        .hero h1 span {
-            color: #ff6b00;
-        }
+.hero p {
+    color: #ccc;
+    font-size: 18px;
+}
 
-        .hero p {
-            color: #ccc;
-            font-size: 18px;
-        }
+/* MAIN SECTION */
 
-        /* MAIN SECTION */
+.section {
+    padding: 60px 8%;
+}
 
-        .section {
-            padding: 60px 8%;
-        }
+.section-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
 
-        .section-title {
-            text-align: center;
-            margin-bottom: 40px;
-        }
+.section-title h2 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
 
-        .section-title h2 {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
+.section-title p {
+    color: #666;
+}
 
-        .section-title p {
-            color: #666;
-        }
-
-        ```css
 /* CREATE TEAM FORM */
 
 .team-form {
@@ -128,13 +124,10 @@
 
 .team-form input {
     width: 100%;
-
     padding: 14px;
-
     margin-bottom: 15px;
 
     border: 1px solid #ddd;
-
     border-radius: 5px;
 
     font-size: 15px;
@@ -142,7 +135,6 @@
 
 .team-form input:focus {
     outline: none;
-
     border-color: #ff6b00;
 }
 
@@ -150,7 +142,6 @@
     width: 100%;
 
     background: #ff6b00;
-
     color: white;
 
     border: none;
@@ -169,154 +160,161 @@
 .create-team-button:hover {
     background: #111;
 }
-```
 
-        /* TEAM CARDS */
+/* TEAM CARDS */
 
-        .teams {
-            display: grid;
-            grid-template-columns:
-                repeat(auto-fit, minmax(260px, 1fr));
+.teams {
+    display: grid;
 
-            gap: 25px;
-        }
+    grid-template-columns:
+        repeat(auto-fit, minmax(260px, 1fr));
 
-        .team-card {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
+    gap: 25px;
+}
 
-            box-shadow:
-                0 5px 20px rgba(0,0,0,0.08);
+.team-card {
+    background: white;
 
-            text-align: center;
-        }
+    padding: 30px;
 
-        .team-logo {
-            width: 90px;
-            height: 90px;
+    border-radius: 10px;
 
-            background: #111;
-            color: #ff6b00;
+    box-shadow:
+        0 5px 20px rgba(0,0,0,0.08);
 
-            border-radius: 50%;
+    text-align: center;
+}
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+.team-logo {
+    width: 90px;
+    height: 90px;
 
-            margin: 0 auto 20px;
+    background: #111;
+    color: #ff6b00;
 
-            font-size: 40px;
-        }
+    border-radius: 50%;
 
-        .team-card h3 {
-            margin-bottom: 10px;
-        }
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-        .team-card p {
-            color: #666;
-            line-height: 1.5;
-            margin-bottom: 15px;
-        }
+    margin: 0 auto 20px;
 
-        .team-info {
-            font-size: 14px;
-            margin-bottom: 20px;
-            line-height: 1.8;
-        }
+    font-size: 40px;
+}
 
-        .team-info strong {
-            color: #ff6b00;
-        }
+.team-card h3 {
+    margin-bottom: 10px;
+}
 
-        .view-button {
-            display: inline-block;
+.team-card p {
+    color: #666;
 
-            background: #ff6b00;
-            color: white;
+    line-height: 1.5;
 
-            padding: 12px 20px;
+    margin-bottom: 15px;
+}
 
-            border-radius: 5px;
+.team-info {
+    font-size: 14px;
 
-            text-decoration: none;
+    margin-bottom: 20px;
 
-            font-weight: bold;
-        }
+    line-height: 1.8;
+}
 
-        /* ORGANIZER CTA */
+.team-info strong {
+    color: #ff6b00;
+}
 
-        .register {
-            background: #ff6b00;
-            color: white;
+.view-button {
+    display: inline-block;
 
-            text-align: center;
+    background: #ff6b00;
+    color: white;
 
-            padding: 70px 20px;
-        }
+    padding: 12px 20px;
 
-        .register h2 {
-            font-size: 35px;
-            margin-bottom: 15px;
-        }
+    border-radius: 5px;
 
-        .register p {
-            margin-bottom: 25px;
-        }
+    text-decoration: none;
 
-        .register a {
-            display: inline-block;
+    font-weight: bold;
+}
 
-            background: white;
-            color: #ff6b00;
+/* ORGANIZER CTA */
 
-            padding: 15px 30px;
+.register {
+    background: #ff6b00;
+    color: white;
 
-            border-radius: 5px;
+    text-align: center;
 
-            text-decoration: none;
+    padding: 70px 20px;
+}
 
-            font-weight: bold;
-        }
+.register h2 {
+    font-size: 35px;
+    margin-bottom: 15px;
+}
 
-        /* FOOTER */
+.register p {
+    margin-bottom: 25px;
+}
 
-        footer {
-            background: #111;
-            color: white;
+.register a {
+    display: inline-block;
 
-            text-align: center;
+    background: white;
+    color: #ff6b00;
 
-            padding: 30px;
-        }
+    padding: 15px 30px;
 
-        footer p {
-            color: #aaa;
-            margin-top: 10px;
-        }
+    border-radius: 5px;
 
-        /* MOBILE */
+    text-decoration: none;
 
-        @media (max-width: 768px) {
+    font-weight: bold;
+}
 
-            header {
-                flex-direction: column;
-                gap: 15px;
-            }
+/* FOOTER */
 
-            nav a {
-                margin: 0 7px;
-                font-size: 12px;
-            }
+footer {
+    background: #111;
+    color: white;
 
-            .hero h1 {
-                font-size: 35px;
-            }
+    text-align: center;
 
-        }
+    padding: 30px;
+}
 
-    </style>
+footer p {
+    color: #aaa;
+
+    margin-top: 10px;
+}
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+
+    header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    nav a {
+        margin: 0 7px;
+        font-size: 12px;
+    }
+
+    .hero h1 {
+        font-size: 35px;
+    }
+
+}
+
+</style>
 
 </head>
 
@@ -324,9 +322,9 @@
 <body>
 
 
-    <!-- NAVIGATION -->
+<!-- NAVIGATION -->
 
-   <header>
+<header>
 
     <a href="index.html" class="logo">
         HOOP <span>HUB PH</span>
@@ -351,28 +349,22 @@
 </header>
 
 
-    <!-- HERO -->
+<!-- HERO -->
 
-    <section class="hero">
+<section class="hero">
 
-        <h1>
+    <h1>
+        DISCOVER <span>TEAMS</span>
+    </h1>
 
-            DISCOVER <span>TEAMS</span>
+    <p>
+        Explore basketball teams and organizations
+        across the Philippines.
+    </p>
 
-        </h1>
-
-        <p>
-
-            Explore basketball teams and organizations
-            across the Philippines.
-
-        </p>
-
-    </section>
+</section>
 
 
-    <!-- TEAMS -->
-    ```html
 <!-- CREATE TEAM -->
 
 <section class="section">
@@ -419,51 +411,6 @@
         >
             CREATE TEAM
         </button>
-        ```javascript
-/* TEAM MESSAGE */
-
-function showTeamMessage(
-    message,
-    type
-) {
-
-    const messageElement =
-        document.getElementById(
-            "teamMessage"
-        );
-
-
-    messageElement.textContent =
-        message;
-
-
-    messageElement.style.display =
-        "block";
-
-
-    if (type === "success") {
-
-        messageElement.style.color =
-            "#2e7d32";
-
-    } else {
-
-        messageElement.style.color =
-            "#d32f2f";
-
-    }
-
-
-    setTimeout(function() {
-
-        messageElement.style.display =
-            "none";
-
-    }, 4000);
-
-}
-```
-
 
 
         <p
@@ -478,82 +425,81 @@ function showTeamMessage(
     </div>
 
 </section>
-```
 
 
-    <section class="section">
+<!-- FEATURED TEAMS -->
 
+<section class="section">
 
-        <div class="section-title">
-
-            <h2>
-                FEATURED TEAMS
-            </h2>
-
-            <p>
-                Discover teams competing in Philippine basketball.
-            </p>
-
-        </div>
-
-
-        <div class="teams" id="teamsContainer">
-
-
-            <div class="teams" id="teamsContainer">
-
-    <p>Loading teams...</p>
-
-</div>
-
-
-        </div>
-
-    </section>
-
-
-    <!-- TEAM REGISTRATION -->
-
-    <section class="register">
+    <div class="section-title">
 
         <h2>
-            HAVE A BASKETBALL TEAM?
+            FEATURED TEAMS
         </h2>
 
         <p>
-
-            Create your team profile and showcase
-            your players and achievements.
-
+            Discover teams competing in Philippine basketball.
         </p>
 
-        <a href="#">
-            REGISTER YOUR TEAM
-        </a>
-
-    </section>
+    </div>
 
 
-    <!-- FOOTER -->
-
-    <footer>
-
-        <h3>
-            🏀 HOOP HUB PH
-        </h3>
+    <div
+        class="teams"
+        id="teamsContainer"
+    >
 
         <p>
-            Connecting Philippine basketball,
-            one community at a time.
+            Loading teams...
         </p>
 
-        <p>
-            © 2026 Hoop Hub PH.
-            All rights reserved.
-        </p>
+    </div>
 
-    </footer>
+</section>
 
+
+<!-- TEAM REGISTRATION -->
+
+<section class="register">
+
+    <h2>
+        HAVE A BASKETBALL TEAM?
+    </h2>
+
+    <p>
+        Create your team profile and showcase
+        your players and achievements.
+    </p>
+
+    <a href="#teamName">
+        REGISTER YOUR TEAM
+    </a>
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer>
+
+    <h3>
+        🏀 HOOP HUB PH
+    </h3>
+
+    <p>
+        Connecting Philippine basketball,
+        one community at a time.
+    </p>
+
+    <p>
+        © 2026 Hoop Hub PH.
+        All rights reserved.
+    </p>
+
+</footer>
+
+
+<!-- SUPABASE -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -569,10 +515,11 @@ const SUPABASE_KEY =
 
 const supabaseClient =
 window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+    SUPABASE_URL,
+    SUPABASE_KEY
 );
-    ```javascript
+
+
 /* CREATE TEAM */
 
 async function createTeam() {
@@ -609,7 +556,7 @@ async function createTeam() {
     }
 
 
-    /* INSERT TEAM INTO SUPABASE */
+    /* INSERT TEAM */
 
     const {
         data,
@@ -635,7 +582,7 @@ async function createTeam() {
     .single();
 
 
-    /* HANDLE ERROR */
+    /* ERROR */
 
     if (error) {
 
@@ -643,7 +590,6 @@ async function createTeam() {
             "Error creating team:",
             error
         );
-
 
         showTeamMessage(
             "Error creating team: " +
@@ -681,13 +627,11 @@ async function createTeam() {
     ).value = "";
 
 
-    /* RELOAD TEAM LIST */
+    /* REFRESH TEAM LIST */
 
     loadTeams();
 
 }
-```
-
 
 
 /* LOAD TEAMS */
@@ -707,6 +651,8 @@ async function loadTeams() {
         ascending: true
     });
 
+
+    /* ERROR */
 
     if (error) {
 
@@ -736,12 +682,17 @@ async function loadTeams() {
         );
 
 
+    /* CLEAR CURRENT TEAMS */
+
     container.innerHTML = "";
 
 
     /* NO TEAMS */
 
-    if (!data || data.length === 0) {
+    if (
+        !data ||
+        data.length === 0
+    ) {
 
         container.innerHTML = `
 
@@ -765,6 +716,7 @@ async function loadTeams() {
                 "div"
             );
 
+
         card.className =
             "team-card";
 
@@ -786,6 +738,7 @@ async function loadTeams() {
                         height:90px;
                         object-fit:contain;
                         border-radius:50%;
+                        margin-bottom:20px;
                     "
                 >
 
@@ -856,12 +809,64 @@ async function loadTeams() {
 }
 
 
+/* TEAM MESSAGE */
+
+function showTeamMessage(
+    message,
+    type
+) {
+
+    const messageElement =
+        document.getElementById(
+            "teamMessage"
+        );
+
+
+    messageElement.textContent =
+        message;
+
+
+    messageElement.style.display =
+        "block";
+
+
+    if (
+        type === "success"
+    ) {
+
+        messageElement.style.color =
+            "#2e7d32";
+
+    } else {
+
+        messageElement.style.color =
+            "#d32f2f";
+
+    }
+
+
+    setTimeout(
+        function() {
+
+            messageElement.style.display =
+                "none";
+
+        },
+        4000
+    );
+
+}
+
+
 /* RUN WHEN PAGE LOADS */
 
 loadTeams();
 
 </script>
 
+
 </body>
 
 </html>
+```
+
