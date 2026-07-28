@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Live Game | Hoop Hub PH</title>
+
+<style>
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f5f5f5;
+        color: #222;
+    }
+
+    /* =========================
+       NAVIGATION
+    ========================= */
+
+    header {
+        background: #111;
+        color: white;
+        padding: 18px 8%;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* CLICKABLE LOGO */
+
+    .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: white;
+        text-decoration: none;
+    }
+
+    .logo span {
+        color: #ff6b00;
+    }
+
+    .logo:hover {
+        color: white;
+    }
+
+    nav a {
+        color: white;
+        text-decoration: none;
+
+        margin-left: 25px;
+
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    nav a:hover {
+        color: #ff6b00;
+    }
+
+
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero {
+        background: #111;
+        color: white;
+
+        text-align: center;
+
+        padding: 50px 20px;
+    }
+
+    .hero h1 {
+        font-size: 42px;
+        margin-bottom: 10px;
+    }
+
+    .hero h1 span {
+        color: #ff6b00;
+    }
+
+    .hero p {
+        color: #ccc;
+        font-size: 17px;
+    }
+
+
+    /* =========================
+       MAIN CONTAINER
+    ========================= */
+
+    .container {
+        max-width: 1100px;
+
+        margin: 40px auto;
+
+        padding: 0 20px;
+    }
+
+
+    /* =========================
+       BACK BUTTON
+    ========================= */
+
+    .back-button {
+        display: inline-block;
+
+        margin-bottom: 25px;
+
+        color: #ff6b00;
+
+        text-decoration: none;
+
+        font-weight: bold;
+    }
+
+    .back-button:hover {
+        text-decoration: underline;
+    }
+
+
+    /* =========================
+       LIVE GAME CARD
+    ========================= */
+
+    .game-card {
+        background: white;
+
+        border-radius: 15px;
+
+        padding: 40px;
+
+        box-shadow:
+            0 5px 25px rgba(0,0,0,0.08);
+
+        text-align: center;
+    }
+
+
+    /* =========================
+       LIVE STATUS
+    ========================= */
+
+    .live-status {
+        display: inline-block;
+
+        background: #e8f5e9;
+
+        color: #2e7d32;
+
+        padding: 8px 15px;
+
+        border-radius: 20px;
+
+        font-size: 13px;
+
+        font-weight: bold;
+
+        margin-bottom: 25px;
+    }
+
+
+    /* =========================
+       SCOREBOARD
+    ========================= */
+
+    .scoreboard {
+        display: grid;
+
+        grid-template-columns:
+            1fr
+            180px
+            1fr;
+
+        align-items: center;
+
+        gap: 30px;
+
+        margin-bottom: 35px;
+    }
+
+
+    /* =========================
+       TEAM
+    ========================= */
+
+    .team h2 {
+        font-size: 28px;
+
+        margin-bottom: 15px;
+    }
+
+    .team-score {
+        font-size: 75px;
+
+        font-weight: bold;
+
+        color: #ff6b00;
+    }
+
+
+    /* =========================
+       CENTER SCORE
+    ========================= */
+
+    .game-center {
+        text-align: center;
+    }
+
+    .vs {
+        font-size: 20px;
+
+        font-weight: bold;
+
+        color: #777;
+
+        margin-bottom: 15px;
+    }
+
+    .period {
+        font-size: 18px;
+
+        font-weight: bold;
+
+        margin-bottom: 10px;
+    }
+
+    .game-clock {
+        font-size: 35px;
+
+        font-weight: bold;
+
+        color: #111;
+
+        background: #f5f5f5;
+
+        padding: 10px 20px;
+
+        border-radius: 8px;
+    }
+
+
+    /* =========================
+       GAME DETAILS
+    ========================= */
+
+    .game-details {
+        display: grid;
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+        gap: 20px;
+
+        border-top: 1px solid #eee;
+
+        padding-top: 30px;
+    }
+
+
+    .detail-card {
+        background: #f8f8f8;
+
+        padding: 20px;
+
+        border-radius: 10px;
+    }
+
+    .detail-card h3 {
+        font-size: 14px;
+
+        color: #666;
+
+        margin-bottom: 8px;
+    }
+
+    .detail-card p {
+        font-size: 24px;
+
+        font-weight: bold;
+
+        color: #ff6b00;
+    }
+
+
+    /* =========================
+       LOADING
+    ========================= */
+
+    #loading {
+        text-align: center;
+
+        padding: 30px;
+
+        font-size: 18px;
+
+        color: #666;
+    }
+
+
+    /* =========================
+       ERROR
+    ========================= */
+
+    #errorMessage {
+        display: none;
+
+        background: #ffebee;
+
+        color: #c62828;
+
+        padding: 20px;
+
+        border-radius: 8px;
+
+        margin-bottom: 20px;
+
+        text-align: center;
+    }
+
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+        background: #111;
+
+        color: white;
+
+        text-align: center;
+
+        padding: 30px;
+
+        margin-top: 50px;
+    }
+
+    footer p {
+        color: #aaa;
+
+        margin-top: 10px;
+    }
+
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (max-width: 768px) {
+
+        header {
+            flex-direction: column;
+
+            gap: 15px;
+        }
+
+        nav {
+            text-align: center;
+        }
+
+        nav a {
+            margin: 0 7px;
+
+            font-size: 12px;
+        }
+
+        .hero h1 {
+            font-size: 32px;
+        }
+
+        .scoreboard {
+            grid-template-columns: 1fr;
+
+            gap: 20px;
+        }
+
+        .team-score {
+            font-size: 60px;
+        }
+
+        .game-center {
+            order: 2;
+        }
+
+        .game-details {
+            grid-template-columns: 1fr;
+        }
+
+        .game-card {
+            padding: 25px 15px;
+        }
+
+    }
+
+</style>
+```
+
+</head>
+
+<body>
+
+```
+<!-- =========================
+     NAVIGATION
+========================= -->
+
+<header>
+
+    <!-- CLICKABLE LOGO -->
+
+    <a href="index.html" class="logo">
+
+        HOOP <span>HUB PH</span>
+
+    </a>
+
+
+    <nav>
+
+        <a href="index.html">
+            Home
+        </a>
+
+        <a href="leagues.html">
+            Leagues
+        </a>
+
+        <a href="teams.html">
+            Teams
+        </a>
+
+        <a href="players.html">
+            Players
+        </a>
+
+        <a href="tournaments.html">
+            Tournaments
+        </a>
+
+    </nav>
+
+</header>
+
+
+
+<!-- =========================
+     HERO
+========================= -->
+
+<section class="hero">
+
+    <h1>
+
+        <span>LIVE</span> GAME CENTER
+
+    </h1>
+
+    <p>
+
+        Follow the action live on Hoop Hub PH.
+
+    </p>
+
+</section>
+
+
+
+<!-- =========================
+     MAIN CONTENT
+========================= -->
+
+<div class="container">
+
+
+    <a href="tournaments.html" class="back-button">
+
+        ← Back to Tournaments
+
+    </a>
+
+
+    <!-- ERROR MESSAGE -->
+
+    <div id="errorMessage">
+
+        Unable to load game information.
+
+    </div>
+
+
+    <!-- LOADING -->
+
+    <div id="loading">
+
+        Loading live game...
+
+    </div>
+
+
+    <!-- GAME CARD -->
+
+    <div class="game-card" id="gameCard" style="display:none;">
+
+
+        <!-- GAME STATUS -->
+
+        <div class="live-status" id="gameStatus">
+
+            LIVE
+
+        </div>
+
+
+        <!-- SCOREBOARD -->
+
+        <div class="scoreboard">
+
+
+            <!-- HOME TEAM -->
+
+            <div class="team">
+
+                <h2 id="homeTeam">
+
+                    Home Team
+
+                </h2>
+
+                <div class="team-score" id="homeScore">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+
+            <!-- GAME CENTER -->
+
+            <div class="game-center">
+
+                <div class="vs">
+
+                    VS
+
+                </div>
+
+                <div class="period" id="period">
+
+                    1st Quarter
+
+                </div>
+
+                <div class="game-clock" id="gameClock">
+
+                    10:00
+
+                </div>
+
+            </div>
+
+
+
+            <!-- AWAY TEAM -->
+
+            <div class="team">
+
+                <h2 id="awayTeam">
+
+                    Away Team
+
+                </h2>
+
+                <div class="team-score" id="awayScore">
+
+                    0
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- GAME DETAILS -->
+
+        <div class="game-details">
+
+
+            <!-- HOME FOULS -->
+
+            <div class="detail-card">
+
+                <h3>
+
+                    HOME FOULS
+
+                </h3>
+
+                <p id="homeFouls">
+
+                    0
+
+                </p>
+
+            </div>
+
+
+            <!-- AWAY FOULS -->
+
+            <div class="detail-card">
+
+                <h3>
+
+                    AWAY FOULS
+
+                </h3>
+
+                <p id="awayFouls">
+
+                    0
+
+                </p>
+
+            </div>
+
+
+            <!-- HOME TIMEOUTS -->
+
+            <div class="detail-card">
+
+                <h3>
+
+                    HOME TIMEOUTS
+
+                </h3>
+
+                <p id="homeTimeouts">
+
+                    5
+
+                </p>
+
+            </div>
+
+
+            <!-- AWAY TIMEOUTS -->
+
+            <div class="detail-card">
+
+                <h3>
+
+                    AWAY TIMEOUTS
+
+                </h3>
+
+                <p id="awayTimeouts">
+
+                    5
+
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+    <h3>
+
+        🏀 HOOP HUB PH
+
+    </h3>
+
+    <p>
+
+        Connecting Philippine basketball,
+        one community at a time.
+
+    </p>
+
+    <p>
+
+        © 2026 Hoop Hub PH.
+        All rights reserved.
+
+    </p>
+
+</footer>
+
+
+
+<!-- =========================
+     SUPABASE
+========================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+
+    /* =========================
+       SUPABASE CONNECTION
+    ========================= */
+
+    const SUPABASE_URL =
+        "https://tkrsyiwffqkgfyooewsf.supabase.co";
+
+    const SUPABASE_KEY =
+        "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
+
+
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+
+
+    /* =========================
+       GAME ID
+       
+       Currently using Game ID 1
+    ========================= */
+
+    const GAME_ID = 1;
+
+
+
+    /* =========================
+       LOAD GAME
+    ========================= */
+
+    async function loadGame() {
+
+
+        const loading =
+            document.getElementById("loading");
+
+
+        const gameCard =
+            document.getElementById("gameCard");
+
+
+        const errorMessage =
+            document.getElementById("errorMessage");
+
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+
+            .from("games")
+
+            .select("*")
+
+            .eq("id", GAME_ID)
+
+            .single();
+
+
+
+        /* =========================
+           ERROR
+        ========================= */
+
+        if (error) {
+
+            console.error(error);
+
+            loading.style.display = "none";
+
+            errorMessage.style.display = "block";
+
+            return;
+
+        }
+
+
+
+        /* =========================
+           HIDE LOADING
+        ========================= */
+
+        loading.style.display = "none";
+
+        errorMessage.style.display = "none";
+
+        gameCard.style.display = "block";
+
+
+
+        /* =========================
+           DISPLAY TEAM NAMES
+        ========================= */
+
+        document.getElementById("homeTeam")
+            .textContent =
+            data.home_team || "Home Team";
+
+
+        document.getElementById("awayTeam")
+            .textContent =
+            data.away_team || "Away Team";
+
+
+
+        /* =========================
+           DISPLAY SCORE
+        ========================= */
+
+        document.getElementById("homeScore")
+            .textContent =
+            data.home_score ?? 0;
+
+
+        document.getElementById("awayScore")
+            .textContent =
+            data.away_score ?? 0;
+
+
+
+        /* =========================
+           DISPLAY PERIOD
+        ========================= */
+
+        document.getElementById("period")
+            .textContent =
+            data.period || "1st Quarter";
+
+
+
+        /* =========================
+           DISPLAY GAME CLOCK
+        ========================= */
+
+        document.getElementById("gameClock")
+            .textContent =
+            data.game_clock || "10:00";
+
+
+
+        /* =========================
+           DISPLAY FOULS
+        ========================= */
+
+        document.getElementById("homeFouls")
+            .textContent =
+            data.home_fouls ?? 0;
+
+
+        document.getElementById("awayFouls")
+            .textContent =
+            data.away_fouls ?? 0;
+
+
+
+        /* =========================
+           DISPLAY TIMEOUTS
+        ========================= */
+
+        document.getElementById("homeTimeouts")
+            .textContent =
+            data.home_timeouts ?? 5;
+
+
+        document.getElementById("awayTimeouts")
+            .textContent =
+            data.away_timeouts ?? 5;
+
+
+
+        /* =========================
+           DISPLAY STATUS
+        ========================= */
+
+        document.getElementById("gameStatus")
+            .textContent =
+            (data.status || "Scheduled").toUpperCase();
+
+
+    }
+
+
+
+    /* =========================
+       INITIAL LOAD
+    ========================= */
+
+    loadGame();
+
+
+
+    /* =========================
+       AUTO REFRESH
+       
+       Refreshes game data
+       every 3 seconds
+    ========================= */
+
+    setInterval(function() {
+
+        loadGame();
+
+    }, 3000);
+
+
+</script>
+```
+
+</body>
+
+</html>
