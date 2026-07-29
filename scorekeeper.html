@@ -2869,98 +2869,81 @@ showStatus(
 }
 
 
+```javascript
 /* =========================================
    CLOCK STATE PERSISTENCE
 ========================================= */
 
 async function saveClockState(){
 
-if(!currentGame)
-return;
+    if(!currentGame)
+        return;
 
+    const updateData = {
+        clock_seconds: Math.max(
+            0,
+            Math.floor(Number(clockSeconds || 0))
+        ),
 
-/*
-WHEN CLOCK IS RUNNING:
-clock_started_at represents the moment
-the current countdown segment began.
+        clock_running: clockRunning,
 
-WHEN CLOCK IS PAUSED:
-clock_started_at is cleared.
-*/
+        clock_started_at: clockRunning
+            ? (
+                clockStartedAt
+                    ? new Date(clockStartedAt).toISOString()
+                    : new Date().toISOString()
+            )
+            : null
+    };
 
-const updateData = {
+    const {
+        data,
+        error
+    } = await supabaseClient
 
-clock_seconds:
-Math.max(
-0,
-Math.floor(
-Number(clockSeconds || 0)
-)
-),
+    .from("games")
 
-clock_running:
-clockRunning,
+    .update(updateData)
 
-clock_started_at:
-clockRunning
-?
-(
-clockStartedAt ||
-new Date().toISOString()
-)
-:
-null
+    .eq("id", currentGame.id)
 
-};
+    .select("*")
 
+    .single();
 
-const {
+    if(error){
 
-data,
-error
+        console.error(
+            "Clock save error:",
+            error
+        );
 
-} = await supabaseClient
+        return false;
 
-.from("games")
+    }
 
-.update(updateData)
+    if(data){
 
-.eq(
-"id",
-currentGame.id
-)
+        currentGame = data;
 
-.select("*")
-.single();
+        clockSeconds = Math.max(
+            0,
+            Number(data.clock_seconds || 0)
+        );
 
+        clockRunning =
+            data.clock_running === true;
 
-if(error){
+        clockStartedAt =
+            data.clock_started_at
+                ? new Date(
+                    data.clock_started_at
+                  ).getTime()
+                : null;
 
-console.error(
-"Clock save error:",
-error
-);
+    }
 
-return;
-
-}
-
-
-if(data){
-
-currentGame =
-data;
-
-clockStartedAt =
-data.clock_started_at
-?
-new Date(
-data.clock_started_at
-).getTime()
-:
-null;
-
-}
+    return true;
 
 }
 
@@ -2971,220 +2954,212 @@ null;
 
 async function loadPersistedClock(){
 
-if(!currentGame)
-return;
+    if(!currentGame)
+        return;
 
 
-/*
-GET THE LATEST CLOCK VALUES DIRECTLY
-FROM SUPABASE
-*/
+    const {
+        data,
+        error
+    } = await supabaseClient
 
-const {
+    .from("games")
 
-data,
-error
+    .select(
+        "clock_seconds, clock_running, clock_started_at"
+    )
 
-} = await supabaseClient
+    .eq(
+        "id",
+        currentGame.id
+    )
 
-.from("games")
-
-.select(
-"clock_seconds, clock_running, clock_started_at"
-)
-
-.eq(
-"id",
-currentGame.id
-)
-
-.single();
+    .single();
 
 
-if(error){
+    if(error){
 
-console.error(
-"Clock load error:",
-error
-);
+        console.error(
+            "Clock load error:",
+            error
+        );
 
-return;
+        return;
+
+    }
+
+
+    /*
+    RESTORE SAVED VALUES
+    */
+
+    clockSeconds = Math.max(
+        0,
+        Number(
+            data.clock_seconds ?? 600
+        )
+    );
+
+    clockRunning =
+        data.clock_running === true;
+
+    clockStartedAt =
+        data.clock_started_at
+            ? new Date(
+                data.clock_started_at
+              ).getTime()
+            : null;
+
+
+    /*
+    IF CLOCK WAS RUNNING BEFORE REFRESH,
+    CALCULATE EXACT TIME THAT PASSED
+    */
+
+    if(
+        clockRunning &&
+        clockStartedAt
+    ){
+
+        const now =
+            Date.now();
+
+        const elapsedSeconds =
+            Math.floor(
+                (
+                    now -
+                    clockStartedAt
+                ) / 1000
+            );
+
+
+        /*
+        SUBTRACT THE TIME THAT PASSED
+        */
+
+        clockSeconds =
+            Math.max(
+                0,
+                clockSeconds -
+                elapsedSeconds
+            );
+
+
+        /*
+        CLOCK FINISHED
+        */
+
+        if(
+            clockSeconds <= 0
+        ){
+
+            clockSeconds = 0;
+
+            clockRunning = false;
+
+            clockStartedAt = null;
+
+            updateClockDisplay();
+
+            await saveClockState();
+
+            return;
+
+        }
+
+
+        /*
+        IMPORTANT:
+        SAVE THE NEW REMAINING TIME
+        AND START A NEW TIMING SEGMENT.
+
+        This prevents the same elapsed time
+        from being subtracted again after
+        another refresh.
+        */
+
+        clockStartedAt =
+            Date.now();
+
+
+        /*
+        SAVE THE NEW TIMING SEGMENT
+        */
+
+        await saveClockState();
+
+    }
+
+
+    /*
+    UPDATE DISPLAY
+    */
+
+    updateClockDisplay();
+
+
+    /*
+    CONTINUE CLOCK IF IT WAS RUNNING
+    */
+
+    if(
+        clockRunning
+    ){
+
+        startClockInternal();
+
+    }
 
 }
 
 
-/*
-NO SAVED CLOCK YET
-*/
-
-if(
-data.clock_seconds === null
-||
-data.clock_seconds === undefined
-){
-
-clockSeconds =
-600;
-
-clockRunning =
-false;
-
-clockStartedAt =
-null;
-
-updateClockDisplay();
-
-return;
-
-}
-
-
-/*
-RESTORE SAVED CLOCK
-*/
-
-clockSeconds =
-
-Math.max(
-
-0,
-
-Number(
-data.clock_seconds
-)
-
-);
-
-
-clockRunning =
-
-data.clock_running === true;
-
-
-/*
-RESTORE START TIME
-*/
-
-clockStartedAt =
-
-data.clock_started_at
-
-?
-
-new Date(
-data.clock_started_at
-).getTime()
-
-:
-
-null;
-
-
-/*
-IF CLOCK WAS RUNNING BEFORE REFRESH,
-CALCULATE THE REAL TIME THAT PASSED
-*/
-
-if(
-
-clockRunning
-
-&&
-
-clockStartedAt
-
-){
-
-const now =
-Date.now();
-
-
-const elapsedSeconds =
-
-Math.floor(
-
-(
-now -
-clockStartedAt
-) / 1000
-
-);
-
-
-if(
-elapsedSeconds > 0
-){
-
-clockSeconds =
-
-Math.max(
-
-0,
-
-clockSeconds -
-elapsedSeconds
-
-);
-
-}
-
-}
-
-
-/*
-UPDATE DISPLAY IMMEDIATELY
-*/
-
-updateClockDisplay();
-
-
-/*
-IF THE CLOCK REACHED ZERO
-*/
-
-if(
-clockSeconds <= 0
-){
-
-clockSeconds =
-0;
-
-clockRunning =
-false;
-
-clockStartedAt =
-null;
-
-updateClockDisplay();
-
-await saveClockState();
-
-return;
-
-}
-
-
-/*
-CONTINUE RUNNING AFTER REFRESH
-*/
-
-if(
-clockRunning
-){
-
-/*
-START A NEW TIMING SEGMENT FROM NOW.
-
-This is important because the previous
-elapsed time has already been subtracted.
-*/
-
-clockStartedAt =
-Date.now();
-
-startClockInternal();
-
-}
+/* =========================================
+   GET CURRENT CLOCK VALUE
+========================================= */
+
+function getCurrentClockSeconds(){
+
+    /*
+    IF CLOCK IS PAUSED,
+    RETURN SAVED VALUE
+    */
+
+    if(
+        !clockRunning ||
+        !clockStartedAt
+    ){
+
+        return Math.max(
+            0,
+            Math.floor(
+                Number(
+                    clockSeconds || 0
+                )
+            )
+        );
+
+    }
+
+
+    /*
+    CALCULATE TIME PASSED SINCE
+    CURRENT TIMING SEGMENT STARTED
+    */
+
+    const elapsedSeconds =
+        Math.floor(
+            (
+                Date.now() -
+                clockStartedAt
+            ) / 1000
+        );
+
+
+    return Math.max(
+        0,
+        clockSeconds -
+        elapsedSeconds
+    );
 
 }
 
@@ -3195,45 +3170,43 @@ startClockInternal();
 
 function updateClockDisplay(){
 
-const minutes =
+    const currentSeconds =
+        getCurrentClockSeconds();
 
-Math.floor(
 
-clockSeconds / 60
+    const minutes =
+        Math.floor(
+            currentSeconds / 60
+        );
 
-);
 
-const seconds =
+    const seconds =
+        currentSeconds % 60;
 
-clockSeconds % 60;
 
-document.getElementById(
-"gameClock"
-).textContent =
+    document.getElementById(
+        "gameClock"
+    ).textContent =
 
-String(
-minutes
-)
+        String(
+            minutes
+        ).padStart(
+            2,
+            "0"
+        )
 
-.padStart(
-2,
-"0"
-)
+        +
 
-+
+        ":"
 
-":"
+        +
 
-+
-
-String(
-seconds
-)
-
-.padStart(
-2,
-"0"
-);
+        String(
+            seconds
+        ).padStart(
+            2,
+            "0"
+        );
 
 }
 
@@ -3244,45 +3217,72 @@ seconds
 
 async function startClock(){
 
-if(
-clockRunning
-)
-return;
-
-if(!currentGame){
-
-showStatus(
-"Load a game first."
-);
-
-return;
-
-}
+    if(
+        clockRunning
+    )
+        return;
 
 
-/*
-START A NEW TIMING SEGMENT
-*/
+    if(
+        !currentGame
+    ){
 
-clockRunning =
-true;
+        showStatus(
+            "Load a game first."
+        );
 
-clockStartedAt =
-Date.now();
+        return;
 
-
-/*
-SAVE BEFORE STARTING INTERVAL
-*/
-
-await saveClockState();
+    }
 
 
-/*
-START COUNTDOWN
-*/
+    /*
+    GET THE MOST CURRENT CLOCK VALUE
+    */
 
-startClockInternal();
+    clockSeconds =
+        getCurrentClockSeconds();
+
+
+    /*
+    DO NOT START IF ALREADY ZERO
+    */
+
+    if(
+        clockSeconds <= 0
+    ){
+
+        clockSeconds = 0;
+
+        updateClockDisplay();
+
+        return;
+
+    }
+
+
+    /*
+    START NEW TIMING SEGMENT
+    */
+
+    clockRunning = true;
+
+    clockStartedAt =
+        Date.now();
+
+
+    /*
+    SAVE START STATE
+    */
+
+    await saveClockState();
+
+
+    /*
+    START LOCAL DISPLAY LOOP
+    */
+
+    startClockInternal();
 
 }
 
@@ -3293,137 +3293,189 @@ startClockInternal();
 
 function startClockInternal(){
 
-if(
-clockInterval
-){
+    /*
+    CLEAR ANY EXISTING INTERVAL
+    */
 
-clearInterval(
-clockInterval
-);
+    if(
+        clockInterval
+    ){
 
-}
+        clearInterval(
+            clockInterval
+        );
 
-
-/*
-MAKE SURE CLOCK HAS A START TIME
-*/
-
-if(
-!clockStartedAt
-){
-
-clockStartedAt =
-Date.now();
-
-}
+    }
 
 
-clockInterval =
+    /*
+    UPDATE IMMEDIATELY
+    */
 
-setInterval(
-
-async()=>{
-
-if(
-!clockRunning
-){
-
-clearInterval(
-clockInterval
-);
-
-clockInterval =
-null;
-
-return;
-
-}
+    updateClockDisplay();
 
 
-if(
-clockSeconds <= 0
-){
+    /*
+    START DISPLAY LOOP
+    */
 
-await pauseClock();
+    clockInterval =
 
-return;
+        setInterval(
+            async()=>{
 
-}
+                if(
+                    !clockRunning
+                ){
 
+                    clearInterval(
+                        clockInterval
+                    );
 
-/*
-ONE SECOND OF GAME TIME
-*/
+                    clockInterval =
+                        null;
 
-clockSeconds--;
+                    return;
 
-updateClockDisplay();
-
-
-/*
-ONE SECOND OF GAME TIME
-EQUALS ONE SECOND
-OF MINUTES PLAYED
-FOR PLAYERS CURRENTLY ON COURT.
-*/
-
-for(
-const playerId in playerOnCourt
-){
-
-if(
-playerOnCourt[playerId] !== true
-)
-continue;
+                }
 
 
-const stats =
+                /*
+                CALCULATE CURRENT TIME
+                BASED ON REAL ELAPSED TIME
+                */
 
-await getPlayerGameStats(
-playerId
-);
-
-
-const newMinutes =
-
-Number(
-stats.minutes_played || 0
-)
-
-+
-
-1;
+                const currentSeconds =
+                    getCurrentClockSeconds();
 
 
-await saveStatDirect(
+                /*
+                CLOCK REACHED ZERO
+                */
 
-playerId,
+                if(
+                    currentSeconds <= 0
+                ){
 
-"minutes_played",
+                    clockSeconds = 0;
 
-newMinutes
+                    clockRunning = false;
 
-);
-
-
-await refreshPlayerRow(
-playerId
-);
-
-}
+                    clockStartedAt = null;
 
 
-/*
-SAVE CURRENT CLOCK VALUE
-*/
+                    if(
+                        clockInterval
+                    ){
 
-await saveClockState();
+                        clearInterval(
+                            clockInterval
+                        );
 
-},
+                        clockInterval =
+                            null;
 
-1000
+                    }
 
-);
+
+                    updateClockDisplay();
+
+
+                    await saveClockState();
+
+
+                    return;
+
+                }
+
+
+                /*
+                UPDATE DISPLAY
+                */
+
+                updateClockDisplay();
+
+
+                /*
+                UPDATE PLAYER MINUTES
+                */
+
+                for(
+                    const playerId in playerOnCourt
+                ){
+
+                    if(
+                        playerOnCourt[playerId] !== true
+                    )
+                        continue;
+
+
+                    const stats =
+                        await getPlayerGameStats(
+                            playerId
+                        );
+
+
+                    const newMinutes =
+
+                        Number(
+                            stats.minutes_played || 0
+                        )
+
+                        +
+
+                        1;
+
+
+                    await saveStatDirect(
+
+                        playerId,
+
+                        "minutes_played",
+
+                        newMinutes
+
+                    );
+
+
+                    await refreshPlayerRow(
+                        playerId
+                    );
+
+                }
+
+
+                /*
+                EVERY 5 SECONDS,
+                SAVE THE CURRENT CLOCK STATE.
+
+                This protects against refreshes
+                without constantly writing to Supabase.
+                */
+
+                if(
+                    Math.floor(
+                        Date.now() / 1000
+                    ) % 5 === 0
+                ){
+
+                    clockSeconds =
+                        getCurrentClockSeconds();
+
+
+                    clockStartedAt =
+                        Date.now();
+
+
+                    await saveClockState();
+
+                }
+
+            },
+
+            1000
+
+        );
 
 }
 
@@ -3434,51 +3486,65 @@ await saveClockState();
 
 async function pauseClock(){
 
-if(
-!currentGame
-)
-return;
+    if(
+        !currentGame
+    )
+        return;
 
 
-/*
-STOP COUNTDOWN
-*/
+    /*
+    FIRST CALCULATE THE EXACT
+    CURRENT REMAINING TIME
+    */
 
-clockRunning =
-false;
-
-
-/*
-CLEAR INTERVAL
-*/
-
-if(
-clockInterval
-){
-
-clearInterval(
-clockInterval
-);
-
-clockInterval =
-null;
-
-}
+    clockSeconds =
+        getCurrentClockSeconds();
 
 
-/*
-CLEAR START TIME
-*/
+    /*
+    STOP CLOCK
+    */
 
-clockStartedAt =
-null;
+    clockRunning = false;
 
 
-/*
-SAVE EXACT REMAINING TIME
-*/
+    /*
+    CLEAR INTERVAL
+    */
 
-await saveClockState();
+    if(
+        clockInterval
+    ){
+
+        clearInterval(
+            clockInterval
+        );
+
+        clockInterval =
+            null;
+
+    }
+
+
+    /*
+    CLEAR TIMING SEGMENT
+    */
+
+    clockStartedAt = null;
+
+
+    /*
+    UPDATE DISPLAY
+    */
+
+    updateClockDisplay();
+
+
+    /*
+    SAVE EXACT PAUSED TIME
+    */
+
+    await saveClockState();
 
 }
 
@@ -3489,66 +3555,63 @@ await saveClockState();
 
 async function resetClock(){
 
-if(
-!currentGame
-)
-return;
+    if(
+        !currentGame
+    )
+        return;
 
 
-/*
-STOP CLOCK
-*/
+    /*
+    STOP CLOCK
+    */
 
-clockRunning =
-false;
-
-
-/*
-CLEAR INTERVAL
-*/
-
-if(
-clockInterval
-){
-
-clearInterval(
-clockInterval
-);
-
-clockInterval =
-null;
-
-}
+    clockRunning = false;
 
 
-/*
-RESET TO 10 MINUTES
-*/
+    /*
+    CLEAR INTERVAL
+    */
 
-clockSeconds =
-600;
+    if(
+        clockInterval
+    ){
 
+        clearInterval(
+            clockInterval
+        );
 
-/*
-CLEAR START TIME
-*/
+        clockInterval =
+            null;
 
-clockStartedAt =
-null;
-
-
-/*
-UPDATE SCREEN
-*/
-
-updateClockDisplay();
+    }
 
 
-/*
-SAVE RESET
-*/
+    /*
+    RESET TO 10 MINUTES
+    */
 
-await saveClockState();
+    clockSeconds = 600;
+
+
+    /*
+    CLEAR START TIME
+    */
+
+    clockStartedAt = null;
+
+
+    /*
+    UPDATE DISPLAY
+    */
+
+    updateClockDisplay();
+
+
+    /*
+    SAVE RESET
+    */
+
+    await saveClockState();
 
 }
 
@@ -3558,33 +3621,32 @@ await saveClockState();
 ========================================= */
 
 async function setPeriod(
-period
+    period
 ){
 
-if(!currentGame)
-return;
+    if(
+        !currentGame
+    )
+        return;
 
-await updateGame({
 
-period:
-period
+    /*
+    UPDATE PERIOD
+    */
 
-});
+    await updateGame({
 
-await resetClock();
+        period:
+            period
+
+    });
+
+
+    /*
+    RESET CLOCK FOR NEW PERIOD
+    */
+
+    await resetClock();
 
 }
-
-
-/* =========================================
-   AUTO LOAD
-========================================= */
-
-loadGame();
-
-</script>
-
-</body>
-
-</html>
 ```
