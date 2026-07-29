@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -10,847 +9,462 @@
 
 <style>
 
-/* =========================================
-   RESET
-========================================= */
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-
-/* =========================================
-   BODY
-========================================= */
-
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f5f5f5;
-    color: #222;
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f5f5f5;
+    color:#222;
 }
 
+/* HEADER */
 
-/* =========================================
-   HEADER
-========================================= */
-
-header {
-    background: #111;
-    color: white;
-
-    padding: 10px 2%;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+header{
+    background:#111;
+    color:white;
+    padding:10px 2%;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 }
 
-.logo {
-    color: white;
-    text-decoration: none;
-
-    font-size: 18px;
-    font-weight: bold;
+.logo{
+    font-size:18px;
+    font-weight:bold;
+    color:white;
+    text-decoration:none;
 }
 
-.logo span {
-    color: #ff6b00;
+.logo span{
+    color:#ff6b00;
 }
 
-nav a {
-    color: white;
-    text-decoration: none;
-
-    margin-left: 12px;
-
-    font-size: 12px;
-    font-weight: bold;
+nav a{
+    color:white;
+    text-decoration:none;
+    margin-left:12px;
+    font-weight:bold;
+    font-size:12px;
 }
 
-nav a:hover {
-    color: #ff6b00;
+nav a:hover{
+    color:#ff6b00;
 }
 
+/* CONTAINER */
 
-/* =========================================
-   MAIN CONTAINER
-========================================= */
-
-.container {
-
-    width: 100%;
-    max-width: 100%;
-
-    margin: 10px auto;
-
-    padding: 0 10px;
+.container{
+    width:100%;
+    max-width:100%;
+    margin:10px auto;
+    padding:0 10px;
 }
 
+/* GAME SELECTOR */
 
-/* =========================================
-   GAME SELECTOR
-========================================= */
-
-.game-selector {
-
-    background: white;
-
-    padding: 10px 15px;
-
-    border-radius: 6px;
-
-    box-shadow:
-        0 2px 6px rgba(0,0,0,0.06);
-
-    margin-bottom: 10px;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
+.game-selector{
+    background:white;
+    padding:10px 15px;
+    border-radius:6px;
+    box-shadow:0 2px 6px rgba(0,0,0,.06);
+    margin-bottom:10px;
+    display:flex;
+    align-items:center;
+    gap:10px;
 }
 
-.game-selector h2 {
-
-    font-size: 14px;
-
-    white-space: nowrap;
+.game-selector h2{
+    font-size:14px;
 }
 
-.game-selector input {
-
-    width: 100px;
-
-    padding: 5px 8px;
-
-    border: 1px solid #ddd;
-
-    border-radius: 4px;
-
-    font-size: 13px;
+.game-selector input{
+    width:100px;
+    padding:5px 8px;
+    border:1px solid #ddd;
+    border-radius:4px;
 }
 
-.load-button {
-
-    background: #ff6b00;
-
-    color: white;
-
-    border: none;
-
-    padding: 6px 12px;
-
-    border-radius: 4px;
-
-    font-weight: bold;
-
-    cursor: pointer;
-
-    font-size: 12px;
+.load-button{
+    background:#ff6b00;
+    color:white;
+    border:none;
+    padding:6px 12px;
+    border-radius:4px;
+    font-weight:bold;
+    cursor:pointer;
 }
 
-.load-button:hover {
+/* STATUS */
 
-    background: #111;
+#statusMessage{
+    text-align:center;
+    padding:7px;
+    background:#e8f5e9;
+    color:#2e7d32;
+    border-radius:5px;
+    margin-bottom:10px;
+    display:none;
+    font-size:12px;
 }
 
+/* SCOREBOARD */
 
-/* =========================================
-   STATUS
-========================================= */
-
-#statusMessage {
-
-    text-align: center;
-
-    padding: 7px;
-
-    background: #e8f5e9;
-
-    color: #2e7d32;
-
-    border-radius: 5px;
-
-    margin-bottom: 10px;
-
-    display: none;
-
-    font-size: 12px;
+.scoreboard{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:10px;
 }
 
-
-/* =========================================
-   SCOREBOARD
-========================================= */
-
-.scoreboard {
-
-    display: grid;
-
-    grid-template-columns: 1fr 1fr;
-
-    gap: 10px;
-
-    margin-bottom: 10px;
+.team-control{
+    background:white;
+    padding:10px;
+    border-radius:6px;
+    text-align:center;
+    box-shadow:0 2px 6px rgba(0,0,0,.06);
 }
 
-.team-control {
-
-    background: white;
-
-    padding: 10px;
-
-    border-radius: 6px;
-
-    text-align: center;
-
-    box-shadow:
-        0 2px 6px rgba(0,0,0,0.06);
+.team-control h2{
+    font-size:16px;
 }
 
-.team-control h2 {
-
-    font-size: 16px;
-
-    margin-bottom: 2px;
+.score{
+    font-size:34px;
+    font-weight:bold;
+    color:#ff6b00;
+    margin:5px 0;
 }
 
-.score {
-
-    font-size: 34px;
-
-    font-weight: bold;
-
-    color: #ff6b00;
-
-    margin-bottom: 5px;
+.button-row{
+    display:flex;
+    justify-content:center;
+    gap:4px;
 }
 
-.button-row {
-
-    display: flex;
-
-    justify-content: center;
-
-    gap: 4px;
+.score-button{
+    background:#111;
+    color:white;
+    border:none;
+    padding:5px 9px;
+    border-radius:4px;
+    font-size:12px;
+    font-weight:bold;
+    cursor:pointer;
 }
 
-.score-button {
-
-    background: #111;
-
-    color: white;
-
-    border: none;
-
-    padding: 5px 9px;
-
-    border-radius: 4px;
-
-    font-size: 12px;
-
-    font-weight: bold;
-
-    cursor: pointer;
+.score-button:hover{
+    background:#ff6b00;
 }
 
-.score-button:hover {
+/* PLAYER STATS */
 
-    background: #ff6b00;
+.controls{
+    background:white;
+    padding:10px;
+    border-radius:6px;
+    box-shadow:0 2px 6px rgba(0,0,0,.06);
+    margin-bottom:10px;
 }
 
-
-/* =========================================
-   PLAYER STATS BOX
-========================================= */
-
-.controls {
-
-    background: white;
-
-    padding: 10px;
-
-    border-radius: 6px;
-
-    box-shadow:
-        0 2px 6px rgba(0,0,0,0.06);
-
-    margin-bottom: 10px;
-
-    overflow: hidden;
+.controls>h2{
+    font-size:16px;
+    text-align:center;
+    margin-bottom:8px;
 }
 
-.controls > h2 {
-
-    font-size: 16px;
-
-    text-align: center;
-
-    margin-bottom: 8px;
+.stats-controls{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
 }
 
-
-/* =========================================
-   HOME / AWAY COLUMNS
-========================================= */
-
-.stats-controls {
-
-    display: grid;
-
-    grid-template-columns: 1fr 1fr;
-
-    gap: 10px;
+.stat-control{
+    background:#fafafa;
+    border:1px solid #ddd;
+    border-radius:6px;
+    padding:7px;
+    overflow-x:auto;
 }
 
-.stat-control {
-
-    background: #fafafa;
-
-    border: 1px solid #ddd;
-
-    border-radius: 6px;
-
-    overflow-x: auto;
-
-    overflow-y: auto;
-
-    max-height: 70vh;
+.stat-control>h2{
+    text-align:center;
+    font-size:13px;
+    margin-bottom:7px;
+    padding:4px 0;
+    border-bottom:2px solid #ff6b00;
 }
 
+/* TABLE */
 
-/* =========================================
-   TEAM TITLE
-========================================= */
-
-.stat-control > h2 {
-
-    text-align: center;
-
-    font-size: 13px;
-
-    margin: 0;
-
-    padding: 7px;
-
-    background: #fafafa;
-
-    border-bottom: 2px solid #ff6b00;
-
-    position: sticky;
-
-    top: 0;
-
-    z-index: 10;
+.stats-table{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+    min-width:760px;
 }
 
-
-/* =========================================
-   STATS TABLE
-========================================= */
-
-.stats-table {
-
-    width: 100%;
-
-    min-width: 1050px;
-
-    border-collapse: collapse;
-
-    table-layout: fixed;
+.stats-table th{
+    background:#111;
+    color:white;
+    font-size:9px;
+    padding:5px 2px;
+    text-align:center;
+    white-space:nowrap;
 }
 
-
-/* =========================================
-   TABLE HEADER
-========================================= */
-
-.stats-table thead th {
-
-    background: #111;
-
-    color: white;
-
-    padding: 5px 2px;
-
-    font-size: 8px;
-
-    text-align: center;
-
-    white-space: nowrap;
-
-    position: sticky;
-
-    top: 0;
-
-    z-index: 5;
+.stats-table th:first-child{
+    width:28px;
 }
 
-
-/* Orange header accent */
-
-.stats-table thead th:first-child {
-
-    border-left: 3px solid #ff6b00;
+.stats-table th:nth-child(2){
+    width:125px;
+    text-align:left;
 }
 
-
-/* =========================================
-   PLAYER ROW
-========================================= */
-
-.player-row {
-
-    background: white;
-
-    border-bottom: 1px solid #ddd;
+.stats-table td{
+    background:white;
+    border-bottom:1px solid #ddd;
+    padding:4px 2px;
+    text-align:center;
+    vertical-align:middle;
 }
 
-.player-row:hover {
-
-    background: #fff8f5;
+.stats-table td:nth-child(2){
+    text-align:left;
 }
 
-
-/* =========================================
-   TABLE CELLS
-========================================= */
-
-.stats-table td {
-
-    padding: 3px 2px;
-
-    text-align: center;
-
-    vertical-align: middle;
-
-    font-size: 10px;
-
-    border-right: 1px solid #eee;
+.player-number{
+    font-weight:bold;
+    font-size:11px;
 }
 
-
-/* =========================================
-   JERSEY
-========================================= */
-
-.jersey-cell {
-
-    width: 35px;
-
-    font-weight: bold;
+.player-name{
+    font-size:10px;
+    font-weight:bold;
+    display:block;
 }
 
-.jersey-number {
-
-    display: inline-block;
-
-    background: #111;
-
-    color: white;
-
-    padding: 3px 5px;
-
-    border-radius: 3px;
-
-    font-size: 9px;
+.player-position{
+    font-size:8px;
+    color:#777;
 }
 
+/* STAT VALUE */
 
-/* =========================================
-   PLAYER NAME
-========================================= */
-
-.player-cell {
-
-    width: 150px;
-
-    text-align: left !important;
-
-    font-weight: bold;
-
-    padding-left: 6px !important;
+.stat-value{
+    font-size:11px;
+    font-weight:bold;
+    color:#ff6b00;
+    margin-bottom:3px;
 }
 
-.player-name {
+/* BUTTONS */
 
-    display: block;
-
-    font-size: 10px;
-
-    white-space: nowrap;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
+.stat-buttons{
+    display:flex;
+    justify-content:center;
+    gap:2px;
 }
 
-.player-position {
-
-    display: block;
-
-    color: #777;
-
-    font-size: 8px;
-
-    font-weight: normal;
+.stat-btn{
+    width:18px;
+    height:17px;
+    border:none;
+    border-radius:3px;
+    background:#111;
+    color:white;
+    font-size:10px;
+    font-weight:bold;
+    cursor:pointer;
 }
 
-
-/* =========================================
-   STAT CELL
-========================================= */
-
-.stat-cell {
-
-    width: 55px;
+.stat-btn:hover{
+    background:#ff6b00;
 }
 
-
-/* =========================================
-   STAT VALUE
-========================================= */
-
-.stat-value {
-
-    font-size: 11px;
-
-    font-weight: bold;
-
-    color: #ff6b00;
-
-    margin-bottom: 2px;
+.stat-btn.minus{
+    background:#888;
 }
 
-
-/* =========================================
-   PLUS MINUS BUTTONS
-========================================= */
-
-.stat-buttons {
-
-    display: flex;
-
-    justify-content: center;
-
-    gap: 2px;
+.stat-btn.minus:hover{
+    background:#333;
 }
 
-.stat-btn {
+/* SHOOTING */
 
-    width: 18px;
-
-    height: 16px;
-
-    border: none;
-
-    border-radius: 3px;
-
-    background: #111;
-
-    color: white;
-
-    font-size: 10px;
-
-    font-weight: bold;
-
-    cursor: pointer;
-
-    padding: 0;
-
-    line-height: 16px;
+.shooting-value{
+    font-size:10px;
+    font-weight:bold;
+    color:#ff6b00;
 }
 
-.stat-btn:hover {
-
-    background: #ff6b00;
+.shooting-buttons{
+    display:flex;
+    justify-content:center;
+    gap:2px;
+    margin-top:2px;
 }
 
-.stat-btn.minus {
-
-    background: #888;
+.shooting-buttons button{
+    width:17px;
+    height:16px;
+    border:none;
+    border-radius:3px;
+    font-size:8px;
+    font-weight:bold;
+    color:white;
+    cursor:pointer;
 }
 
-.stat-btn.minus:hover {
-
-    background: #333;
+.make-btn{
+    background:#111;
 }
 
-
-/* =========================================
-   SHOOTING CELL
-========================================= */
-
-.shooting-cell {
-
-    width: 75px;
+.attempt-btn{
+    background:#ff6b00;
 }
 
-.shooting-value {
-
-    font-size: 10px;
-
-    font-weight: bold;
-
-    color: #222;
-
-    margin-bottom: 2px;
+.minus-btn{
+    background:#888;
 }
 
-.shooting-percent {
-
-    font-size: 8px;
-
-    color: #ff6b00;
-
-    font-weight: bold;
-
-    margin-top: 2px;
+.shooting-pct{
+    font-size:8px;
+    color:#555;
+    margin-top:2px;
 }
 
+/* PLUS MINUS */
 
-/* =========================================
-   SHOOTING BUTTONS
-========================================= */
-
-.shooting-buttons {
-
-    display: flex;
-
-    justify-content: center;
-
-    gap: 2px;
-
-    margin-bottom: 2px;
+.plus-minus{
+    font-size:11px;
+    font-weight:bold;
 }
 
-.shooting-btn {
-
-    height: 16px;
-
-    min-width: 22px;
-
-    border: none;
-
-    border-radius: 3px;
-
-    background: #111;
-
-    color: white;
-
-    font-size: 8px;
-
-    font-weight: bold;
-
-    cursor: pointer;
-
-    padding: 0 3px;
+.plus{
+    color:#16803c;
 }
 
-.shooting-btn:hover {
-
-    background: #ff6b00;
+.minus-value{
+    color:#d32f2f;
 }
 
-.shooting-btn.attempt {
-
-    background: #ff6b00;
+.zero{
+    color:#555;
 }
 
-.shooting-btn.minus {
+/* ON COURT */
 
-    background: #888;
+.court-button{
+    border:none;
+    border-radius:3px;
+    padding:4px 5px;
+    font-size:8px;
+    font-weight:bold;
+    cursor:pointer;
+    color:white;
+    background:#777;
 }
 
-.shooting-btn.minus:hover {
-
-    background: #333;
+.court-button.active{
+    background:#16803c;
 }
 
-
-/* =========================================
-   PLUS MINUS PLAYER +/- CELL
-========================================= */
-
-.plus-minus-cell {
-
-    width: 55px;
+.court-button:hover{
+    background:#ff6b00;
 }
 
-.plus-minus-value {
+/* NO PLAYERS */
 
-    font-size: 11px;
-
-    font-weight: bold;
-
-    color: #ff6b00;
-
-    margin-bottom: 2px;
+.no-players{
+    text-align:center;
+    color:#777;
+    padding:10px;
+    font-size:11px;
 }
 
+/* FOOTER */
 
-/* =========================================
-   NO PLAYERS
-========================================= */
-
-.no-players {
-
-    text-align: center;
-
-    color: #777;
-
-    padding: 15px;
-
-    font-size: 11px;
+.game-footer-controls{
+    display:flex;
+    gap:10px;
+    justify-content:space-around;
+    background:white;
+    padding:8px;
+    border-radius:6px;
+    font-size:11px;
 }
 
-
-/* =========================================
-   GAME FOOTER
-========================================= */
-
-.game-footer-controls {
-
-    display: flex;
-
-    gap: 10px;
-
-    justify-content: space-around;
-
-    background: white;
-
-    padding: 8px;
-
-    border-radius: 6px;
-
-    font-size: 11px;
+.control-button{
+    background:#ff6b00;
+    color:white;
+    border:none;
+    padding:5px 9px;
+    border-radius:4px;
+    font-weight:bold;
+    cursor:pointer;
+    font-size:10px;
 }
 
-.control-button {
-
-    background: #ff6b00;
-
-    color: white;
-
-    border: none;
-
-    padding: 5px 9px;
-
-    border-radius: 4px;
-
-    font-weight: bold;
-
-    cursor: pointer;
-
-    font-size: 10px;
+.control-button:hover{
+    background:#111;
 }
 
-.control-button:hover {
+/* MOBILE */
 
-    background: #111;
-}
+@media(max-width:768px){
 
-
-/* =========================================
-   MOBILE
-========================================= */
-
-@media (max-width: 768px) {
-
-    header {
-
-        flex-direction: column;
-
-        gap: 8px;
+    .scoreboard{
+        grid-template-columns:1fr 1fr;
     }
 
-    nav a {
-
-        margin: 0 5px;
-
-        font-size: 10px;
+    .stats-controls{
+        grid-template-columns:1fr;
     }
 
-    .scoreboard {
-
-        grid-template-columns: 1fr 1fr;
+    .stat-control{
+        overflow-x:auto;
     }
 
-    .stats-controls {
-
-        grid-template-columns: 1fr;
-    }
-
-    .stat-control {
-
-        max-height: 500px;
-    }
-
-    .game-footer-controls {
-
-        flex-direction: column;
-
-        align-items: center;
+    .game-footer-controls{
+        flex-direction:column;
+        align-items:center;
     }
 
 }
 
 </style>
-
 </head>
 
-
 <body>
-
-
-<!-- =========================================
-     HEADER
-========================================= -->
 
 <header>
 
 <a href="index.html" class="logo">
-
 HOOP <span>HUB PH</span>
-
 </a>
 
 <nav>
-
-<a href="index.html">
-Home
-</a>
-
-<a href="live-game.html">
-Live Game
-</a>
-
+<a href="index.html">Home</a>
+<a href="live-game.html">Live Game</a>
 </nav>
 
 </header>
 
-
 <div class="container">
-
-
-<!-- =========================================
-     GAME SELECTOR
-========================================= -->
 
 <div class="game-selector">
 
-<h2>
-Game ID:
-</h2>
+<h2>Game ID:</h2>
 
 <input
 type="number"
 id="gameId"
 value="1"
-placeholder="Enter Game ID"
 >
 
 <button
@@ -863,20 +477,11 @@ LOAD
 
 </div>
 
-
-<!-- STATUS -->
-
 <div id="statusMessage"></div>
 
-
-<!-- =========================================
-     SCOREBOARD
-========================================= -->
+<!-- SCOREBOARD -->
 
 <div class="scoreboard">
-
-
-<!-- HOME -->
 
 <div class="team-control">
 
@@ -897,41 +502,30 @@ id="homeScore">
 <button
 class="score-button"
 onclick="updateScore('home',1)">
-
 +1
-
 </button>
 
 <button
 class="score-button"
 onclick="updateScore('home',2)">
-
 +2
-
 </button>
 
 <button
 class="score-button"
 onclick="updateScore('home',3)">
-
 +3
-
 </button>
 
 <button
 class="score-button"
 onclick="updateScore('home',-1)">
-
 -1
-
 </button>
 
 </div>
 
 </div>
-
-
-<!-- AWAY -->
 
 <div class="team-control">
 
@@ -952,33 +546,25 @@ id="awayScore">
 <button
 class="score-button"
 onclick="updateScore('away',1)">
-
 +1
-
 </button>
 
 <button
 class="score-button"
 onclick="updateScore('away',2)">
-
 +2
-
 </button>
 
 <button
 class="score-button"
 onclick="updateScore('away',3)">
-
 +3
-
 </button>
 
 <button
 class="score-button"
 onclick="updateScore('away',-1)">
-
 -1
-
 </button>
 
 </div>
@@ -987,20 +573,13 @@ onclick="updateScore('away',-1)">
 
 </div>
 
-
-<!-- =========================================
-     PLAYER STATS
-========================================= -->
+<!-- PLAYER STATS -->
 
 <div class="controls">
 
-<h2>
-PLAYER STATS
-</h2>
-
+<h2>PLAYER STATS</h2>
 
 <div class="stats-controls">
-
 
 <!-- HOME -->
 
@@ -1020,7 +599,6 @@ Load a game to see players.
 
 </div>
 
-
 <!-- AWAY -->
 
 <div class="stat-control">
@@ -1039,18 +617,13 @@ Load a game to see players.
 
 </div>
 
-
 </div>
 
 </div>
 
-
-<!-- =========================================
-     GAME CONTROLS
-========================================= -->
+<!-- GAME CONTROLS -->
 
 <div class="game-footer-controls">
-
 
 <div>
 
@@ -1059,29 +632,22 @@ Load a game to see players.
 <button
 class="control-button"
 onclick="updateGame({status:'Live'})">
-
 LIVE
-
 </button>
 
 <button
 class="control-button"
 onclick="updateGame({status:'Halftime'})">
-
 HALF
-
 </button>
 
 <button
 class="control-button"
 onclick="updateGame({status:'Final'})">
-
 FINAL
-
 </button>
 
 </div>
-
 
 <div>
 
@@ -1090,55 +656,39 @@ FINAL
 <button
 class="control-button"
 onclick="updateGame({period:'1st Quarter'})">
-
 1Q
-
 </button>
 
 <button
 class="control-button"
 onclick="updateGame({period:'2nd Quarter'})">
-
 2Q
-
 </button>
 
 <button
 class="control-button"
 onclick="updateGame({period:'3rd Quarter'})">
-
 3Q
-
 </button>
 
 <button
 class="control-button"
 onclick="updateGame({period:'4th Quarter'})">
-
 4Q
-
 </button>
 
 </div>
 
-
 </div>
 
-
 </div>
-
-
-<!-- =========================================
-     SUPABASE
-========================================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 
 <script>
 
 /* =========================================
-   SUPABASE CONNECTION
+SUPABASE
 ========================================= */
 
 const SUPABASE_URL =
@@ -1155,62 +705,47 @@ SUPABASE_KEY
 
 
 /* =========================================
-   CURRENT GAME
+GAME DATA
 ========================================= */
 
 let currentGame = null;
-
-
-/* =========================================
-   PLAYER DATA
-========================================= */
 
 let playerStatsMap = {};
 
 let playerDataMap = {};
 
+let playerOnCourt = {};
+
 
 /* =========================================
-   ESCAPE HTML
+ESCAPE HTML
 ========================================= */
 
-function escapeHTML(str) {
+function escapeHTML(str){
 
-if (!str)
-return "";
+if(!str) return "";
 
 return String(str)
-
 .replace(/&/g,"&amp;")
-
 .replace(/</g,"&lt;")
-
 .replace(/>/g,"&gt;")
-
 .replace(/"/g,"&quot;")
-
 .replace(/'/g,"&#039;");
 
 }
 
 
 /* =========================================
-   CALCULATE PERCENTAGE
+PERCENTAGE
 ========================================= */
 
 function calculatePercentage(
 made,
 attempted
-) {
+){
 
-if (
-!attempted ||
-attempted === 0
-) {
-
+if(!attempted || attempted === 0)
 return "0%";
-
-}
 
 return Math.round(
 (made / attempted) * 100
@@ -1220,12 +755,10 @@ return Math.round(
 
 
 /* =========================================
-   STATUS MESSAGE
+STATUS
 ========================================= */
 
-function showStatus(
-message
-) {
+function showStatus(message){
 
 const el =
 document.getElementById(
@@ -1239,26 +772,20 @@ el.style.display =
 "block";
 
 setTimeout(
-
-() => {
-
-el.style.display =
-"none";
-
+()=>{
+el.style.display="none";
 },
-
 3000
-
 );
 
 }
 
 
 /* =========================================
-   LOAD GAME
+LOAD GAME
 ========================================= */
 
-async function loadGame() {
+async function loadGame(){
 
 const gameId =
 Number(
@@ -1267,8 +794,7 @@ document.getElementById(
 ).value
 );
 
-
-if (!gameId) {
+if(!gameId){
 
 showStatus(
 "Please enter a valid Game ID."
@@ -1278,28 +804,20 @@ return;
 
 }
 
-
 const {
-
 data,
-
 error
-
 } = await supabaseClient
 
 .from("games")
 
 .select("*")
 
-.eq(
-"id",
-gameId
-)
+.eq("id",gameId)
 
 .single();
 
-
-if (error) {
+if(error){
 
 console.error(error);
 
@@ -1312,10 +830,14 @@ return;
 
 }
 
-
 currentGame =
 data;
 
+playerStatsMap = {};
+
+playerDataMap = {};
+
+playerOnCourt = {};
 
 document.getElementById(
 "homeTeam"
@@ -1323,24 +845,15 @@ document.getElementById(
 data.home_team ||
 "Home Team";
 
-
 document.getElementById(
 "awayTeam"
 ).textContent =
 data.away_team ||
 "Away Team";
 
-
-playerStatsMap = {};
-
-playerDataMap = {};
-
-
 refreshDisplay();
 
-
 await loadTeamPlayers();
-
 
 showStatus(
 "Game loaded successfully."
@@ -1350,20 +863,18 @@ showStatus(
 
 
 /* =========================================
-   REFRESH SCORE
+REFRESH SCORE
 ========================================= */
 
-function refreshDisplay() {
+function refreshDisplay(){
 
-if (!currentGame)
+if(!currentGame)
 return;
-
 
 document.getElementById(
 "homeScore"
 ).textContent =
 currentGame.home_score ?? 0;
-
 
 document.getElementById(
 "awayScore"
@@ -1374,15 +885,15 @@ currentGame.away_score ?? 0;
 
 
 /* =========================================
-   UPDATE SCORE
+UPDATE SCORE
 ========================================= */
 
 async function updateScore(
 team,
 amount
-) {
+){
 
-if (!currentGame) {
+if(!currentGame){
 
 showStatus(
 "Please load a game first."
@@ -1392,39 +903,34 @@ return;
 
 }
 
-
 const column =
 team === "home"
 ? "home_score"
 : "away_score";
 
+const oldHome =
+Number(currentGame.home_score || 0);
 
-const newScore = Math.max(
+const oldAway =
+Number(currentGame.away_score || 0);
 
+let newScore =
+Math.max(
 0,
-
-Number(
-currentGame[column] || 0
-) + amount
-
+Number(currentGame[column] || 0)
++
+amount
 );
 
-
 const {
-
 data,
-
 error
-
 } = await supabaseClient
 
 .from("games")
 
 .update({
-
-[column]:
-newScore
-
+[column]:newScore
 })
 
 .eq(
@@ -1433,42 +939,106 @@ currentGame.id
 )
 
 .select()
-
 .single();
 
-
-if (error) {
+if(error){
 
 console.error(error);
 
 showStatus(
-"Error updating score: " +
-error.message
+"Error updating score."
 );
 
 return;
 
 }
 
-
 currentGame =
 data;
 
-
 refreshDisplay();
+
+/* UPDATE ACTIVE PLAYER +/- */
+
+await updateActivePlayersPlusMinus(
+oldHome,
+oldAway,
+Number(currentGame.home_score || 0),
+Number(currentGame.away_score || 0)
+);
 
 }
 
 
 /* =========================================
-   UPDATE GAME
+UPDATE ACTIVE PLAYERS +/- 
 ========================================= */
 
-async function updateGame(
-changes
-) {
+async function updateActivePlayersPlusMinus(
+oldHome,
+oldAway,
+newHome,
+newAway
+){
 
-if (!currentGame) {
+if(!currentGame)
+return;
+
+const oldDiff =
+oldHome - oldAway;
+
+const newDiff =
+newHome - newAway;
+
+const scoreChange =
+newDiff - oldDiff;
+
+if(scoreChange === 0)
+return;
+
+for(
+const playerId in playerOnCourt
+){
+
+if(!playerOnCourt[playerId])
+continue;
+
+const player =
+playerDataMap[playerId];
+
+if(!player)
+continue;
+
+const stats =
+await getPlayerGameStats(
+playerId
+);
+
+const newPlusMinus =
+Number(
+stats.plus_minus || 0
+)
++
+scoreChange;
+
+await saveStatDirect(
+playerId,
+"plus_minus",
+newPlusMinus
+);
+
+}
+
+}
+
+
+/* =========================================
+UPDATE GAME
+========================================= */
+
+async function updateGame(changes){
+
+if(!currentGame){
 
 showStatus(
 "Load a game first."
@@ -1478,13 +1048,9 @@ return;
 
 }
 
-
 const {
-
 data,
-
 error
-
 } = await supabaseClient
 
 .from("games")
@@ -1497,11 +1063,9 @@ currentGame.id
 )
 
 .select()
-
 .single();
 
-
-if (error) {
+if(error){
 
 console.error(error);
 
@@ -1513,13 +1077,8 @@ return;
 
 }
 
-
 currentGame =
 data;
-
-
-refreshDisplay();
-
 
 showStatus(
 "Game updated."
@@ -1529,20 +1088,18 @@ showStatus(
 
 
 /* =========================================
-   LOAD TEAMS
+LOAD TEAMS
 ========================================= */
 
-async function loadTeamPlayers() {
+async function loadTeamPlayers(){
 
-if (!currentGame)
+if(!currentGame)
 return;
-
 
 const homeName =
 String(
 currentGame.home_team || ""
 ).trim();
-
 
 const awayName =
 String(
@@ -1550,15 +1107,10 @@ currentGame.away_team || ""
 ).trim();
 
 
-/* HOME */
-
 const {
-
-data: homeTeam,
-
-error: homeError
-
-} = await supabaseClient
+data:homeTeam
+} =
+await supabaseClient
 
 .from("teams")
 
@@ -1572,17 +1124,7 @@ homeName
 .maybeSingle();
 
 
-if (homeError) {
-
-console.error(
-"Home team error:",
-homeError
-);
-
-}
-
-
-if (homeTeam) {
+if(homeTeam){
 
 document.getElementById(
 "homePlayersTitle"
@@ -1590,42 +1132,18 @@ document.getElementById(
 homeTeam.name +
 " Players";
 
-
 await loadPlayersForTeam(
-
 homeTeam.id,
-
 "homePlayersList"
-
 );
 
 }
 
-else {
-
-document.getElementById(
-"homePlayersList"
-).innerHTML =
-
-`<div class="no-players">
-
-Team not found:
-${escapeHTML(homeName)}
-
-</div>`;
-
-}
-
-
-/* AWAY */
 
 const {
-
-data: awayTeam,
-
-error: awayError
-
-} = await supabaseClient
+data:awayTeam
+} =
+await supabaseClient
 
 .from("teams")
 
@@ -1639,17 +1157,7 @@ awayName
 .maybeSingle();
 
 
-if (awayError) {
-
-console.error(
-"Away team error:",
-awayError
-);
-
-}
-
-
-if (awayTeam) {
+if(awayTeam){
 
 document.getElementById(
 "awayPlayersTitle"
@@ -1657,29 +1165,10 @@ document.getElementById(
 awayTeam.name +
 " Players";
 
-
 await loadPlayersForTeam(
-
 awayTeam.id,
-
 "awayPlayersList"
-
 );
-
-}
-
-else {
-
-document.getElementById(
-"awayPlayersList"
-).innerHTML =
-
-`<div class="no-players">
-
-Team not found:
-${escapeHTML(awayName)}
-
-</div>`;
 
 }
 
@@ -1687,39 +1176,29 @@ ${escapeHTML(awayName)}
 
 
 /* =========================================
-   LOAD PLAYERS
+LOAD PLAYERS
 ========================================= */
 
 async function loadPlayersForTeam(
-
 teamId,
-
 containerId
-
-) {
+){
 
 const container =
 document.getElementById(
 containerId
 );
 
-
 container.innerHTML =
-
 `<div class="no-players">
-
 Loading players...
-
 </div>`;
 
-
 const {
-
 data,
-
 error
-
-} = await supabaseClient
+} =
+await supabaseClient
 
 .from("players")
 
@@ -1731,47 +1210,31 @@ teamId
 )
 
 .order(
-
 "jersey_number",
-
 {
-
-ascending:
-true
-
+ascending:true
 }
-
 );
 
-
-if (error) {
+if(error){
 
 console.error(error);
 
 container.innerHTML =
-
 `<div class="no-players">
-
 Unable to load players.
-
 </div>`;
 
 return;
 
 }
 
-
-if (
-!data ||
-data.length === 0
-) {
+if(!data ||
+data.length === 0){
 
 container.innerHTML =
-
 `<div class="no-players">
-
 No players assigned.
-
 </div>`;
 
 return;
@@ -1779,64 +1242,11 @@ return;
 }
 
 
-container.innerHTML = "";
+/* TABLE */
 
+container.innerHTML = `
 
-const table =
-createStatsTable();
-
-
-container.appendChild(
-table
-);
-
-
-const tbody =
-table.querySelector(
-"tbody"
-);
-
-
-for (
-const player
-of data
-) {
-
-playerDataMap[
-player.id
-] =
-player;
-
-
-await createPlayerRow(
-
-player,
-
-tbody
-
-);
-
-}
-
-}
-
-
-/* =========================================
-   CREATE TABLE
-========================================= */
-
-function createStatsTable() {
-
-const table =
-document.createElement(
-"table"
-);
-
-table.className =
-"stats-table";
-
-
-table.innerHTML = `
+<table class="stats-table">
 
 <thead>
 
@@ -1876,84 +1286,93 @@ table.innerHTML = `
 
 </thead>
 
-<tbody></tbody>
+<tbody id="${containerId}-tbody">
+
+</tbody>
+
+</table>
 
 `;
 
+const tbody =
+document.getElementById(
+containerId + "-tbody"
+);
 
-return table;
+for(
+const player of data
+){
+
+playerDataMap[
+player.id
+] =
+player;
+
+await createPlayerRow(
+player,
+tbody
+);
+
+}
 
 }
 
 
 /* =========================================
-   DEFAULT STATS
-========================================= */
-
-function getDefaultStats() {
-
-return {
-
-minutes_played: 0,
-
-points: 0,
-
-offensive_rebounds: 0,
-
-defensive_rebounds: 0,
-
-assists: 0,
-
-steals: 0,
-
-blocks: 0,
-
-turnovers: 0,
-
-fouls: 0,
-
-two_pt_made: 0,
-
-two_pt_attempted: 0,
-
-three_pt_made: 0,
-
-three_pt_attempted: 0,
-
-ft_made: 0,
-
-ft_attempted: 0,
-
-plus_minus: 0
-
-};
-
-}
-
-
-/* =========================================
-   GET PLAYER GAME STATS
+GET PLAYER STATS
 ========================================= */
 
 async function getPlayerGameStats(
 playerId
-) {
+){
 
-const defaults =
-getDefaultStats();
+const defaults = {
 
+minutes_played:0,
 
-if (!currentGame)
+points:0,
+
+offensive_rebounds:0,
+
+defensive_rebounds:0,
+
+assists:0,
+
+steals:0,
+
+blocks:0,
+
+turnovers:0,
+
+fouls:0,
+
+two_pt_made:0,
+
+two_pt_attempted:0,
+
+three_pt_made:0,
+
+three_pt_attempted:0,
+
+ft_made:0,
+
+ft_attempted:0,
+
+plus_minus:0
+
+};
+
+if(!currentGame)
 return defaults;
 
+if(playerStatsMap[playerId])
+return playerStatsMap[playerId];
 
 const {
-
 data,
-
 error
-
-} = await supabaseClient
+} =
+await supabaseClient
 
 .from(
 "player_game_stats"
@@ -1973,8 +1392,7 @@ playerId
 
 .maybeSingle();
 
-
-if (error) {
+if(error){
 
 console.error(
 "Stats loading error:",
@@ -1983,249 +1401,34 @@ error
 
 }
 
-
-playerStatsMap[
-playerId
-] = {
+playerStatsMap[playerId] =
+data ||
+{
 
 ...defaults,
 
-...(data || {})
+player_id:
+playerId,
+
+game_id:
+currentGame.id
 
 };
 
-
-return playerStatsMap[
-playerId
-];
+return playerStatsMap[playerId];
 
 }
 
 
 /* =========================================
-   UPDATE PLAYER STAT
+SAVE STAT
 ========================================= */
 
-async function updatePlayerStat(
-
+async function saveStatDirect(
 playerId,
-
 statKey,
-
-amount
-
-) {
-
-if (!currentGame) {
-
-showStatus(
-"Please load a game first."
-);
-
-return;
-
-}
-
-
-let stats =
-await getPlayerGameStats(
-playerId
-);
-
-
-let currentValue =
-Number(
-stats[statKey] || 0
-);
-
-
-let newValue =
-
-Math.max(
-
-0,
-
-currentValue +
-amount
-
-);
-
-
-/* Prevent made shots from
-   exceeding attempts */
-
-if (
-statKey === "two_pt_made" &&
-newValue >
-Number(
-stats.two_pt_attempted || 0
-)
-) {
-
-newValue =
-Number(
-stats.two_pt_attempted || 0
-);
-
-}
-
-
-if (
-statKey === "three_pt_made" &&
-newValue >
-Number(
-stats.three_pt_attempted || 0
-)
-) {
-
-newValue =
-Number(
-stats.three_pt_attempted || 0
-);
-
-}
-
-
-if (
-statKey === "ft_made" &&
-newValue >
-Number(
-stats.ft_attempted || 0
-)
-) {
-
-newValue =
-Number(
-stats.ft_attempted || 0
-);
-
-}
-
-
-/* Prevent attempts
-   below made shots */
-
-if (
-statKey === "two_pt_attempted" &&
-newValue <
-Number(
-stats.two_pt_made || 0
-)
-) {
-
-newValue =
-Number(
-stats.two_pt_made || 0
-);
-
-}
-
-
-if (
-statKey === "three_pt_attempted" &&
-newValue <
-Number(
-stats.three_pt_made || 0
-)
-) {
-
-newValue =
-Number(
-stats.three_pt_made || 0
-);
-
-}
-
-
-if (
-statKey === "ft_attempted" &&
-newValue <
-Number(
-stats.ft_made || 0
-)
-) {
-
-newValue =
-Number(
-stats.ft_made || 0
-);
-
-}
-
-
-/* =========================================
-   SPECIAL POINTS LOGIC
-========================================= */
-
-/*
-   When made shots change,
-   automatically update POINTS.
-
-   2PT = 2 points
-   3PT = 3 points
-   FT = 1 point
-*/
-
-let newPoints =
-Number(
-stats.points || 0
-);
-
-
-if (
-statKey === "two_pt_made"
-) {
-
-newPoints =
-Math.max(
-
-0,
-
-newPoints +
-(amount * 2)
-
-);
-
-}
-
-
-if (
-statKey === "three_pt_made"
-) {
-
-newPoints =
-Math.max(
-
-0,
-
-newPoints +
-(amount * 3)
-
-);
-
-}
-
-
-if (
-statKey === "ft_made"
-) {
-
-newPoints =
-Math.max(
-
-0,
-
-newPoints +
-amount
-
-);
-
-}
-
-
-/* =========================================
-   BUILD UPDATE
-========================================= */
+value
+){
 
 const updateObj = {
 
@@ -2237,46 +1440,14 @@ currentGame.id
 
 };
 
-
-updateObj[
-statKey
-] =
-newValue;
-
-
-/* Update points automatically
-   when shooting stats change */
-
-if (
-
-statKey ===
-"two_pt_made" ||
-
-statKey ===
-"three_pt_made" ||
-
-statKey ===
-"ft_made"
-
-) {
-
-updateObj.points =
-newPoints;
-
-}
-
-
-/* =========================================
-   SAVE
-========================================= */
+updateObj[statKey] =
+Math.max(0,Number(value || 0));
 
 const {
-
 data,
-
 error
-
-} = await supabaseClient
+} =
+await supabaseClient
 
 .from(
 "player_game_stats"
@@ -2287,88 +1458,111 @@ error
 updateObj,
 
 {
-
 onConflict:
 "player_id,game_id"
-
 }
 
 )
 
 .select()
-
 .single();
 
-
-if (error) {
+if(error){
 
 console.error(
-"Player stats update error:",
+"Save stat error:",
 error
 );
 
-showStatus(
-
-"Unable to update player stats: " +
-error.message
-
-);
-
-return;
+return false;
 
 }
 
+playerStatsMap[playerId] =
+{
 
-/* =========================================
-   UPDATE LOCAL DATA
-========================================= */
-
-playerStatsMap[
-playerId
-] = {
-
-...stats,
+...playerStatsMap[playerId],
 
 ...data
 
 };
 
+return true;
+
+}
+
 
 /* =========================================
-   REFRESH ROW
+UPDATE PLAYER STAT
 ========================================= */
 
-const player =
-playerDataMap[
-playerId
-];
+async function updatePlayerStat(
+playerId,
+statKey,
+amount
+){
 
+if(!currentGame){
 
-if (!player)
+showStatus(
+"Load a game first."
+);
+
 return;
 
+}
 
-const oldRow =
-document.getElementById(
-
-`player-row-${playerId}`
-
+const stats =
+await getPlayerGameStats(
+playerId
 );
 
+const currentValue =
+Number(
+stats[statKey] || 0
+);
 
-if (oldRow) {
+const newValue =
+Math.max(
+0,
+currentValue + amount
+);
 
-const parent =
-oldRow.parentElement;
+/* Prevent made from exceeding attempts */
 
-oldRow.remove();
+if(
+(statKey === "two_pt_made" &&
+newValue >
+Number(stats.two_pt_attempted || 0))
+||
+(statKey === "three_pt_made" &&
+newValue >
+Number(stats.three_pt_attempted || 0))
+||
+(statKey === "ft_made" &&
+newValue >
+Number(stats.ft_attempted || 0))
+){
 
-await createPlayerRow(
+showStatus(
+"Made shots cannot exceed attempts."
+);
 
-player,
+return;
 
-parent
+}
 
+const success =
+await saveStatDirect(
+playerId,
+statKey,
+newValue
+);
+
+if(success){
+
+await refreshPlayerRow(
+playerId
 );
 
 }
@@ -2377,65 +1571,99 @@ parent
 
 
 /* =========================================
-   CREATE STAT CONTROL
+REFRESH PLAYER ROW
 ========================================= */
 
-function statControl(
+async function refreshPlayerRow(
+playerId
+){
 
-label,
+const row =
+document.getElementById(
+"player-row-" +
+playerId
+);
 
-value,
+if(!row)
+return;
 
-playerId,
+const parent =
+row.parentElement;
 
-statKey
+row.remove();
 
-) {
+const player =
+playerDataMap[playerId];
+
+await createPlayerRow(
+player,
+parent
+);
+
+}
+
+
+/* =========================================
+CREATE PLAYER ROW
+========================================= */
+
+async function createPlayerRow(
+player,
+tbody
+){
+
+const s =
+await getPlayerGameStats(
+player.id
+);
+
+const row =
+document.createElement("tr");
+
+row.id =
+"player-row-" +
+player.id;
+
+
+/* ON COURT STATUS */
+
+const isOnCourt =
+playerOnCourt[player.id] === true;
+
+
+/* STAT BOX */
+
+function statBox(
+key,
+value
+){
 
 return `
 
 <div class="stat-value">
-
 ${value || 0}
-
 </div>
 
 <div class="stat-buttons">
 
 <button
-
 class="stat-btn"
-
 onclick="updatePlayerStat(
-
-'${playerId}',
-
-'${statKey}',
-
+'${player.id}',
+'${key}',
 1
-
 )">
-
 +
-
 </button>
 
 <button
-
 class="stat-btn minus"
-
 onclick="updatePlayerStat(
-
-'${playerId}',
-
-'${statKey}',
-
+'${player.id}',
+'${key}',
 -1
-
 )">
-
 −
-
 </button>
 
 </div>
@@ -2445,23 +1673,14 @@ onclick="updatePlayerStat(
 }
 
 
-/* =========================================
-   SHOOTING CONTROL
-========================================= */
+/* SHOOTING BOX */
 
-function shootingControl(
-
-made,
-
-attempted,
-
-playerId,
-
+function shootingBox(
 madeKey,
-
-attemptedKey
-
-) {
+attemptKey,
+made,
+attempted
+){
 
 return `
 
@@ -2471,99 +1690,55 @@ ${made || 0}/${attempted || 0}
 
 </div>
 
-
 <div class="shooting-buttons">
 
 <button
-
-class="shooting-btn"
-
+class="make-btn"
 onclick="updatePlayerStat(
-
-'${playerId}',
-
+'${player.id}',
 '${madeKey}',
-
 1
-
 )">
-
 M+
-
 </button>
 
-
 <button
-
-class="shooting-btn minus"
-
+class="minus-btn"
 onclick="updatePlayerStat(
-
-'${playerId}',
-
+'${player.id}',
 '${madeKey}',
-
 -1
-
 )">
-
 M−
-
 </button>
 
-</div>
-
-
-<div class="shooting-buttons">
-
 <button
-
-class="shooting-btn attempt"
-
+class="attempt-btn"
 onclick="updatePlayerStat(
-
-'${playerId}',
-
-'${attemptedKey}',
-
+'${player.id}',
+'${attemptKey}',
 1
-
 )">
-
 A+
-
 </button>
 
-
 <button
-
-class="shooting-btn minus"
-
+class="minus-btn"
 onclick="updatePlayerStat(
-
-'${playerId}',
-
-'${attemptedKey}',
-
+'${player.id}',
+'${attemptKey}',
 -1
-
 )">
-
 A−
-
 </button>
 
 </div>
 
-
-<div class="shooting-percent">
+<div class="shooting-pct">
 
 ${calculatePercentage(
-
 made,
-
 attempted
-
 )}
 
 </div>
@@ -2573,82 +1748,33 @@ attempted
 }
 
 
-/* =========================================
-   CREATE PLAYER ROW
-========================================= */
-
-async function createPlayerRow(
-
-player,
-
-tbody
-
-) {
-
-const s =
-await getPlayerGameStats(
-player.id
-);
-
-
-const row =
-document.createElement(
-"tr"
-);
-
-
-row.className =
-"player-row";
-
-
-row.id =
-
-`player-row-${player.id}`;
-
-
-/* =========================================
-   ROW HTML
-========================================= */
-
 row.innerHTML = `
 
-<!-- JERSEY -->
+<td>
 
-<td class="jersey-cell">
-
-<span class="jersey-number">
+<div class="player-number">
 
 ${escapeHTML(
-
 String(
-
 player.jersey_number || ""
-
 )
-
 )}
 
-</span>
+</div>
 
 </td>
 
 
-<!-- PLAYER -->
-
-<td class="player-cell">
+<td>
 
 <span class="player-name">
 
 ${escapeHTML(
-
-player.first_name || ""
-
-)}
+player.first_name
+)} 
 
 ${escapeHTML(
-
-player.last_name || ""
-
+player.last_name
 )}
 
 </span>
@@ -2656,280 +1782,254 @@ player.last_name || ""
 <span class="player-position">
 
 ${escapeHTML(
-
 player.position || ""
-
 )}
 
 </span>
 
+<br>
+
+<button
+
+class="court-button ${
+isOnCourt ? "active" : ""
+}"
+
+onclick="togglePlayerCourt(
+'${player.id}'
+)">
+
+${
+isOnCourt
+? "SUB OUT"
+: "ON COURT"
+}
+
+</button>
+
 </td>
 
 
-<!-- MIN -->
+<td>
 
-<td class="stat-cell">
-
-${statControl(
-
-"MIN",
-
-s.minutes_played,
-
-player.id,
-
-"minutes_played"
-
+${statBox(
+"minutes_played",
+s.minutes_played
 )}
 
 </td>
 
 
-<!-- PTS -->
+<td>
 
-<td class="stat-cell">
-
-${statControl(
-
-"PTS",
-
-s.points,
-
-player.id,
-
-"points"
-
+${statBox(
+"points",
+s.points
 )}
 
 </td>
 
 
-<!-- OREB -->
+<td>
 
-<td class="stat-cell">
-
-${statControl(
-
-"OREB",
-
-s.offensive_rebounds,
-
-player.id,
-
-"offensive_rebounds"
-
+${statBox(
+"offensive_rebounds",
+s.offensive_rebounds
 )}
 
 </td>
 
 
-<!-- DREB -->
+<td>
 
-<td class="stat-cell">
-
-${statControl(
-
-"DREB",
-
-s.defensive_rebounds,
-
-player.id,
-
-"defensive_rebounds"
-
+${statBox(
+"defensive_rebounds",
+s.defensive_rebounds
 )}
 
 </td>
 
 
-<!-- AST -->
+<td>
 
-<td class="stat-cell">
-
-${statControl(
-
-"AST",
-
-s.assists,
-
-player.id,
-
-"assists"
-
+${statBox(
+"assists",
+s.assists
 )}
 
 </td>
 
 
-<!-- STL -->
+<td>
 
-<td class="stat-cell">
-
-${statControl(
-
-"STL",
-
-s.steals,
-
-player.id,
-
-"steals"
-
+${statBox(
+"steals",
+s.steals
 )}
 
 </td>
 
 
-<!-- BLK -->
+<td>
 
-<td class="stat-cell">
-
-${statControl(
-
-"BLK",
-
-s.blocks,
-
-player.id,
-
-"blocks"
-
+${statBox(
+"blocks",
+s.blocks
 )}
 
 </td>
 
 
-<!-- TO -->
+<td>
 
-<td class="stat-cell">
-
-${statControl(
-
-"TO",
-
-s.turnovers,
-
-player.id,
-
-"turnovers"
-
+${statBox(
+"turnovers",
+s.turnovers
 )}
 
 </td>
 
 
-<!-- PF -->
+<td>
 
-<td class="stat-cell">
-
-${statControl(
-
-"PF",
-
-s.fouls,
-
-player.id,
-
-"fouls"
-
+${statBox(
+"fouls",
+s.fouls
 )}
 
 </td>
 
 
-<!-- 2PT -->
+<td>
 
-<td class="shooting-cell">
-
-${shootingControl(
-
-s.two_pt_made,
-
-s.two_pt_attempted,
-
-player.id,
+${shootingBox(
 
 "two_pt_made",
 
-"two_pt_attempted"
+"two_pt_attempted",
+
+s.two_pt_made,
+
+s.two_pt_attempted
 
 )}
 
 </td>
 
 
-<!-- 3PT -->
+<td>
 
-<td class="shooting-cell">
-
-${shootingControl(
-
-s.three_pt_made,
-
-s.three_pt_attempted,
-
-player.id,
+${shootingBox(
 
 "three_pt_made",
 
-"three_pt_attempted"
+"three_pt_attempted",
+
+s.three_pt_made,
+
+s.three_pt_attempted
 
 )}
 
 </td>
 
 
-<!-- FT -->
+<td>
 
-<td class="shooting-cell">
-
-${shootingControl(
-
-s.ft_made,
-
-s.ft_attempted,
-
-player.id,
+${shootingBox(
 
 "ft_made",
 
-"ft_attempted"
+"ft_attempted",
+
+s.ft_made,
+
+s.ft_attempted
 
 )}
 
 </td>
 
 
-<!-- +/- -->
+<td>
 
-<td class="plus-minus-cell">
+<div class="plus-minus
 
-${statControl(
+${
+s.plus_minus > 0
+? "plus"
+:
+s.plus_minus < 0
+? "minus-value"
+:
+"zero"
+}">
 
-"+/-",
+${
+s.plus_minus > 0
+? "+"
+:
+""
+}${s.plus_minus || 0}
 
-s.plus_minus,
-
-player.id,
-
-"plus_minus"
-
-)}
+</div>
 
 </td>
 
 `;
 
+tbody.appendChild(row);
 
-tbody.appendChild(
-row
+}
+
+
+/* =========================================
+TOGGLE PLAYER ON COURT
+========================================= */
+
+async function togglePlayerCourt(
+playerId
+){
+
+if(!currentGame)
+return;
+
+const isCurrentlyOn =
+playerOnCourt[playerId] === true;
+
+if(!isCurrentlyOn){
+
+/* PLAYER ENTERS */
+
+playerOnCourt[playerId] =
+true;
+
+showStatus(
+"Player is now ON COURT."
+);
+
+}else{
+
+/* PLAYER LEAVES */
+
+playerOnCourt[playerId] =
+false;
+
+showStatus(
+"Player SUBBED OUT."
+);
+
+}
+
+await refreshPlayerRow(
+playerId
 );
 
 }
 
 
 /* =========================================
-   AUTO LOAD GAME
+AUTO LOAD
 ========================================= */
 
 loadGame();
