@@ -39,6 +39,7 @@ body {
 header {
     background: #111;
     color: white;
+
     padding: 10px 2%;
 
     display: flex;
@@ -47,10 +48,11 @@ header {
 }
 
 .logo {
-    font-size: 18px;
-    font-weight: bold;
     color: white;
     text-decoration: none;
+
+    font-size: 18px;
+    font-weight: bold;
 }
 
 .logo span {
@@ -60,9 +62,11 @@ header {
 nav a {
     color: white;
     text-decoration: none;
+
     margin-left: 12px;
-    font-weight: bold;
+
     font-size: 12px;
+    font-weight: bold;
 }
 
 nav a:hover {
@@ -75,9 +79,12 @@ nav a:hover {
 ========================================= */
 
 .container {
+
     width: 100%;
     max-width: 100%;
+
     margin: 10px auto;
+
     padding: 0 10px;
 }
 
@@ -87,37 +94,49 @@ nav a:hover {
 ========================================= */
 
 .game-selector {
+
     background: white;
+
     padding: 10px 15px;
+
     border-radius: 6px;
 
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    box-shadow:
+        0 2px 6px rgba(0,0,0,0.06);
 
     margin-bottom: 10px;
 
     display: flex;
+
     align-items: center;
+
     gap: 10px;
 }
 
 .game-selector h2 {
+
     font-size: 14px;
+
     white-space: nowrap;
 }
 
 .game-selector input {
+
     width: 100px;
 
     padding: 5px 8px;
 
     border: 1px solid #ddd;
+
     border-radius: 4px;
 
     font-size: 13px;
 }
 
 .load-button {
+
     background: #ff6b00;
+
     color: white;
 
     border: none;
@@ -134,15 +153,17 @@ nav a:hover {
 }
 
 .load-button:hover {
+
     background: #111;
 }
 
 
 /* =========================================
-   STATUS MESSAGE
+   STATUS
 ========================================= */
 
 #statusMessage {
+
     text-align: center;
 
     padding: 7px;
@@ -166,6 +187,7 @@ nav a:hover {
 ========================================= */
 
 .scoreboard {
+
     display: grid;
 
     grid-template-columns: 1fr 1fr;
@@ -176,6 +198,7 @@ nav a:hover {
 }
 
 .team-control {
+
     background: white;
 
     padding: 10px;
@@ -184,16 +207,19 @@ nav a:hover {
 
     text-align: center;
 
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    box-shadow:
+        0 2px 6px rgba(0,0,0,0.06);
 }
 
 .team-control h2 {
+
     font-size: 16px;
 
     margin-bottom: 2px;
 }
 
 .score {
+
     font-size: 34px;
 
     font-weight: bold;
@@ -204,6 +230,7 @@ nav a:hover {
 }
 
 .button-row {
+
     display: flex;
 
     justify-content: center;
@@ -212,6 +239,7 @@ nav a:hover {
 }
 
 .score-button {
+
     background: #111;
 
     color: white;
@@ -230,27 +258,33 @@ nav a:hover {
 }
 
 .score-button:hover {
+
     background: #ff6b00;
 }
 
 
 /* =========================================
-   PLAYER STATS MAIN BOX
+   PLAYER STATS BOX
 ========================================= */
 
 .controls {
+
     background: white;
 
     padding: 10px;
 
     border-radius: 6px;
 
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    box-shadow:
+        0 2px 6px rgba(0,0,0,0.06);
 
     margin-bottom: 10px;
+
+    overflow: hidden;
 }
 
 .controls > h2 {
+
     font-size: 16px;
 
     text-align: center;
@@ -260,10 +294,11 @@ nav a:hover {
 
 
 /* =========================================
-   HOME / AWAY TEAM BOXES
+   HOME / AWAY COLUMNS
 ========================================= */
 
 .stats-controls {
+
     display: grid;
 
     grid-template-columns: 1fr 1fr;
@@ -272,61 +307,60 @@ nav a:hover {
 }
 
 .stat-control {
+
     background: #fafafa;
 
     border: 1px solid #ddd;
 
-    padding: 7px;
-
     border-radius: 6px;
 
-    overflow: hidden;
+    overflow-x: auto;
+
+    overflow-y: auto;
+
+    max-height: 70vh;
 }
 
+
+/* =========================================
+   TEAM TITLE
+========================================= */
+
 .stat-control > h2 {
+
     text-align: center;
 
     font-size: 13px;
 
-    margin-bottom: 7px;
+    margin: 0;
+
+    padding: 7px;
 
     background: #fafafa;
 
-    padding: 5px 0;
-
     border-bottom: 2px solid #ff6b00;
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 10;
 }
 
 
 /* =========================================
-   TABLE SCROLL CONTAINER
+   STATS TABLE
 ========================================= */
 
-.table-wrapper {
+.stats-table {
+
     width: 100%;
 
-    overflow-x: auto;
-
-    overflow-y: visible;
-
-    -webkit-overflow-scrolling: touch;
-}
-
-
-/* =========================================
-   PLAYER TABLE
-========================================= */
-
-.player-table {
-    width: 100%;
-
-    min-width: 1100px;
+    min-width: 1050px;
 
     border-collapse: collapse;
 
     table-layout: fixed;
-
-    font-size: 10px;
 }
 
 
@@ -334,18 +368,17 @@ nav a:hover {
    TABLE HEADER
 ========================================= */
 
-.player-table thead th {
+.stats-table thead th {
+
     background: #111;
 
     color: white;
 
-    font-weight: bold;
-
-    text-align: center;
-
     padding: 5px 2px;
 
-    border-right: 1px solid #444;
+    font-size: 8px;
+
+    text-align: center;
 
     white-space: nowrap;
 
@@ -353,7 +386,15 @@ nav a:hover {
 
     top: 0;
 
-    z-index: 2;
+    z-index: 5;
+}
+
+
+/* Orange header accent */
+
+.stats-table thead th:first-child {
+
+    border-left: 3px solid #ff6b00;
 }
 
 
@@ -361,13 +402,15 @@ nav a:hover {
    PLAYER ROW
 ========================================= */
 
-.player-table tbody tr {
+.player-row {
+
     background: white;
 
     border-bottom: 1px solid #ddd;
 }
 
-.player-table tbody tr:hover {
+.player-row:hover {
+
     background: #fff8f5;
 }
 
@@ -376,43 +419,44 @@ nav a:hover {
    TABLE CELLS
 ========================================= */
 
-.player-table td {
+.stats-table td {
+
+    padding: 3px 2px;
+
     text-align: center;
 
-    padding: 4px 2px;
+    vertical-align: middle;
+
+    font-size: 10px;
 
     border-right: 1px solid #eee;
-
-    vertical-align: middle;
 }
 
 
 /* =========================================
-   COLUMN WIDTHS
+   JERSEY
 ========================================= */
 
-.col-number {
+.jersey-cell {
+
     width: 35px;
+
+    font-weight: bold;
 }
 
-.col-player {
-    width: 130px;
+.jersey-number {
 
-    text-align: left !important;
+    display: inline-block;
 
-    padding-left: 6px !important;
-}
+    background: #111;
 
-.col-stat {
-    width: 58px;
-}
+    color: white;
 
-.col-shooting {
-    width: 80px;
-}
+    padding: 3px 5px;
 
-.col-plus-minus {
-    width: 65px;
+    border-radius: 3px;
+
+    font-size: 9px;
 }
 
 
@@ -420,10 +464,22 @@ nav a:hover {
    PLAYER NAME
 ========================================= */
 
-.player-name-cell {
+.player-cell {
+
+    width: 150px;
+
+    text-align: left !important;
+
     font-weight: bold;
 
-    font-size: 11px;
+    padding-left: 6px !important;
+}
+
+.player-name {
+
+    display: block;
+
+    font-size: 10px;
 
     white-space: nowrap;
 
@@ -433,34 +489,24 @@ nav a:hover {
 }
 
 .player-position {
+
     display: block;
 
-    font-size: 8px;
-
     color: #777;
+
+    font-size: 8px;
 
     font-weight: normal;
 }
 
 
 /* =========================================
-   JERSEY NUMBER
+   STAT CELL
 ========================================= */
 
-.jersey-number {
-    background: #111;
+.stat-cell {
 
-    color: white;
-
-    border-radius: 3px;
-
-    padding: 3px 5px;
-
-    font-weight: bold;
-
-    display: inline-block;
-
-    min-width: 24px;
+    width: 55px;
 }
 
 
@@ -469,23 +515,23 @@ nav a:hover {
 ========================================= */
 
 .stat-value {
-    font-size: 12px;
+
+    font-size: 11px;
 
     font-weight: bold;
 
     color: #ff6b00;
 
-    display: block;
-
-    margin-bottom: 3px;
+    margin-bottom: 2px;
 }
 
 
 /* =========================================
-   STAT BUTTONS
+   PLUS MINUS BUTTONS
 ========================================= */
 
 .stat-buttons {
+
     display: flex;
 
     justify-content: center;
@@ -494,9 +540,10 @@ nav a:hover {
 }
 
 .stat-btn {
-    width: 20px;
 
-    height: 18px;
+    width: 18px;
+
+    height: 16px;
 
     border: none;
 
@@ -506,74 +553,71 @@ nav a:hover {
 
     color: white;
 
+    font-size: 10px;
+
     font-weight: bold;
 
     cursor: pointer;
 
-    font-size: 10px;
-
-    line-height: 18px;
-
     padding: 0;
+
+    line-height: 16px;
 }
 
 .stat-btn:hover {
+
     background: #ff6b00;
 }
 
 .stat-btn.minus {
+
     background: #888;
 }
 
 .stat-btn.minus:hover {
+
     background: #333;
 }
 
 
 /* =========================================
-   REBOUND TOTAL
+   SHOOTING CELL
 ========================================= */
 
-.rebound-total {
-    color: #555;
+.shooting-cell {
+
+    width: 75px;
+}
+
+.shooting-value {
 
     font-size: 10px;
 
     font-weight: bold;
 
-    display: block;
-
-    margin-top: 2px;
-}
-
-
-/* =========================================
-   SHOOTING STAT
-========================================= */
-
-.shooting-value {
-    font-size: 11px;
-
-    font-weight: bold;
-
     color: #222;
 
-    margin-bottom: 3px;
-
-    white-space: nowrap;
+    margin-bottom: 2px;
 }
 
-.shooting-label {
+.shooting-percent {
+
     font-size: 8px;
 
     color: #ff6b00;
 
     font-weight: bold;
 
-    margin-bottom: 3px;
+    margin-top: 2px;
 }
 
+
+/* =========================================
+   SHOOTING BUTTONS
+========================================= */
+
 .shooting-buttons {
+
     display: flex;
 
     justify-content: center;
@@ -584,9 +628,10 @@ nav a:hover {
 }
 
 .shooting-btn {
-    width: 20px;
 
-    height: 18px;
+    height: 16px;
+
+    min-width: 22px;
 
     border: none;
 
@@ -596,57 +641,54 @@ nav a:hover {
 
     color: white;
 
-    font-size: 9px;
+    font-size: 8px;
 
     font-weight: bold;
 
     cursor: pointer;
 
-    padding: 0;
+    padding: 0 3px;
 }
 
 .shooting-btn:hover {
+
     background: #ff6b00;
 }
 
 .shooting-btn.attempt {
+
     background: #ff6b00;
 }
 
-.shooting-btn.attempt:hover {
-    background: #111;
-}
-
 .shooting-btn.minus {
+
     background: #888;
 }
 
+.shooting-btn.minus:hover {
 
-/* =========================================
-   SHOOTING PERCENTAGE
-========================================= */
-
-.shooting-percentage {
-    font-size: 8px;
-
-    color: #ff6b00;
-
-    font-weight: bold;
+    background: #333;
 }
 
 
 /* =========================================
-   PLUS / MINUS
+   PLUS MINUS PLAYER +/- CELL
 ========================================= */
 
+.plus-minus-cell {
+
+    width: 55px;
+}
+
 .plus-minus-value {
-    font-size: 12px;
+
+    font-size: 11px;
 
     font-weight: bold;
 
     color: #ff6b00;
 
-    margin-bottom: 3px;
+    margin-bottom: 2px;
 }
 
 
@@ -655,6 +697,7 @@ nav a:hover {
 ========================================= */
 
 .no-players {
+
     text-align: center;
 
     color: #777;
@@ -670,6 +713,7 @@ nav a:hover {
 ========================================= */
 
 .game-footer-controls {
+
     display: flex;
 
     gap: 10px;
@@ -686,6 +730,7 @@ nav a:hover {
 }
 
 .control-button {
+
     background: #ff6b00;
 
     color: white;
@@ -704,6 +749,7 @@ nav a:hover {
 }
 
 .control-button:hover {
+
     background: #111;
 }
 
@@ -715,34 +761,36 @@ nav a:hover {
 @media (max-width: 768px) {
 
     header {
+
         flex-direction: column;
 
         gap: 8px;
     }
 
     nav a {
+
         margin: 0 5px;
 
         font-size: 10px;
     }
 
     .scoreboard {
+
         grid-template-columns: 1fr 1fr;
     }
 
     .stats-controls {
+
         grid-template-columns: 1fr;
     }
 
     .stat-control {
-        width: 100%;
-    }
 
-    .player-table {
-        min-width: 1100px;
+        max-height: 500px;
     }
 
     .game-footer-controls {
+
         flex-direction: column;
 
         align-items: center;
@@ -765,7 +813,9 @@ nav a:hover {
 <header>
 
 <a href="index.html" class="logo">
+
 HOOP <span>HUB PH</span>
+
 </a>
 
 <nav>
@@ -952,9 +1002,7 @@ PLAYER STATS
 <div class="stats-controls">
 
 
-<!-- =========================================
-     HOME PLAYERS
-========================================= -->
+<!-- HOME -->
 
 <div class="stat-control">
 
@@ -962,9 +1010,7 @@ PLAYER STATS
 Home Players
 </h2>
 
-<div
-class="table-wrapper"
-id="homePlayersList">
+<div id="homePlayersList">
 
 <div class="no-players">
 Load a game to see players.
@@ -975,9 +1021,7 @@ Load a game to see players.
 </div>
 
 
-<!-- =========================================
-     AWAY PLAYERS
-========================================= -->
+<!-- AWAY -->
 
 <div class="stat-control">
 
@@ -985,9 +1029,7 @@ Load a game to see players.
 Away Players
 </h2>
 
-<div
-class="table-wrapper"
-id="awayPlayersList">
+<div id="awayPlayersList">
 
 <div class="no-players">
 Load a game to see players.
@@ -1090,8 +1132,7 @@ onclick="updateGame({period:'4th Quarter'})">
      SUPABASE
 ========================================= -->
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
 <script>
@@ -1114,10 +1155,15 @@ SUPABASE_KEY
 
 
 /* =========================================
-   GLOBAL DATA
+   CURRENT GAME
 ========================================= */
 
 let currentGame = null;
+
+
+/* =========================================
+   PLAYER DATA
+========================================= */
 
 let playerStatsMap = {};
 
@@ -1130,9 +1176,8 @@ let playerDataMap = {};
 
 function escapeHTML(str) {
 
-if (str === null || str === undefined) {
+if (!str)
 return "";
-}
 
 return String(str)
 
@@ -1150,7 +1195,7 @@ return String(str)
 
 
 /* =========================================
-   PERCENTAGE
+   CALCULATE PERCENTAGE
 ========================================= */
 
 function calculatePercentage(
@@ -1158,12 +1203,13 @@ made,
 attempted
 ) {
 
-made = Number(made || 0);
+if (
+!attempted ||
+attempted === 0
+) {
 
-attempted = Number(attempted || 0);
-
-if (attempted === 0) {
 return "0%";
+
 }
 
 return Math.round(
@@ -1174,10 +1220,12 @@ return Math.round(
 
 
 /* =========================================
-   STATUS
+   STATUS MESSAGE
 ========================================= */
 
-function showStatus(message) {
+function showStatus(
+message
+) {
 
 const el =
 document.getElementById(
@@ -1190,12 +1238,18 @@ message;
 el.style.display =
 "block";
 
-setTimeout(() => {
+setTimeout(
+
+() => {
 
 el.style.display =
 "none";
 
-}, 3000);
+},
+
+3000
+
+);
 
 }
 
@@ -1247,10 +1301,7 @@ gameId
 
 if (error) {
 
-console.error(
-"Game loading error:",
-error
-);
+console.error(error);
 
 showStatus(
 "Error loading game: " +
@@ -1388,13 +1439,10 @@ currentGame.id
 
 if (error) {
 
-console.error(
-"Score update error:",
-error
-);
+console.error(error);
 
 showStatus(
-"Unable to update score: " +
+"Error updating score: " +
 error.message
 );
 
@@ -1455,13 +1503,10 @@ currentGame.id
 
 if (error) {
 
-console.error(
-"Game update error:",
-error
-);
+console.error(error);
 
 showStatus(
-"Unable to update game."
+"Error updating game."
 );
 
 return;
@@ -1505,9 +1550,7 @@ currentGame.away_team || ""
 ).trim();
 
 
-/* =========================================
-   HOME TEAM
-========================================= */
+/* HOME */
 
 const {
 
@@ -1519,9 +1562,7 @@ error: homeError
 
 .from("teams")
 
-.select(
-"id,name"
-)
+.select("id,name")
 
 .ilike(
 "name",
@@ -1567,15 +1608,16 @@ document.getElementById(
 ).innerHTML =
 
 `<div class="no-players">
-Team not found: ${escapeHTML(homeName)}
+
+Team not found:
+${escapeHTML(homeName)}
+
 </div>`;
 
 }
 
 
-/* =========================================
-   AWAY TEAM
-========================================= */
+/* AWAY */
 
 const {
 
@@ -1587,9 +1629,7 @@ error: awayError
 
 .from("teams")
 
-.select(
-"id,name"
-)
+.select("id,name")
 
 .ilike(
 "name",
@@ -1635,7 +1675,10 @@ document.getElementById(
 ).innerHTML =
 
 `<div class="no-players">
-Team not found: ${escapeHTML(awayName)}
+
+Team not found:
+${escapeHTML(awayName)}
+
 </div>`;
 
 }
@@ -1664,7 +1707,9 @@ containerId
 container.innerHTML =
 
 `<div class="no-players">
+
 Loading players...
+
 </div>`;
 
 
@@ -1701,15 +1746,14 @@ true
 
 if (error) {
 
-console.error(
-"Player loading error:",
-error
-);
+console.error(error);
 
 container.innerHTML =
 
 `<div class="no-players">
+
 Unable to load players.
+
 </div>`;
 
 return;
@@ -1717,13 +1761,17 @@ return;
 }
 
 
-if (!data ||
-data.length === 0) {
+if (
+!data ||
+data.length === 0
+) {
 
 container.innerHTML =
 
 `<div class="no-players">
+
 No players assigned.
+
 </div>`;
 
 return;
@@ -1732,6 +1780,21 @@ return;
 
 
 container.innerHTML = "";
+
+
+const table =
+createStatsTable();
+
+
+container.appendChild(
+table
+);
+
+
+const tbody =
+table.querySelector(
+"tbody"
+);
 
 
 for (
@@ -1744,29 +1807,92 @@ player.id
 ] =
 player;
 
-}
 
+await createPlayerRow(
 
-await createPlayerTable(
+player,
 
-data,
-
-container
+tbody
 
 );
 
 }
 
+}
+
 
 /* =========================================
-   GET PLAYER GAME STATS
+   CREATE TABLE
 ========================================= */
 
-async function getPlayerGameStats(
-playerId
-) {
+function createStatsTable() {
 
-const defaults = {
+const table =
+document.createElement(
+"table"
+);
+
+table.className =
+"stats-table";
+
+
+table.innerHTML = `
+
+<thead>
+
+<tr>
+
+<th>#</th>
+
+<th>PLAYER</th>
+
+<th>MIN</th>
+
+<th>PTS</th>
+
+<th>OREB</th>
+
+<th>DREB</th>
+
+<th>AST</th>
+
+<th>STL</th>
+
+<th>BLK</th>
+
+<th>TO</th>
+
+<th>PF</th>
+
+<th>2PT</th>
+
+<th>3PT</th>
+
+<th>FT</th>
+
+<th>+/-</th>
+
+</tr>
+
+</thead>
+
+<tbody></tbody>
+
+`;
+
+
+return table;
+
+}
+
+
+/* =========================================
+   DEFAULT STATS
+========================================= */
+
+function getDefaultStats() {
+
+return {
 
 minutes_played: 0,
 
@@ -1802,19 +1928,23 @@ plus_minus: 0
 
 };
 
-
-if (!currentGame) {
-
-return {
-
-...defaults,
-
-player_id:
-playerId
-
-};
-
 }
+
+
+/* =========================================
+   GET PLAYER GAME STATS
+========================================= */
+
+async function getPlayerGameStats(
+playerId
+) {
+
+const defaults =
+getDefaultStats();
+
+
+if (!currentGame)
+return defaults;
 
 
 const {
@@ -1854,28 +1984,20 @@ error
 }
 
 
-const stats = {
+playerStatsMap[
+playerId
+] = {
 
 ...defaults,
 
-...(data || {}),
-
-player_id:
-playerId,
-
-game_id:
-currentGame.id
+...(data || {})
 
 };
 
 
-playerStatsMap[
+return playerStatsMap[
 playerId
-] =
-stats;
-
-
-return stats;
+];
 
 }
 
@@ -1905,7 +2027,7 @@ return;
 }
 
 
-const stats =
+let stats =
 await getPlayerGameStats(
 playerId
 );
@@ -1918,47 +2040,83 @@ stats[statKey] || 0
 
 
 let newValue =
+
+Math.max(
+
+0,
+
 currentValue +
-amount;
+amount
+
+);
 
 
-/*
-   Prevent negative values for normal stats.
-
-   +/- is allowed to be negative.
-*/
+/* Prevent made shots from
+   exceeding attempts */
 
 if (
-statKey !== "plus_minus"
+statKey === "two_pt_made" &&
+newValue >
+Number(
+stats.two_pt_attempted || 0
+)
 ) {
 
 newValue =
-Math.max(
-0,
-newValue
+Number(
+stats.two_pt_attempted || 0
 );
 
 }
 
 
-/*
-   Prevent made shots from being
-   greater than attempted shots.
+if (
+statKey === "three_pt_made" &&
+newValue >
+Number(
+stats.three_pt_attempted || 0
+)
+) {
 
-   This applies only when decreasing attempts.
-*/
+newValue =
+Number(
+stats.three_pt_attempted || 0
+);
+
+}
+
+
+if (
+statKey === "ft_made" &&
+newValue >
+Number(
+stats.ft_attempted || 0
+)
+) {
+
+newValue =
+Number(
+stats.ft_attempted || 0
+);
+
+}
+
+
+/* Prevent attempts
+   below made shots */
 
 if (
 statKey === "two_pt_attempted" &&
 newValue <
-Number(stats.two_pt_made || 0)
+Number(
+stats.two_pt_made || 0
+)
 ) {
 
-showStatus(
-"2PT attempts cannot be lower than 2PT made."
+newValue =
+Number(
+stats.two_pt_made || 0
 );
-
-return;
 
 }
 
@@ -1966,14 +2124,15 @@ return;
 if (
 statKey === "three_pt_attempted" &&
 newValue <
-Number(stats.three_pt_made || 0)
+Number(
+stats.three_pt_made || 0
+)
 ) {
 
-showStatus(
-"3PT attempts cannot be lower than 3PT made."
+newValue =
+Number(
+stats.three_pt_made || 0
 );
-
-return;
 
 }
 
@@ -1981,22 +2140,92 @@ return;
 if (
 statKey === "ft_attempted" &&
 newValue <
-Number(stats.ft_made || 0)
+Number(
+stats.ft_made || 0
+)
 ) {
 
-showStatus(
-"FT attempts cannot be lower than FT made."
+newValue =
+Number(
+stats.ft_made || 0
 );
-
-return;
 
 }
 
 
+/* =========================================
+   SPECIAL POINTS LOGIC
+========================================= */
+
 /*
-   Keep plus/minus as a
-   positive or negative value.
+   When made shots change,
+   automatically update POINTS.
+
+   2PT = 2 points
+   3PT = 3 points
+   FT = 1 point
 */
+
+let newPoints =
+Number(
+stats.points || 0
+);
+
+
+if (
+statKey === "two_pt_made"
+) {
+
+newPoints =
+Math.max(
+
+0,
+
+newPoints +
+(amount * 2)
+
+);
+
+}
+
+
+if (
+statKey === "three_pt_made"
+) {
+
+newPoints =
+Math.max(
+
+0,
+
+newPoints +
+(amount * 3)
+
+);
+
+}
+
+
+if (
+statKey === "ft_made"
+) {
+
+newPoints =
+Math.max(
+
+0,
+
+newPoints +
+amount
+
+);
+
+}
+
+
+/* =========================================
+   BUILD UPDATE
+========================================= */
 
 const updateObj = {
 
@@ -2015,14 +2244,31 @@ statKey
 newValue;
 
 
-/*
-   UPSERT
+/* Update points automatically
+   when shooting stats change */
 
-   This automatically creates the row
-   if it does not exist.
+if (
 
-   Otherwise it updates the existing row.
-*/
+statKey ===
+"two_pt_made" ||
+
+statKey ===
+"three_pt_made" ||
+
+statKey ===
+"ft_made"
+
+) {
+
+updateObj.points =
+newPoints;
+
+}
+
+
+/* =========================================
+   SAVE
+========================================= */
 
 const {
 
@@ -2062,8 +2308,10 @@ error
 );
 
 showStatus(
-"Unable to update stats: " +
+
+"Unable to update player stats: " +
 error.message
+
 );
 
 return;
@@ -2071,9 +2319,9 @@ return;
 }
 
 
-/*
-   Update local stats
-*/
+/* =========================================
+   UPDATE LOCAL DATA
+========================================= */
 
 playerStatsMap[
 playerId
@@ -2086,24 +2334,9 @@ playerId
 };
 
 
-/*
-   Refresh only the player's row
-*/
-
-await refreshPlayerRow(
-playerId
-);
-
-}
-
-
 /* =========================================
-   REFRESH PLAYER ROW
+   REFRESH ROW
 ========================================= */
-
-async function refreshPlayerRow(
-playerId
-) {
 
 const player =
 playerDataMap[
@@ -2117,164 +2350,225 @@ return;
 
 const oldRow =
 document.getElementById(
+
 `player-row-${playerId}`
+
 );
 
 
-if (!oldRow)
-return;
-
+if (oldRow) {
 
 const parent =
 oldRow.parentElement;
 
+oldRow.remove();
 
-const newRow =
 await createPlayerRow(
-player
+
+player,
+
+parent
+
 );
 
-
-oldRow.replaceWith(
-newRow
-);
+}
 
 }
 
 
 /* =========================================
-   CREATE PLAYER TABLE
+   CREATE STAT CONTROL
 ========================================= */
 
-async function createPlayerTable(
+function statControl(
 
-players,
+label,
 
-container
+value,
+
+playerId,
+
+statKey
 
 ) {
 
-const table =
-document.createElement(
-"table"
-);
+return `
 
+<div class="stat-value">
 
-table.className =
-"player-table";
+${value || 0}
 
+</div>
 
-/*
-   TABLE HEADER
-*/
+<div class="stat-buttons">
 
-table.innerHTML = `
+<button
 
-<thead>
+class="stat-btn"
 
-<tr>
+onclick="updatePlayerStat(
 
-<th class="col-number">
-#
-</th>
+'${playerId}',
 
-<th class="col-player">
-PLAYER
-</th>
+'${statKey}',
 
-<th class="col-stat">
-MIN
-</th>
+1
 
-<th class="col-stat">
-PTS
-</th>
+)">
 
-<th class="col-stat">
-OREB
-</th>
++
 
-<th class="col-stat">
-DREB
-</th>
+</button>
 
-<th class="col-stat">
-REB
-</th>
+<button
 
-<th class="col-stat">
-AST
-</th>
+class="stat-btn minus"
 
-<th class="col-stat">
-STL
-</th>
+onclick="updatePlayerStat(
 
-<th class="col-stat">
-BLK
-</th>
+'${playerId}',
 
-<th class="col-stat">
-TO
-</th>
+'${statKey}',
 
-<th class="col-stat">
-PF
-</th>
+-1
 
-<th class="col-shooting">
-2PT
-</th>
+)">
 
-<th class="col-shooting">
-3PT
-</th>
+−
 
-<th class="col-shooting">
-FT
-</th>
+</button>
 
-<th class="col-plus-minus">
-+/-
-</th>
-
-</tr>
-
-</thead>
-
-<tbody id="table-body-${container.id}">
-
-</tbody>
+</div>
 
 `;
 
-
-container.appendChild(
-table
-);
+}
 
 
-const tbody =
-table.querySelector(
-"tbody"
-);
+/* =========================================
+   SHOOTING CONTROL
+========================================= */
 
+function shootingControl(
 
-for (
-const player
-of players
+made,
+
+attempted,
+
+playerId,
+
+madeKey,
+
+attemptedKey
+
 ) {
 
-const row =
-await createPlayerRow(
-player
-);
+return `
 
-tbody.appendChild(
-row
-);
+<div class="shooting-value">
 
-}
+${made || 0}/${attempted || 0}
+
+</div>
+
+
+<div class="shooting-buttons">
+
+<button
+
+class="shooting-btn"
+
+onclick="updatePlayerStat(
+
+'${playerId}',
+
+'${madeKey}',
+
+1
+
+)">
+
+M+
+
+</button>
+
+
+<button
+
+class="shooting-btn minus"
+
+onclick="updatePlayerStat(
+
+'${playerId}',
+
+'${madeKey}',
+
+-1
+
+)">
+
+M−
+
+</button>
+
+</div>
+
+
+<div class="shooting-buttons">
+
+<button
+
+class="shooting-btn attempt"
+
+onclick="updatePlayerStat(
+
+'${playerId}',
+
+'${attemptedKey}',
+
+1
+
+)">
+
+A+
+
+</button>
+
+
+<button
+
+class="shooting-btn minus"
+
+onclick="updatePlayerStat(
+
+'${playerId}',
+
+'${attemptedKey}',
+
+-1
+
+)">
+
+A−
+
+</button>
+
+</div>
+
+
+<div class="shooting-percent">
+
+${calculatePercentage(
+
+made,
+
+attempted
+
+)}
+
+</div>
+
+`;
 
 }
 
@@ -2284,7 +2578,11 @@ row
 ========================================= */
 
 async function createPlayerRow(
-player
+
+player,
+
+tbody
+
 ) {
 
 const s =
@@ -2299,79 +2597,68 @@ document.createElement(
 );
 
 
+row.className =
+"player-row";
+
+
 row.id =
+
 `player-row-${player.id}`;
 
 
-/*
-   TOTAL REBOUNDS
-*/
-
-const totalRebounds =
-
-Number(
-s.offensive_rebounds || 0
-)
-
-+
-
-Number(
-s.defensive_rebounds || 0
-);
-
-
-/*
-   PLAYER NAME
-*/
-
-const playerName =
-
-`${escapeHTML(
-player.first_name || ""
-)} ${escapeHTML(
-player.last_name || ""
-)}`;
-
-
-/*
-   CREATE ROW
-*/
+/* =========================================
+   ROW HTML
+========================================= */
 
 row.innerHTML = `
 
-
 <!-- JERSEY -->
 
-<td>
+<td class="jersey-cell">
 
 <span class="jersey-number">
 
 ${escapeHTML(
+
 String(
+
 player.jersey_number || ""
+
 )
+
 )}
 
 </span>
 
 </td>
-
 
 
 <!-- PLAYER -->
 
-<td class="col-player">
+<td class="player-cell">
 
-<div class="player-name-cell">
+<span class="player-name">
 
-${playerName}
+${escapeHTML(
 
-</div>
+player.first_name || ""
+
+)}
+
+${escapeHTML(
+
+player.last_name || ""
+
+)}
+
+</span>
 
 <span class="player-position">
 
 ${escapeHTML(
-player.position || "N/A"
+
+player.position || ""
+
 )}
 
 </span>
@@ -2379,12 +2666,13 @@ player.position || "N/A"
 </td>
 
 
+<!-- MIN -->
 
-<!-- MINUTES -->
+<td class="stat-cell">
 
-<td>
+${statControl(
 
-${createNormalStat(
+"MIN",
 
 s.minutes_played,
 
@@ -2397,12 +2685,13 @@ player.id,
 </td>
 
 
+<!-- PTS -->
 
-<!-- POINTS -->
+<td class="stat-cell">
 
-<td>
+${statControl(
 
-${createNormalStat(
+"PTS",
 
 s.points,
 
@@ -2415,12 +2704,13 @@ player.id,
 </td>
 
 
+<!-- OREB -->
 
-<!-- OFFENSIVE REBOUND -->
+<td class="stat-cell">
 
-<td>
+${statControl(
 
-${createNormalStat(
+"OREB",
 
 s.offensive_rebounds,
 
@@ -2433,12 +2723,13 @@ player.id,
 </td>
 
 
+<!-- DREB -->
 
-<!-- DEFENSIVE REBOUND -->
+<td class="stat-cell">
 
-<td>
+${statControl(
 
-${createNormalStat(
+"DREB",
 
 s.defensive_rebounds,
 
@@ -2451,32 +2742,13 @@ player.id,
 </td>
 
 
+<!-- AST -->
 
-<!-- TOTAL REBOUND -->
+<td class="stat-cell">
 
-<td>
+${statControl(
 
-<span class="stat-value">
-
-${totalRebounds}
-
-</span>
-
-<span class="rebound-total">
-
-OREB+DREB
-
-</span>
-
-</td>
-
-
-
-<!-- ASSISTS -->
-
-<td>
-
-${createNormalStat(
+"AST",
 
 s.assists,
 
@@ -2489,12 +2761,13 @@ player.id,
 </td>
 
 
+<!-- STL -->
 
-<!-- STEALS -->
+<td class="stat-cell">
 
-<td>
+${statControl(
 
-${createNormalStat(
+"STL",
 
 s.steals,
 
@@ -2507,12 +2780,13 @@ player.id,
 </td>
 
 
+<!-- BLK -->
 
-<!-- BLOCKS -->
+<td class="stat-cell">
 
-<td>
+${statControl(
 
-${createNormalStat(
+"BLK",
 
 s.blocks,
 
@@ -2525,12 +2799,13 @@ player.id,
 </td>
 
 
+<!-- TO -->
 
-<!-- TURNOVERS -->
+<td class="stat-cell">
 
-<td>
+${statControl(
 
-${createNormalStat(
+"TO",
 
 s.turnovers,
 
@@ -2543,12 +2818,13 @@ player.id,
 </td>
 
 
+<!-- PF -->
 
-<!-- FOULS -->
+<td class="stat-cell">
 
-<td>
+${statControl(
 
-${createNormalStat(
+"PF",
 
 s.fouls,
 
@@ -2561,12 +2837,11 @@ player.id,
 </td>
 
 
-
 <!-- 2PT -->
 
-<td>
+<td class="shooting-cell">
 
-${createShootingStat(
+${shootingControl(
 
 s.two_pt_made,
 
@@ -2583,12 +2858,11 @@ player.id,
 </td>
 
 
-
 <!-- 3PT -->
 
-<td>
+<td class="shooting-cell">
 
-${createShootingStat(
+${shootingControl(
 
 s.three_pt_made,
 
@@ -2605,12 +2879,11 @@ player.id,
 </td>
 
 
-
 <!-- FT -->
 
-<td>
+<td class="shooting-cell">
 
-${createShootingStat(
+${shootingControl(
 
 s.ft_made,
 
@@ -2627,332 +2900,30 @@ player.id,
 </td>
 
 
+<!-- +/- -->
 
-<!-- PLUS MINUS -->
+<td class="plus-minus-cell">
 
-<td>
+${statControl(
 
-${createPlusMinusStat(
+"+/-",
 
 s.plus_minus,
 
-player.id
+player.id,
+
+"plus_minus"
 
 )}
 
 </td>
 
-
 `;
 
 
-return row;
-
-}
-
-
-/* =========================================
-   NORMAL STAT CONTROL
-========================================= */
-
-function createNormalStat(
-
-value,
-
-playerId,
-
-statKey
-
-) {
-
-return `
-
-<span class="stat-value">
-
-${Number(value || 0)}
-
-</span>
-
-
-<div class="stat-buttons">
-
-<button
-
-class="stat-btn"
-
-onclick="updatePlayerStat(
-
-'${playerId}',
-
-'${statKey}',
-
-1
-
-)"
-
->
-
-+
-
-</button>
-
-
-<button
-
-class="stat-btn minus"
-
-onclick="updatePlayerStat(
-
-'${playerId}',
-
-'${statKey}',
-
--1
-
-)"
-
->
-
-−
-
-</button>
-
-</div>
-
-`;
-
-}
-
-
-/* =========================================
-   SHOOTING STAT CONTROL
-========================================= */
-
-function createShootingStat(
-
-made,
-
-attempted,
-
-playerId,
-
-madeKey,
-
-attemptedKey
-
-) {
-
-made =
-Number(made || 0);
-
-attempted =
-Number(attempted || 0);
-
-
-return `
-
-<div class="shooting-value">
-
-${made}/${attempted}
-
-</div>
-
-
-<div class="shooting-label">
-
-${calculatePercentage(
-made,
-attempted
-)}
-
-</div>
-
-
-<div class="shooting-buttons">
-
-
-<!-- MADE + -->
-
-<button
-
-class="shooting-btn"
-
-onclick="updatePlayerStat(
-
-'${playerId}',
-
-'${madeKey}',
-
-1
-
-)"
-
->
-
-M+
-
-</button>
-
-
-<!-- MADE - -->
-
-<button
-
-class="shooting-btn minus"
-
-onclick="updatePlayerStat(
-
-'${playerId}',
-
-'${madeKey}',
-
--1
-
-)"
-
->
-
-M−
-
-</button>
-
-
-</div>
-
-
-<div class="shooting-buttons">
-
-
-<!-- ATTEMPT + -->
-
-<button
-
-class="shooting-btn attempt"
-
-onclick="updatePlayerStat(
-
-'${playerId}',
-
-'${attemptedKey}',
-
-1
-
-)"
-
->
-
-A+
-
-</button>
-
-
-<!-- ATTEMPT - -->
-
-<button
-
-class="shooting-btn minus"
-
-onclick="updatePlayerStat(
-
-'${playerId}',
-
-'${attemptedKey}',
-
--1
-
-)"
-
->
-
-A−
-
-</button>
-
-
-</div>
-
-`;
-
-}
-
-
-/* =========================================
-   PLUS / MINUS CONTROL
-========================================= */
-
-function createPlusMinusStat(
-
-value,
-
-playerId
-
-) {
-
-value =
-Number(value || 0);
-
-
-let displayValue =
-value > 0
-? "+" + value
-: value;
-
-
-return `
-
-<div class="plus-minus-value">
-
-${displayValue}
-
-</div>
-
-
-<div class="stat-buttons">
-
-<button
-
-class="stat-btn"
-
-onclick="updatePlayerStat(
-
-'${playerId}',
-
-'plus_minus',
-
-1
-
-)"
-
->
-
-+
-
-</button>
-
-
-<button
-
-class="stat-btn minus"
-
-onclick="updatePlayerStat(
-
-'${playerId}',
-
-'plus_minus',
-
--1
-
-)"
-
->
-
-−
-
-</button>
-
-</div>
-
-`;
+tbody.appendChild(
+row
+);
 
 }
 
