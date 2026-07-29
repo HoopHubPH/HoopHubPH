@@ -3369,39 +3369,63 @@ return;
 
 
 /*
-The clock state is stored in the games table.
+SAVE CURRENT CLOCK STATE
 
-These columns must exist:
-clock_seconds
-clock_running
-clock_updated_at
+clock_seconds:
+Remaining game time.
+
+clock_running:
+Whether the clock is running.
+
+clock_started_at:
+The exact time the current clock run started.
 */
+
+const updateData = {
+
+clock_seconds:
+Math.max(
+0,
+Math.floor(
+Number(clockSeconds || 0)
+)
+),
+
+clock_running:
+clockRunning,
+
+clock_started_at:
+clockRunning
+?
+(
+currentGame.clock_started_at
+||
+new Date().toISOString()
+)
+:
+null
+
+};
+
 
 const {
 
+data,
 error
 
 } = await supabaseClient
 
 .from("games")
 
-.update({
-
-clock_seconds:
-clockSeconds,
-
-clock_running:
-clockRunning,
-
-clock_updated_at:
-new Date().toISOString()
-
-})
+.update(updateData)
 
 .eq(
 "id",
 currentGame.id
-);
+)
+
+.select()
+.single();
 
 
 if(error){
@@ -3410,6 +3434,20 @@ console.error(
 "Clock save error:",
 error
 );
+
+return;
+
+}
+
+
+/*
+KEEP currentGame UPDATED
+*/
+
+if(data){
+
+currentGame =
+data;
 
 }
 
@@ -3427,8 +3465,10 @@ return;
 
 
 /*
-If these columns do not exist,
-the clock starts at 10:00.
+LOAD SAVED CLOCK TIME
+
+If no saved clock exists,
+start at 10:00.
 */
 
 if(
@@ -3450,10 +3490,20 @@ return;
 }
 
 
+/*
+RESTORE SAVED CLOCK
+*/
+
 clockSeconds =
+
+Math.max(
+
+0,
 
 Number(
 currentGame.clock_seconds
+)
+
 );
 
 
@@ -3463,21 +3513,28 @@ currentGame.clock_running === true;
 
 
 /*
-If clock was running before refresh,
-subtract the time elapsed while
-the browser was refreshed.
+IF CLOCK WAS RUNNING BEFORE REFRESH
+
+Calculate how much real time passed
+while the page was refreshed.
 */
 
 if(
+
 clockRunning
+
 &&
-currentGame.clock_updated_at
+
+currentGame.clock_started_at
+
 ){
 
-const lastUpdated =
+const startedAt =
 
 new Date(
-currentGame.clock_updated_at
+
+currentGame.clock_started_at
+
 ).getTime();
 
 
@@ -3486,17 +3543,21 @@ const now =
 Date.now();
 
 
-const elapsed =
+const elapsedSeconds =
 
 Math.floor(
 
 (
 now -
-lastUpdated
+startedAt
 ) / 1000
 
 );
 
+
+/*
+SUBTRACT ELAPSED TIME
+*/
 
 clockSeconds =
 
@@ -3505,7 +3566,7 @@ Math.max(
 0,
 
 clockSeconds -
-elapsed
+elapsedSeconds
 
 );
 
@@ -3520,14 +3581,39 @@ updateClockDisplay();
 
 
 /*
-CONTINUE CLOCK
+CONTINUE CLOCK AFTER REFRESH
 */
 
 if(
+
 clockRunning
+
+&&
+
+clockSeconds > 0
+
 ){
 
+/*
+START A NEW CLOCK SESSION FROM NOW
+
+This prevents the elapsed time from
+being subtracted again.
+*/
+
+currentGame.clock_started_at =
+
+new Date().toISOString();
+
+
 startClockInternal();
+
+}
+
+else{
+
+clockRunning =
+false;
 
 }
 
@@ -3589,7 +3675,7 @@ seconds
    START CLOCK
 ========================================= */
 
-function startClock(){
+async function startClock(){
 
 if(
 clockRunning
@@ -3608,12 +3694,29 @@ return;
 }
 
 
+/*
+START A NEW CLOCK SESSION
+*/
+
+currentGame.clock_started_at =
+
+new Date().toISOString();
+
+
 clockRunning =
 true;
 
 
-saveClockState();
+/*
+SAVE CLOCK STATE
+*/
 
+await saveClockState();
+
+
+/*
+START CLOCK
+*/
 
 startClockInternal();
 
@@ -3637,10 +3740,6 @@ clockInterval
 }
 
 
-clockRunning =
-true;
-
-
 clockInterval =
 
 setInterval(
@@ -3651,12 +3750,16 @@ if(
 clockSeconds <= 0
 ){
 
-pauseClock();
+await pauseClock();
 
 return;
 
 }
 
+
+/*
+DECREASE GAME CLOCK BY ONE SECOND
+*/
 
 clockSeconds--;
 
@@ -3665,10 +3768,8 @@ updateClockDisplay();
 
 
 /*
-ONE SECOND OF GAME TIME
-EQUALS ONE SECOND
-OF MINUTES PLAYED
-FOR PLAYERS CURRENTLY ON COURT.
+ADD ONE SECOND TO MINUTES PLAYED
+FOR EVERY PLAYER CURRENTLY ON COURT
 */
 
 for(
@@ -3718,9 +3819,10 @@ playerId
 
 
 /*
-SAVE CLOCK EVERY SECOND
+SAVE CLOCK STATE
 
-This allows refresh persistence.
+clock_started_at remains the original
+start time of the current running session.
 */
 
 await saveClockState();
@@ -3758,6 +3860,13 @@ null;
 }
 
 
+/*
+SAVE REMAINING TIME
+
+clock_started_at becomes NULL
+because the clock is paused.
+*/
+
 await saveClockState();
 
 }
@@ -3778,6 +3887,18 @@ clockSeconds =
 
 clockRunning =
 false;
+
+
+/*
+CLEAR START TIME
+*/
+
+if(currentGame){
+
+currentGame.clock_started_at =
+null;
+
+}
 
 
 updateClockDisplay();
@@ -3818,7 +3939,6 @@ await resetClock();
 ========================================= */
 
 loadGame();
-
 </script>
 
 </body>
