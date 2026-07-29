@@ -1,5 +1,5 @@
+```html
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -479,16 +479,14 @@ Game ID:
 type="number"
 id="gameId"
 value="1"
-
 >
 
 <button
 class="load-button"
 onclick="loadGame()"
-
 >
-
-LOAD </button>
+LOAD
+</button>
 
 </div>
 
@@ -514,34 +512,30 @@ id="homeScore"
 <button
 class="score-button"
 onclick="updateScore('home',1)"
-
 >
-
-+1 </button>
++1
+</button>
 
 <button
 class="score-button"
 onclick="updateScore('home',2)"
-
 >
-
-+2 </button>
++2
+</button>
 
 <button
 class="score-button"
 onclick="updateScore('home',3)"
-
 >
-
-+3 </button>
++3
+</button>
 
 <button
 class="score-button"
 onclick="updateScore('home',-1)"
-
 >
-
--1 </button>
+-1
+</button>
 
 </div>
 
@@ -565,34 +559,30 @@ id="awayScore"
 <button
 class="score-button"
 onclick="updateScore('away',1)"
-
 >
-
-+1 </button>
++1
+</button>
 
 <button
 class="score-button"
 onclick="updateScore('away',2)"
-
 >
-
-+2 </button>
++2
+</button>
 
 <button
 class="score-button"
 onclick="updateScore('away',3)"
-
 >
-
-+3 </button>
++3
+</button>
 
 <button
 class="score-button"
 onclick="updateScore('away',-1)"
-
 >
-
--1 </button>
+-1
+</button>
 
 </div>
 
@@ -686,26 +676,23 @@ Status:
 <button
 class="control-button"
 onclick="updateGame({status:'Live'})"
-
 >
-
-LIVE </button>
+LIVE
+</button>
 
 <button
 class="control-button"
 onclick="updateGame({status:'Halftime'})"
-
 >
-
-HALF </button>
+HALF
+</button>
 
 <button
 class="control-button"
 onclick="updateGame({status:'Final'})"
-
 >
-
-FINAL </button>
+FINAL
+</button>
 
 </div>
 
@@ -751,16 +738,7 @@ let clockStartedAt = null;
 
 
 /* =========================================
-   PLAYER MINUTES TRACKING
-========================================= */
-
-let playerMinuteTracking = {};
-
-let lastMinuteUpdateTime = null;
-
-
-/* =========================================
-   HELPERS
+   BASIC HELPERS
 ========================================= */
 
 function escapeHTML(str){
@@ -769,11 +747,16 @@ function escapeHTML(str){
         return "";
 
     return String(str)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
+
+    .replace(/&/g,"&amp;")
+
+    .replace(/</g,"&lt;")
+
+    .replace(/>/g,"&gt;")
+
+    .replace(/"/g,"&quot;")
+
+    .replace(/'/g,"&#039;");
 
 }
 
@@ -790,10 +773,12 @@ function calculatePercentage(
         return "0%";
 
     return Math.round(
+
         (
             Number(made) /
             Number(attempted)
         ) * 100
+
     ) + "%";
 
 }
@@ -865,10 +850,13 @@ async function loadGame(){
 
     if(error){
 
-        console.error(error);
+        console.error(
+            "Game loading error:",
+            error
+        );
 
         showStatus(
-            "Error loading game: "+
+            "Error loading game: " +
             error.message
         );
 
@@ -907,6 +895,10 @@ async function loadGame(){
         data.away_score || 0;
 
 
+    /*
+    RESET LOCAL PLAYER MAPS
+    */
+
     playerStatsMap = {};
 
     playerDataMap = {};
@@ -917,10 +909,17 @@ async function loadGame(){
 
     playerCourtOrder = {};
 
-    playerMinuteTracking = {};
 
+    /*
+    LOAD CLOCK
+    */
 
     await loadPersistedClock();
+
+
+    /*
+    LOAD PLAYERS
+    */
 
     await loadTeamPlayers();
 
@@ -1017,6 +1016,10 @@ async function updateScore(
         newScore;
 
 
+    /*
+    UPDATE +/- FOR PLAYERS ON COURT
+    */
+
     if(amount !== 0){
 
         const playersToUpdate =
@@ -1036,7 +1039,8 @@ async function updateScore(
 
 
         for(
-            const playerId of playersToUpdate
+            const playerId
+            of playersToUpdate
         ){
 
             const stats =
@@ -1152,8 +1156,13 @@ async function loadTeamPlayers(){
         ).trim();
 
 
+    /*
+    FIND HOME TEAM
+    */
+
     const {
-        data:homeTeam
+        data:homeTeam,
+        error:homeTeamError
     } = await supabaseClient
 
     .from("teams")
@@ -1170,8 +1179,23 @@ async function loadTeamPlayers(){
     .maybeSingle();
 
 
+    if(homeTeamError){
+
+        console.error(
+            "Home team error:",
+            homeTeamError
+        );
+
+    }
+
+
+    /*
+    FIND AWAY TEAM
+    */
+
     const {
-        data:awayTeam
+        data:awayTeam,
+        error:awayTeamError
     } = await supabaseClient
 
     .from("teams")
@@ -1187,6 +1211,20 @@ async function loadTeamPlayers(){
 
     .maybeSingle();
 
+
+    if(awayTeamError){
+
+        console.error(
+            "Away team error:",
+            awayTeamError
+        );
+
+    }
+
+
+    /*
+    LOAD HOME PLAYERS
+    */
 
     if(homeTeam){
 
@@ -1207,7 +1245,19 @@ async function loadTeamPlayers(){
         );
 
     }
+    else{
 
+        document.getElementById(
+            "homePlayersList"
+        ).innerHTML =
+            "<div>No home team found.</div>";
+
+    }
+
+
+    /*
+    LOAD AWAY PLAYERS
+    */
 
     if(awayTeam){
 
@@ -1226,6 +1276,14 @@ async function loadTeamPlayers(){
             "away"
 
         );
+
+    }
+    else{
+
+        document.getElementById(
+            "awayPlayersList"
+        ).innerHTML =
+            "<div>No away team found.</div>";
 
     }
 
@@ -1276,10 +1334,15 @@ async function loadPlayersForTeam(
 
     if(error){
 
-        console.error(error);
+        console.error(
+            "Players loading error:",
+            error
+        );
+
 
         container.innerHTML =
             "<div>Unable to load players.</div>";
+
 
         return;
 
@@ -1293,6 +1356,7 @@ async function loadPlayersForTeam(
 
         container.innerHTML =
             "<div>No players assigned.</div>";
+
 
         return;
 
@@ -1367,8 +1431,13 @@ async function loadPlayersForTeam(
         );
 
 
+    /*
+    LOAD ALL PLAYERS
+    */
+
     for(
-        const player of data
+        const player
+        of data
     ){
 
         playerDataMap[
@@ -1396,19 +1465,28 @@ async function loadPlayersForTeam(
 
 
         if(
-            playerOnCourt[player.id]
+            playerOnCourt[
+                player.id
+            ]
         ){
 
             if(
-                !playerCourtOrder[team]
+                !playerCourtOrder[
+                    team
+                ]
             ){
 
-                playerCourtOrder[team] = [];
+                playerCourtOrder[
+                    team
+                ] =
+                    [];
 
             }
 
 
-            playerCourtOrder[team].push(
+            playerCourtOrder[
+                team
+            ].push(
                 player.id
             );
 
@@ -1417,23 +1495,40 @@ async function loadPlayersForTeam(
     }
 
 
+    /*
+    ON-COURT PLAYERS FIRST
+    */
+
     const orderedPlayers = [
 
         ...data.filter(
+
             p =>
-                playerOnCourt[p.id]
+                playerOnCourt[
+                    p.id
+                ]
+
         ),
 
         ...data.filter(
+
             p =>
-                !playerOnCourt[p.id]
+                !playerOnCourt[
+                    p.id
+                ]
+
         )
 
     ];
 
 
+    /*
+    RENDER EVERY PLAYER
+    */
+
     for(
-        const player of orderedPlayers
+        const player
+        of orderedPlayers
     ){
 
         const row =
@@ -1465,7 +1560,7 @@ async function loadPlayersForTeam(
 
 
 /* =========================================
-   PLAYER GAME STATS
+   PLAYER STATS
 ========================================= */
 
 async function getPlayerGameStats(
@@ -1514,10 +1609,14 @@ async function getPlayerGameStats(
 
 
     if(
-        playerStatsMap[playerId]
+        playerStatsMap[
+            playerId
+        ]
     ){
 
-        return playerStatsMap[playerId];
+        return playerStatsMap[
+            playerId
+        ];
 
     }
 
@@ -1560,7 +1659,9 @@ async function getPlayerGameStats(
     }
 
 
-    playerStatsMap[playerId] = {
+    playerStatsMap[
+        playerId
+    ] = {
 
         ...defaults,
 
@@ -1569,14 +1670,12 @@ async function getPlayerGameStats(
     };
 
 
-    return playerStatsMap[playerId];
+    return playerStatsMap[
+        playerId
+    ];
 
 }
 
-
-/* =========================================
-   SAVE PLAYER STAT
-========================================= */
 
 async function saveStatDirect(
 
@@ -1610,16 +1709,18 @@ async function saveStatDirect(
 
 
     if(
-        statKey === "on_court"
+        statKey ===
+        "on_court"
     ){
 
         updateObj[
             statKey
         ] =
-            Boolean(value);
+            Boolean(
+                value
+            );
 
     }
-
     else{
 
         updateObj[
@@ -1654,7 +1755,9 @@ async function saveStatDirect(
 
             ?
 
-            Number(value)
+            Number(
+                value
+            )
 
             :
 
@@ -1670,7 +1773,9 @@ async function saveStatDirect(
 
             ?
 
-            Number(value)
+            Number(
+                value
+            )
 
             :
 
@@ -1717,19 +1822,25 @@ async function saveStatDirect(
 
     if(error){
 
-        console.error(error);
+        console.error(
+            error
+        );
+
 
         showStatus(
-            "Unable to save player stats: "+
+            "Unable to save player stats: " +
             error.message
         );
+
 
         return;
 
     }
 
 
-    playerStatsMap[playerId] = {
+    playerStatsMap[
+        playerId
+    ] = {
 
         ...stats,
 
@@ -1739,10 +1850,6 @@ async function saveStatDirect(
 
 }
 
-
-/* =========================================
-   PLAYER STAT UPDATE
-========================================= */
 
 async function updatePlayerStat(
 
@@ -1762,7 +1869,9 @@ async function updatePlayerStat(
 
     const currentValue =
         Number(
-            stats[statKey] || 0
+            stats[
+                statKey
+            ] || 0
         );
 
 
@@ -1774,34 +1883,49 @@ async function updatePlayerStat(
 
 
     if(
-        statKey === "points"
-    )
+        statKey ===
+        "points"
+    ){
+
         return;
+
+    }
 
 
     if(
-        statKey === "minutes_played"
-    )
+        statKey ===
+        "minutes_played"
+    ){
+
         return;
+
+    }
 
 
     if(
-        statKey === "plus_minus"
-    )
+        statKey ===
+        "plus_minus"
+    ){
+
         return;
+
+    }
 
 
     if(
 
-        statKey === "two_pt_made"
+        statKey ===
+        "two_pt_made"
 
         ||
 
-        statKey === "three_pt_made"
+        statKey ===
+        "three_pt_made"
 
         ||
 
-        statKey === "ft_made"
+        statKey ===
+        "ft_made"
 
     ){
 
@@ -1871,7 +1995,9 @@ async function updatePlayerStat(
 
 
         const team =
-            playerTeamMap[playerId];
+            playerTeamMap[
+                playerId
+            ];
 
 
         if(
@@ -1881,7 +2007,8 @@ async function updatePlayerStat(
 
             const column =
 
-                team === "home"
+                team ===
+                "home"
 
                 ?
 
@@ -1893,9 +2020,10 @@ async function updatePlayerStat(
 
 
             const oldTeamScore =
-
                 Number(
-                    currentGame[column] || 0
+                    currentGame[
+                        column
+                    ] || 0
                 );
 
 
@@ -1956,10 +2084,6 @@ async function updatePlayerStat(
 }
 
 
-/* =========================================
-   UPDATE TEAM SCORE FROM PLAYER
-========================================= */
-
 async function updateScoreFromPlayer(
 
     team,
@@ -1974,7 +2098,8 @@ async function updateScoreFromPlayer(
 
     const column =
 
-        team === "home"
+        team ===
+        "home"
 
         ?
 
@@ -1986,14 +2111,14 @@ async function updateScoreFromPlayer(
 
 
     const oldScore =
-
         Number(
-            currentGame[column] || 0
+            currentGame[
+                column
+            ] || 0
         );
 
 
     const amount =
-
         newScore -
         oldScore;
 
@@ -2027,11 +2152,15 @@ async function updateScoreFromPlayer(
 
     if(error){
 
-        console.error(error);
+        console.error(
+            error
+        );
+
 
         showStatus(
             "Unable to sync team score."
         );
+
 
         return;
 
@@ -2056,17 +2185,22 @@ async function updateScoreFromPlayer(
 
             playerId =>
 
-                playerOnCourt[playerId] === true
+                playerOnCourt[
+                    playerId
+                ] === true
 
                 &&
 
-                playerTeamMap[playerId] === team
+                playerTeamMap[
+                    playerId
+                ] === team
 
         );
 
 
     for(
-        const playerId of playersToUpdate
+        const playerId
+        of playersToUpdate
     ){
 
         const stats =
@@ -2103,7 +2237,7 @@ async function updateScoreFromPlayer(
 
 
 /* =========================================
-   REFRESH PLAYER ROW
+   RENDER PLAYER ROW
 ========================================= */
 
 async function refreshPlayerRow(
@@ -2111,7 +2245,9 @@ async function refreshPlayerRow(
 ){
 
     const player =
-        playerDataMap[playerId];
+        playerDataMap[
+            playerId
+        ];
 
 
     const row =
@@ -2138,10 +2274,6 @@ async function refreshPlayerRow(
 }
 
 
-/* =========================================
-   RENDER PLAYER ROW
-========================================= */
-
 async function renderPlayerRow(
 
     player,
@@ -2157,7 +2289,9 @@ async function renderPlayerRow(
 
 
     const onCourt =
-        playerOnCourt[player.id] === true;
+        playerOnCourt[
+            player.id
+        ] === true;
 
 
     row.className =
@@ -2239,7 +2373,7 @@ class="sub-button ${
 }"
 
 onclick="toggleSubstitution(
-'${player.id}'
+    '${player.id}'
 )"
 
 >
@@ -2472,11 +2606,11 @@ class="shot-btn"
 
 onclick="updatePlayerStat(
 
-'${player.id}',
+    '${player.id}',
 
-'two_pt_made',
+    'two_pt_made',
 
-1
+    1
 
 )"
 
@@ -2490,11 +2624,11 @@ class="shot-btn"
 
 onclick="updatePlayerStat(
 
-'${player.id}',
+    '${player.id}',
 
-'two_pt_made',
+    'two_pt_made',
 
--1
+    -1
 
 )"
 
@@ -2508,11 +2642,11 @@ class="shot-btn attempt"
 
 onclick="updatePlayerStat(
 
-'${player.id}',
+    '${player.id}',
 
-'two_pt_attempted',
+    'two_pt_attempted',
 
-1
+    1
 
 )"
 
@@ -2526,11 +2660,11 @@ class="shot-btn"
 
 onclick="updatePlayerStat(
 
-'${player.id}',
+    '${player.id}',
 
-'two_pt_attempted',
+    'two_pt_attempted',
 
--1
+    -1
 
 )"
 
@@ -2572,11 +2706,11 @@ class="shot-btn"
 
 onclick="updatePlayerStat(
 
-'${player.id}',
+    '${player.id}',
 
-'three_pt_made',
+    'three_pt_made',
 
-1
+    1
 
 )"
 
@@ -2590,11 +2724,11 @@ class="shot-btn"
 
 onclick="updatePlayerStat(
 
-'${player.id}',
+    '${player.id}',
 
-'three_pt_made',
+    'three_pt_made',
 
--1
+    -1
 
 )"
 
@@ -2608,11 +2742,11 @@ class="shot-btn attempt"
 
 onclick="updatePlayerStat(
 
-'${player.id}',
+    '${player.id}',
 
-'three_pt_attempted',
+    'three_pt_attempted',
 
-1
+    1
 
 )"
 
@@ -2626,11 +2760,11 @@ class="shot-btn"
 
 onclick="updatePlayerStat(
 
-'${player.id}',
+    '${player.id}',
 
-'three_pt_attempted',
+    'three_pt_attempted',
 
--1
+    -1
 
 )"
 
@@ -2672,11 +2806,11 @@ class="shot-btn"
 
 onclick="updatePlayerStat(
 
-'${player.id}',
+    '${player.id}',
 
-'ft_made',
+    'ft_made',
 
-1
+    1
 
 )"
 
@@ -2690,11 +2824,11 @@ class="shot-btn"
 
 onclick="updatePlayerStat(
 
-'${player.id}',
+    '${player.id}',
 
-'ft_made',
+    'ft_made',
 
--1
+    -1
 
 )"
 
@@ -2708,11 +2842,11 @@ class="shot-btn attempt"
 
 onclick="updatePlayerStat(
 
-'${player.id}',
+    '${player.id}',
 
-'ft_attempted',
+    'ft_attempted',
 
-1
+    1
 
 )"
 
@@ -2726,11 +2860,11 @@ class="shot-btn"
 
 onclick="updatePlayerStat(
 
-'${player.id}',
+    '${player.id}',
 
-'ft_attempted',
+    'ft_attempted',
 
--1
+    -1
 
 )"
 
@@ -2748,9 +2882,13 @@ A−
     Number(
         s.plus_minus || 0
     ) >= 0
+
     ?
+
     "plus-value"
+
     :
+
     "minus-value"
 }">
 
@@ -2758,9 +2896,13 @@ ${
     Number(
         s.plus_minus || 0
     ) > 0
+
     ?
+
     "+"
+
     :
+
     ""
 }
 
@@ -2774,10 +2916,6 @@ ${s.plus_minus || 0}
 
 }
 
-
-/* =========================================
-   STAT BUTTONS
-========================================= */
 
 function statButtons(
 
@@ -2795,11 +2933,11 @@ class="stat-btn"
 
 onclick="updatePlayerStat(
 
-'${playerId}',
+    '${playerId}',
 
-'${statKey}',
+    '${statKey}',
 
-1
+    1
 
 )"
 
@@ -2815,11 +2953,11 @@ class="stat-btn minus"
 
 onclick="updatePlayerStat(
 
-'${playerId}',
+    '${playerId}',
 
-'${statKey}',
+    '${statKey}',
 
--1
+    -1
 
 )"
 
@@ -2833,10 +2971,6 @@ onclick="updatePlayerStat(
 
 }
 
-
-/* =========================================
-   FORMAT MINUTES
-========================================= */
 
 function formatMinutes(
     seconds
@@ -2855,9 +2989,7 @@ function formatMinutes(
 
 
     const secs =
-        Math.floor(
-            totalSeconds % 60
-        );
+        totalSeconds % 60;
 
 
     return (
@@ -2883,7 +3015,7 @@ function formatMinutes(
 
 
 /* =========================================
-   SUBSTITUTION
+   SUBSTITUTIONS
 ========================================= */
 
 async function toggleSubstitution(
@@ -2894,25 +3026,23 @@ async function toggleSubstitution(
         return;
 
 
-    /*
-    FIRST SAVE ANY MINUTES
-    ACCUMULATED BEFORE SUBSTITUTION
-    */
-
-    await updatePlayerMinutes();
-
-
     const team =
-        playerTeamMap[playerId];
+        playerTeamMap[
+            playerId
+        ];
 
 
     const currentlyOn =
-        playerOnCourt[playerId] === true;
+        playerOnCourt[
+            playerId
+        ] === true;
 
 
     if(currentlyOn){
 
-        playerOnCourt[playerId] =
+        playerOnCourt[
+            playerId
+        ] =
             false;
 
 
@@ -2928,12 +3058,18 @@ async function toggleSubstitution(
 
 
         if(
-            playerCourtOrder[team]
+            playerCourtOrder[
+                team
+            ]
         ){
 
-            playerCourtOrder[team] =
+            playerCourtOrder[
+                team
+            ] =
 
-                playerCourtOrder[team].filter(
+                playerCourtOrder[
+                    team
+                ].filter(
 
                     id =>
                         id !== playerId
@@ -2966,11 +3102,15 @@ async function toggleSubstitution(
 
             id =>
 
-                playerOnCourt[id] === true
+                playerOnCourt[
+                    id
+                ] === true
 
                 &&
 
-                playerTeamMap[id] === team
+                playerTeamMap[
+                    id
+                ] === team
 
         ).length;
 
@@ -2991,7 +3131,9 @@ async function toggleSubstitution(
     }
 
 
-    playerOnCourt[playerId] =
+    playerOnCourt[
+        playerId
+    ] =
         true;
 
 
@@ -3007,15 +3149,22 @@ async function toggleSubstitution(
 
 
     if(
-        !playerCourtOrder[team]
+        !playerCourtOrder[
+            team
+        ]
     ){
 
-        playerCourtOrder[team] = [];
+        playerCourtOrder[
+            team
+        ] =
+            [];
 
     }
 
 
-    playerCourtOrder[team].push(
+    playerCourtOrder[
+        team
+    ].push(
         playerId
     );
 
@@ -3033,8 +3182,38 @@ async function toggleSubstitution(
 
 
 /* =========================================
-   CLOCK PERSISTENCE
+   CLOCK
+   FIXED PERSISTENT VERSION
 ========================================= */
+
+
+/*
+IMPORTANT:
+
+clock_seconds stores the LAST KNOWN REMAINING TIME.
+
+clock_started_at stores the exact time
+the current running segment began.
+
+When paused:
+- Calculate remaining time
+- Stop running
+- Save remaining time
+
+When started:
+- Save the current remaining time
+- Save a new started_at timestamp
+
+When page reloads:
+- If running, calculate elapsed time from started_at
+- Subtract elapsed time ONCE
+- Save the new remaining time
+- Start a new timing segment
+
+This prevents the clock from jumping
+backward repeatedly after refresh.
+*/
+
 
 async function saveClockState(){
 
@@ -3064,7 +3243,6 @@ async function saveClockState(){
             ?
 
             (
-
                 clockStartedAt
 
                 ?
@@ -3076,7 +3254,6 @@ async function saveClockState(){
                 :
 
                 new Date().toISOString()
-
             )
 
             :
@@ -3093,7 +3270,9 @@ async function saveClockState(){
 
     .from("games")
 
-    .update(updateData)
+    .update(
+        updateData
+    )
 
     .eq(
         "id",
@@ -3101,6 +3280,7 @@ async function saveClockState(){
     )
 
     .select("*")
+
     .single();
 
 
@@ -3110,6 +3290,7 @@ async function saveClockState(){
             "Clock save error:",
             error
         );
+
 
         return false;
 
@@ -3128,10 +3309,6 @@ async function saveClockState(){
 
 }
 
-
-/* =========================================
-   LOAD CLOCK
-========================================= */
 
 async function loadPersistedClock(){
 
@@ -3165,14 +3342,18 @@ async function loadPersistedClock(){
             error
         );
 
-        clockSeconds =
-            600;
 
-        clockRunning =
-            false;
+        /*
+        If clock columns do not exist,
+        keep default 10:00 instead of
+        breaking the player loading.
+        */
 
-        clockStartedAt =
-            null;
+        clockSeconds = 600;
+
+        clockRunning = false;
+
+        clockStartedAt = null;
 
         updateClockDisplay();
 
@@ -3181,13 +3362,19 @@ async function loadPersistedClock(){
     }
 
 
-    clockSeconds =
-        Math.max(
-            0,
-            Number(
-                data.clock_seconds ?? 600
-            )
-        );
+    /*
+    RESTORE SAVED TIME
+    */
+
+    clockSeconds = Math.max(
+
+        0,
+
+        Number(
+            data.clock_seconds ?? 600
+        )
+
+    );
 
 
     clockRunning =
@@ -3211,31 +3398,38 @@ async function loadPersistedClock(){
 
     /*
     IF THE CLOCK WAS RUNNING
-    WHEN THE PAGE WAS CLOSED,
-    SUBTRACT THE REAL TIME THAT PASSED.
+    BEFORE THE PAGE WAS REFRESHED
     */
 
     if(
-        clockRunning &&
+
+        clockRunning
+
+        &&
+
         clockStartedAt
+
     ){
+
+        const now =
+            Date.now();
+
 
         const elapsedSeconds =
 
             Math.floor(
 
                 (
-                    Date.now()
-                    -
+                    now -
                     clockStartedAt
-                )
-
-                /
-
-                1000
+                ) / 1000
 
             );
 
+
+        /*
+        SUBTRACT REAL ELAPSED TIME
+        */
 
         clockSeconds =
 
@@ -3249,38 +3443,42 @@ async function loadPersistedClock(){
             );
 
 
+        /*
+        CLOCK FINISHED
+        */
+
         if(
             clockSeconds <= 0
         ){
 
-            clockSeconds =
-                0;
+            clockSeconds = 0;
 
-            clockRunning =
-                false;
+            clockRunning = false;
 
-            clockStartedAt =
-                null;
+            clockStartedAt = null;
 
-            await saveClockState();
-
-        }
-
-        else{
-
-            /*
-            CREATE A NEW TIME SEGMENT.
-            THIS PREVENTS DOUBLE COUNTING
-            AFTER REFRESH.
-            */
-
-            clockStartedAt =
-                Date.now();
-
+            updateClockDisplay();
 
             await saveClockState();
 
+            return;
+
         }
+
+
+        /*
+        CREATE NEW TIMING SEGMENT
+        */
+
+        clockStartedAt =
+            Date.now();
+
+
+        /*
+        SAVE THE NEW SEGMENT
+        */
+
+        await saveClockState();
 
     }
 
@@ -3289,8 +3487,7 @@ async function loadPersistedClock(){
 
 
     /*
-    START LOCAL DISPLAY
-    IF CLOCK WAS RUNNING.
+    RESUME LOCAL CLOCK
     */
 
     if(
@@ -3304,15 +3501,20 @@ async function loadPersistedClock(){
 }
 
 
-/* =========================================
-   GET CURRENT CLOCK
-========================================= */
-
 function getCurrentClockSeconds(){
 
+    /*
+    PAUSED CLOCK
+    */
+
     if(
-        !clockRunning ||
+
+        !clockRunning
+
+        ||
+
         !clockStartedAt
+
     ){
 
         return Math.max(
@@ -3320,9 +3522,11 @@ function getCurrentClockSeconds(){
             0,
 
             Math.floor(
+
                 Number(
                     clockSeconds || 0
                 )
+
             )
 
         );
@@ -3330,19 +3534,19 @@ function getCurrentClockSeconds(){
     }
 
 
+    /*
+    RUNNING CLOCK
+    */
+
     const elapsedSeconds =
 
         Math.floor(
 
             (
-                Date.now()
-                -
+                Date.now() -
                 clockStartedAt
-            )
 
-            /
-
-            1000
+            ) / 1000
 
         );
 
@@ -3359,10 +3563,6 @@ function getCurrentClockSeconds(){
 }
 
 
-/* =========================================
-   CLOCK DISPLAY
-========================================= */
-
 function updateClockDisplay(){
 
     const currentSeconds =
@@ -3370,12 +3570,16 @@ function updateClockDisplay(){
 
 
     const minutes =
+
         Math.floor(
+
             currentSeconds / 60
+
         );
 
 
     const seconds =
+
         currentSeconds % 60;
 
 
@@ -3406,119 +3610,6 @@ function updateClockDisplay(){
 }
 
 
-/* =========================================
-   PLAYER MINUTES
-========================================= */
-
-async function updatePlayerMinutes(){
-
-    if(
-        !currentGame ||
-        !clockRunning
-    )
-        return;
-
-
-    const now =
-        Date.now();
-
-
-    if(
-        !lastMinuteUpdateTime
-    ){
-
-        lastMinuteUpdateTime =
-            now;
-
-        return;
-
-    }
-
-
-    const elapsedSeconds =
-
-        Math.floor(
-
-            (
-                now -
-                lastMinuteUpdateTime
-            )
-
-            /
-
-            1000
-
-        );
-
-
-    if(
-        elapsedSeconds <= 0
-    )
-        return;
-
-
-    lastMinuteUpdateTime =
-        now;
-
-
-    const playersToUpdate =
-
-        Object.keys(
-            playerOnCourt
-        ).filter(
-
-            playerId =>
-
-                playerOnCourt[playerId] === true
-
-        );
-
-
-    for(
-        const playerId of playersToUpdate
-    ){
-
-        const stats =
-            await getPlayerGameStats(
-                playerId
-            );
-
-
-        const newMinutes =
-
-            Number(
-                stats.minutes_played || 0
-            )
-
-            +
-
-            elapsedSeconds;
-
-
-        await saveStatDirect(
-
-            playerId,
-
-            "minutes_played",
-
-            newMinutes
-
-        );
-
-
-        await refreshPlayerRow(
-            playerId
-        );
-
-    }
-
-}
-
-
-/* =========================================
-   START CLOCK
-========================================= */
-
 async function startClock(){
 
     if(
@@ -3540,6 +3631,10 @@ async function startClock(){
     }
 
 
+    /*
+    GET CURRENT PAUSED VALUE
+    */
+
     clockSeconds =
         getCurrentClockSeconds();
 
@@ -3548,8 +3643,7 @@ async function startClock(){
         clockSeconds <= 0
     ){
 
-        clockSeconds =
-            0;
+        clockSeconds = 0;
 
         updateClockDisplay();
 
@@ -3558,31 +3652,37 @@ async function startClock(){
     }
 
 
-    clockRunning =
-        true;
+    /*
+    START NEW SEGMENT
+    */
 
+    clockRunning = true;
 
     clockStartedAt =
         Date.now();
 
 
-    lastMinuteUpdateTime =
-        Date.now();
-
+    /*
+    SAVE START STATE
+    */
 
     await saveClockState();
 
+
+    /*
+    START DISPLAY
+    */
 
     startClockInternal();
 
 }
 
 
-/* =========================================
-   INTERNAL CLOCK
-========================================= */
-
 function startClockInternal(){
+
+    /*
+    CLEAR OLD INTERVAL
+    */
 
     if(
         clockInterval
@@ -3601,7 +3701,9 @@ function startClockInternal(){
     clockInterval =
 
         setInterval(
+
             async()=>{
+
 
                 if(
                     !clockRunning
@@ -3619,33 +3721,23 @@ function startClockInternal(){
                 }
 
 
-                /*
-                UPDATE PLAYER MINUTES
-                BASED ON REAL ELAPSED TIME.
-                */
-
-                await updatePlayerMinutes();
-
-
                 const currentSeconds =
                     getCurrentClockSeconds();
 
+
+                /*
+                CLOCK FINISHED
+                */
 
                 if(
                     currentSeconds <= 0
                 ){
 
-                    clockSeconds =
-                        0;
+                    clockSeconds = 0;
 
-                    clockRunning =
-                        false;
+                    clockRunning = false;
 
-                    clockStartedAt =
-                        null;
-
-                    lastMinuteUpdateTime =
-                        null;
+                    clockStartedAt = null;
 
 
                     if(
@@ -3673,36 +3765,144 @@ function startClockInternal(){
                 }
 
 
+                /*
+                UPDATE DISPLAY
+                */
+
                 updateClockDisplay();
 
 
                 /*
-                PERIODICALLY SAVE THE CLOCK.
+                UPDATE PLAYER MINUTES
+                ONLY EVERY FULL MINUTE
+                */
+
+                const previousWholeMinute =
+
+                    Math.floor(
+                        clockSeconds / 60
+                    );
+
+
+                const currentWholeMinute =
+
+                    Math.floor(
+                        currentSeconds / 60
+                    );
+
+
+                /*
+                Update stored clock value
+                in memory so minute transitions
+                can be detected correctly.
+                */
+
+                if(
+
+                    currentWholeMinute
+                    <
+
+                    previousWholeMinute
+
+                ){
+
+                    const playersToUpdate =
+
+                        Object.keys(
+                            playerOnCourt
+                        ).filter(
+
+                            playerId =>
+
+                                playerOnCourt[
+                                    playerId
+                                ] === true
+
+                        );
+
+
+                    for(
+                        const playerId
+                        of playersToUpdate
+                    ){
+
+                        const stats =
+
+                            await getPlayerGameStats(
+                                playerId
+                            );
+
+
+                        const newMinutes =
+
+                            Number(
+                                stats.minutes_played || 0
+                            )
+
+                            +
+
+                            60;
+
+
+                        await saveStatDirect(
+
+                            playerId,
+
+                            "minutes_played",
+
+                            newMinutes
+
+                        );
+
+
+                        await refreshPlayerRow(
+                            playerId
+                        );
+
+                    }
+
+                }
+
+
+                /*
+                Update in-memory remaining time
+                */
+
+                clockSeconds =
+                    currentSeconds;
+
+
+                /*
+                SAVE EVERY 5 SECONDS
                 */
 
                 if(
 
                     Math.floor(
                         Date.now() / 1000
-                    )
-
-                    %
-
-                    5
-
-                    ===
-
-                    0
+                    ) % 5 === 0
 
                 ){
+
+                    /*
+                    Freeze current remaining value
+                    */
 
                     clockSeconds =
                         getCurrentClockSeconds();
 
 
+                    /*
+                    Start a fresh timing segment
+                    */
+
                     clockStartedAt =
                         Date.now();
 
+
+                    /*
+                    Save
+                    */
 
                     await saveClockState();
 
@@ -3717,10 +3917,6 @@ function startClockInternal(){
 }
 
 
-/* =========================================
-   PAUSE CLOCK
-========================================= */
-
 async function pauseClock(){
 
     if(
@@ -3730,20 +3926,23 @@ async function pauseClock(){
 
 
     /*
-    SAVE PLAYER MINUTES
-    BEFORE STOPPING CLOCK.
+    SAVE EXACT CURRENT TIME
     */
-
-    await updatePlayerMinutes();
-
 
     clockSeconds =
         getCurrentClockSeconds();
 
 
-    clockRunning =
-        false;
+    /*
+    STOP
+    */
 
+    clockRunning = false;
+
+
+    /*
+    CLEAR INTERVAL
+    */
 
     if(
         clockInterval
@@ -3759,25 +3958,25 @@ async function pauseClock(){
     }
 
 
+    /*
+    CLEAR START TIME
+    */
+
     clockStartedAt =
-        null;
-
-
-    lastMinuteUpdateTime =
         null;
 
 
     updateClockDisplay();
 
 
+    /*
+    SAVE PAUSED STATE
+    */
+
     await saveClockState();
 
 }
 
-
-/* =========================================
-   RESET CLOCK
-========================================= */
 
 async function resetClock(){
 
@@ -3788,16 +3987,15 @@ async function resetClock(){
 
 
     /*
-    SAVE ANY PLAYER MINUTES
-    BEFORE RESETTING.
+    STOP
     */
 
-    await updatePlayerMinutes();
+    clockRunning = false;
 
 
-    clockRunning =
-        false;
-
+    /*
+    CLEAR INTERVAL
+    */
 
     if(
         clockInterval
@@ -3813,6 +4011,10 @@ async function resetClock(){
     }
 
 
+    /*
+    RESET TO 10 MINUTES
+    */
+
     clockSeconds =
         600;
 
@@ -3821,12 +4023,12 @@ async function resetClock(){
         null;
 
 
-    lastMinuteUpdateTime =
-        null;
-
-
     updateClockDisplay();
 
+
+    /*
+    SAVE
+    */
 
     await saveClockState();
 
@@ -3834,7 +4036,7 @@ async function resetClock(){
 
 
 /* =========================================
-   SET PERIOD
+   PERIOD
 ========================================= */
 
 async function setPeriod(
@@ -3847,6 +4049,35 @@ async function setPeriod(
         return;
 
 
+    /*
+    STOP CLOCK FIRST
+    */
+
+    clockRunning = false;
+
+
+    if(
+        clockInterval
+    ){
+
+        clearInterval(
+            clockInterval
+        );
+
+        clockInterval =
+            null;
+
+    }
+
+
+    clockStartedAt =
+        null;
+
+
+    /*
+    UPDATE PERIOD
+    */
+
     await updateGame({
 
         period:
@@ -3855,7 +4086,18 @@ async function setPeriod(
     });
 
 
-    await resetClock();
+    /*
+    RESET CLOCK
+    */
+
+    clockSeconds =
+        600;
+
+
+    updateClockDisplay();
+
+
+    await saveClockState();
 
 }
 
@@ -3864,3 +4106,4 @@ async function setPeriod(
 </body>
 
 </html>
+```
