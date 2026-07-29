@@ -301,6 +301,21 @@
 
 
         </div>
+        <div class="form-group">
+
+    <label for="teamId">
+        Team
+    </label>
+
+    <select id="teamId" required>
+
+        <option value="">
+            Loading teams...
+        </option>
+
+    </select>
+
+</div>
 
 
         <button
@@ -328,6 +343,74 @@ document.addEventListener("DOMContentLoaded", () => {
         SUPABASE_URL,
         SUPABASE_KEY
     );
+    async function loadTeams() {
+
+    const teamSelect =
+        document.getElementById("teamId");
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+        .from("teams")
+
+        .select("id, name")
+
+        .order("name", {
+            ascending: true
+        });
+
+
+    if (error) {
+
+        console.error(
+            "Error loading teams:",
+            error
+        );
+
+        teamSelect.innerHTML = `
+            <option value="">
+                Unable to load teams
+            </option>
+        `;
+
+        return;
+
+    }
+
+
+    teamSelect.innerHTML = `
+        <option value="">
+            Select Team
+        </option>
+    `;
+
+
+    data.forEach(team => {
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+
+        option.value =
+            team.id;
+
+
+        option.textContent =
+            team.name;
+
+
+        teamSelect.appendChild(
+            option
+        );
+
+    });
+
+}
 
     const playerForm = document.getElementById("playerForm");
 
@@ -339,20 +422,26 @@ document.addEventListener("DOMContentLoaded", () => {
         const lastName = document.getElementById("lastName").value.trim();
         const position = document.getElementById("position").value;
         const jerseyNumber = document.getElementById("jerseyNumber").value;
+        const teamId =
+    document.getElementById(
+        "teamId"
+    ).value;
         const height = document.getElementById("height").value.trim();
+        
 
-        const { data, error } = await supabaseClient
-            .from("players")
-            .insert([
-                {
-                    first_name: firstName,
-                    last_name: lastName,
-                    position: position,
-                    jersey_number: Number(jerseyNumber),
-                    height: height
-                }
-            ])
-            .select();
+      const { data, error } = await supabaseClient
+    .from("players")
+    .insert([
+        {
+            first_name: firstName,
+            last_name: lastName,
+            position: position,
+            jersey_number: Number(jerseyNumber),
+            height: height,
+            team_id: Number(teamId)
+        }
+    ])
+    .select();
 
         if (error) {
             console.error(error);
@@ -364,11 +453,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         console.log(data);
 
-        playerForm.reset();
+                playerForm.reset();
 
          }
 
     );
+
+    /* LOAD TEAMS WHEN PAGE OPENS */
+
+    loadTeams();
 
     });
 
