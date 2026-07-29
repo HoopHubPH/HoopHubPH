@@ -570,7 +570,6 @@ onclick="updateScore('home',-1)"
 
 </div>
 
-
 <div class="team-control">
 
 <h2 id="awayTeam">
@@ -773,6 +772,65 @@ let playerTeamMap = {};
 
 let playerOnCourt = {};
 
+/*
+NEW:
+Stores the exact five court slots for each team.
+
+Example:
+
+courtSlots.home = [
+    player1,
+    player2,
+    player3,
+    player4,
+    player5
+];
+
+When player1 SUBS OUT,
+the slot becomes empty.
+
+When player6 SUBS IN,
+player6 takes player1's old slot.
+*/
+
+let courtSlots = {
+
+    home: [
+        null,
+        null,
+        null,
+        null,
+        null
+    ],
+
+    away: [
+        null,
+        null,
+        null,
+        null,
+        null
+    ]
+
+};
+
+
+/*
+Stores the last slot that became empty
+because of a manual SUB OUT.
+
+The next manually SUBBED IN player
+will take this exact slot.
+*/
+
+let openCourtSlot = {
+
+    home: null,
+
+    away: null
+
+};
+
+
 let clockSeconds = 600;
 
 let clockInterval = null;
@@ -926,34 +984,53 @@ document.getElementById(
 ).textContent =
 data.away_score || 0;
 
-
-/*
-RESET PLAYER DATA
-*/
-
 playerStatsMap = {};
 
 playerDataMap = {};
 
 playerTeamMap = {};
 
+playerOnCourt = {};
+
 
 /*
-IMPORTANT:
-
-EVERY PLAYER STARTS SUB OUT.
-
-NO PLAYER IS AUTOMATICALLY
-SUBBED IN WHEN THE GAME LOADS.
+RESET COURT SLOTS
+WHEN A NEW GAME IS LOADED
 */
 
-playerOnCourt = {};
+courtSlots = {
+
+home: [
+null,
+null,
+null,
+null,
+null
+],
+
+away: [
+null,
+null,
+null,
+null,
+null
+]
+
+};
+
+openCourtSlot = {
+
+home: null,
+
+away: null
+
+};
 
 
 await loadTeamPlayers();
 
 showStatus(
-"Game loaded successfully. Please manually SUB IN your 5 starting players."
+"Game loaded successfully."
 );
 
 }
@@ -1370,15 +1447,7 @@ table.querySelector(
 
 
 /*
-IMPORTANT:
-
-ALL PLAYERS START SUB OUT.
-
-NO PLAYER IS AUTOMATICALLY
-SUBBED IN.
-
-THE FIRST 5 PLAYERS MUST
-BE MANUALLY SUBBED IN.
+CREATE PLAYER DATA
 */
 
 for(
@@ -1391,15 +1460,33 @@ player;
 playerTeamMap[player.id] =
 team;
 
-
-/*
-EVERY PLAYER IS INITIALLY
-ON THE BENCH.
-*/
+if(
+playerOnCourt[player.id] === undefined
+){
 
 playerOnCourt[player.id] =
 false;
 
+}
+
+}
+
+
+/*
+IMPORTANT:
+
+The players are initially shown
+in their normal roster order.
+
+No players are automatically
+subbed in.
+
+The five court slots start empty.
+*/
+
+for(
+const player of data
+){
 
 const row =
 document.createElement(
@@ -2433,7 +2520,6 @@ playerId
 if(!currentGame)
 return;
 
-
 const team =
 playerTeamMap[playerId];
 
@@ -2445,28 +2531,61 @@ playerOnCourt[playerId];
 =========================================
 SUB OUT
 =========================================
+
+The player is manually removed
+from the court.
+
+The exact court slot is saved.
+
+No other player is automatically
+subbed in.
 */
 
 if(currentlyOn){
 
 /*
-PLAYER IS MANUALLY SUBBED OUT.
+FIND THE PLAYER'S CURRENT SLOT
+*/
 
-THE PLAYER IMMEDIATELY LEAVES
-THE COURT.
+const slotIndex =
+courtSlots[team].indexOf(
+playerId
+);
 
-THEIR MINUTES STOP ACCUMULATING.
+if(slotIndex !== -1){
+
+/*
+EMPTY THE EXACT SLOT
+*/
+
+courtSlots[team][slotIndex] =
+null;
+
+/*
+SAVE THE OPEN SLOT
+*/
+
+openCourtSlot[team] =
+slotIndex;
+
+}
+
+
+/*
+PLAYER IS NOW OFF COURT
 */
 
 playerOnCourt[playerId] =
 false;
 
+
 await refreshPlayerRow(
 playerId
 );
 
+
 showStatus(
-"Player SUB OUT."
+"Player SUB OUT. Select a player to SUB IN."
 );
 
 return;
@@ -2476,8 +2595,12 @@ return;
 
 /*
 =========================================
-COUNT CURRENT PLAYERS ON COURT
+SUB IN
 =========================================
+*/
+
+/*
+COUNT CURRENT PLAYERS
 */
 
 const activePlayers =
@@ -2495,15 +2618,13 @@ playerTeamMap[id] === team
 
 
 /*
-=========================================
 MAXIMUM 5 PLAYERS
-=========================================
 */
 
 if(activePlayers >= 5){
 
 showStatus(
-"5 players are already on the court. SUB OUT a player before SUB IN another player."
+"Maximum 5 players can be on court. SUB OUT a player first."
 );
 
 return;
@@ -2513,16 +2634,129 @@ return;
 
 /*
 =========================================
-MANUALLY SUB IN PLAYER
+FIND OPEN COURT SLOT
 =========================================
+*/
+
+/*
+FIRST PRIORITY:
+Use the exact slot of the player
+who was just manually subbed out.
+*/
+
+let slotIndex =
+openCourtSlot[team];
+
+
+/*
+If there is no saved substitution slot,
+find the first empty court slot.
+*/
+
+if(
+slotIndex === null
+||
+slotIndex === undefined
+){
+
+slotIndex =
+courtSlots[team].findIndex(
+slot => slot === null
+);
+
+}
+
+
+/*
+SAFETY CHECK
+*/
+
+if(slotIndex === -1){
+
+showStatus(
+"No available court slot."
+);
+
+return;
+
+}
+
+
+/*
+=========================================
+SUB PLAYER IN
+=========================================
+*/
+
+/*
+PLAYER BECOMES ACTIVE
 */
 
 playerOnCourt[playerId] =
 true;
 
+
+/*
+PLAYER TAKES THE OPEN SLOT
+*/
+
+courtSlots[team][slotIndex] =
+playerId;
+
+
+/*
+CLEAR THE OPEN SLOT
+
+This prevents another player
+from incorrectly taking the same slot.
+*/
+
+openCourtSlot[team] =
+null;
+
+
+/*
+REFRESH THE SUBBED-IN PLAYER
+*/
+
 await refreshPlayerRow(
 playerId
 );
+
+
+/*
+REFRESH THE REST OF THE TEAM
+
+This keeps the roster display
+consistent without changing
+the actual player order.
+*/
+
+const teamPlayers =
+Object.keys(
+playerTeamMap
+).filter(
+
+id =>
+
+playerTeamMap[id] === team
+
+);
+
+for(
+const id of teamPlayers
+){
+
+if(id !== playerId){
+
+await refreshPlayerRow(
+id
+);
+
+}
+
+}
+
 
 showStatus(
 "Player SUB IN."
@@ -2605,29 +2839,13 @@ return;
 1 GAME SECOND
 
 ONLY PLAYERS CURRENTLY
-SUBBED IN GET MINUTES.
+ON COURT GET MINUTES.
 */
 
 clockSeconds--;
 
 updateClockDisplay();
 
-
-/*
-UPDATE MINUTES ONLY FOR
-PLAYERS CURRENTLY ON COURT.
-
-PLAYERS WHO ARE SUBBED OUT
-ARE SKIPPED.
-
-WHEN A PLAYER SUBS OUT,
-THE NEXT CLOCK TICK WILL
-NOT ADD ANY MORE MINUTES.
-
-WHEN A PLAYER SUBS IN,
-THE NEXT CLOCK TICK WILL
-RESUME THEIR MINUTES.
-*/
 
 for(
 const playerId in playerOnCourt
