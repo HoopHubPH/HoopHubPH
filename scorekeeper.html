@@ -2407,8 +2407,15 @@ async function toggleSubstitution(
 playerId
 ){
 
-if(!currentGame)
+if(!currentGame){
+
+showStatus(
+"Load a game first."
+);
+
 return;
+
+}
 
 const team =
 playerTeamMap[playerId];
@@ -2417,21 +2424,34 @@ const currentlyOn =
 playerOnCourt[playerId];
 
 
-/*
+/* =========================================
 SUB OUT
-*/
+
+Player immediately stops earning minutes.
+The player's existing minutes are preserved.
+========================================= */
 
 if(currentlyOn){
 
 playerOnCourt[playerId] =
 false;
 
+/*
+IMPORTANT:
+Because playerOnCourt is now false,
+the clock will no longer add minutes
+to this player.
+
+The player's current minutes_played
+remain saved and are not reset.
+*/
+
 await refreshPlayerRow(
 playerId
 );
 
 showStatus(
-"Player SUB OUT."
+"Player SUB OUT. Minutes stopped."
 );
 
 return;
@@ -2439,9 +2459,9 @@ return;
 }
 
 
-/*
+/* =========================================
 COUNT PLAYERS ON COURT
-*/
+========================================= */
 
 const activePlayers =
 Object.keys(
@@ -2457,9 +2477,9 @@ playerTeamMap[id] === team
 ).length;
 
 
-/*
-MAX 5
-*/
+/* =========================================
+MAXIMUM 5 PLAYERS
+========================================= */
 
 if(activePlayers >= 5){
 
@@ -2472,19 +2492,35 @@ return;
 }
 
 
-/*
+/* =========================================
 SUB IN
-*/
+
+Player resumes earning minutes.
+Existing minutes are preserved.
+========================================= */
 
 playerOnCourt[playerId] =
 true;
+
+/*
+IMPORTANT:
+The player's existing minutes are NOT reset.
+
+If the player previously had 10:25,
+they will resume from 10:25 when
+they are SUB IN again.
+
+If the game clock is running,
+the player will begin earning minutes
+on the next clock tick.
+*/
 
 await refreshPlayerRow(
 playerId
 );
 
 showStatus(
-"Player SUB IN."
+"Player SUB IN. Minutes resumed."
 );
 
 }
@@ -2562,9 +2598,6 @@ return;
 /*
 1 REAL SECOND =
 1 GAME SECOND
-
-ALL ON COURT PLAYERS
-GET ONE SECOND OF MINUTES.
 */
 
 clockSeconds--;
@@ -2572,9 +2605,20 @@ clockSeconds--;
 updateClockDisplay();
 
 
-if(
-clockSeconds % 1 === 0
-){
+/*
+ONLY PLAYERS CURRENTLY ON COURT
+RECEIVE PLAYING TIME.
+
+If a player SUB OUTs,
+playerOnCourt[playerId] becomes false,
+so that player will NOT receive any
+additional seconds.
+
+If the player SUB INs again,
+playerOnCourt[playerId] becomes true,
+and their minutes continue from
+their previous saved total.
+*/
 
 for(
 const playerId in playerOnCourt
@@ -2603,8 +2647,6 @@ playerId,
 newMinutes
 
 );
-
-}
 
 }
 
