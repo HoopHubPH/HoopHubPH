@@ -1492,6 +1492,10 @@ currentGame.id
 };
 
 
+/*
+ON COURT
+*/
+
 if(
 statKey === "on_court"
 ){
@@ -1503,6 +1507,48 @@ Boolean(value);
 
 }
 
+
+/*
+MINUTES PLAYED
+
+Supabase column is INTEGER.
+
+Always save whole seconds.
+Never save decimal values such as:
+0.245
+1.5
+2.75
+
+The database will receive:
+0
+1
+2
+etc.
+*/
+
+else if(
+statKey === "minutes_played"
+){
+
+updateObj[
+statKey
+] =
+Math.max(
+0,
+Math.floor(
+Number(value || 0)
+)
+);
+
+}
+
+
+/*
+ALL OTHER PLAYER STATS
+
+Save as whole numbers.
+*/
+
 else{
 
 updateObj[
@@ -1510,11 +1556,17 @@ statKey
 ] =
 Math.max(
 0,
+Math.floor(
 Number(value || 0)
+)
 );
 
 }
 
+
+/*
+AUTOMATICALLY CALCULATE TOTAL REBOUNDS
+*/
 
 if(
 
@@ -1564,11 +1616,17 @@ updateObj.rebounds =
 
 Math.max(
 0,
+Math.floor(
 oreb + dreb
+)
 );
 
 }
 
+
+/*
+SAVE TO SUPABASE
+*/
 
 const {
 data,
@@ -1589,6 +1647,7 @@ onConflict:
 if(error){
 
 console.error(
+"Player stats save error:",
 error
 );
 
@@ -1601,6 +1660,10 @@ return;
 
 }
 
+
+/*
+UPDATE LOCAL PLAYER STATS
+*/
 
 playerStatsMap[playerId] = {
 
