@@ -572,8 +572,9 @@ async function createTeam() {
         location:
             location || null,
 
-        logo:
-            logo || null
+        logo_url:
+    logo || null
+     
 
     })
 
@@ -726,12 +727,12 @@ async function loadTeams() {
         let logoHTML;
 
 
-        if (team.logo) {
+        if (team.logo_url) {
 
             logoHTML = `
 
                 <img
-                    src="${team.logo}"
+                    src="${team.logo_url}"
                     alt="${team.name}"
                     style="
                         width:90px;
