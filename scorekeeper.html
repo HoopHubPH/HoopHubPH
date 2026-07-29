@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 
 <html lang="en">
@@ -128,23 +127,7 @@ nav a:hover{
     font-size:32px;
     font-weight:bold;
     color:#ff6b00;
-    margin:2px 0 5px;
-}
-
-.button-row{
-    display:flex;
-    justify-content:center;
-    gap:4px;
-}
-
-.score-button{
-    background:#111;
-    color:white;
-    border:0;
-    padding:4px 8px;
-    border-radius:4px;
-    font-size:11px;
-    cursor:pointer;
+    margin:2px 0 0;
 }
 
 .clock-area{
@@ -480,11 +463,13 @@ Game ID:
 type="number"
 id="gameId"
 value="1"
+
 >
 
 <button
 class="load-button"
 onclick="loadGame()"
+
 >
 
 LOAD </button>
@@ -492,6 +477,12 @@ LOAD </button>
 </div>
 
 <div id="statusMessage"></div>
+
+<!-- SCOREBOARD
+     Team score buttons removed.
+     Scores are now updated automatically
+     through player scoring actions.
+-->
 
 <div class="scoreboard">
 
@@ -506,38 +497,6 @@ class="score"
 id="homeScore"
 >
 0
-</div>
-
-<div class="button-row">
-
-<button
-class="score-button"
-onclick="updateScore('home',1)"
->
-+1
-</button>
-
-<button
-class="score-button"
-onclick="updateScore('home',2)"
->
-+2
-</button>
-
-<button
-class="score-button"
-onclick="updateScore('home',3)"
->
-+3
-</button>
-
-<button
-class="score-button"
-onclick="updateScore('home',-1)"
->
--1
-</button>
-
 </div>
 
 </div>
@@ -555,41 +514,11 @@ id="awayScore"
 0
 </div>
 
-<div class="button-row">
-
-<button
-class="score-button"
-onclick="updateScore('away',1)"
->
-+1
-</button>
-
-<button
-class="score-button"
-onclick="updateScore('away',2)"
->
-+2
-</button>
-
-<button
-class="score-button"
-onclick="updateScore('away',3)"
->
-+3
-</button>
-
-<button
-class="score-button"
-onclick="updateScore('away',-1)"
->
--1
-</button>
-
 </div>
 
 </div>
 
-</div>
+<!-- GAME CLOCK -->
 
 <div class="clock-area">
 
@@ -634,6 +563,8 @@ RESET
 
 </div>
 
+<!-- PLAYER STATS -->
+
 <div class="controls">
 
 <h2>
@@ -666,6 +597,8 @@ Away Players
 
 </div>
 
+<!-- GAME STATUS -->
+
 <div class="game-footer-controls">
 
 <div>
@@ -677,23 +610,26 @@ Status:
 <button
 class="control-button"
 onclick="updateGame({status:'Live'})"
+
 >
-LIVE
-</button>
+
+LIVE </button>
 
 <button
 class="control-button"
 onclick="updateGame({status:'Halftime'})"
+
 >
-HALF
-</button>
+
+HALF </button>
 
 <button
 class="control-button"
 onclick="updateGame({status:'Final'})"
+
 >
-FINAL
-</button>
+
+FINAL </button>
 
 </div>
 
@@ -736,8 +672,45 @@ let clockInterval = null;
 
 let clockRunning = false;
 
+
+/*
+IMPORTANT CLOCK SYSTEM
+
+The database stores:
+
+clock_seconds
+= the remaining time when the current
+clock segment was last synchronized.
+
+clock_running
+= whether the clock should currently
+be counting down.
+
+clock_started_at
+= the exact timestamp when the current
+countdown segment started.
+
+When the page refreshes, the code calculates:
+
+elapsed time =
+current time - clock_started_at
+
+Then:
+
+remaining time =
+saved clock_seconds - elapsed time
+
+This prevents the clock from returning
+to 10:00 after refresh.
+*/
+
+
 let clockStartedAt = null;
 
+
+/* =========================================
+   HELPER FUNCTIONS
+========================================= */
 
 function escapeHTML(str){
 
@@ -804,6 +777,10 @@ el.style.display =
 
 }
 
+
+/* =========================================
+   LOAD GAME
+========================================= */
 
 async function loadGame(){
 
@@ -894,7 +871,7 @@ playerCourtOrder = {};
 
 
 /*
-LOAD CLOCK FIRST
+LOAD CLOCK BEFORE PLAYERS
 */
 
 await loadPersistedClock();
@@ -913,6 +890,14 @@ showStatus(
 }
 
 
+/* =========================================
+   UPDATE SCORE
+   TEAM SCORE BUTTONS HAVE BEEN REMOVED.
+
+   This function is now used internally
+   when player scoring changes the team score.
+========================================= */
+
 async function updateScore(
 team,
 amount
@@ -927,6 +912,9 @@ showStatus(
 return;
 
 }
+
+if(!amount)
+return;
 
 const column =
 team === "home"
@@ -989,7 +977,11 @@ team+"Score"
 ).textContent =
 newScore;
 
-if(amount !== 0){
+
+/*
+UPDATE +/- FOR PLAYERS
+CURRENTLY ON COURT
+*/
 
 const playersToUpdate = Object.keys(
 playerOnCourt
@@ -1037,8 +1029,10 @@ playerId
 
 }
 
-}
 
+/* =========================================
+   UPDATE GAME
+========================================= */
 
 async function updateGame(
 changes
@@ -1095,6 +1089,10 @@ showStatus(
 
 }
 
+
+/* =========================================
+   LOAD TEAMS AND PLAYERS
+========================================= */
 
 async function loadTeamPlayers(){
 
@@ -1396,6 +1394,10 @@ row
 }
 
 
+/* =========================================
+   GET PLAYER GAME STATS
+========================================= */
+
 async function getPlayerGameStats(
 playerId
 ){
@@ -1497,6 +1499,10 @@ return playerStatsMap[playerId];
 
 }
 
+
+/* =========================================
+   SAVE PLAYER STAT
+========================================= */
 
 async function saveStatDirect(
 
@@ -1653,6 +1659,10 @@ playerStatsMap[playerId] = {
 }
 
 
+/* =========================================
+   UPDATE PLAYER STAT
+========================================= */
+
 async function updatePlayerStat(
 
 playerId,
@@ -1703,6 +1713,11 @@ return;
 
 }
 
+
+/*
+PLAYER SCORING
+*/
+
 if(
 
 statKey === "two_pt_made"
@@ -1737,6 +1752,11 @@ statKey === "three_pt_made"
 
 1;
 
+
+/*
+SAVE MADE SHOT
+*/
+
 await saveStatDirect(
 
 playerId,
@@ -1746,6 +1766,19 @@ statKey,
 newValue
 
 );
+
+
+/*
+UPDATE PLAYER POINTS
+
+IMPORTANT:
+
+If the user presses M-,
+the amount is -1.
+
+Therefore player points
+and team score also decrease.
+*/
 
 const newPoints =
 
@@ -1773,8 +1806,15 @@ playerId,
 "points",
 
 newPoints
-
 );
+
+
+/*
+UPDATE TEAM SCORE
+
+The team score is now controlled
+ONLY by player scoring.
+*/
 
 const team =
 playerTeamMap[playerId];
@@ -1784,46 +1824,12 @@ team &&
 currentGame
 ){
 
-const column =
-
-team === "home"
-
-?
-
-"home_score"
-
-:
-
-"away_score";
-
-const oldTeamScore =
-
-Number(
-currentGame[column] || 0
-);
-
-const newTeamScore =
-
-Math.max(
-
-0,
-
-oldTeamScore
-
-+
-
-(
-amount *
-pointsToAdd
-)
-
-);
-
-await updateScoreFromPlayer(
+await updateScore(
 
 team,
 
-newTeamScore
+amount *
+pointsToAdd
 
 );
 
@@ -1836,6 +1842,11 @@ playerId
 return;
 
 }
+
+
+/*
+NORMAL PLAYER STAT
+*/
 
 await saveStatDirect(
 
@@ -1844,7 +1855,6 @@ playerId,
 statKey,
 
 newValue
-
 );
 
 await refreshPlayerRow(
@@ -1854,138 +1864,9 @@ playerId
 }
 
 
-async function updateScoreFromPlayer(
-
-team,
-
-newScore
-
-){
-
-if(!currentGame)
-return;
-
-const column =
-
-team === "home"
-
-?
-
-"home_score"
-
-:
-
-"away_score";
-
-const oldScore =
-
-Number(
-currentGame[column] || 0
-);
-
-const amount =
-
-newScore -
-oldScore;
-
-if(amount === 0)
-return;
-
-const {
-
-data,
-error
-
-} = await supabaseClient
-
-.from("games")
-
-.update({
-
-[column]:
-newScore
-
-})
-
-.eq(
-"id",
-currentGame.id
-)
-
-.select()
-.single();
-
-if(error){
-
-console.error(
-error
-);
-
-showStatus(
-"Unable to sync team score."
-);
-
-return;
-
-}
-
-currentGame =
-data;
-
-document.getElementById(
-team+"Score"
-).textContent =
-newScore;
-
-const playersToUpdate =
-
-Object.keys(
-playerOnCourt
-).filter(
-
-playerId =>
-
-playerOnCourt[playerId] === true
-
-&&
-
-playerTeamMap[playerId] === team
-
-);
-
-for(
-const playerId of playersToUpdate
-){
-
-const stats =
-await getPlayerGameStats(
-playerId
-);
-
-const currentPlusMinus =
-
-Number(
-stats.plus_minus || 0
-);
-
-await saveStatDirect(
-
-playerId,
-
-"plus_minus",
-
-currentPlusMinus + amount
-
-);
-
-await refreshPlayerRow(
-playerId
-);
-
-}
-
-}
-
+/* =========================================
+   REFRESH PLAYER ROW
+========================================= */
 
 async function refreshPlayerRow(
 playerId
@@ -2015,6 +1896,10 @@ row
 
 }
 
+
+/* =========================================
+   RENDER PLAYER ROW
+========================================= */
 
 async function renderPlayerRow(
 
@@ -2655,6 +2540,10 @@ ${s.plus_minus || 0}
 }
 
 
+/* =========================================
+   STAT BUTTONS
+========================================= */
+
 function statButtons(
 
 playerId,
@@ -2710,6 +2599,10 @@ onclick="updatePlayerStat(
 }
 
 
+/* =========================================
+   FORMAT MINUTES
+========================================= */
+
 function formatMinutes(
 seconds
 ){
@@ -2748,6 +2641,10 @@ String(secs)
 
 }
 
+
+/* =========================================
+   SUBSTITUTIONS
+========================================= */
 
 async function toggleSubstitution(
 playerId
@@ -2870,23 +2767,30 @@ showStatus(
 
 
 /* =========================================
-   CLOCK STATE PERSISTENCE
+   CLOCK PERSISTENCE
 ========================================= */
+
+/*
+This function saves the current state.
+
+IMPORTANT:
+
+If the clock is running, we save:
+
+1. clock_seconds
+2. clock_running = true
+3. clock_started_at = timestamp
+
+The timestamp is NOT changed every second.
+
+This means a refresh can calculate exactly
+how much real time has passed.
+*/
 
 async function saveClockState(){
 
 if(!currentGame)
 return;
-
-
-/*
-WHEN CLOCK IS RUNNING:
-clock_started_at represents the moment
-the current countdown segment began.
-
-WHEN CLOCK IS PAUSED:
-clock_started_at is cleared.
-*/
 
 const updateData = {
 
@@ -2905,14 +2809,16 @@ clock_started_at:
 clockRunning
 ?
 (
-clockStartedAt ||
+clockStartedAt
+?
+new Date(clockStartedAt).toISOString()
+:
 new Date().toISOString()
 )
 :
 null
 
 };
-
 
 const {
 
@@ -2933,7 +2839,6 @@ currentGame.id
 .select("*")
 .single();
 
-
 if(error){
 
 console.error(
@@ -2945,20 +2850,10 @@ return;
 
 }
 
-
 if(data){
 
 currentGame =
 data;
-
-clockStartedAt =
-data.clock_started_at
-?
-new Date(
-data.clock_started_at
-).getTime()
-:
-null;
 
 }
 
@@ -2973,12 +2868,6 @@ async function loadPersistedClock(){
 
 if(!currentGame)
 return;
-
-
-/*
-GET THE LATEST CLOCK VALUES DIRECTLY
-FROM SUPABASE
-*/
 
 const {
 
@@ -3000,7 +2889,6 @@ currentGame.id
 
 .single();
 
-
 if(error){
 
 console.error(
@@ -3014,7 +2902,10 @@ return;
 
 
 /*
-NO SAVED CLOCK YET
+NO SAVED CLOCK
+
+Use 10:00 only if the game
+does not have a saved clock yet.
 */
 
 if(
@@ -3040,7 +2931,7 @@ return;
 
 
 /*
-RESTORE SAVED CLOCK
+RESTORE SAVED REMAINING TIME
 */
 
 clockSeconds =
@@ -3055,14 +2946,13 @@ data.clock_seconds
 
 );
 
-
 clockRunning =
 
 data.clock_running === true;
 
 
 /*
-RESTORE START TIME
+RESTORE THE TIMESTAMP
 */
 
 clockStartedAt =
@@ -3082,7 +2972,8 @@ null;
 
 /*
 IF CLOCK WAS RUNNING BEFORE REFRESH,
-CALCULATE THE REAL TIME THAT PASSED
+CALCULATE HOW MANY SECONDS PASSED
+SINCE THE LAST SAVED START TIME.
 */
 
 if(
@@ -3098,7 +2989,6 @@ clockStartedAt
 const now =
 Date.now();
 
-
 const elapsedSeconds =
 
 Math.floor(
@@ -3111,9 +3001,9 @@ clockStartedAt
 );
 
 
-if(
-elapsedSeconds > 0
-){
+/*
+SUBTRACT THE REAL ELAPSED TIME
+*/
 
 clockSeconds =
 
@@ -3128,18 +3018,16 @@ elapsedSeconds
 
 }
 
-}
-
 
 /*
-UPDATE DISPLAY IMMEDIATELY
+UPDATE THE SCREEN
 */
 
 updateClockDisplay();
 
 
 /*
-IF THE CLOCK REACHED ZERO
+IF CLOCK REACHED ZERO
 */
 
 if(
@@ -3165,19 +3053,19 @@ return;
 
 
 /*
-CONTINUE RUNNING AFTER REFRESH
+IF CLOCK WAS RUNNING,
+START IT AGAIN FROM THE CURRENT TIME.
+
+The already elapsed time has already
+been subtracted above.
+
+Therefore the clock continues from
+the correct remaining time.
 */
 
 if(
 clockRunning
 ){
-
-/*
-START A NEW TIMING SEGMENT FROM NOW.
-
-This is important because the previous
-elapsed time has already been subtracted.
-*/
 
 clockStartedAt =
 Date.now();
@@ -3259,9 +3147,24 @@ return;
 
 }
 
+if(
+clockSeconds <= 0
+){
+
+showStatus(
+"Reset the clock before starting."
+);
+
+return;
+
+}
+
 
 /*
-START A NEW TIMING SEGMENT
+START A NEW CLOCK SEGMENT.
+
+The database will now remember
+the exact time this segment began.
 */
 
 clockRunning =
@@ -3272,7 +3175,7 @@ Date.now();
 
 
 /*
-SAVE BEFORE STARTING INTERVAL
+SAVE BEFORE STARTING COUNTDOWN
 */
 
 await saveClockState();
@@ -3301,11 +3204,14 @@ clearInterval(
 clockInterval
 );
 
+clockInterval =
+null;
+
 }
 
 
 /*
-MAKE SURE CLOCK HAS A START TIME
+MAKE SURE START TIME EXISTS
 */
 
 if(
@@ -3317,6 +3223,18 @@ Date.now();
 
 }
 
+
+/*
+USE A FREQUENT INTERVAL.
+
+The actual remaining time is calculated
+from timestamps instead of trusting that
+JavaScript intervals always fire exactly
+every 1000ms.
+
+This makes the clock more accurate if the
+browser slows down or the tab is inactive.
+*/
 
 clockInterval =
 
@@ -3340,88 +3258,102 @@ return;
 }
 
 
+/*
+CALCULATE REAL ELAPSED TIME
+*/
+
+const elapsedSeconds =
+
+Math.floor(
+
+(
+Date.now() -
+clockStartedAt
+) / 1000
+
+);
+
+
+/*
+CALCULATE REMAINING TIME FROM
+THE ORIGINAL SEGMENT START.
+*/
+
+const startingSeconds =
+Number(
+currentGame.clock_seconds || clockSeconds
+);
+
+const newSeconds =
+
+Math.max(
+
+0,
+
+startingSeconds -
+elapsedSeconds
+
+);
+
+
+/*
+ONLY UPDATE WHEN THE DISPLAY
+SECOND ACTUALLY CHANGES
+*/
+
+if(
+newSeconds !== clockSeconds
+){
+
+clockSeconds =
+newSeconds;
+
+updateClockDisplay();
+
+}
+
+
+/*
+CLOCK REACHED ZERO
+*/
+
 if(
 clockSeconds <= 0
 ){
 
-await pauseClock();
+clockSeconds =
+0;
+
+clockRunning =
+false;
+
+clockStartedAt =
+null;
+
+updateClockDisplay();
+
+if(
+clockInterval
+){
+
+clearInterval(
+clockInterval
+);
+
+clockInterval =
+null;
+
+}
+
+await saveClockState();
 
 return;
 
 }
 
-
-/*
-ONE SECOND OF GAME TIME
-*/
-
-clockSeconds--;
-
-updateClockDisplay();
-
-
-/*
-ONE SECOND OF GAME TIME
-EQUALS ONE SECOND
-OF MINUTES PLAYED
-FOR PLAYERS CURRENTLY ON COURT.
-*/
-
-for(
-const playerId in playerOnCourt
-){
-
-if(
-playerOnCourt[playerId] !== true
-)
-continue;
-
-
-const stats =
-
-await getPlayerGameStats(
-playerId
-);
-
-
-const newMinutes =
-
-Number(
-stats.minutes_played || 0
-)
-
-+
-
-1;
-
-
-await saveStatDirect(
-
-playerId,
-
-"minutes_played",
-
-newMinutes
-
-);
-
-
-await refreshPlayerRow(
-playerId
-);
-
-}
-
-
-/*
-SAVE CURRENT CLOCK VALUE
-*/
-
-await saveClockState();
-
 },
 
-1000
+250
 
 );
 
@@ -3441,7 +3373,49 @@ return;
 
 
 /*
-STOP COUNTDOWN
+IMPORTANT:
+
+Before pausing, calculate the exact
+remaining time using the timestamp.
+*/
+
+if(
+clockRunning &&
+clockStartedAt
+){
+
+const elapsedSeconds =
+
+Math.floor(
+
+(
+Date.now() -
+clockStartedAt
+) / 1000
+
+);
+
+clockSeconds =
+
+Math.max(
+
+0,
+
+Number(
+currentGame.clock_seconds || clockSeconds
+)
+
+-
+
+elapsedSeconds
+
+);
+
+}
+
+
+/*
+STOP CLOCK
 */
 
 clockRunning =
@@ -3467,11 +3441,18 @@ null;
 
 
 /*
-CLEAR START TIME
+CLEAR TIMESTAMP
 */
 
 clockStartedAt =
 null;
+
+
+/*
+UPDATE DISPLAY
+*/
+
+updateClockDisplay();
 
 
 /*
@@ -3530,7 +3511,7 @@ clockSeconds =
 
 
 /*
-CLEAR START TIME
+CLEAR TIMESTAMP
 */
 
 clockStartedAt =
@@ -3577,7 +3558,7 @@ await resetClock();
 
 
 /* =========================================
-   AUTO LOAD
+   AUTO LOAD GAME
 ========================================= */
 
 loadGame();
@@ -3587,4 +3568,3 @@ loadGame();
 </body>
 
 </html>
-```
