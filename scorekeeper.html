@@ -659,29 +659,46 @@ let clockInterval = null;
 
 let clockRunning = false;
 
-/*
-IMPORTANT CLOCK SYSTEM
+let clockEndTime = null;
 
-Instead of simply saving the current number every second,
-we save the exact timestamp when the clock should reach ZERO.
 
-Example:
+/* =====================================================
+   NEW MINUTES SYNCHRONIZATION SYSTEM
+   =====================================================
 
-Clock = 8:09
-Clock starts at 10:00:00
-End timestamp = 10:08:09
+   This keeps player minutes synchronized with the
+   actual game clock.
 
-If the page refreshes at 10:03:00,
-the clock calculates:
+   IMPORTANT:
 
-10:08:09 - 10:03:00
-= 5:09 remaining
+   We do NOT add 1 minute every 60 seconds.
 
-Therefore the clock NEVER goes back to 10:00
-while the game is running.
+   Instead, we calculate exactly how much game time
+   has elapsed since the last synchronization.
+
+   Example:
+
+   Game clock starts at 10:00.
+   Player enters at 10:00.
+
+   Game clock reaches 9:30.
+
+   Player gets 30 seconds.
+
+   Player SUB OUT at 9:30.
+
+   Player has exactly 30 seconds recorded.
+
+   If the page refreshes, the clock continues from
+   Supabase and the player minutes remain saved.
+
+   If the player is SUB OUT, no more minutes are added.
+
+   If the player is SUB IN again, minutes continue.
 */
 
-let clockEndTime = null;
+
+let playerMinutesLastSync = null;
 
 
 /* ================================
@@ -836,9 +853,7 @@ playerCourtOrder = {};
 
 
 /*
-LOAD CLOCK FROM SUPABASE.
-
-This happens BEFORE loading players.
+LOAD CLOCK FIRST.
 */
 
 await loadPersistedClock();
@@ -856,8 +871,6 @@ showStatus(
 
 /* ================================
    TEAM SCORE
-   No manual team score buttons.
-   Scores are changed by player stats.
 ================================ */
 
 async function updateScore(
@@ -1870,7 +1883,9 @@ currentGame.id
 
 if(error){
 
-console.error(error);
+console.error(
+error
+);
 
 showStatus(
 "Unable to sync team score."
@@ -2573,6 +2588,205 @@ String(secs)
 }
 
 
+/* =====================================================
+   PLAYER MINUTES SYNCHRONIZATION
+   =====================================================
+
+   This is the important fix.
+
+   Every 250ms, the game clock updates.
+
+   We calculate the exact elapsed game time since
+   the last player-minute synchronization.
+
+   Only players currently on the court receive
+   the elapsed time.
+
+   The values are saved to Supabase.
+
+   Because the game clock itself is based on
+   clockEndTime, refreshing the page does not
+   reset the clock.
+
+   Player minutes are stored permanently in
+   player_game_stats.minutes_played.
+*/
+
+
+async function syncPlayerMinutes(){
+
+if(!currentGame)
+return;
+
+
+if(!clockRunning)
+return;
+
+
+/*
+Initialize the synchronization timestamp.
+*/
+
+if(
+!playerMinutesLastSync
+){
+
+playerMinutesLastSync =
+Date.now();
+
+return;
+
+}
+
+
+/*
+Calculate exact real elapsed time.
+*/
+
+const now =
+Date.now();
+
+
+const elapsedSeconds =
+
+Math.max(
+
+0,
+
+(
+now -
+playerMinutesLastSync
+) / 1000
+
+);
+
+
+/*
+Update timestamp immediately.
+
+This prevents double counting.
+*/
+
+playerMinutesLastSync =
+now;
+
+
+if(
+elapsedSeconds <= 0
+)
+return;
+
+
+/*
+Find all players currently on court.
+*/
+
+const activePlayers =
+
+Object.keys(
+playerOnCourt
+).filter(
+
+playerId =>
+
+playerOnCourt[playerId] === true
+
+);
+
+
+/*
+No active players means no minutes to add.
+*/
+
+if(
+!activePlayers.length
+)
+return;
+
+
+/*
+Update each active player's minutes.
+*/
+
+for(
+const playerId of activePlayers
+){
+
+const stats =
+await getPlayerGameStats(
+playerId
+);
+
+
+const oldMinutes =
+
+Number(
+stats.minutes_played || 0
+);
+
+
+const newMinutes =
+
+oldMinutes +
+elapsedSeconds;
+
+
+/*
+Save decimal seconds.
+
+The display rounds down to whole seconds,
+but Supabase keeps the exact value.
+
+This prevents lost seconds when the page
+is running continuously.
+*/
+
+await saveStatDirect(
+
+playerId,
+
+"minutes_played",
+
+newMinutes
+
+);
+
+
+/*
+Update the visible player row.
+*/
+
+await refreshPlayerRow(
+playerId
+);
+
+}
+
+}
+
+
+/* =====================================================
+   RESET MINUTE SYNC
+   =====================================================
+
+   Called when:
+
+   - Clock starts
+   - Clock pauses
+   - Player subs in
+   - Player subs out
+   - Page loads
+*/
+
+
+function resetPlayerMinuteSync(){
+
+playerMinutesLastSync =
+Date.now();
+
+}
+
+
 /* ================================
    SUBSTITUTIONS
 ================================ */
@@ -2591,6 +2805,23 @@ playerTeamMap[playerId];
 
 const currentlyOn =
 playerOnCourt[playerId] === true;
+
+
+/*
+IMPORTANT:
+
+Before changing the player's status,
+save all minutes accumulated up to
+this exact moment.
+*/
+
+if(
+clockRunning
+){
+
+await syncPlayerMinutes();
+
+}
 
 
 if(currentlyOn){
@@ -2622,6 +2853,9 @@ id => id !== playerId
 await refreshPlayerRow(
 playerId
 );
+
+
+resetPlayerMinuteSync();
 
 
 showStatus(
@@ -2694,6 +2928,14 @@ playerId
 );
 
 
+/*
+The player starts accumulating minutes
+from this exact moment.
+*/
+
+resetPlayerMinuteSync();
+
+
 showStatus(
 "Player SUB IN."
 );
@@ -2702,29 +2944,15 @@ showStatus(
 
 
 /* =====================================================
-   NEW CLOCK SYSTEM
+   CLOCK SYSTEM
    =====================================================
 
-   DATABASE FIELDS USED:
+   DATABASE FIELDS:
 
    clock_seconds
    clock_running
    clock_end_time
 
-   clock_end_time = exact UTC timestamp when clock reaches 0.
-
-   Example:
-
-   8:09 remaining
-   clock_running = true
-   clock_end_time = current time + 8 minutes 9 seconds
-
-   On refresh:
-
-   remaining =
-   clock_end_time - current real time
-
-   This means the countdown continues correctly.
 */
 
 
@@ -2831,12 +3059,6 @@ console.error(
 error
 );
 
-
-/*
-If the clock columns do not exist,
-use 10:00 as the default.
-*/
-
 clockSeconds =
 600;
 
@@ -2848,14 +3070,12 @@ null;
 
 updateClockDisplay();
 
+resetPlayerMinuteSync();
+
 return;
 
 }
 
-
-/*
-IF THERE IS NO SAVED CLOCK
-*/
 
 if(
 data.clock_seconds === null
@@ -2874,14 +3094,12 @@ null;
 
 updateClockDisplay();
 
+resetPlayerMinuteSync();
+
 return;
 
 }
 
-
-/*
-RESTORE SAVED CLOCK
-*/
 
 clockSeconds =
 Math.max(
@@ -2905,12 +3123,6 @@ data.clock_end_time
 :
 null;
 
-
-/*
-IF CLOCK WAS RUNNING,
-CALCULATE THE ACTUAL REMAINING TIME
-BASED ON THE END TIMESTAMP.
-*/
 
 if(
 clockRunning &&
@@ -2936,10 +3148,6 @@ Date.now()
 }
 
 
-/*
-CLOCK HAS FINISHED
-*/
-
 if(
 clockSeconds <= 0
 ){
@@ -2957,21 +3165,27 @@ updateClockDisplay();
 
 await saveClockState();
 
+resetPlayerMinuteSync();
+
 return;
 
 }
 
 
-/*
-UPDATE DISPLAY
-*/
-
 updateClockDisplay();
 
 
 /*
-CONTINUE COUNTDOWN AFTER REFRESH
+Reset the player minute timer AFTER
+the persisted clock has been restored.
+
+This prevents the time spent loading
+the page from being incorrectly added
+to player minutes.
 */
+
+resetPlayerMinuteSync();
+
 
 if(
 clockRunning
@@ -3052,11 +3266,6 @@ return;
 }
 
 
-/*
-If clock is at zero,
-do not start it.
-*/
-
 if(
 clockSeconds <= 0
 ){
@@ -3071,16 +3280,15 @@ return;
 
 
 /*
-Create exact end timestamp.
+Reset player minute synchronization
+BEFORE starting the clock.
 
-Example:
-
-8:09 remaining
-
-Date.now() + 489 seconds
-
-This timestamp is saved in Supabase.
+This means the players begin accumulating
+minutes from the exact moment START is pressed.
 */
+
+resetPlayerMinuteSync();
+
 
 clockEndTime =
 
@@ -3098,16 +3306,8 @@ clockRunning =
 true;
 
 
-/*
-SAVE CLOCK STATE FIRST
-*/
-
 await saveClockState();
 
-
-/*
-START LOCAL DISPLAY
-*/
 
 startClockInternal();
 
@@ -3129,6 +3329,9 @@ clockInterval
 );
 
 }
+
+
+resetPlayerMinuteSync();
 
 
 clockInterval =
@@ -3155,12 +3358,20 @@ return;
 
 
 /*
-CALCULATE REMAINING TIME
-FROM REAL TIME.
+FIRST:
+Synchronize player minutes.
 
-This prevents the clock from
-drifting and ensures refresh
-does not reset it.
+This is done BEFORE changing the
+displayed clock value.
+*/
+
+await syncPlayerMinutes();
+
+
+/*
+SECOND:
+Calculate remaining game time
+using the exact end timestamp.
 */
 
 clockSeconds =
@@ -3192,6 +3403,14 @@ if(
 clockSeconds <= 0
 ){
 
+/*
+Give players their final seconds
+before stopping the clock.
+*/
+
+await syncPlayerMinutes();
+
+
 clockSeconds =
 0;
 
@@ -3211,6 +3430,8 @@ null;
 updateClockDisplay();
 
 await saveClockState();
+
+resetPlayerMinuteSync();
 
 return;
 
@@ -3242,9 +3463,15 @@ return;
 
 
 /*
-Calculate exact remaining time
-BEFORE stopping the clock.
+IMPORTANT:
+
+Before pausing the clock,
+save all player minutes accumulated
+since the last synchronization.
 */
+
+await syncPlayerMinutes();
+
 
 if(
 clockEndTime
@@ -3270,25 +3497,13 @@ Date.now()
 }
 
 
-/*
-STOP CLOCK
-*/
-
 clockRunning =
 false;
 
 
-/*
-REMOVE END TIMESTAMP
-*/
-
 clockEndTime =
 null;
 
-
-/*
-STOP INTERVAL
-*/
 
 if(
 clockInterval
@@ -3307,9 +3522,8 @@ null;
 updateClockDisplay();
 
 
-/*
-SAVE EXACT PAUSED TIME
-*/
+resetPlayerMinuteSync();
+
 
 await saveClockState();
 
@@ -3327,24 +3541,26 @@ return;
 
 
 /*
-STOP CLOCK
+If the clock is running,
+save all player minutes first.
 */
+
+if(
+clockRunning
+){
+
+await syncPlayerMinutes();
+
+}
+
 
 clockRunning =
 false;
 
 
-/*
-CLEAR END TIME
-*/
-
 clockEndTime =
 null;
 
-
-/*
-STOP INTERVAL
-*/
 
 if(
 clockInterval
@@ -3360,10 +3576,6 @@ null;
 }
 
 
-/*
-RESET TO 10 MINUTES
-*/
-
 clockSeconds =
 600;
 
@@ -3371,9 +3583,8 @@ clockSeconds =
 updateClockDisplay();
 
 
-/*
-SAVE RESET
-*/
+resetPlayerMinuteSync();
+
 
 await saveClockState();
 
