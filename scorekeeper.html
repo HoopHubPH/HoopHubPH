@@ -1,5 +1,5 @@
-```html
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -21,6 +21,8 @@ body{
     background:#f5f5f5;
     color:#222;
 }
+
+/* HEADER */
 
 header{
     background:#111;
@@ -54,11 +56,15 @@ nav a:hover{
     color:#ff6b00;
 }
 
+/* MAIN */
+
 .container{
     width:100%;
     max-width:100%;
     padding:8px;
 }
+
+/* GAME SELECTOR */
 
 .game-selector{
     background:white;
@@ -93,6 +99,8 @@ nav a:hover{
     cursor:pointer;
 }
 
+/* STATUS */
+
 #statusMessage{
     display:none;
     text-align:center;
@@ -103,6 +111,8 @@ nav a:hover{
     margin-bottom:8px;
     font-size:11px;
 }
+
+/* SCOREBOARD */
 
 .scoreboard{
     display:grid;
@@ -145,6 +155,8 @@ nav a:hover{
     font-size:11px;
     cursor:pointer;
 }
+
+/* CLOCK */
 
 .clock-area{
     background:white;
@@ -190,6 +202,8 @@ nav a:hover{
     cursor:pointer;
 }
 
+/* PLAYER AREA */
+
 .controls{
     background:white;
     padding:7px;
@@ -202,6 +216,8 @@ nav a:hover{
     font-size:14px;
     margin-bottom:7px;
 }
+
+/* TWO TEAM TABLES */
 
 .stats-controls{
     display:grid;
@@ -223,6 +239,8 @@ nav a:hover{
     font-size:12px;
     padding:6px;
 }
+
+/* TABLE */
 
 .player-table{
     width:100%;
@@ -255,6 +273,8 @@ nav a:hover{
     background:#fff8f3;
 }
 
+/* COLUMN WIDTHS */
+
 .col-number{
     width:25px;
 }
@@ -280,6 +300,8 @@ nav a:hover{
     width:38px;
 }
 
+/* PLAYER */
+
 .player-name{
     font-weight:bold;
     font-size:9px;
@@ -294,6 +316,8 @@ nav a:hover{
     font-size:7px;
     display:block;
 }
+
+/* VALUE */
 
 .stat-value{
     font-weight:bold;
@@ -311,6 +335,8 @@ nav a:hover{
     color:#c62828;
 }
 
+/* SUB STATUS */
+
 .on-court{
     background:#e8f5e9!important;
 }
@@ -322,6 +348,8 @@ nav a:hover{
 .bench{
     background:white;
 }
+
+/* SUB BUTTON */
 
 .sub-button{
     border:0;
@@ -342,6 +370,8 @@ nav a:hover{
     background:#c62828;
     color:white;
 }
+
+/* STAT CONTROLS */
 
 .stat-control-buttons{
     display:flex;
@@ -370,6 +400,8 @@ nav a:hover{
 .stat-btn:hover{
     background:#ff6b00;
 }
+
+/* SHOOTING */
 
 .shot-value{
     font-size:9px;
@@ -403,6 +435,8 @@ nav a:hover{
     background:#ff6b00;
 }
 
+/* FOOTER */
+
 .game-footer-controls{
     margin-top:8px;
     background:white;
@@ -425,6 +459,8 @@ nav a:hover{
     cursor:pointer;
 }
 
+/* MOBILE */
+
 @media(max-width:900px){
 
     .stats-controls{
@@ -442,6 +478,7 @@ nav a:hover{
 }
 
 </style>
+
 </head>
 
 <body>
@@ -461,6 +498,8 @@ HOOP <span>HUB PH</span>
 
 <div class="container">
 
+<!-- GAME SELECTOR -->
+
 <div class="game-selector">
 
 <h2>Game ID:</h2>
@@ -469,18 +508,22 @@ HOOP <span>HUB PH</span>
 type="number"
 id="gameId"
 value="1"
+
 >
 
 <button
 class="load-button"
 onclick="loadGame()"
+
 >
-LOAD
-</button>
+
+LOAD </button>
 
 </div>
 
 <div id="statusMessage"></div>
+
+<!-- SCOREBOARD -->
 
 <div class="scoreboard">
 
@@ -502,30 +545,34 @@ id="homeScore"
 <button
 class="score-button"
 onclick="updateScore('home',1)"
+
 >
-+1
-</button>
+
++1 </button>
 
 <button
 class="score-button"
 onclick="updateScore('home',2)"
+
 >
-+2
-</button>
+
++2 </button>
 
 <button
 class="score-button"
 onclick="updateScore('home',3)"
+
 >
-+3
-</button>
+
++3 </button>
 
 <button
 class="score-button"
 onclick="updateScore('home',-1)"
+
 >
--1
-</button>
+
+-1 </button>
 
 </div>
 
@@ -549,36 +596,42 @@ id="awayScore"
 <button
 class="score-button"
 onclick="updateScore('away',1)"
+
 >
-+1
-</button>
+
++1 </button>
 
 <button
 class="score-button"
 onclick="updateScore('away',2)"
+
 >
-+2
-</button>
+
++2 </button>
 
 <button
 class="score-button"
 onclick="updateScore('away',3)"
+
 >
-+3
-</button>
+
++3 </button>
 
 <button
 class="score-button"
 onclick="updateScore('away',-1)"
+
 >
--1
-</button>
+
+-1 </button>
 
 </div>
 
 </div>
 
 </div>
+
+<!-- CLOCK -->
 
 <div class="clock-area">
 
@@ -623,6 +676,8 @@ RESET
 
 </div>
 
+<!-- PLAYER STATS -->
+
 <div class="controls">
 
 <h2>
@@ -630,6 +685,8 @@ PLAYER STATS
 </h2>
 
 <div class="stats-controls">
+
+<!-- HOME -->
 
 <div class="stat-control">
 
@@ -640,6 +697,8 @@ Home Players
 <div id="homePlayersList"></div>
 
 </div>
+
+<!-- AWAY -->
 
 <div class="stat-control">
 
@@ -655,6 +714,8 @@ Away Players
 
 </div>
 
+<!-- FOOTER -->
+
 <div class="game-footer-controls">
 
 <div>
@@ -664,23 +725,26 @@ Away Players
 <button
 class="control-button"
 onclick="updateGame({status:'Live'})"
+
 >
-LIVE
-</button>
+
+LIVE </button>
 
 <button
 class="control-button"
 onclick="updateGame({status:'Halftime'})"
+
 >
-HALF
-</button>
+
+HALF </button>
 
 <button
 class="control-button"
 onclick="updateGame({status:'Final'})"
+
 >
-FINAL
-</button>
+
+FINAL </button>
 
 </div>
 
@@ -728,6 +792,20 @@ let clockSeconds = 600;
 let clockInterval = null;
 
 let clockRunning = false;
+
+
+/*
+NEW CLOCK PERSISTENCE VARIABLES
+
+clock_started_at stores the exact time
+when the running clock was last started.
+
+The value is saved in Supabase.
+*/
+
+let clockStartedAt = null;
+
+let lastClockSave = 0;
 
 
 /* =========================================
@@ -800,6 +878,330 @@ el.style.display =
 
 
 /* =========================================
+CLOCK PERSISTENCE
+========================================= */
+
+
+/*
+SAVE CURRENT CLOCK STATE
+
+If the clock is running, we save:
+
+clock_seconds
+clock_running = true
+clock_started_at = current timestamp
+
+If paused, we save:
+
+clock_seconds
+clock_running = false
+clock_started_at = null
+*/
+
+async function saveClockState(){
+
+if(!currentGame)
+return;
+
+const updateData = {
+
+clock_seconds:
+Math.max(
+0,
+Math.floor(clockSeconds)
+),
+
+clock_running:
+clockRunning,
+
+clock_started_at:
+clockRunning
+? new Date().toISOString()
+: null
+
+};
+
+const {
+
+data,
+error
+
+} = await supabaseClient
+
+.from("games")
+
+.update(updateData)
+
+.eq(
+"id",
+currentGame.id
+)
+
+.select()
+.single();
+
+if(error){
+
+console.error(
+"Clock save error:",
+error
+);
+
+return;
+
+}
+
+currentGame =
+data;
+
+clockStartedAt =
+data.clock_started_at;
+
+lastClockSave =
+Date.now();
+
+}
+
+
+/*
+SAVE CLOCK WITHOUT RESETTING
+THE START TIMESTAMP
+
+This function is used while the clock
+is running.
+
+It saves the current remaining time
+and creates a new starting timestamp
+for the remaining clock.
+
+This keeps the clock accurate after
+a page refresh.
+*/
+
+async function saveRunningClock(){
+
+if(!currentGame ||
+!clockRunning)
+return;
+
+const now =
+Date.now();
+
+const elapsed =
+clockStartedAt
+? Math.floor(
+(now -
+new Date(clockStartedAt).getTime())
+/ 1000
+)
+: 0;
+
+const calculatedSeconds =
+Math.max(
+0,
+clockSeconds -
+elapsed
+);
+
+clockSeconds =
+calculatedSeconds;
+
+clockStartedAt =
+new Date().toISOString();
+
+const {
+
+data,
+error
+
+} = await supabaseClient
+
+.from("games")
+
+.update({
+
+clock_seconds:
+clockSeconds,
+
+clock_running:
+true,
+
+clock_started_at:
+clockStartedAt
+
+})
+
+.eq(
+"id",
+currentGame.id
+)
+
+.select()
+.single();
+
+if(error){
+
+console.error(
+"Running clock save error:",
+error
+);
+
+return;
+
+}
+
+currentGame =
+data;
+
+lastClockSave =
+Date.now();
+
+}
+
+
+/*
+LOAD SAVED CLOCK
+
+If the saved clock was paused,
+we use the saved clock_seconds.
+
+If the saved clock was running,
+we calculate the number of seconds
+that passed since clock_started_at.
+
+Example:
+
+Saved:
+9:09
+clock_started_at:
+10:00:00
+
+Refresh:
+10:00:15
+
+Result:
+8:54
+*/
+
+function loadSavedClock(){
+
+if(!currentGame){
+
+clockSeconds =
+600;
+
+clockRunning =
+false;
+
+clockStartedAt =
+null;
+
+updateClockDisplay();
+
+return;
+
+}
+
+const savedSeconds =
+Number(
+currentGame.clock_seconds
+);
+
+if(
+Number.isFinite(savedSeconds)
+){
+
+clockSeconds =
+Math.max(
+0,
+Math.floor(savedSeconds)
+);
+
+}
+else{
+
+clockSeconds =
+600;
+
+}
+
+
+clockRunning =
+currentGame.clock_running === true;
+
+
+clockStartedAt =
+currentGame.clock_started_at ||
+null;
+
+
+/*
+CLOCK WAS RUNNING BEFORE REFRESH
+*/
+
+if(
+clockRunning &&
+clockStartedAt
+){
+
+const startedTime =
+new Date(
+clockStartedAt
+).getTime();
+
+const now =
+Date.now();
+
+const elapsed =
+Math.floor(
+(now -
+startedTime)
+/ 1000
+);
+
+clockSeconds =
+Math.max(
+0,
+clockSeconds -
+elapsed
+);
+
+}
+
+
+/*
+IF TIME HAS ENDED
+*/
+
+if(
+clockSeconds <= 0
+){
+
+clockSeconds =
+0;
+
+clockRunning =
+false;
+
+clockStartedAt =
+null;
+
+}
+
+
+/*
+IMPORTANT:
+
+The clock is displayed immediately
+using the calculated remaining time.
+*/
+
+updateClockDisplay();
+
+}
+
+
+/* =========================================
 LOAD GAME
 ========================================= */
 
@@ -854,6 +1256,15 @@ return;
 currentGame =
 data;
 
+
+/*
+LOAD THE SAVED CLOCK BEFORE
+LOADING THE PLAYER DATA
+*/
+
+loadSavedClock();
+
+
 document.getElementById(
 "homeTeam"
 ).textContent =
@@ -876,32 +1287,6 @@ document.getElementById(
 ).textContent =
 data.away_score || 0;
 
-
-/*
-=========================================
-RESTORE CLOCK FROM SUPABASE
-=========================================
-*/
-
-clockSeconds =
-Number(
-data.clock_seconds ?? 600
-);
-
-clockRunning =
-Boolean(
-data.clock_running ?? false
-);
-
-updateClockDisplay();
-
-
-/*
-=========================================
-RESET LOCAL MAPS
-=========================================
-*/
-
 playerStatsMap = {};
 
 playerDataMap = {};
@@ -910,32 +1295,7 @@ playerTeamMap = {};
 
 playerOnCourt = {};
 
-
-/*
-=========================================
-LOAD PLAYERS
-
-The on_court status is now restored
-from Supabase instead of resetting.
-=========================================
-*/
-
 await loadTeamPlayers();
-
-
-/*
-=========================================
-IF CLOCK WAS RUNNING BEFORE REFRESH
-RESUME IT
-=========================================
-*/
-
-if(clockRunning){
-
-startClock();
-
-}
-
 
 showStatus(
 "Game loaded successfully."
@@ -1025,8 +1385,8 @@ newScore;
 
 
 /*
-UPDATE INDIVIDUAL +/- FOR
-PLAYERS CURRENTLY ON COURT
+The +/- of players currently on court
+is based on the score change.
 */
 
 if(amount !== 0){
@@ -1282,6 +1642,10 @@ return;
 }
 
 
+/*
+CREATE TABLE
+*/
+
 const table =
 document.createElement(
 "table"
@@ -1348,6 +1712,11 @@ table.querySelector(
 );
 
 
+/*
+Players are created once in fixed order.
+Updating stats only changes cell contents.
+*/
+
 for(
 const player of data
 ){
@@ -1358,31 +1727,14 @@ player;
 playerTeamMap[player.id] =
 team;
 
-
-/*
-=========================================
-GET SAVED PLAYER GAME STATS
-=========================================
-*/
-
-const savedStats =
-await getPlayerGameStats(
-player.id
-);
-
-
-/*
-=========================================
-RESTORE ON COURT STATUS
-FROM SUPABASE
-=========================================
-*/
+if(
+playerOnCourt[player.id] === undefined
+){
 
 playerOnCourt[player.id] =
-Boolean(
-savedStats.on_court
-);
+false;
 
+}
 
 const row =
 document.createElement(
@@ -1446,9 +1798,7 @@ ft_made:0,
 
 ft_attempted:0,
 
-plus_minus:0,
-
-on_court:false
+plus_minus:0
 
 };
 
@@ -1676,18 +2026,46 @@ currentValue + amount
 );
 
 
+/*
+PTS IS NOT MANUALLY EDITABLE
+*/
+
 if(statKey === "points"){
+
 return;
+
 }
+
+
+/*
+MINUTES ARE NOT MANUALLY EDITABLE
+*/
 
 if(statKey === "minutes_played"){
+
 return;
+
 }
+
+
+/*
+PLUS MINUS IS NOT MANUALLY EDITABLE
+*/
 
 if(statKey === "plus_minus"){
+
 return;
+
 }
 
+
+/*
+MADE SHOTS
+
+2PT MADE = +2 POINTS
+3PT MADE = +3 POINTS
+FT MADE = +1 POINT
+*/
 
 if(
 statKey === "two_pt_made"
@@ -1703,6 +2081,12 @@ statKey === "two_pt_made"
 : statKey === "three_pt_made"
 ? 3
 : 1;
+
+
+/*
+When subtracting a made shot,
+subtract the corresponding points.
+*/
 
 const newPoints =
 Math.max(
@@ -1725,21 +2109,6 @@ playerId,
 newPoints
 );
 
-
-/*
-UPDATE TEAM SCORE.
-THIS ALSO UPDATES THE INDIVIDUAL
-+/- OF THE ON-COURT PLAYERS.
-*/
-
-const team =
-playerTeamMap[playerId];
-
-await updateScore(
-team,
-amount * pointsToAdd
-);
-
 await refreshPlayerRow(
 playerId
 );
@@ -1758,6 +2127,11 @@ statKey,
 newValue
 
 );
+
+
+/*
+REFRESH ONLY THE ROW
+*/
 
 await refreshPlayerRow(
 playerId
@@ -1829,6 +2203,10 @@ Number(
 s.defensive_rebounds || 0
 );
 
+
+/*
+PLAYER ROW
+*/
 
 row.innerHTML = `
 
@@ -2406,17 +2784,6 @@ if(currentlyOn){
 playerOnCourt[playerId] =
 false;
 
-
-/*
-SAVE SUB OUT STATUS TO SUPABASE
-*/
-
-await saveStatDirect(
-playerId,
-"on_court",
-false
-);
-
 await refreshPlayerRow(
 playerId
 );
@@ -2470,17 +2837,6 @@ SUB IN
 playerOnCourt[playerId] =
 true;
 
-
-/*
-SAVE SUB IN STATUS TO SUPABASE
-*/
-
-await saveStatDirect(
-playerId,
-"on_court",
-true
-);
-
 await refreshPlayerRow(
 playerId
 );
@@ -2493,7 +2849,7 @@ showStatus(
 
 
 /* =========================================
-CLOCK DISPLAY
+CLOCK
 ========================================= */
 
 function updateClockDisplay(){
@@ -2526,13 +2882,48 @@ String(seconds)
 
 
 /* =========================================
-SAVE CLOCK TO SUPABASE
+START CLOCK
 ========================================= */
 
-async function saveClockState(){
+async function startClock(){
 
-if(!currentGame)
+if(clockRunning)
 return;
+
+if(!currentGame){
+
+showStatus(
+"Load a game first."
+);
+
+return;
+
+}
+
+if(clockSeconds <= 0){
+
+showStatus(
+"Clock is at 0:00. Reset the clock first."
+);
+
+return;
+
+}
+
+
+/*
+START CLOCK PERSISTENTLY
+
+The current clock value is saved
+together with the exact timestamp.
+*/
+
+clockRunning =
+true;
+
+clockStartedAt =
+new Date().toISOString();
+
 
 const {
 
@@ -2549,7 +2940,10 @@ clock_seconds:
 clockSeconds,
 
 clock_running:
-clockRunning
+true,
+
+clock_started_at:
+clockStartedAt
 
 })
 
@@ -2561,120 +2955,181 @@ currentGame.id
 .select()
 .single();
 
+
 if(error){
 
 console.error(
-"Clock save error:",
+"Unable to start clock:",
 error
+);
+
+clockRunning =
+false;
+
+clockStartedAt =
+null;
+
+showStatus(
+"Unable to start game clock."
 );
 
 return;
 
 }
+
 
 currentGame =
 data;
 
-}
-
-
-/* =========================================
-START CLOCK
-========================================= */
-
-function startClock(){
-
-if(clockRunning)
-return;
-
-if(!currentGame){
-
-showStatus(
-"Load a game first."
-);
-
-return;
-
-}
-
-clockRunning =
-true;
+lastClockSave =
+Date.now();
 
 
 /*
-SAVE RUNNING STATUS
+LOCAL DISPLAY TIMER
+
+The database timestamp remains
+the source of truth after refresh.
 */
-
-saveClockState();
-
 
 clockInterval =
 setInterval(
 
 async()=>{
 
-if(clockSeconds <= 0){
+if(!clockRunning)
+return;
 
-pauseClock();
+
+/*
+Calculate elapsed time from the
+last saved clock start timestamp.
+*/
+
+const elapsed =
+Math.floor(
+
+(
+Date.now()
+-
+new Date(
+clockStartedAt
+).getTime()
+
+)
+/1000
+
+);
+
+
+/*
+Calculate current clock.
+
+This prevents the clock from
+being affected by page refresh.
+*/
+
+const currentSeconds =
+Math.max(
+
+0,
+
+Number(
+currentGame.clock_seconds
+)
+
+-
+
+elapsed
+
+);
+
+
+clockSeconds =
+currentSeconds;
+
+updateClockDisplay();
+
+
+/*
+When the clock reaches 0,
+stop and save it.
+*/
+
+if(
+clockSeconds <= 0
+){
+
+clockSeconds =
+0;
+
+clockRunning =
+false;
+
+clearInterval(
+clockInterval
+);
+
+clockInterval =
+null;
+
+clockStartedAt =
+null;
+
+
+await supabaseClient
+
+.from("games")
+
+.update({
+
+clock_seconds:
+0,
+
+clock_running:
+false,
+
+clock_started_at:
+null
+
+})
+
+.eq(
+"id",
+currentGame.id
+);
 
 return;
 
 }
 
 
-clockSeconds--;
-
-updateClockDisplay();
-
-
 /*
-SAVE CURRENT CLOCK EVERY SECOND
+Save the running clock periodically.
+
+This prevents the database from
+falling too far behind if the page
+is refreshed while the game is running.
+
+Every 10 seconds, we save the
+current remaining clock and create
+a fresh timestamp.
 */
-
-await saveClockState();
-
-
-/*
-=========================================
-MINUTES ONLY FOR PLAYERS ON COURT
-=========================================
-*/
-
-for(
-const playerId in playerOnCourt
-){
 
 if(
-playerOnCourt[playerId]
+Date.now() -
+lastClockSave
+>=
+10000
 ){
 
-const stats =
-await getPlayerGameStats(
-playerId
-);
-
-const newMinutes =
-Number(
-stats.minutes_played || 0
-)+1;
-
-await saveStatDirect(
-
-playerId,
-
-"minutes_played",
-
-newMinutes
-
-);
-
-}
+await saveRunningClock();
 
 }
 
 },
 
-1000
+250
 
 );
 
@@ -2687,8 +3142,57 @@ PAUSE CLOCK
 
 async function pauseClock(){
 
+if(!currentGame)
+return;
+
+
+/*
+Calculate exact remaining time
+before pausing.
+*/
+
+if(clockRunning &&
+clockStartedAt){
+
+const elapsed =
+Math.floor(
+
+(
+Date.now()
+-
+new Date(
+clockStartedAt
+).getTime()
+
+)
+/1000
+
+);
+
+clockSeconds =
+Math.max(
+
+0,
+
+Number(
+currentGame.clock_seconds
+)
+
+-
+
+elapsed
+
+);
+
+}
+
+
 clockRunning =
 false;
+
+clockStartedAt =
+null;
+
 
 if(clockInterval){
 
@@ -2701,7 +3205,61 @@ null;
 
 }
 
-await saveClockState();
+
+updateClockDisplay();
+
+
+/*
+SAVE PAUSED CLOCK
+
+The exact remaining time is stored.
+*/
+
+const {
+
+data,
+error
+
+} = await supabaseClient
+
+.from("games")
+
+.update({
+
+clock_seconds:
+clockSeconds,
+
+clock_running:
+false,
+
+clock_started_at:
+null
+
+})
+
+.eq(
+"id",
+currentGame.id
+)
+
+.select()
+.single();
+
+
+if(error){
+
+console.error(
+"Unable to pause clock:",
+error
+);
+
+return;
+
+}
+
+
+currentGame =
+data;
 
 }
 
@@ -2712,14 +3270,96 @@ RESET CLOCK
 
 async function resetClock(){
 
-pauseClock();
+if(!currentGame){
 
 clockSeconds =
 600;
 
+clockRunning =
+false;
+
+clockStartedAt =
+null;
+
 updateClockDisplay();
 
-await saveClockState();
+return;
+
+}
+
+
+await pauseClock();
+
+
+clockSeconds =
+600;
+
+clockRunning =
+false;
+
+clockStartedAt =
+null;
+
+updateClockDisplay();
+
+
+/*
+SAVE RESET CLOCK
+*/
+
+const {
+
+data,
+error
+
+} = await supabaseClient
+
+.from("games")
+
+.update({
+
+clock_seconds:
+600,
+
+clock_running:
+false,
+
+clock_started_at:
+null
+
+})
+
+.eq(
+"id",
+currentGame.id
+)
+
+.select()
+.single();
+
+
+if(error){
+
+console.error(
+"Unable to reset clock:",
+error
+);
+
+showStatus(
+"Unable to reset clock."
+);
+
+return;
+
+}
+
+
+currentGame =
+data;
+
+showStatus(
+"Clock reset to 10:00."
+);
 
 }
 
@@ -2735,11 +3375,80 @@ period
 if(!currentGame)
 return;
 
-await updateGame({
-period:period
-});
 
-resetClock();
+/*
+Changing the period stops the
+current clock and resets it to 10:00.
+*/
+
+await pauseClock();
+
+
+clockSeconds =
+600;
+
+clockRunning =
+false;
+
+clockStartedAt =
+null;
+
+updateClockDisplay();
+
+
+const {
+
+data,
+error
+
+} = await supabaseClient
+
+.from("games")
+
+.update({
+
+period:
+period,
+
+clock_seconds:
+600,
+
+clock_running:
+false,
+
+clock_started_at:
+null
+
+})
+
+.eq(
+"id",
+currentGame.id
+)
+
+.select()
+.single();
+
+
+if(error){
+
+console.error(
+"Unable to change period:",
+error
+);
+
+return;
+
+}
+
+
+currentGame =
+data;
+
+showStatus(
+period+
+" started. Clock reset to 10:00."
+);
 
 }
 
@@ -2755,4 +3464,3 @@ loadGame();
 </body>
 
 </html>
-```
