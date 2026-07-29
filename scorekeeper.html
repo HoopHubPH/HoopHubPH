@@ -1024,11 +1024,10 @@ newScore;
 
 
 /*
-PLUS/MINUS
+IMPORTANT:
 
-Only players currently on court
-for the scoring team receive
-the score change.
+The +/- of players currently on court
+is based on the score change.
 */
 
 if(amount !== 0){
@@ -1240,7 +1239,6 @@ containerId
 container.innerHTML =
 "";
 
-
 const {
 
 data,
@@ -1264,7 +1262,6 @@ ascending:true
 }
 );
 
-
 if(error){
 
 console.error(error);
@@ -1275,7 +1272,6 @@ container.innerHTML =
 return;
 
 }
-
 
 if(!data || !data.length){
 
@@ -1358,15 +1354,9 @@ table.querySelector(
 
 
 /*
-CREATE PLAYERS IN FIXED ORDER
-
-The important change here is that
-the saved on_court value is loaded
-from player_game_stats.
-
-This means refreshing the page
-will NOT automatically make every
-player SUB OUT.
+IMPORTANT:
+Players are created once in fixed order.
+Updating stats only changes cell contents.
 */
 
 for(
@@ -1379,32 +1369,14 @@ player;
 playerTeamMap[player.id] =
 team;
 
-
-/*
-GET SAVED GAME STATS
-*/
-
-const stats =
-await getPlayerGameStats(
-player.id
-);
-
-
-/*
-RESTORE ON-COURT STATUS
-
-If Supabase says true:
-player remains SUB IN.
-
-If Supabase says false:
-player remains SUB OUT.
-*/
+if(
+playerOnCourt[player.id] === undefined
+){
 
 playerOnCourt[player.id] =
-Boolean(
-stats.on_court
-);
+false;
 
+}
 
 const row =
 document.createElement(
@@ -1415,14 +1387,6 @@ row.id =
 "player-row-"+player.id;
 
 tbody.appendChild(row);
-
-
-/*
-RENDER ROW
-
-The row itself is NOT removed
-or recreated when stats update.
-*/
 
 await renderPlayerRow(
 player,
@@ -1476,19 +1440,9 @@ ft_made:0,
 
 ft_attempted:0,
 
-plus_minus:0,
-
-/*
-IMPORTANT:
-Default is SUB OUT.
-The real value is loaded from Supabase
-when the player already has a game stat.
-*/
-
-on_court:false
+plus_minus:0
 
 };
-
 
 if(
 playerStatsMap[playerId]
@@ -1539,12 +1493,6 @@ error
 }
 
 
-/*
-COMBINE DEFAULTS WITH SAVED DATA
-
-This keeps on_court from Supabase.
-*/
-
 playerStatsMap[playerId] = {
 
 ...defaults,
@@ -1575,12 +1523,10 @@ value
 if(!currentGame)
 return;
 
-
 const stats =
 await getPlayerGameStats(
 playerId
 );
-
 
 const updateObj = {
 
@@ -1591,7 +1537,6 @@ game_id:
 currentGame.id
 
 };
-
 
 updateObj[statKey] =
 Math.max(
@@ -1780,29 +1725,180 @@ statKey === "two_pt_made"
 : 1;
 
 
+/*
+UPDATE MADE SHOT
+*/
+
+await saveStatDirect(
+
+playerId,
+
+statKey,
+
+newValue
+
+);
+
+
+/*
+CALCULATE NEW PLAYER POINTS
+*/
+
 const newPoints =
 Math.max(
+
 0,
-Number(stats.points || 0)
+
+Number(
+stats.points || 0
+)
+
++
+
+(amount * pointsToAdd)
+
+);
+
+
+/*
+UPDATE PLAYER POINTS
+*/
+
+await saveStatDirect(
+
+playerId,
+
+"points",
+
+newPoints
+
+);
+
+
+/*
+UPDATE TEAM SCORE
+
+This is the requested change.
+
+When a made shot is added or removed,
+the team score changes by the same
+number of points.
+*/
+
+const team =
+playerTeamMap[playerId];
+
+if(team){
+
+const column =
+team === "home"
+? "home_score"
+: "away_score";
+
+
+const currentTeamScore =
+Number(
+currentGame[column] || 0
+);
+
+
+const newTeamScore =
+Math.max(
+
+0,
+
+currentTeamScore
 +
 (amount * pointsToAdd)
+
 );
 
 
-await saveStatDirect(
-playerId,
-statKey,
-newValue
+/*
+UPDATE TEAM SCORE IN SUPABASE
+*/
+
+const {
+
+data,
+error
+
+} = await supabaseClient
+
+.from("games")
+
+.update({
+
+[column]:
+newTeamScore
+
+})
+
+.eq(
+
+"id",
+
+currentGame.id
+
+)
+
+.select()
+
+.single();
+
+
+if(error){
+
+console.error(
+
+"Team score update error:",
+
+error
+
 );
 
-await saveStatDirect(
-playerId,
-"points",
-newPoints
+showStatus(
+
+"Player stats saved, but team score could not be updated."
+
 );
+
+}
+
+else{
+
+/*
+UPDATE CURRENT GAME
+*/
+
+currentGame =
+data;
+
+
+/*
+UPDATE SCOREBOARD
+*/
+
+document.getElementById(
+
+team + "Score"
+
+).textContent =
+newTeamScore;
+
+}
+
+}
+
+
+/*
+REFRESH ONLY PLAYER ROW
+*/
 
 await refreshPlayerRow(
+
 playerId
+
 );
 
 return;
@@ -1810,6 +1906,10 @@ return;
 }
 
 
+/*
+ALL OTHER STATS
+*/
+
 await saveStatDirect(
 
 playerId,
@@ -1821,8 +1921,14 @@ newValue
 );
 
 
+/*
+REFRESH ONLY PLAYER ROW
+*/
+
 await refreshPlayerRow(
+
 playerId
+
 );
 
 }
@@ -1846,7 +1952,6 @@ document.getElementById(
 
 if(!player || !row)
 return;
-
 
 await renderPlayerRow(
 player,
@@ -1874,9 +1979,7 @@ player.id
 );
 
 const onCourt =
-Boolean(
-playerOnCourt[player.id]
-);
+playerOnCourt[player.id];
 
 
 row.className =
@@ -2456,130 +2559,24 @@ async function toggleSubstitution(
 playerId
 ){
 
-if(!currentGame){
-
-showStatus(
-"Load a game first."
-);
-
+if(!currentGame)
 return;
-
-}
-
 
 const team =
 playerTeamMap[playerId];
 
 const currentlyOn =
-Boolean(
-playerOnCourt[playerId]
-);
+playerOnCourt[playerId];
 
 
 /*
-=========================================
 SUB OUT
-=========================================
 */
 
 if(currentlyOn){
 
-/*
-UPDATE LOCAL STATE IMMEDIATELY
-*/
-
 playerOnCourt[playerId] =
 false;
-
-
-/*
-SAVE SUB OUT TO SUPABASE
-
-on_court = false
-*/
-
-const {
-
-data,
-error
-
-} = await supabaseClient
-
-.from("player_game_stats")
-
-.upsert(
-
-{
-
-player_id:
-playerId,
-
-game_id:
-currentGame.id,
-
-on_court:
-false
-
-},
-
-{
-
-onConflict:
-"player_id,game_id"
-
-}
-
-)
-
-.select()
-.single();
-
-
-if(error){
-
-console.error(
-"SUB OUT ERROR:",
-error
-);
-
-
-/*
-ROLL BACK IF SAVE FAILED
-*/
-
-playerOnCourt[playerId] =
-true;
-
-showStatus(
-"Unable to save SUB OUT: "+
-error.message
-);
-
-return;
-
-}
-
-
-/*
-UPDATE LOCAL STATS CACHE
-*/
-
-if(data){
-
-playerStatsMap[playerId] = {
-
-...playerStatsMap[playerId],
-
-...data
-
-};
-
-}
-
-
-/*
-REFRESH ONLY THIS ROW
-*/
 
 await refreshPlayerRow(
 playerId
@@ -2595,9 +2592,7 @@ return;
 
 
 /*
-=========================================
-COUNT PLAYERS CURRENTLY ON COURT
-=========================================
+COUNT PLAYERS ON COURT
 */
 
 const activePlayers =
@@ -2608,24 +2603,20 @@ playerOnCourt
 id =>
 
 playerOnCourt[id] === true
-
 &&
-
 playerTeamMap[id] === team
 
 ).length;
 
 
 /*
-=========================================
-MAXIMUM 5
-=========================================
+MAX 5
 */
 
 if(activePlayers >= 5){
 
 showStatus(
-"Maximum 5 players are already on court. SUB OUT a player first."
+"Maximum 5 players can be on court."
 );
 
 return;
@@ -2634,103 +2625,11 @@ return;
 
 
 /*
-=========================================
 SUB IN
-=========================================
 */
 
 playerOnCourt[playerId] =
 true;
-
-
-/*
-SAVE SUB IN TO SUPABASE
-
-on_court = true
-*/
-
-const {
-
-data,
-error
-
-} = await supabaseClient
-
-.from("player_game_stats")
-
-.upsert(
-
-{
-
-player_id:
-playerId,
-
-game_id:
-currentGame.id,
-
-on_court:
-true
-
-},
-
-{
-
-onConflict:
-"player_id,game_id"
-
-}
-
-)
-
-.select()
-.single();
-
-
-if(error){
-
-console.error(
-"SUB IN ERROR:",
-error
-);
-
-
-/*
-ROLL BACK LOCAL STATE
-*/
-
-playerOnCourt[playerId] =
-false;
-
-showStatus(
-"Unable to save SUB IN: "+
-error.message
-);
-
-return;
-
-}
-
-
-/*
-UPDATE LOCAL STATS CACHE
-*/
-
-if(data){
-
-playerStatsMap[playerId] = {
-
-...playerStatsMap[playerId],
-
-...data
-
-};
-
-}
-
-
-/*
-REFRESH ONLY THIS ROW
-*/
 
 await refreshPlayerRow(
 playerId
@@ -2816,15 +2715,18 @@ return;
 1 REAL SECOND =
 1 GAME SECOND
 
-ONLY PLAYERS WITH
-on_court = TRUE
-EARN PLAYING TIME.
+ALL ON COURT PLAYERS
+GET ONE SECOND OF MINUTES.
 */
 
 clockSeconds--;
 
 updateClockDisplay();
 
+
+if(
+clockSeconds % 1 === 0
+){
 
 for(
 const playerId in playerOnCourt
@@ -2853,6 +2755,8 @@ playerId,
 newMinutes
 
 );
+
+}
 
 }
 
