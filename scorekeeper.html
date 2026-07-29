@@ -1,10 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Scorekeeper | Hoop Hub PH</title>
@@ -29,7 +29,6 @@ header {
     background: #111;
     color: white;
     padding: 18px 8%;
-
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -63,9 +62,7 @@ nav a:hover {
 .hero {
     background: #111;
     color: white;
-
     text-align: center;
-
     padding: 50px 20px;
 }
 
@@ -90,7 +87,7 @@ nav a:hover {
     padding: 0 20px;
 }
 
-/* GAME SELECT */
+/* GAME SELECTOR */
 
 .game-selector {
     background: white;
@@ -120,6 +117,10 @@ nav a:hover {
     border-radius: 6px;
     font-weight: bold;
     cursor: pointer;
+}
+
+.load-button:hover {
+    background: #111;
 }
 
 /* SCOREBOARD */
@@ -163,15 +164,10 @@ nav a:hover {
     background: #111;
     color: white;
     border: none;
-
     padding: 15px 20px;
-
     border-radius: 6px;
-
     font-size: 18px;
-
     font-weight: bold;
-
     cursor: pointer;
 }
 
@@ -185,11 +181,8 @@ nav a:hover {
     background: white;
     padding: 30px;
     border-radius: 12px;
-
     box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-
     margin-bottom: 25px;
-
     text-align: center;
 }
 
@@ -208,46 +201,82 @@ nav a:hover {
 .control-button {
     background: #ff6b00;
     color: white;
-
     border: none;
-
     padding: 12px 18px;
-
     margin: 5px;
-
     border-radius: 6px;
-
     font-weight: bold;
-
     cursor: pointer;
 }
 
-/* FOULS AND TIMEOUTS */
+.control-button:hover {
+    background: #111;
+}
+
+/* PLAYER STATS */
+
+.player-stats-section {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    margin-bottom: 25px;
+}
+
+.player-stats-section > h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.player-subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 25px;
+}
 
 .stats-controls {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 25px;
-
     margin-bottom: 25px;
 }
 
 .stat-control {
     background: white;
     padding: 25px;
-
     border-radius: 12px;
-
     text-align: center;
-
     box-shadow: 0 5px 20px rgba(0,0,0,0.08);
 }
+
+.player-list {
+    margin-top: 20px;
+}
+
+.player-card {
+    background: #f5f5f5;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    text-align: left;
+}
+
+.player-card strong {
+    font-size: 17px;
+}
+
+.player-position {
+    color: #666;
+    display: block;
+    margin-top: 5px;
+}
+
+/* FOULS AND TIMEOUTS */
 
 .stat-number {
     font-size: 40px;
     font-weight: bold;
     color: #ff6b00;
-
     margin: 15px;
 }
 
@@ -255,17 +284,11 @@ nav a:hover {
 
 #statusMessage {
     text-align: center;
-
     padding: 15px;
-
     background: #e8f5e9;
-
     color: #2e7d32;
-
     border-radius: 8px;
-
     margin-bottom: 25px;
-
     display: none;
 }
 
@@ -276,6 +299,10 @@ nav a:hover {
     header {
         flex-direction: column;
         gap: 15px;
+    }
+
+    nav {
+        text-align: center;
     }
 
     nav a {
@@ -291,59 +318,63 @@ nav a:hover {
         grid-template-columns: 1fr;
     }
 
+    .hero h1 {
+        font-size: 32px;
+    }
+
 }
 
 </style>
 
 </head>
 
-
 <body>
 
+<!-- HEADER -->
 
 <header>
 
 <a href="index.html" class="logo">
-
-HOOP <span>HUB PH</span>
-
+    HOOP <span>HUB PH</span>
 </a>
 
-
-```html
 <nav>
-    <a href="index.html">Home</a>
-    <a href="leagues.html">Leagues</a>
-    <a href="teams.html">Teams</a>
-    <a href="players.html">Players</a>
-    <a href="tournaments.html">Tournaments</a>
-    <a href="live-game.html">Live Game</a>
-</nav>
+
+```
+<a href="index.html">Home</a>
+
+<a href="leagues.html">Leagues</a>
+
+<a href="teams.html">Teams</a>
+
+<a href="players.html">Players</a>
+
+<a href="tournaments.html">Tournaments</a>
+
+<a href="live-game.html">Live Game</a>
 ```
 
+</nav>
 
 </header>
 
+<!-- HERO -->
 
 <section class="hero">
 
 <h1>
-
-LIVE GAME <span>SCOREKEEPER</span>
-
+    LIVE GAME <span>SCOREKEEPER</span>
 </h1>
 
 <p>
-
-Control the live basketball game.
-
+    Control the live basketball game.
 </p>
 
 </section>
 
-
 <div class="container">
 
+<!-- GAME SELECTOR -->
 
 <div class="game-selector">
 
@@ -354,140 +385,162 @@ type="number"
 id="gameId"
 value="1"
 placeholder="Enter Game ID"
+
 >
 
 <button
 class="load-button"
-onclick="loadGame()">
+onclick="loadGame()"
 
+>
+
+```
 LOAD GAME
+```
 
 </button>
 
 </div>
 
+<!-- STATUS MESSAGE -->
 
 <div id="statusMessage"></div>
 
+<!-- SCOREBOARD -->
 
 <div class="scoreboard">
-
 
 <!-- HOME TEAM -->
 
 <div class="team-control">
 
 <h2 id="homeTeam">
-
-Home Team
-
+    Home Team
 </h2>
 
 <div
-class="score"
-id="homeScore">
-
-0
-
+    class="score"
+    id="homeScore"
+>
+    0
 </div>
-
 
 <div class="button-row">
 
 <button
 class="score-button"
-onclick="updateScore('home', 1)">
+onclick="updateScore('home', 1)"
 
+>
+
+```
 +1
+```
 
 </button>
 
-
 <button
 class="score-button"
-onclick="updateScore('home', 2)">
+onclick="updateScore('home', 2)"
 
+>
+
+```
 +2
+```
 
 </button>
 
-
 <button
 class="score-button"
-onclick="updateScore('home', 3)">
+onclick="updateScore('home', 3)"
 
+>
+
+```
 +3
+```
 
 </button>
-
 
 <button
 class="score-button"
-onclick="updateScore('home', -1)">
+onclick="updateScore('home', -1)"
 
+>
+
+```
 -1
+```
 
 </button>
 
 </div>
 
 </div>
-
-
 
 <!-- AWAY TEAM -->
 
 <div class="team-control">
 
 <h2 id="awayTeam">
-
-Away Team
-
+    Away Team
 </h2>
 
 <div
-class="score"
-id="awayScore">
-
-0
-
+    class="score"
+    id="awayScore"
+>
+    0
 </div>
-
 
 <div class="button-row">
 
 <button
 class="score-button"
-onclick="updateScore('away', 1)">
+onclick="updateScore('away', 1)"
 
+>
+
+```
 +1
+```
 
 </button>
 
-
 <button
 class="score-button"
-onclick="updateScore('away', 2)">
+onclick="updateScore('away', 2)"
 
+>
+
+```
 +2
+```
 
 </button>
 
-
 <button
 class="score-button"
-onclick="updateScore('away', 3)">
+onclick="updateScore('away', 3)"
 
+>
+
+```
 +3
+```
 
 </button>
-
 
 <button
 class="score-button"
-onclick="updateScore('away', -1)">
+onclick="updateScore('away', -1)"
 
+>
+
+```
 -1
+```
 
 </button>
 
@@ -497,7 +550,63 @@ onclick="updateScore('away', -1)">
 
 </div>
 
+<!-- PLAYER STATS -->
 
+<div class="player-stats-section">
+
+<h2>PLAYER STATS</h2>
+
+<p class="player-subtitle">
+    Select a player to record individual game statistics.
+</p>
+
+<div class="stats-controls">
+
+<!-- HOME PLAYERS -->
+
+<div class="stat-control">
+
+<h2 id="homePlayersTitle">
+    Home Players
+</h2>
+
+<div
+    id="homePlayersList"
+    class="player-list"
+>
+
+<p>
+    Load a game to see players.
+</p>
+
+</div>
+
+</div>
+
+<!-- AWAY PLAYERS -->
+
+<div class="stat-control">
+
+<h2 id="awayPlayersTitle">
+    Away Players
+</h2>
+
+<div
+    id="awayPlayersList"
+    class="player-list"
+>
+
+<p>
+    Load a game to see players.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 <!-- GAME CONTROLS -->
 
@@ -505,39 +614,47 @@ onclick="updateScore('away', -1)">
 
 <h2>Game Controls</h2>
 
-
 <div class="control-group">
 
 <h3>Game Status</h3>
 
 <button
 class="control-button"
-onclick="updateGame({status:'Live'})">
+onclick="updateGame({status:'Live'})"
 
+>
+
+```
 LIVE
+```
 
 </button>
 
-
 <button
 class="control-button"
-onclick="updateGame({status:'Halftime'})">
+onclick="updateGame({status:'Halftime'})"
 
+>
+
+```
 HALFTIME
+```
 
 </button>
 
-
 <button
 class="control-button"
-onclick="updateGame({status:'Final'})">
+onclick="updateGame({status:'Final'})"
 
+>
+
+```
 FINAL
+```
 
 </button>
 
 </div>
-
 
 <div class="control-group">
 
@@ -545,168 +662,193 @@ FINAL
 
 <button
 class="control-button"
-onclick="updateGame({period:'1st Quarter'})">
+onclick="updateGame({period:'1st Quarter'})"
 
+>
+
+```
 1ST
+```
 
 </button>
 
-
 <button
 class="control-button"
-onclick="updateGame({period:'2nd Quarter'})">
+onclick="updateGame({period:'2nd Quarter'})"
 
+>
+
+```
 2ND
+```
 
 </button>
 
-
 <button
 class="control-button"
-onclick="updateGame({period:'3rd Quarter'})">
+onclick="updateGame({period:'3rd Quarter'})"
 
+>
+
+```
 3RD
+```
 
 </button>
-
 
 <button
 class="control-button"
-onclick="updateGame({period:'4th Quarter'})">
+onclick="updateGame({period:'4th Quarter'})"
 
+>
+
+```
 4TH
+```
 
 </button>
 
 </div>
 
 </div>
-
-
 
 <!-- FOULS -->
 
 <div class="stats-controls">
 
+<!-- HOME FOULS -->
 
 <div class="stat-control">
 
 <h2>Home Fouls</h2>
 
 <div
-class="stat-number"
-id="homeFouls">
-
-0
-
+    class="stat-number"
+    id="homeFouls"
+>
+    0
 </div>
-
 
 <button
 class="control-button"
-onclick="updateStat('home_fouls', 1)">
+onclick="updateStat('home_fouls', 1)"
 
+>
+
+```
 + FOUL
+```
 
 </button>
 
-
 <button
 class="control-button"
-onclick="updateStat('home_fouls', -1)">
+onclick="updateStat('home_fouls', -1)"
 
+>
+
+```
 - FOUL
+```
 
 </button>
 
 </div>
 
-
+<!-- AWAY FOULS -->
 
 <div class="stat-control">
 
 <h2>Away Fouls</h2>
 
 <div
-class="stat-number"
-id="awayFouls">
-
-0
-
+    class="stat-number"
+    id="awayFouls"
+>
+    0
 </div>
-
 
 <button
 class="control-button"
-onclick="updateStat('away_fouls', 1)">
+onclick="updateStat('away_fouls', 1)"
 
+>
+
+```
 + FOUL
+```
 
 </button>
-
 
 <button
 class="control-button"
-onclick="updateStat('away_fouls', -1)">
+onclick="updateStat('away_fouls', -1)"
 
+>
+
+```
 - FOUL
+```
 
 </button>
 
 </div>
 
 </div>
-
-
 
 <!-- TIMEOUTS -->
 
 <div class="stats-controls">
 
+<!-- HOME TIMEOUTS -->
 
 <div class="stat-control">
 
 <h2>Home Timeouts</h2>
 
 <div
-class="stat-number"
-id="homeTimeouts">
-
-5
-
+    class="stat-number"
+    id="homeTimeouts"
+>
+    5
 </div>
-
 
 <button
 class="control-button"
-onclick="updateStat('home_timeouts', -1)">
+onclick="updateStat('home_timeouts', -1)"
 
+>
+
+```
 USE TIMEOUT
+```
 
 </button>
 
 </div>
 
-
+<!-- AWAY TIMEOUTS -->
 
 <div class="stat-control">
 
 <h2>Away Timeouts</h2>
 
 <div
-class="stat-number"
-id="awayTimeouts">
-
-5
-
+    class="stat-number"
+    id="awayTimeouts"
+>
+    5
 </div>
-
 
 <button
 class="control-button"
-onclick="updateStat('away_timeouts', -1)">
+onclick="updateStat('away_timeouts', -1)"
 
+>
+
+```
 USE TIMEOUT
+```
 
 </button>
 
@@ -714,17 +856,17 @@ USE TIMEOUT
 
 </div>
 
-
 </div>
 
-
+<!-- SUPABASE -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
 <script>
 
-/* SUPABASE */
+/* =========================================
+   SUPABASE CONNECTION
+========================================= */
 
 const SUPABASE_URL =
 "https://tkrsyiwffqkgfyooewsf.supabase.co";
@@ -732,366 +874,743 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
 
-
 const supabaseClient =
 window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+    SUPABASE_URL,
+    SUPABASE_KEY
 );
 
 
-/* CURRENT GAME */
+/* =========================================
+   CURRENT GAME
+========================================= */
 
 let currentGame = null;
 
 
-/* LOAD GAME */
+/* =========================================
+   LOAD GAME
+========================================= */
 
 async function loadGame() {
 
-const gameId =
-Number(document.getElementById("gameId").value);
+    const gameId =
+        Number(
+            document.getElementById(
+                "gameId"
+            ).value
+        );
 
 
-const {
-data,
-error
-} = await supabaseClient
+    if (!gameId) {
 
-.from("games")
+        showStatus(
+            "Please enter a valid Game ID."
+        );
 
-.select("*")
+        return;
 
-.eq("id", gameId)
-
-.single();
+    }
 
 
-if (error) {
+    const {
+        data,
+        error
+    } = await supabaseClient
 
-showStatus(
-"Error loading game: " +
-error.message
-);
+    .from("games")
 
-console.error(error);
+    .select("*")
 
-return;
+    .eq("id", gameId)
+
+    .single();
+
+
+    if (error) {
+
+        showStatus(
+            "Error loading game: " +
+            error.message
+        );
+
+        console.error(
+            "Game loading error:",
+            error
+        );
+
+        return;
+
+    }
+
+
+    currentGame = data;
+
+
+    document.getElementById(
+        "homeTeam"
+    ).textContent =
+        data.home_team ||
+        "Home Team";
+
+
+    document.getElementById(
+        "awayTeam"
+    ).textContent =
+        data.away_team ||
+        "Away Team";
+
+
+    refreshDisplay();
+
+
+    /* LOAD PLAYERS FOR BOTH TEAMS */
+
+    await loadTeamPlayers();
+
+
+    showStatus(
+        "Game and players loaded successfully."
+    );
 
 }
 
 
-currentGame = data;
-
-
-document.getElementById("homeTeam")
-.textContent =
-data.home_team || "Home Team";
-
-
-document.getElementById("awayTeam")
-.textContent =
-data.away_team || "Away Team";
-
-
-refreshDisplay();
-
-showStatus(
-"Game loaded successfully."
-);
-
-}
-
-
-/* REFRESH DISPLAY */
+/* =========================================
+   REFRESH SCOREBOARD
+========================================= */
 
 function refreshDisplay() {
 
-if (!currentGame) return;
+    if (!currentGame) {
+        return;
+    }
 
 
-document.getElementById("homeScore")
-.textContent =
-currentGame.home_score ?? 0;
+    document.getElementById(
+        "homeScore"
+    ).textContent =
+        currentGame.home_score ?? 0;
 
 
-document.getElementById("awayScore")
-.textContent =
-currentGame.away_score ?? 0;
+    document.getElementById(
+        "awayScore"
+    ).textContent =
+        currentGame.away_score ?? 0;
 
 
-document.getElementById("homeFouls")
-.textContent =
-currentGame.home_fouls ?? 0;
+    document.getElementById(
+        "homeFouls"
+    ).textContent =
+        currentGame.home_fouls ?? 0;
 
 
-document.getElementById("awayFouls")
-.textContent =
-currentGame.away_fouls ?? 0;
+    document.getElementById(
+        "awayFouls"
+    ).textContent =
+        currentGame.away_fouls ?? 0;
 
 
-document.getElementById("homeTimeouts")
-.textContent =
-currentGame.home_timeouts ?? 5;
+    document.getElementById(
+        "homeTimeouts"
+    ).textContent =
+        currentGame.home_timeouts ?? 5;
 
 
-document.getElementById("awayTimeouts")
-.textContent =
-currentGame.away_timeouts ?? 5;
-
-}
-
-
-/* UPDATE SCORE */
-
-async function updateScore(team, amount) {
-
-if (!currentGame) {
-
-showStatus(
-"Please load a game first."
-);
-
-return;
+    document.getElementById(
+        "awayTimeouts"
+    ).textContent =
+        currentGame.away_timeouts ?? 5;
 
 }
 
 
-let column;
+/* =========================================
+   UPDATE SCORE
+========================================= */
+
+async function updateScore(
+    team,
+    amount
+) {
+
+    if (!currentGame) {
+
+        showStatus(
+            "Please load a game first."
+        );
+
+        return;
+
+    }
 
 
-if (team === "home") {
-
-column = "home_score";
-
-} else {
-
-column = "away_score";
-
-}
+    let column;
 
 
-let newScore =
-Number(currentGame[column] || 0)
-+ amount;
+    if (team === "home") {
+
+        column =
+            "home_score";
+
+    } else {
+
+        column =
+            "away_score";
+
+    }
 
 
-if (newScore < 0) {
-
-newScore = 0;
-
-}
-
-
-const updateData = {};
-
-updateData[column] = newScore;
+    let newScore =
+        Number(
+            currentGame[column] || 0
+        ) + amount;
 
 
-const {
-data,
-error
-} = await supabaseClient
+    if (newScore < 0) {
 
-.from("games")
+        newScore = 0;
 
-.update(updateData)
-
-.eq("id", currentGame.id)
-
-.select()
-
-.single();
+    }
 
 
-if (error) {
-
-showStatus(
-"Error updating score: " +
-error.message
-);
-
-console.error(error);
-
-return;
-
-}
+    const updateData = {};
 
 
-currentGame = data;
-
-refreshDisplay();
-
-
-showStatus(
-"Score updated successfully."
-);
-
-}
+    updateData[column] =
+        newScore;
 
 
-/* UPDATE GAME */
+    const {
+        data,
+        error
+    } = await supabaseClient
 
-async function updateGame(changes) {
+    .from("games")
 
-if (!currentGame) {
+    .update(updateData)
 
-showStatus(
-"Please load a game first."
-);
+    .eq(
+        "id",
+        currentGame.id
+    )
 
-return;
+    .select()
 
-}
-
-
-const {
-data,
-error
-} = await supabaseClient
-
-.from("games")
-
-.update(changes)
-
-.eq("id", currentGame.id)
-
-.select()
-
-.single();
+    .single();
 
 
-if (error) {
+    if (error) {
 
-showStatus(
-"Error updating game: " +
-error.message
-);
+        showStatus(
+            "Error updating score: " +
+            error.message
+        );
 
-console.error(error);
+        console.error(error);
 
-return;
+        return;
+
+    }
+
+
+    currentGame =
+        data;
+
+
+    refreshDisplay();
+
+
+    showStatus(
+        "Score updated successfully."
+    );
 
 }
 
 
-currentGame = data;
+/* =========================================
+   UPDATE GAME STATUS / PERIOD
+========================================= */
 
-refreshDisplay();
+async function updateGame(
+    changes
+) {
 
+    if (!currentGame) {
 
-showStatus(
-"Game updated successfully."
-);
+        showStatus(
+            "Please load a game first."
+        );
 
-}
+        return;
 
-
-/* UPDATE FOULS / TIMEOUTS */
-
-async function updateStat(column, amount) {
-
-if (!currentGame) {
-
-showStatus(
-"Please load a game first."
-);
-
-return;
-
-}
+    }
 
 
-let newValue =
-Number(currentGame[column] || 0)
-+ amount;
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+    .from("games")
+
+    .update(changes)
+
+    .eq(
+        "id",
+        currentGame.id
+    )
+
+    .select()
+
+    .single();
 
 
-if (newValue < 0) {
+    if (error) {
 
-newValue = 0;
+        showStatus(
+            "Error updating game: " +
+            error.message
+        );
 
-}
+        console.error(error);
 
+        return;
 
-const updateData = {};
-
-updateData[column] = newValue;
-
-
-const {
-data,
-error
-} = await supabaseClient
-
-.from("games")
-
-.update(updateData)
-
-.eq("id", currentGame.id)
-
-.select()
-
-.single();
+    }
 
 
-if (error) {
+    currentGame =
+        data;
 
-showStatus(
-"Error updating game: " +
-error.message
-);
 
-console.error(error);
+    refreshDisplay();
 
-return;
+
+    showStatus(
+        "Game updated successfully."
+    );
 
 }
 
 
-currentGame = data;
+/* =========================================
+   UPDATE FOULS / TIMEOUTS
+========================================= */
 
-refreshDisplay();
+async function updateStat(
+    column,
+    amount
+) {
+
+    if (!currentGame) {
+
+        showStatus(
+            "Please load a game first."
+        );
+
+        return;
+
+    }
 
 
-showStatus(
-"Updated successfully."
-);
+    let newValue =
+        Number(
+            currentGame[column] || 0
+        ) + amount;
+
+
+    if (newValue < 0) {
+
+        newValue = 0;
+
+    }
+
+
+    const updateData = {};
+
+
+    updateData[column] =
+        newValue;
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+    .from("games")
+
+    .update(updateData)
+
+    .eq(
+        "id",
+        currentGame.id
+    )
+
+    .select()
+
+    .single();
+
+
+    if (error) {
+
+        showStatus(
+            "Error updating game: " +
+            error.message
+        );
+
+        console.error(error);
+
+        return;
+
+    }
+
+
+    currentGame =
+        data;
+
+
+    refreshDisplay();
+
+
+    showStatus(
+        "Updated successfully."
+    );
 
 }
 
 
-/* STATUS MESSAGE */
+/* =========================================
+   STATUS MESSAGE
+========================================= */
 
-function showStatus(message) {
+function showStatus(
+    message
+) {
 
-const status =
-document.getElementById(
-"statusMessage"
-);
+    const status =
+        document.getElementById(
+            "statusMessage"
+        );
 
-status.textContent =
-message;
 
-status.style.display =
-"block";
+    status.textContent =
+        message;
 
-setTimeout(function() {
 
-status.style.display =
-"none";
+    status.style.display =
+        "block";
 
-}, 3000);
+
+    setTimeout(
+        function() {
+
+            status.style.display =
+                "none";
+
+        },
+        3000
+    );
 
 }
 
 
-/* AUTO LOAD */
+/* =========================================
+   LOAD PLAYERS FOR BOTH TEAMS
+========================================= */
+
+async function loadTeamPlayers() {
+
+    if (!currentGame) {
+
+        showStatus(
+            "Please load a game first."
+        );
+
+        return;
+
+    }
+
+
+    /* =====================================
+       FIND HOME TEAM
+    ===================================== */
+
+    const {
+        data: homeTeamData,
+        error: homeTeamError
+    } = await supabaseClient
+
+    .from("teams")
+
+    .select(
+        "id, name"
+    )
+
+    .eq(
+        "name",
+        currentGame.home_team
+    )
+
+    .single();
+
+
+    if (homeTeamError) {
+
+        console.error(
+            "Home team error:",
+            homeTeamError
+        );
+
+
+        document.getElementById(
+            "homePlayersList"
+        ).innerHTML =
+            "<p>Could not find home team.</p>";
+
+
+        return;
+
+    }
+
+
+    /* =====================================
+       FIND AWAY TEAM
+    ===================================== */
+
+    const {
+        data: awayTeamData,
+        error: awayTeamError
+    } = await supabaseClient
+
+    .from("teams")
+
+    .select(
+        "id, name"
+    )
+
+    .eq(
+        "name",
+        currentGame.away_team
+    )
+
+    .single();
+
+
+    if (awayTeamError) {
+
+        console.error(
+            "Away team error:",
+            awayTeamError
+        );
+
+
+        document.getElementById(
+            "awayPlayersList"
+        ).innerHTML =
+            "<p>Could not find away team.</p>";
+
+
+        return;
+
+    }
+
+
+    /* =====================================
+       UPDATE PLAYER SECTION TITLES
+    ===================================== */
+
+    document.getElementById(
+        "homePlayersTitle"
+    ).textContent =
+        homeTeamData.name +
+        " Players";
+
+
+    document.getElementById(
+        "awayPlayersTitle"
+    ).textContent =
+        awayTeamData.name +
+        " Players";
+
+
+    /* =====================================
+       LOAD HOME PLAYERS
+    ===================================== */
+
+    await loadPlayersForTeam(
+        homeTeamData.id,
+        "homePlayersList"
+    );
+
+
+    /* =====================================
+       LOAD AWAY PLAYERS
+    ===================================== */
+
+    await loadPlayersForTeam(
+        awayTeamData.id,
+        "awayPlayersList"
+    );
+
+}
+
+
+/* =========================================
+   LOAD PLAYERS FOR ONE TEAM
+========================================= */
+
+async function loadPlayersForTeam(
+    teamId,
+    containerId
+) {
+
+    const container =
+        document.getElementById(
+            containerId
+        );
+
+
+    container.innerHTML =
+        "<p>Loading players...</p>";
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+    .from("players")
+
+    .select("*")
+
+    .eq(
+        "team_id",
+        teamId
+    )
+
+    .order(
+        "jersey_number",
+        {
+            ascending: true
+        }
+    );
+
+
+    if (error) {
+
+        console.error(
+            "Error loading players:",
+            error
+        );
+
+
+        container.innerHTML =
+            "<p>Unable to load players.</p>";
+
+
+        return;
+
+    }
+
+
+    if (
+        !data ||
+        data.length === 0
+    ) {
+
+        container.innerHTML =
+            "<p>No players assigned to this team.</p>";
+
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    /* =====================================
+       DISPLAY PLAYERS
+    ===================================== */
+
+    data.forEach(
+        player => {
+
+            const playerCard =
+                document.createElement(
+                    "div"
+                );
+
+
+            playerCard.className =
+                "player-card";
+
+
+            playerCard.innerHTML = `
+
+                <strong>
+                    #${player.jersey_number || ""}
+                    ${player.first_name || ""}
+                    ${player.last_name || ""}
+                </strong>
+
+                <span class="player-position">
+                    ${player.position || "No position"}
+                </span>
+
+                <button
+                    class="control-button"
+                    onclick="selectPlayer('${player.id}')"
+                >
+                    ADD STATS
+                </button>
+
+            `;
+
+
+            container.appendChild(
+                playerCard
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   STEP 7 — SELECT PLAYER
+========================================= */
+
+function selectPlayer(
+    playerId
+) {
+
+    console.log(
+        "Selected player:",
+        playerId
+    );
+
+
+    alert(
+        "Player selected!\n\nPlayer ID: " +
+        playerId
+    );
+
+}
+
+
+/* =========================================
+   AUTO LOAD GAME
+========================================= */
 
 loadGame();
 
 </script>
-
 
 </body>
 
