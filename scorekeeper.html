@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 
 <html lang="en">
@@ -480,11 +479,13 @@ Game ID:
 type="number"
 id="gameId"
 value="1"
+
 >
 
 <button
 class="load-button"
 onclick="loadGame()"
+
 >
 
 LOAD </button>
@@ -513,30 +514,34 @@ id="homeScore"
 <button
 class="score-button"
 onclick="updateScore('home',1)"
+
 >
-+1
-</button>
+
++1 </button>
 
 <button
 class="score-button"
 onclick="updateScore('home',2)"
+
 >
-+2
-</button>
+
++2 </button>
 
 <button
 class="score-button"
 onclick="updateScore('home',3)"
+
 >
-+3
-</button>
+
++3 </button>
 
 <button
 class="score-button"
 onclick="updateScore('home',-1)"
+
 >
--1
-</button>
+
+-1 </button>
 
 </div>
 
@@ -560,30 +565,34 @@ id="awayScore"
 <button
 class="score-button"
 onclick="updateScore('away',1)"
+
 >
-+1
-</button>
+
++1 </button>
 
 <button
 class="score-button"
 onclick="updateScore('away',2)"
+
 >
-+2
-</button>
+
++2 </button>
 
 <button
 class="score-button"
 onclick="updateScore('away',3)"
+
 >
-+3
-</button>
+
++3 </button>
 
 <button
 class="score-button"
 onclick="updateScore('away',-1)"
+
 >
--1
-</button>
+
+-1 </button>
 
 </div>
 
@@ -677,23 +686,26 @@ Status:
 <button
 class="control-button"
 onclick="updateGame({status:'Live'})"
+
 >
-LIVE
-</button>
+
+LIVE </button>
 
 <button
 class="control-button"
 onclick="updateGame({status:'Halftime'})"
+
 >
-HALF
-</button>
+
+HALF </button>
 
 <button
 class="control-button"
 onclick="updateGame({status:'Final'})"
+
 >
-FINAL
-</button>
+
+FINAL </button>
 
 </div>
 
@@ -701,8 +713,7 @@ FINAL
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 
@@ -739,527 +750,566 @@ let clockRunning = false;
 let clockStartedAt = null;
 
 
+/* =========================================
+   PLAYER MINUTES TRACKING
+========================================= */
+
+let playerMinuteTracking = {};
+
+let lastMinuteUpdateTime = null;
+
+
+/* =========================================
+   HELPERS
+========================================= */
+
 function escapeHTML(str){
 
-if(!str)
-return "";
+    if(!str)
+        return "";
 
-return String(str)
-
-.replace(/&/g,"&amp;")
-
-.replace(/</g,"&lt;")
-
-.replace(/>/g,"&gt;")
-
-.replace(/"/g,"&quot;")
-
-.replace(/'/g,"&#039;");
+    return String(str)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 
 }
 
 
 function calculatePercentage(
-made,
-attempted
+    made,
+    attempted
 ){
 
-if(
-!attempted ||
-attempted <= 0
-)
-return "0%";
+    if(
+        !attempted ||
+        attempted <= 0
+    )
+        return "0%";
 
-return Math.round(
-
-(
-Number(made) /
-Number(attempted)
-) * 100
-
-) + "%";
+    return Math.round(
+        (
+            Number(made) /
+            Number(attempted)
+        ) * 100
+    ) + "%";
 
 }
 
 
 function showStatus(message){
 
-const el =
-document.getElementById(
-"statusMessage"
-);
+    const el =
+        document.getElementById(
+            "statusMessage"
+        );
 
-el.textContent =
-message;
+    el.textContent =
+        message;
 
-el.style.display =
-"block";
+    el.style.display =
+        "block";
 
-setTimeout(()=>{
+    setTimeout(()=>{
 
-el.style.display =
-"none";
+        el.style.display =
+            "none";
 
-},3000);
+    },3000);
 
 }
 
+
+/* =========================================
+   LOAD GAME
+========================================= */
 
 async function loadGame(){
 
-const gameId =
-Number(
-document.getElementById(
-"gameId"
-).value
-);
+    const gameId =
+        Number(
+            document.getElementById(
+                "gameId"
+            ).value
+        );
 
-if(!gameId){
+    if(!gameId){
 
-showStatus(
-"Enter a valid Game ID."
-);
+        showStatus(
+            "Enter a valid Game ID."
+        );
 
-return;
+        return;
 
-}
-
-const {
-
-data,
-
-error
-
-} = await supabaseClient
-
-.from("games")
-
-.select("*")
-
-.eq(
-"id",
-gameId
-)
-
-.single();
+    }
 
 
-if(error){
+    const {
+        data,
+        error
+    } = await supabaseClient
 
-console.error(error);
+    .from("games")
 
-showStatus(
-"Error loading game: "+
-error.message
-);
+    .select("*")
 
-return;
+    .eq(
+        "id",
+        gameId
+    )
 
-}
-
-currentGame =
-data;
-
-document.getElementById(
-"homeTeam"
-).textContent =
-data.home_team ||
-"Home Team";
-
-document.getElementById(
-"awayTeam"
-).textContent =
-data.away_team ||
-"Away Team";
-
-document.getElementById(
-"homeScore"
-).textContent =
-data.home_score || 0;
-
-document.getElementById(
-"awayScore"
-).textContent =
-data.away_score || 0;
-
-playerStatsMap = {};
-
-playerDataMap = {};
-
-playerTeamMap = {};
-
-playerOnCourt = {};
-
-playerCourtOrder = {};
+    .single();
 
 
-/*
-LOAD CLOCK FIRST
-*/
+    if(error){
 
-await loadPersistedClock();
+        console.error(error);
+
+        showStatus(
+            "Error loading game: "+
+            error.message
+        );
+
+        return;
+
+    }
 
 
-/*
-LOAD PLAYERS
-*/
+    currentGame =
+        data;
 
-await loadTeamPlayers();
 
-showStatus(
-"Game loaded successfully."
-);
+    document.getElementById(
+        "homeTeam"
+    ).textContent =
+        data.home_team ||
+        "Home Team";
+
+
+    document.getElementById(
+        "awayTeam"
+    ).textContent =
+        data.away_team ||
+        "Away Team";
+
+
+    document.getElementById(
+        "homeScore"
+    ).textContent =
+        data.home_score || 0;
+
+
+    document.getElementById(
+        "awayScore"
+    ).textContent =
+        data.away_score || 0;
+
+
+    playerStatsMap = {};
+
+    playerDataMap = {};
+
+    playerTeamMap = {};
+
+    playerOnCourt = {};
+
+    playerCourtOrder = {};
+
+    playerMinuteTracking = {};
+
+
+    await loadPersistedClock();
+
+    await loadTeamPlayers();
+
+
+    showStatus(
+        "Game loaded successfully."
+    );
 
 }
 
+
+/* =========================================
+   SCORE
+========================================= */
 
 async function updateScore(
-team,
-amount
+    team,
+    amount
 ){
 
-if(!currentGame){
+    if(!currentGame){
 
-showStatus(
-"Load a game first."
-);
+        showStatus(
+            "Load a game first."
+        );
 
-return;
+        return;
+
+    }
+
+
+    const column =
+        team === "home"
+        ? "home_score"
+        : "away_score";
+
+
+    const oldScore =
+        Number(
+            currentGame[column] || 0
+        );
+
+
+    const newScore =
+        Math.max(
+            0,
+            oldScore + amount
+        );
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+    .from("games")
+
+    .update({
+
+        [column]:
+            newScore
+
+    })
+
+    .eq(
+        "id",
+        currentGame.id
+    )
+
+    .select()
+    .single();
+
+
+    if(error){
+
+        console.error(error);
+
+        showStatus(
+            "Unable to update score."
+        );
+
+        return;
+
+    }
+
+
+    currentGame =
+        data;
+
+
+    document.getElementById(
+        team+"Score"
+    ).textContent =
+        newScore;
+
+
+    if(amount !== 0){
+
+        const playersToUpdate =
+            Object.keys(
+                playerOnCourt
+            ).filter(
+
+                playerId =>
+
+                    playerOnCourt[playerId] === true
+
+                    &&
+
+                    playerTeamMap[playerId] === team
+
+            );
+
+
+        for(
+            const playerId of playersToUpdate
+        ){
+
+            const stats =
+                await getPlayerGameStats(
+                    playerId
+                );
+
+
+            const currentPlusMinus =
+                Number(
+                    stats.plus_minus || 0
+                );
+
+
+            await saveStatDirect(
+
+                playerId,
+
+                "plus_minus",
+
+                currentPlusMinus + amount
+
+            );
+
+
+            await refreshPlayerRow(
+                playerId
+            );
+
+        }
+
+    }
 
 }
 
-const column =
-team === "home"
-? "home_score"
-: "away_score";
 
-const oldScore =
-Number(
-currentGame[column] || 0
-);
-
-const newScore =
-Math.max(
-0,
-oldScore + amount
-);
-
-const {
-
-data,
-error
-
-} = await supabaseClient
-
-.from("games")
-
-.update({
-
-[column]:
-newScore
-
-})
-
-.eq(
-"id",
-currentGame.id
-)
-
-.select()
-.single();
-
-
-if(error){
-
-console.error(error);
-
-showStatus(
-"Unable to update score."
-);
-
-return;
-
-}
-
-currentGame =
-data;
-
-document.getElementById(
-team+"Score"
-).textContent =
-newScore;
-
-if(amount !== 0){
-
-const playersToUpdate = Object.keys(
-playerOnCourt
-).filter(
-
-playerId =>
-
-playerOnCourt[playerId] === true
-
-&&
-
-playerTeamMap[playerId] === team
-
-);
-
-for(
-const playerId of playersToUpdate
-){
-
-const stats =
-await getPlayerGameStats(
-playerId
-);
-
-const currentPlusMinus =
-Number(
-stats.plus_minus || 0
-);
-
-await saveStatDirect(
-
-playerId,
-
-"plus_minus",
-
-currentPlusMinus + amount
-
-);
-
-await refreshPlayerRow(
-playerId
-);
-
-}
-
-}
-
-}
-
+/* =========================================
+   UPDATE GAME
+========================================= */
 
 async function updateGame(
-changes
+    changes
 ){
 
-if(!currentGame){
+    if(!currentGame){
 
-showStatus(
-"Load a game first."
-);
+        showStatus(
+            "Load a game first."
+        );
 
-return;
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+    .from("games")
+
+    .update(changes)
+
+    .eq(
+        "id",
+        currentGame.id
+    )
+
+    .select()
+    .single();
+
+
+    if(error){
+
+        console.error(error);
+
+        showStatus(
+            "Unable to update game."
+        );
+
+        return;
+
+    }
+
+
+    currentGame =
+        data;
+
+
+    showStatus(
+        "Game updated."
+    );
 
 }
 
-const {
 
-data,
-error
-
-} = await supabaseClient
-
-.from("games")
-
-.update(changes)
-
-.eq(
-"id",
-currentGame.id
-)
-
-.select()
-.single();
-
-
-if(error){
-
-console.error(error);
-
-showStatus(
-"Unable to update game."
-);
-
-return;
-
-}
-
-currentGame =
-data;
-
-showStatus(
-"Game updated."
-);
-
-}
-
+/* =========================================
+   LOAD TEAMS AND PLAYERS
+========================================= */
 
 async function loadTeamPlayers(){
 
-const homeName =
-String(
-currentGame.home_team || ""
-).trim();
+    const homeName =
+        String(
+            currentGame.home_team || ""
+        ).trim();
 
-const awayName =
-String(
-currentGame.away_team || ""
-).trim();
 
-const {
+    const awayName =
+        String(
+            currentGame.away_team || ""
+        ).trim();
 
-data:homeTeam
 
-} = await supabaseClient
+    const {
+        data:homeTeam
+    } = await supabaseClient
 
-.from("teams")
+    .from("teams")
 
-.select(
-"id,name"
-)
+    .select(
+        "id,name"
+    )
 
-.ilike(
-"name",
-homeName
-)
+    .ilike(
+        "name",
+        homeName
+    )
 
-.maybeSingle();
+    .maybeSingle();
 
-const {
 
-data:awayTeam
+    const {
+        data:awayTeam
+    } = await supabaseClient
 
-} = await supabaseClient
+    .from("teams")
 
-.from("teams")
+    .select(
+        "id,name"
+    )
 
-.select(
-"id,name"
-)
+    .ilike(
+        "name",
+        awayName
+    )
 
-.ilike(
-"name",
-awayName
-)
+    .maybeSingle();
 
-.maybeSingle();
 
-if(homeTeam){
+    if(homeTeam){
 
-document.getElementById(
-"homePlayersTitle"
-).textContent =
-homeTeam.name;
+        document.getElementById(
+            "homePlayersTitle"
+        ).textContent =
+            homeTeam.name;
 
-await loadPlayersForTeam(
 
-homeTeam.id,
+        await loadPlayersForTeam(
 
-"homePlayersList",
+            homeTeam.id,
 
-"home"
+            "homePlayersList",
 
-);
+            "home"
 
-}
+        );
 
-if(awayTeam){
+    }
 
-document.getElementById(
-"awayPlayersTitle"
-).textContent =
-awayTeam.name;
 
-await loadPlayersForTeam(
+    if(awayTeam){
 
-awayTeam.id,
+        document.getElementById(
+            "awayPlayersTitle"
+        ).textContent =
+            awayTeam.name;
 
-"awayPlayersList",
 
-"away"
+        await loadPlayersForTeam(
 
-);
+            awayTeam.id,
 
-}
+            "awayPlayersList",
+
+            "away"
+
+        );
+
+    }
 
 }
 
 
 async function loadPlayersForTeam(
 
-teamId,
+    teamId,
 
-containerId,
+    containerId,
 
-team
+    team
 
 ){
 
-const container =
-document.getElementById(
-containerId
-);
+    const container =
+        document.getElementById(
+            containerId
+        );
 
-container.innerHTML =
-"";
 
-const {
+    container.innerHTML =
+        "";
 
-data,
-error
 
-} = await supabaseClient
+    const {
+        data,
+        error
+    } = await supabaseClient
 
-.from("players")
+    .from("players")
 
-.select("*")
+    .select("*")
 
-.eq(
-"team_id",
-teamId
-)
+    .eq(
+        "team_id",
+        teamId
+    )
 
-.order(
-"jersey_number",
-{
-ascending:true
-}
-);
+    .order(
+        "jersey_number",
+        {
+            ascending:true
+        }
+    );
 
-if(error){
 
-console.error(error);
+    if(error){
 
-container.innerHTML =
-"<div>Unable to load players.</div>";
+        console.error(error);
 
-return;
+        container.innerHTML =
+            "<div>Unable to load players.</div>";
 
-}
+        return;
 
-if(
-!data ||
-!data.length
-){
+    }
 
-container.innerHTML =
-"<div>No players assigned.</div>";
 
-return;
+    if(
+        !data ||
+        !data.length
+    ){
 
-}
+        container.innerHTML =
+            "<div>No players assigned.</div>";
 
-const table =
-document.createElement(
-"table"
-);
+        return;
 
-table.className =
-"player-table";
+    }
 
-table.innerHTML = `
+
+    const table =
+        document.createElement(
+            "table"
+        );
+
+
+    table.className =
+        "player-table";
+
+
+    table.innerHTML = `
 
 <thead>
 
@@ -1305,765 +1355,845 @@ table.innerHTML = `
 
 `;
 
-container.appendChild(
-table
-);
 
-const tbody =
-table.querySelector(
-"tbody"
-);
+    container.appendChild(
+        table
+    );
 
-for(
-const player of data
-){
 
-playerDataMap[
-player.id
-] =
-player;
+    const tbody =
+        table.querySelector(
+            "tbody"
+        );
 
-playerTeamMap[
-player.id
-] =
-team;
 
-const stats =
-await getPlayerGameStats(
-player.id
-);
+    for(
+        const player of data
+    ){
 
-playerOnCourt[
-player.id
-] =
-stats.on_court === true;
+        playerDataMap[
+            player.id
+        ] =
+            player;
 
-if(
-playerOnCourt[player.id]
-){
 
-if(
-!playerCourtOrder[team]
-){
+        playerTeamMap[
+            player.id
+        ] =
+            team;
 
-playerCourtOrder[team] = [];
+
+        const stats =
+            await getPlayerGameStats(
+                player.id
+            );
+
+
+        playerOnCourt[
+            player.id
+        ] =
+            stats.on_court === true;
+
+
+        if(
+            playerOnCourt[player.id]
+        ){
+
+            if(
+                !playerCourtOrder[team]
+            ){
+
+                playerCourtOrder[team] = [];
+
+            }
+
+
+            playerCourtOrder[team].push(
+                player.id
+            );
+
+        }
+
+    }
+
+
+    const orderedPlayers = [
+
+        ...data.filter(
+            p =>
+                playerOnCourt[p.id]
+        ),
+
+        ...data.filter(
+            p =>
+                !playerOnCourt[p.id]
+        )
+
+    ];
+
+
+    for(
+        const player of orderedPlayers
+    ){
+
+        const row =
+            document.createElement(
+                "tr"
+            );
+
+
+        row.id =
+            "player-row-"+player.id;
+
+
+        tbody.appendChild(
+            row
+        );
+
+
+        await renderPlayerRow(
+
+            player,
+
+            row
+
+        );
+
+    }
 
 }
 
-playerCourtOrder[team].push(
-player.id
-);
 
-}
-
-}
-
-const orderedPlayers = [
-
-...data.filter(
-p => playerOnCourt[p.id]
-),
-
-...data.filter(
-p => !playerOnCourt[p.id]
-)
-
-];
-
-for(
-const player of orderedPlayers
-){
-
-const row =
-document.createElement(
-"tr"
-);
-
-row.id =
-"player-row-"+player.id;
-
-tbody.appendChild(
-row
-);
-
-await renderPlayerRow(
-player,
-row
-);
-
-}
-
-}
-
+/* =========================================
+   PLAYER GAME STATS
+========================================= */
 
 async function getPlayerGameStats(
-playerId
+    playerId
 ){
 
-const defaults = {
+    const defaults = {
 
-points:0,
+        points:0,
 
-minutes_played:0,
+        minutes_played:0,
 
-offensive_rebounds:0,
+        offensive_rebounds:0,
 
-defensive_rebounds:0,
+        defensive_rebounds:0,
 
-rebounds:0,
+        rebounds:0,
 
-assists:0,
+        assists:0,
 
-steals:0,
+        steals:0,
 
-blocks:0,
+        blocks:0,
 
-turnovers:0,
+        turnovers:0,
 
-fouls:0,
+        fouls:0,
 
-two_pt_made:0,
+        two_pt_made:0,
 
-two_pt_attempted:0,
+        two_pt_attempted:0,
 
-three_pt_made:0,
+        three_pt_made:0,
 
-three_pt_attempted:0,
+        three_pt_attempted:0,
 
-ft_made:0,
+        ft_made:0,
 
-ft_attempted:0,
+        ft_attempted:0,
 
-plus_minus:0,
+        plus_minus:0,
 
-on_court:false
+        on_court:false
 
-};
+    };
 
-if(
-playerStatsMap[playerId]
-){
 
-return playerStatsMap[playerId];
+    if(
+        playerStatsMap[playerId]
+    ){
+
+        return playerStatsMap[playerId];
+
+    }
+
+
+    if(!currentGame)
+        return defaults;
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+    .from(
+        "player_game_stats"
+    )
+
+    .select("*")
+
+    .eq(
+        "game_id",
+        currentGame.id
+    )
+
+    .eq(
+        "player_id",
+        playerId
+    )
+
+    .maybeSingle();
+
+
+    if(error){
+
+        console.error(
+            "Stats error:",
+            error
+        );
+
+    }
+
+
+    playerStatsMap[playerId] = {
+
+        ...defaults,
+
+        ...(data || {})
+
+    };
+
+
+    return playerStatsMap[playerId];
 
 }
 
-if(!currentGame)
-return defaults;
 
-const {
-
-data,
-error
-
-} = await supabaseClient
-
-.from(
-"player_game_stats"
-)
-
-.select("*")
-
-.eq(
-"game_id",
-currentGame.id
-)
-
-.eq(
-"player_id",
-playerId
-)
-
-.maybeSingle();
-
-if(error){
-
-console.error(
-"Stats error:",
-error
-);
-
-}
-
-playerStatsMap[playerId] = {
-
-...defaults,
-
-...(data || {})
-
-};
-
-return playerStatsMap[playerId];
-
-}
-
+/* =========================================
+   SAVE PLAYER STAT
+========================================= */
 
 async function saveStatDirect(
 
-playerId,
+    playerId,
 
-statKey,
+    statKey,
 
-value
-
-){
-
-if(!currentGame)
-return;
-
-const stats =
-await getPlayerGameStats(
-playerId
-);
-
-const updateObj = {
-
-player_id:
-playerId,
-
-game_id:
-currentGame.id
-
-};
-
-if(
-statKey === "on_court"
-){
-
-updateObj[
-statKey
-] =
-Boolean(value);
-
-}
-
-else{
-
-updateObj[
-statKey
-] =
-Math.max(
-0,
-Number(value || 0)
-);
-
-}
-
-if(
-
-statKey ===
-"offensive_rebounds"
-
-||
-
-statKey ===
-"defensive_rebounds"
+    value
 
 ){
 
-const oreb =
+    if(!currentGame)
+        return;
 
-statKey ===
-"offensive_rebounds"
 
-?
+    const stats =
+        await getPlayerGameStats(
+            playerId
+        );
 
-Number(value)
 
-:
+    const updateObj = {
 
-Number(
-stats.offensive_rebounds || 0
-);
+        player_id:
+            playerId,
 
-const dreb =
+        game_id:
+            currentGame.id
 
-statKey ===
-"defensive_rebounds"
+    };
 
-?
 
-Number(value)
+    if(
+        statKey === "on_court"
+    ){
 
-:
+        updateObj[
+            statKey
+        ] =
+            Boolean(value);
 
-Number(
-stats.defensive_rebounds || 0
-);
+    }
 
-updateObj.rebounds =
+    else{
 
-Math.max(
-0,
-oreb + dreb
-);
+        updateObj[
+            statKey
+        ] =
+            Math.max(
+                0,
+                Number(
+                    value || 0
+                )
+            );
+
+    }
+
+
+    if(
+
+        statKey ===
+        "offensive_rebounds"
+
+        ||
+
+        statKey ===
+        "defensive_rebounds"
+
+    ){
+
+        const oreb =
+
+            statKey ===
+            "offensive_rebounds"
+
+            ?
+
+            Number(value)
+
+            :
+
+            Number(
+                stats.offensive_rebounds || 0
+            );
+
+
+        const dreb =
+
+            statKey ===
+            "defensive_rebounds"
+
+            ?
+
+            Number(value)
+
+            :
+
+            Number(
+                stats.defensive_rebounds || 0
+            );
+
+
+        updateObj.rebounds =
+
+            Math.max(
+                0,
+                oreb + dreb
+            );
+
+    }
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+    .from(
+        "player_game_stats"
+    )
+
+    .upsert(
+
+        updateObj,
+
+        {
+
+            onConflict:
+                "player_id,game_id"
+
+        }
+
+    )
+
+    .select()
+    .single();
+
+
+    if(error){
+
+        console.error(error);
+
+        showStatus(
+            "Unable to save player stats: "+
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    playerStatsMap[playerId] = {
+
+        ...stats,
+
+        ...data
+
+    };
 
 }
 
-const {
 
-data,
-error
-
-} = await supabaseClient
-
-.from(
-"player_game_stats"
-)
-
-.upsert(
-
-updateObj,
-
-{
-
-onConflict:
-"player_id,game_id"
-
-}
-
-)
-
-.select()
-.single();
-
-if(error){
-
-console.error(
-error
-);
-
-showStatus(
-"Unable to save player stats: "+
-error.message
-);
-
-return;
-
-}
-
-playerStatsMap[playerId] = {
-
-...stats,
-
-...data
-
-};
-
-}
-
+/* =========================================
+   PLAYER STAT UPDATE
+========================================= */
 
 async function updatePlayerStat(
 
-playerId,
+    playerId,
 
-statKey,
+    statKey,
 
-amount
-
-){
-
-const stats =
-await getPlayerGameStats(
-playerId
-);
-
-const currentValue =
-Number(
-stats[statKey] || 0
-);
-
-const newValue =
-Math.max(
-0,
-currentValue + amount
-);
-
-if(
-statKey === "points"
-){
-
-return;
-
-}
-
-if(
-statKey === "minutes_played"
-){
-
-return;
-
-}
-
-if(
-statKey === "plus_minus"
-){
-
-return;
-
-}
-
-if(
-
-statKey === "two_pt_made"
-
-||
-
-statKey === "three_pt_made"
-
-||
-
-statKey === "ft_made"
+    amount
 
 ){
 
-const pointsToAdd =
+    const stats =
+        await getPlayerGameStats(
+            playerId
+        );
 
-statKey === "two_pt_made"
 
-?
+    const currentValue =
+        Number(
+            stats[statKey] || 0
+        );
 
-2
 
-:
+    const newValue =
+        Math.max(
+            0,
+            currentValue + amount
+        );
 
-statKey === "three_pt_made"
 
-?
+    if(
+        statKey === "points"
+    )
+        return;
 
-3
 
-:
+    if(
+        statKey === "minutes_played"
+    )
+        return;
 
-1;
 
-await saveStatDirect(
+    if(
+        statKey === "plus_minus"
+    )
+        return;
 
-playerId,
 
-statKey,
+    if(
 
-newValue
+        statKey === "two_pt_made"
 
-);
+        ||
 
-const newPoints =
+        statKey === "three_pt_made"
 
-Math.max(
+        ||
 
-0,
+        statKey === "ft_made"
 
-Number(
-stats.points || 0
-)
+    ){
 
-+
+        const pointsToAdd =
 
-(
-amount *
-pointsToAdd
-)
+            statKey ===
+            "two_pt_made"
 
-);
+            ?
 
-await saveStatDirect(
+            2
 
-playerId,
+            :
 
-"points",
+            statKey ===
+            "three_pt_made"
 
-newPoints
+            ?
 
-);
+            3
 
-const team =
-playerTeamMap[playerId];
+            :
 
-if(
-team &&
-currentGame
-){
+            1;
 
-const column =
 
-team === "home"
+        await saveStatDirect(
 
-?
+            playerId,
 
-"home_score"
+            statKey,
 
-:
+            newValue
 
-"away_score";
+        );
 
-const oldTeamScore =
 
-Number(
-currentGame[column] || 0
-);
+        const newPoints =
 
-const newTeamScore =
+            Math.max(
 
-Math.max(
+                0,
 
-0,
+                Number(
+                    stats.points || 0
+                )
 
-oldTeamScore
+                +
 
-+
+                (
+                    amount *
+                    pointsToAdd
+                )
 
-(
-amount *
-pointsToAdd
-)
+            );
 
-);
 
-await updateScoreFromPlayer(
+        await saveStatDirect(
 
-team,
+            playerId,
 
-newTeamScore
+            "points",
 
-);
+            newPoints
+
+        );
+
+
+        const team =
+            playerTeamMap[playerId];
+
+
+        if(
+            team &&
+            currentGame
+        ){
+
+            const column =
+
+                team === "home"
+
+                ?
+
+                "home_score"
+
+                :
+
+                "away_score";
+
+
+            const oldTeamScore =
+
+                Number(
+                    currentGame[column] || 0
+                );
+
+
+            const newTeamScore =
+
+                Math.max(
+
+                    0,
+
+                    oldTeamScore
+
+                    +
+
+                    (
+                        amount *
+                        pointsToAdd
+                    )
+
+                );
+
+
+            await updateScoreFromPlayer(
+
+                team,
+
+                newTeamScore
+
+            );
+
+        }
+
+
+        await refreshPlayerRow(
+            playerId
+        );
+
+
+        return;
+
+    }
+
+
+    await saveStatDirect(
+
+        playerId,
+
+        statKey,
+
+        newValue
+
+    );
+
+
+    await refreshPlayerRow(
+        playerId
+    );
 
 }
 
-await refreshPlayerRow(
-playerId
-);
 
-return;
-
-}
-
-await saveStatDirect(
-
-playerId,
-
-statKey,
-
-newValue
-
-);
-
-await refreshPlayerRow(
-playerId
-);
-
-}
-
+/* =========================================
+   UPDATE TEAM SCORE FROM PLAYER
+========================================= */
 
 async function updateScoreFromPlayer(
 
-team,
+    team,
 
-newScore
+    newScore
 
 ){
 
-if(!currentGame)
-return;
+    if(!currentGame)
+        return;
 
-const column =
 
-team === "home"
+    const column =
 
-?
+        team === "home"
 
-"home_score"
+        ?
 
-:
+        "home_score"
 
-"away_score";
+        :
 
-const oldScore =
+        "away_score";
 
-Number(
-currentGame[column] || 0
-);
 
-const amount =
+    const oldScore =
 
-newScore -
-oldScore;
+        Number(
+            currentGame[column] || 0
+        );
 
-if(amount === 0)
-return;
 
-const {
+    const amount =
 
-data,
-error
+        newScore -
+        oldScore;
 
-} = await supabaseClient
 
-.from("games")
+    if(amount === 0)
+        return;
 
-.update({
 
-[column]:
-newScore
+    const {
+        data,
+        error
+    } = await supabaseClient
 
-})
+    .from("games")
 
-.eq(
-"id",
-currentGame.id
-)
+    .update({
 
-.select()
-.single();
+        [column]:
+            newScore
 
-if(error){
+    })
 
-console.error(
-error
-);
+    .eq(
+        "id",
+        currentGame.id
+    )
 
-showStatus(
-"Unable to sync team score."
-);
+    .select()
+    .single();
 
-return;
+
+    if(error){
+
+        console.error(error);
+
+        showStatus(
+            "Unable to sync team score."
+        );
+
+        return;
+
+    }
+
+
+    currentGame =
+        data;
+
+
+    document.getElementById(
+        team+"Score"
+    ).textContent =
+        newScore;
+
+
+    const playersToUpdate =
+
+        Object.keys(
+            playerOnCourt
+        ).filter(
+
+            playerId =>
+
+                playerOnCourt[playerId] === true
+
+                &&
+
+                playerTeamMap[playerId] === team
+
+        );
+
+
+    for(
+        const playerId of playersToUpdate
+    ){
+
+        const stats =
+            await getPlayerGameStats(
+                playerId
+            );
+
+
+        const currentPlusMinus =
+
+            Number(
+                stats.plus_minus || 0
+            );
+
+
+        await saveStatDirect(
+
+            playerId,
+
+            "plus_minus",
+
+            currentPlusMinus + amount
+
+        );
+
+
+        await refreshPlayerRow(
+            playerId
+        );
+
+    }
 
 }
 
-currentGame =
-data;
 
-document.getElementById(
-team+"Score"
-).textContent =
-newScore;
-
-const playersToUpdate =
-
-Object.keys(
-playerOnCourt
-).filter(
-
-playerId =>
-
-playerOnCourt[playerId] === true
-
-&&
-
-playerTeamMap[playerId] === team
-
-);
-
-for(
-const playerId of playersToUpdate
-){
-
-const stats =
-await getPlayerGameStats(
-playerId
-);
-
-const currentPlusMinus =
-
-Number(
-stats.plus_minus || 0
-);
-
-await saveStatDirect(
-
-playerId,
-
-"plus_minus",
-
-currentPlusMinus + amount
-
-);
-
-await refreshPlayerRow(
-playerId
-);
-
-}
-
-}
-
+/* =========================================
+   REFRESH PLAYER ROW
+========================================= */
 
 async function refreshPlayerRow(
-playerId
+    playerId
 ){
 
-const player =
-playerDataMap[playerId];
+    const player =
+        playerDataMap[playerId];
 
-const row =
-document.getElementById(
-"player-row-"+playerId
-);
 
-if(
-!player ||
-!row
-)
-return;
+    const row =
+        document.getElementById(
+            "player-row-"+playerId
+        );
 
-await renderPlayerRow(
 
-player,
+    if(
+        !player ||
+        !row
+    )
+        return;
 
-row
 
-);
+    await renderPlayerRow(
+
+        player,
+
+        row
+
+    );
 
 }
 
+
+/* =========================================
+   RENDER PLAYER ROW
+========================================= */
 
 async function renderPlayerRow(
 
-player,
+    player,
 
-row
+    row
 
 ){
 
-const s =
-await getPlayerGameStats(
-player.id
-);
+    const s =
+        await getPlayerGameStats(
+            player.id
+        );
 
-const onCourt =
-playerOnCourt[player.id] === true;
 
-row.className =
+    const onCourt =
+        playerOnCourt[player.id] === true;
 
-onCourt
 
-?
+    row.className =
 
-"on-court"
+        onCourt
 
-:
+        ?
 
-"bench";
+        "on-court"
 
-const reb =
+        :
 
-Number(
-s.offensive_rebounds || 0
-)
+        "bench";
 
-+
 
-Number(
-s.defensive_rebounds || 0
-);
+    const reb =
 
-row.innerHTML = `
+        Number(
+            s.offensive_rebounds || 0
+        )
+
+        +
+
+        Number(
+            s.defensive_rebounds || 0
+        );
+
+
+    row.innerHTML = `
 
 <td>
 
 ${escapeHTML(
-String(
-player.jersey_number || ""
-)
+    String(
+        player.jersey_number || ""
+    )
 )}
 
 </td>
@@ -2074,15 +2204,15 @@ player.jersey_number || ""
 
 ${escapeHTML(
 
-(player.first_name || "")
+    (player.first_name || "")
 
-+
+    +
 
-" "
+    " "
 
-+
+    +
 
-(player.last_name || "")
+    (player.last_name || "")
 
 )}
 
@@ -2092,7 +2222,7 @@ ${escapeHTML(
 
 ${escapeHTML(
 
-player.position || "N/A"
+    player.position || "N/A"
 
 )}
 
@@ -2101,11 +2231,11 @@ player.position || "N/A"
 <button
 
 class="sub-button ${
-onCourt
-?
-"sub-out"
-:
-"sub-in"
+    onCourt
+    ?
+    "sub-out"
+    :
+    "sub-in"
 }"
 
 onclick="toggleSubstitution(
@@ -2115,11 +2245,11 @@ onclick="toggleSubstitution(
 >
 
 ${
-onCourt
-?
-"SUB OUT"
-:
-"SUB IN"
+    onCourt
+    ?
+    "SUB OUT"
+    :
+    "SUB IN"
 }
 
 </button>
@@ -2131,7 +2261,7 @@ onCourt
 <span class="stat-value">
 
 ${formatMinutes(
-s.minutes_played
+    s.minutes_played
 )}
 
 </span>
@@ -2160,9 +2290,9 @@ ${s.offensive_rebounds || 0}
 
 ${statButtons(
 
-player.id,
+    player.id,
 
-"offensive_rebounds"
+    "offensive_rebounds"
 
 )}
 
@@ -2182,9 +2312,9 @@ ${s.defensive_rebounds || 0}
 
 ${statButtons(
 
-player.id,
+    player.id,
 
-"defensive_rebounds"
+    "defensive_rebounds"
 
 )}
 
@@ -2214,9 +2344,9 @@ ${s.assists || 0}
 
 ${statButtons(
 
-player.id,
+    player.id,
 
-"assists"
+    "assists"
 
 )}
 
@@ -2236,9 +2366,9 @@ ${s.steals || 0}
 
 ${statButtons(
 
-player.id,
+    player.id,
 
-"steals"
+    "steals"
 
 )}
 
@@ -2258,9 +2388,9 @@ ${s.blocks || 0}
 
 ${statButtons(
 
-player.id,
+    player.id,
 
-"blocks"
+    "blocks"
 
 )}
 
@@ -2280,9 +2410,9 @@ ${s.turnovers || 0}
 
 ${statButtons(
 
-player.id,
+    player.id,
 
-"turnovers"
+    "turnovers"
 
 )}
 
@@ -2302,9 +2432,9 @@ ${s.fouls || 0}
 
 ${statButtons(
 
-player.id,
+    player.id,
 
-"fouls"
+    "fouls"
 
 )}
 
@@ -2326,9 +2456,9 @@ ${s.two_pt_attempted || 0}
 
 ${calculatePercentage(
 
-s.two_pt_made,
+    s.two_pt_made,
 
-s.two_pt_attempted
+    s.two_pt_attempted
 
 )}
 
@@ -2426,9 +2556,9 @@ ${s.three_pt_attempted || 0}
 
 ${calculatePercentage(
 
-s.three_pt_made,
+    s.three_pt_made,
 
-s.three_pt_attempted
+    s.three_pt_attempted
 
 )}
 
@@ -2526,9 +2656,9 @@ ${s.ft_attempted || 0}
 
 ${calculatePercentage(
 
-s.ft_made,
+    s.ft_made,
 
-s.ft_attempted
+    s.ft_attempted
 
 )}
 
@@ -2615,33 +2745,23 @@ A−
 <td>
 
 <span class="${
-Number(
-s.plus_minus || 0
-) >= 0
-
-?
-
-"plus-value"
-
-:
-
-"minus-value"
-
+    Number(
+        s.plus_minus || 0
+    ) >= 0
+    ?
+    "plus-value"
+    :
+    "minus-value"
 }">
 
 ${
-Number(
-s.plus_minus || 0
-) > 0
-
-?
-
-"+"
-
-:
-
-""
-
+    Number(
+        s.plus_minus || 0
+    ) > 0
+    ?
+    "+"
+    :
+    ""
 }
 
 ${s.plus_minus || 0}
@@ -2655,15 +2775,19 @@ ${s.plus_minus || 0}
 }
 
 
+/* =========================================
+   STAT BUTTONS
+========================================= */
+
 function statButtons(
 
-playerId,
+    playerId,
 
-statKey
+    statKey
 
 ){
 
-return `
+    return `
 
 <button
 
@@ -2710,191 +2834,257 @@ onclick="updatePlayerStat(
 }
 
 
+/* =========================================
+   FORMAT MINUTES
+========================================= */
+
 function formatMinutes(
-seconds
+    seconds
 ){
 
-const totalSeconds =
-Number(
-seconds || 0
-);
+    const totalSeconds =
+        Number(
+            seconds || 0
+        );
 
-const minutes =
-Math.floor(
-totalSeconds / 60
-);
 
-const secs =
-totalSeconds % 60;
+    const minutes =
+        Math.floor(
+            totalSeconds / 60
+        );
 
-return (
 
-minutes
+    const secs =
+        Math.floor(
+            totalSeconds % 60
+        );
 
-+
 
-":"
+    return (
 
-+
+        minutes
 
-String(secs)
+        +
 
-.padStart(
-2,
-"0"
-)
+        ":"
 
-);
+        +
+
+        String(
+            secs
+        ).padStart(
+            2,
+            "0"
+        )
+
+    );
 
 }
 
+
+/* =========================================
+   SUBSTITUTION
+========================================= */
 
 async function toggleSubstitution(
-playerId
+    playerId
 ){
 
-if(!currentGame)
-return;
+    if(!currentGame)
+        return;
 
-const team =
-playerTeamMap[playerId];
 
-const currentlyOn =
-playerOnCourt[playerId] === true;
+    /*
+    FIRST SAVE ANY MINUTES
+    ACCUMULATED BEFORE SUBSTITUTION
+    */
 
-if(currentlyOn){
+    await updatePlayerMinutes();
 
-playerOnCourt[playerId] =
-false;
 
-await saveStatDirect(
+    const team =
+        playerTeamMap[playerId];
 
-playerId,
 
-"on_court",
+    const currentlyOn =
+        playerOnCourt[playerId] === true;
 
-false
 
-);
+    if(currentlyOn){
 
-if(
-playerCourtOrder[team]
-){
+        playerOnCourt[playerId] =
+            false;
 
-playerCourtOrder[team] =
 
-playerCourtOrder[team].filter(
+        await saveStatDirect(
 
-id => id !== playerId
+            playerId,
 
-);
+            "on_court",
+
+            false
+
+        );
+
+
+        if(
+            playerCourtOrder[team]
+        ){
+
+            playerCourtOrder[team] =
+
+                playerCourtOrder[team].filter(
+
+                    id =>
+                        id !== playerId
+
+                );
+
+        }
+
+
+        await refreshPlayerRow(
+            playerId
+        );
+
+
+        showStatus(
+            "Player SUB OUT."
+        );
+
+
+        return;
+
+    }
+
+
+    const activePlayers =
+
+        Object.keys(
+            playerOnCourt
+        ).filter(
+
+            id =>
+
+                playerOnCourt[id] === true
+
+                &&
+
+                playerTeamMap[id] === team
+
+        ).length;
+
+
+    if(
+        activePlayers >= 5
+    ){
+
+        showStatus(
+
+            "Maximum 5 players are on court. Sub out a player first."
+
+        );
+
+
+        return;
+
+    }
+
+
+    playerOnCourt[playerId] =
+        true;
+
+
+    await saveStatDirect(
+
+        playerId,
+
+        "on_court",
+
+        true
+
+    );
+
+
+    if(
+        !playerCourtOrder[team]
+    ){
+
+        playerCourtOrder[team] = [];
+
+    }
+
+
+    playerCourtOrder[team].push(
+        playerId
+    );
+
+
+    await refreshPlayerRow(
+        playerId
+    );
+
+
+    showStatus(
+        "Player SUB IN."
+    );
 
 }
 
-await refreshPlayerRow(
-playerId
-);
 
-showStatus(
-"Player SUB OUT."
-);
-
-return;
-
-}
-
-const activePlayers =
-
-Object.keys(
-playerOnCourt
-).filter(
-
-id =>
-
-playerOnCourt[id] === true
-
-&&
-
-playerTeamMap[id] === team
-
-).length;
-
-if(
-activePlayers >= 5
-){
-
-showStatus(
-
-"Maximum 5 players are on court. Sub out a player first."
-
-);
-
-return;
-
-}
-
-playerOnCourt[playerId] =
-true;
-
-await saveStatDirect(
-
-playerId,
-
-"on_court",
-
-true
-
-);
-
-if(
-!playerCourtOrder[team]
-){
-
-playerCourtOrder[team] = [];
-
-}
-
-playerCourtOrder[team].push(
-playerId
-);
-
-await refreshPlayerRow(
-playerId
-);
-
-showStatus(
-"Player SUB IN."
-);
-
-}
-
-
-```javascript
 /* =========================================
-   CLOCK STATE PERSISTENCE
+   CLOCK PERSISTENCE
 ========================================= */
 
 async function saveClockState(){
 
     if(!currentGame)
-        return;
+        return false;
+
 
     const updateData = {
-        clock_seconds: Math.max(
-            0,
-            Math.floor(Number(clockSeconds || 0))
-        ),
 
-        clock_running: clockRunning,
+        clock_seconds:
+            Math.max(
+                0,
+                Math.floor(
+                    Number(
+                        clockSeconds || 0
+                    )
+                )
+            ),
 
-        clock_started_at: clockRunning
-            ? (
+        clock_running:
+            clockRunning,
+
+        clock_started_at:
+
+            clockRunning
+
+            ?
+
+            (
+
                 clockStartedAt
-                    ? new Date(clockStartedAt).toISOString()
-                    : new Date().toISOString()
+
+                ?
+
+                new Date(
+                    clockStartedAt
+                ).toISOString()
+
+                :
+
+                new Date().toISOString()
+
             )
-            : null
+
+            :
+
+            null
+
     };
+
 
     const {
         data,
@@ -2905,11 +3095,14 @@ async function saveClockState(){
 
     .update(updateData)
 
-    .eq("id", currentGame.id)
+    .eq(
+        "id",
+        currentGame.id
+    )
 
     .select("*")
-
     .single();
+
 
     if(error){
 
@@ -2922,26 +3115,14 @@ async function saveClockState(){
 
     }
 
+
     if(data){
 
-        currentGame = data;
-
-        clockSeconds = Math.max(
-            0,
-            Number(data.clock_seconds || 0)
-        );
-
-        clockRunning =
-            data.clock_running === true;
-
-        clockStartedAt =
-            data.clock_started_at
-                ? new Date(
-                    data.clock_started_at
-                  ).getTime()
-                : null;
+        currentGame =
+            data;
 
     }
+
 
     return true;
 
@@ -2949,7 +3130,7 @@ async function saveClockState(){
 
 
 /* =========================================
-   LOAD PERSISTED CLOCK
+   LOAD CLOCK
 ========================================= */
 
 async function loadPersistedClock(){
@@ -2984,36 +3165,54 @@ async function loadPersistedClock(){
             error
         );
 
+        clockSeconds =
+            600;
+
+        clockRunning =
+            false;
+
+        clockStartedAt =
+            null;
+
+        updateClockDisplay();
+
         return;
 
     }
 
 
-    /*
-    RESTORE SAVED VALUES
-    */
+    clockSeconds =
+        Math.max(
+            0,
+            Number(
+                data.clock_seconds ?? 600
+            )
+        );
 
-    clockSeconds = Math.max(
-        0,
-        Number(
-            data.clock_seconds ?? 600
-        )
-    );
 
     clockRunning =
         data.clock_running === true;
 
+
     clockStartedAt =
+
         data.clock_started_at
-            ? new Date(
-                data.clock_started_at
-              ).getTime()
-            : null;
+
+        ?
+
+        new Date(
+            data.clock_started_at
+        ).getTime()
+
+        :
+
+        null;
 
 
     /*
-    IF CLOCK WAS RUNNING BEFORE REFRESH,
-    CALCULATE EXACT TIME THAT PASSED
+    IF THE CLOCK WAS RUNNING
+    WHEN THE PAGE WAS CLOSED,
+    SUBTRACT THE REAL TIME THAT PASSED.
     */
 
     if(
@@ -3021,85 +3220,77 @@ async function loadPersistedClock(){
         clockStartedAt
     ){
 
-        const now =
-            Date.now();
-
         const elapsedSeconds =
+
             Math.floor(
+
                 (
-                    now -
+                    Date.now()
+                    -
                     clockStartedAt
-                ) / 1000
+                )
+
+                /
+
+                1000
+
             );
 
-
-        /*
-        SUBTRACT THE TIME THAT PASSED
-        */
 
         clockSeconds =
+
             Math.max(
+
                 0,
+
                 clockSeconds -
                 elapsedSeconds
+
             );
 
-
-        /*
-        CLOCK FINISHED
-        */
 
         if(
             clockSeconds <= 0
         ){
 
-            clockSeconds = 0;
+            clockSeconds =
+                0;
 
-            clockRunning = false;
+            clockRunning =
+                false;
 
-            clockStartedAt = null;
-
-            updateClockDisplay();
+            clockStartedAt =
+                null;
 
             await saveClockState();
 
-            return;
+        }
+
+        else{
+
+            /*
+            CREATE A NEW TIME SEGMENT.
+            THIS PREVENTS DOUBLE COUNTING
+            AFTER REFRESH.
+            */
+
+            clockStartedAt =
+                Date.now();
+
+
+            await saveClockState();
 
         }
 
-
-        /*
-        IMPORTANT:
-        SAVE THE NEW REMAINING TIME
-        AND START A NEW TIMING SEGMENT.
-
-        This prevents the same elapsed time
-        from being subtracted again after
-        another refresh.
-        */
-
-        clockStartedAt =
-            Date.now();
-
-
-        /*
-        SAVE THE NEW TIMING SEGMENT
-        */
-
-        await saveClockState();
-
     }
 
-
-    /*
-    UPDATE DISPLAY
-    */
 
     updateClockDisplay();
 
 
     /*
-    CONTINUE CLOCK IF IT WAS RUNNING
+    START LOCAL DISPLAY
+    IF CLOCK WAS RUNNING.
     */
 
     if(
@@ -3114,15 +3305,10 @@ async function loadPersistedClock(){
 
 
 /* =========================================
-   GET CURRENT CLOCK VALUE
+   GET CURRENT CLOCK
 ========================================= */
 
 function getCurrentClockSeconds(){
-
-    /*
-    IF CLOCK IS PAUSED,
-    RETURN SAVED VALUE
-    */
 
     if(
         !clockRunning ||
@@ -3130,42 +3316,51 @@ function getCurrentClockSeconds(){
     ){
 
         return Math.max(
+
             0,
+
             Math.floor(
                 Number(
                     clockSeconds || 0
                 )
             )
+
         );
 
     }
 
 
-    /*
-    CALCULATE TIME PASSED SINCE
-    CURRENT TIMING SEGMENT STARTED
-    */
-
     const elapsedSeconds =
+
         Math.floor(
+
             (
-                Date.now() -
+                Date.now()
+                -
                 clockStartedAt
-            ) / 1000
+            )
+
+            /
+
+            1000
+
         );
 
 
     return Math.max(
+
         0,
+
         clockSeconds -
         elapsedSeconds
+
     );
 
 }
 
 
 /* =========================================
-   UPDATE CLOCK DISPLAY
+   CLOCK DISPLAY
 ========================================= */
 
 function updateClockDisplay(){
@@ -3212,6 +3407,115 @@ function updateClockDisplay(){
 
 
 /* =========================================
+   PLAYER MINUTES
+========================================= */
+
+async function updatePlayerMinutes(){
+
+    if(
+        !currentGame ||
+        !clockRunning
+    )
+        return;
+
+
+    const now =
+        Date.now();
+
+
+    if(
+        !lastMinuteUpdateTime
+    ){
+
+        lastMinuteUpdateTime =
+            now;
+
+        return;
+
+    }
+
+
+    const elapsedSeconds =
+
+        Math.floor(
+
+            (
+                now -
+                lastMinuteUpdateTime
+            )
+
+            /
+
+            1000
+
+        );
+
+
+    if(
+        elapsedSeconds <= 0
+    )
+        return;
+
+
+    lastMinuteUpdateTime =
+        now;
+
+
+    const playersToUpdate =
+
+        Object.keys(
+            playerOnCourt
+        ).filter(
+
+            playerId =>
+
+                playerOnCourt[playerId] === true
+
+        );
+
+
+    for(
+        const playerId of playersToUpdate
+    ){
+
+        const stats =
+            await getPlayerGameStats(
+                playerId
+            );
+
+
+        const newMinutes =
+
+            Number(
+                stats.minutes_played || 0
+            )
+
+            +
+
+            elapsedSeconds;
+
+
+        await saveStatDirect(
+
+            playerId,
+
+            "minutes_played",
+
+            newMinutes
+
+        );
+
+
+        await refreshPlayerRow(
+            playerId
+        );
+
+    }
+
+}
+
+
+/* =========================================
    START CLOCK
 ========================================= */
 
@@ -3236,23 +3540,16 @@ async function startClock(){
     }
 
 
-    /*
-    GET THE MOST CURRENT CLOCK VALUE
-    */
-
     clockSeconds =
         getCurrentClockSeconds();
 
-
-    /*
-    DO NOT START IF ALREADY ZERO
-    */
 
     if(
         clockSeconds <= 0
     ){
 
-        clockSeconds = 0;
+        clockSeconds =
+            0;
 
         updateClockDisplay();
 
@@ -3261,26 +3558,20 @@ async function startClock(){
     }
 
 
-    /*
-    START NEW TIMING SEGMENT
-    */
+    clockRunning =
+        true;
 
-    clockRunning = true;
 
     clockStartedAt =
         Date.now();
 
 
-    /*
-    SAVE START STATE
-    */
+    lastMinuteUpdateTime =
+        Date.now();
+
 
     await saveClockState();
 
-
-    /*
-    START LOCAL DISPLAY LOOP
-    */
 
     startClockInternal();
 
@@ -3293,10 +3584,6 @@ async function startClock(){
 
 function startClockInternal(){
 
-    /*
-    CLEAR ANY EXISTING INTERVAL
-    */
-
     if(
         clockInterval
     ){
@@ -3308,16 +3595,8 @@ function startClockInternal(){
     }
 
 
-    /*
-    UPDATE IMMEDIATELY
-    */
-
     updateClockDisplay();
 
-
-    /*
-    START DISPLAY LOOP
-    */
 
     clockInterval =
 
@@ -3341,27 +3620,32 @@ function startClockInternal(){
 
 
                 /*
-                CALCULATE CURRENT TIME
-                BASED ON REAL ELAPSED TIME
+                UPDATE PLAYER MINUTES
+                BASED ON REAL ELAPSED TIME.
                 */
+
+                await updatePlayerMinutes();
+
 
                 const currentSeconds =
                     getCurrentClockSeconds();
 
 
-                /*
-                CLOCK REACHED ZERO
-                */
-
                 if(
                     currentSeconds <= 0
                 ){
 
-                    clockSeconds = 0;
+                    clockSeconds =
+                        0;
 
-                    clockRunning = false;
+                    clockRunning =
+                        false;
 
-                    clockStartedAt = null;
+                    clockStartedAt =
+                        null;
+
+                    lastMinuteUpdateTime =
+                        null;
 
 
                     if(
@@ -3389,74 +3673,27 @@ function startClockInternal(){
                 }
 
 
-                /*
-                UPDATE DISPLAY
-                */
-
                 updateClockDisplay();
 
 
                 /*
-                UPDATE PLAYER MINUTES
-                */
-
-                for(
-                    const playerId in playerOnCourt
-                ){
-
-                    if(
-                        playerOnCourt[playerId] !== true
-                    )
-                        continue;
-
-
-                    const stats =
-                        await getPlayerGameStats(
-                            playerId
-                        );
-
-
-                    const newMinutes =
-
-                        Number(
-                            stats.minutes_played || 0
-                        )
-
-                        +
-
-                        1;
-
-
-                    await saveStatDirect(
-
-                        playerId,
-
-                        "minutes_played",
-
-                        newMinutes
-
-                    );
-
-
-                    await refreshPlayerRow(
-                        playerId
-                    );
-
-                }
-
-
-                /*
-                EVERY 5 SECONDS,
-                SAVE THE CURRENT CLOCK STATE.
-
-                This protects against refreshes
-                without constantly writing to Supabase.
+                PERIODICALLY SAVE THE CLOCK.
                 */
 
                 if(
+
                     Math.floor(
                         Date.now() / 1000
-                    ) % 5 === 0
+                    )
+
+                    %
+
+                    5
+
+                    ===
+
+                    0
+
                 ){
 
                     clockSeconds =
@@ -3493,24 +3730,20 @@ async function pauseClock(){
 
 
     /*
-    FIRST CALCULATE THE EXACT
-    CURRENT REMAINING TIME
+    SAVE PLAYER MINUTES
+    BEFORE STOPPING CLOCK.
     */
+
+    await updatePlayerMinutes();
+
 
     clockSeconds =
         getCurrentClockSeconds();
 
 
-    /*
-    STOP CLOCK
-    */
+    clockRunning =
+        false;
 
-    clockRunning = false;
-
-
-    /*
-    CLEAR INTERVAL
-    */
 
     if(
         clockInterval
@@ -3526,23 +3759,16 @@ async function pauseClock(){
     }
 
 
-    /*
-    CLEAR TIMING SEGMENT
-    */
-
-    clockStartedAt = null;
+    clockStartedAt =
+        null;
 
 
-    /*
-    UPDATE DISPLAY
-    */
+    lastMinuteUpdateTime =
+        null;
+
 
     updateClockDisplay();
 
-
-    /*
-    SAVE EXACT PAUSED TIME
-    */
 
     await saveClockState();
 
@@ -3562,15 +3788,16 @@ async function resetClock(){
 
 
     /*
-    STOP CLOCK
+    SAVE ANY PLAYER MINUTES
+    BEFORE RESETTING.
     */
 
-    clockRunning = false;
+    await updatePlayerMinutes();
 
 
-    /*
-    CLEAR INTERVAL
-    */
+    clockRunning =
+        false;
+
 
     if(
         clockInterval
@@ -3586,30 +3813,20 @@ async function resetClock(){
     }
 
 
-    /*
-    RESET TO 10 MINUTES
-    */
-
-    clockSeconds = 600;
+    clockSeconds =
+        600;
 
 
-    /*
-    CLEAR START TIME
-    */
-
-    clockStartedAt = null;
+    clockStartedAt =
+        null;
 
 
-    /*
-    UPDATE DISPLAY
-    */
+    lastMinuteUpdateTime =
+        null;
+
 
     updateClockDisplay();
 
-
-    /*
-    SAVE RESET
-    */
 
     await saveClockState();
 
@@ -3630,10 +3847,6 @@ async function setPeriod(
         return;
 
 
-    /*
-    UPDATE PERIOD
-    */
-
     await updateGame({
 
         period:
@@ -3642,11 +3855,12 @@ async function setPeriod(
     });
 
 
-    /*
-    RESET CLOCK FOR NEW PERIOD
-    */
-
     await resetClock();
 
 }
-```
+
+</script>
+
+</body>
+
+</html>
