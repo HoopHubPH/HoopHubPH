@@ -155,15 +155,17 @@ async function loadPlayers() {
     `)
     .order("created_at", { ascending: false });
 
-    if (error) {
+   if (error) {
 
-        playersList.innerHTML =
-            "<h3>Unable to load players.</h3>";
+    playersList.innerHTML =
+        "<h3>Unable to load players: " +
+        error.message +
+        "</h3>";
 
-        console.error(error);
+    console.error("PLAYER LOAD ERROR:", error);
 
-        return;
-    }
+    return;
+}
 
     if (data.length === 0) {
 
