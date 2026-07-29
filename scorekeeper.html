@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,8 +21,6 @@ body{
     background:#f5f5f5;
     color:#222;
 }
-
-/* HEADER */
 
 header{
     background:#111;
@@ -55,15 +54,11 @@ nav a:hover{
     color:#ff6b00;
 }
 
-/* MAIN */
-
 .container{
     width:100%;
     max-width:100%;
     padding:8px;
 }
-
-/* GAME SELECTOR */
 
 .game-selector{
     background:white;
@@ -98,8 +93,6 @@ nav a:hover{
     cursor:pointer;
 }
 
-/* STATUS */
-
 #statusMessage{
     display:none;
     text-align:center;
@@ -110,8 +103,6 @@ nav a:hover{
     margin-bottom:8px;
     font-size:11px;
 }
-
-/* SCOREBOARD */
 
 .scoreboard{
     display:grid;
@@ -154,8 +145,6 @@ nav a:hover{
     font-size:11px;
     cursor:pointer;
 }
-
-/* CLOCK */
 
 .clock-area{
     background:white;
@@ -201,8 +190,6 @@ nav a:hover{
     cursor:pointer;
 }
 
-/* PLAYER AREA */
-
 .controls{
     background:white;
     padding:7px;
@@ -215,8 +202,6 @@ nav a:hover{
     font-size:14px;
     margin-bottom:7px;
 }
-
-/* TWO TEAM TABLES */
 
 .stats-controls{
     display:grid;
@@ -238,8 +223,6 @@ nav a:hover{
     font-size:12px;
     padding:6px;
 }
-
-/* TABLE */
 
 .player-table{
     width:100%;
@@ -272,8 +255,6 @@ nav a:hover{
     background:#fff8f3;
 }
 
-/* COLUMN WIDTHS */
-
 .col-number{
     width:25px;
 }
@@ -299,8 +280,6 @@ nav a:hover{
     width:38px;
 }
 
-/* PLAYER */
-
 .player-name{
     font-weight:bold;
     font-size:9px;
@@ -315,8 +294,6 @@ nav a:hover{
     font-size:7px;
     display:block;
 }
-
-/* VALUE */
 
 .stat-value{
     font-weight:bold;
@@ -334,8 +311,6 @@ nav a:hover{
     color:#c62828;
 }
 
-/* SUB STATUS */
-
 .on-court{
     background:#e8f5e9!important;
 }
@@ -347,8 +322,6 @@ nav a:hover{
 .bench{
     background:white;
 }
-
-/* SUB BUTTON */
 
 .sub-button{
     border:0;
@@ -369,8 +342,6 @@ nav a:hover{
     background:#c62828;
     color:white;
 }
-
-/* STAT CONTROLS */
 
 .stat-control-buttons{
     display:flex;
@@ -399,8 +370,6 @@ nav a:hover{
 .stat-btn:hover{
     background:#ff6b00;
 }
-
-/* SHOOTING */
 
 .shot-value{
     font-size:9px;
@@ -434,8 +403,6 @@ nav a:hover{
     background:#ff6b00;
 }
 
-/* FOOTER */
-
 .game-footer-controls{
     margin-top:8px;
     background:white;
@@ -457,8 +424,6 @@ nav a:hover{
     font-size:9px;
     cursor:pointer;
 }
-
-/* MOBILE */
 
 @media(max-width:900px){
 
@@ -496,8 +461,6 @@ HOOP <span>HUB PH</span>
 
 <div class="container">
 
-<!-- GAME SELECTOR -->
-
 <div class="game-selector">
 
 <h2>Game ID:</h2>
@@ -518,8 +481,6 @@ LOAD
 </div>
 
 <div id="statusMessage"></div>
-
-<!-- SCOREBOARD -->
 
 <div class="scoreboard">
 
@@ -570,7 +531,6 @@ onclick="updateScore('home',-1)"
 
 </div>
 
-
 <div class="team-control">
 
 <h2 id="awayTeam">
@@ -620,8 +580,6 @@ onclick="updateScore('away',-1)"
 
 </div>
 
-<!-- CLOCK -->
-
 <div class="clock-area">
 
 <div
@@ -665,8 +623,6 @@ RESET
 
 </div>
 
-<!-- PLAYER STATS -->
-
 <div class="controls">
 
 <h2>
@@ -674,8 +630,6 @@ PLAYER STATS
 </h2>
 
 <div class="stats-controls">
-
-<!-- HOME -->
 
 <div class="stat-control">
 
@@ -686,8 +640,6 @@ Home Players
 <div id="homePlayersList"></div>
 
 </div>
-
-<!-- AWAY -->
 
 <div class="stat-control">
 
@@ -702,8 +654,6 @@ Away Players
 </div>
 
 </div>
-
-<!-- FOOTER -->
 
 <div class="game-footer-controls">
 
@@ -926,6 +876,32 @@ document.getElementById(
 ).textContent =
 data.away_score || 0;
 
+
+/*
+=========================================
+RESTORE CLOCK FROM SUPABASE
+=========================================
+*/
+
+clockSeconds =
+Number(
+data.clock_seconds ?? 600
+);
+
+clockRunning =
+Boolean(
+data.clock_running ?? false
+);
+
+updateClockDisplay();
+
+
+/*
+=========================================
+RESET LOCAL MAPS
+=========================================
+*/
+
 playerStatsMap = {};
 
 playerDataMap = {};
@@ -934,7 +910,32 @@ playerTeamMap = {};
 
 playerOnCourt = {};
 
+
+/*
+=========================================
+LOAD PLAYERS
+
+The on_court status is now restored
+from Supabase instead of resetting.
+=========================================
+*/
+
 await loadTeamPlayers();
+
+
+/*
+=========================================
+IF CLOCK WAS RUNNING BEFORE REFRESH
+RESUME IT
+=========================================
+*/
+
+if(clockRunning){
+
+startClock();
+
+}
+
 
 showStatus(
 "Game loaded successfully."
@@ -1024,10 +1025,8 @@ newScore;
 
 
 /*
-IMPORTANT:
-
-The +/- of players currently on court
-is based on the score change.
+UPDATE INDIVIDUAL +/- FOR
+PLAYERS CURRENTLY ON COURT
 */
 
 if(amount !== 0){
@@ -1283,10 +1282,6 @@ return;
 }
 
 
-/*
-CREATE TABLE
-*/
-
 const table =
 document.createElement(
 "table"
@@ -1353,12 +1348,6 @@ table.querySelector(
 );
 
 
-/*
-IMPORTANT:
-Players are created once in fixed order.
-Updating stats only changes cell contents.
-*/
-
 for(
 const player of data
 ){
@@ -1369,14 +1358,31 @@ player;
 playerTeamMap[player.id] =
 team;
 
-if(
-playerOnCourt[player.id] === undefined
-){
+
+/*
+=========================================
+GET SAVED PLAYER GAME STATS
+=========================================
+*/
+
+const savedStats =
+await getPlayerGameStats(
+player.id
+);
+
+
+/*
+=========================================
+RESTORE ON COURT STATUS
+FROM SUPABASE
+=========================================
+*/
 
 playerOnCourt[player.id] =
-false;
+Boolean(
+savedStats.on_court
+);
 
-}
 
 const row =
 document.createElement(
@@ -1440,7 +1446,9 @@ ft_made:0,
 
 ft_attempted:0,
 
-plus_minus:0
+plus_minus:0,
+
+on_court:false
 
 };
 
@@ -1668,46 +1676,18 @@ currentValue + amount
 );
 
 
-/*
-PTS IS NOT MANUALLY EDITABLE
-*/
-
 if(statKey === "points"){
-
 return;
-
 }
-
-
-/*
-MINUTES ARE NOT MANUALLY EDITABLE
-*/
 
 if(statKey === "minutes_played"){
-
 return;
-
 }
-
-
-/*
-PLUS MINUS IS NOT MANUALLY EDITABLE
-*/
 
 if(statKey === "plus_minus"){
-
 return;
-
 }
 
-
-/*
-MADE SHOTS
-
-2PT MADE = +2 POINTS
-3PT MADE = +3 POINTS
-FT MADE = +1 POINT
-*/
 
 if(
 statKey === "two_pt_made"
@@ -1724,181 +1704,44 @@ statKey === "two_pt_made"
 ? 3
 : 1;
 
-
-/*
-UPDATE MADE SHOT
-*/
-
-await saveStatDirect(
-
-playerId,
-
-statKey,
-
-newValue
-
-);
-
-
-/*
-CALCULATE NEW PLAYER POINTS
-*/
-
 const newPoints =
 Math.max(
-
 0,
-
-Number(
-stats.points || 0
-)
-
+Number(stats.points || 0)
 +
-
 (amount * pointsToAdd)
-
 );
 
-
-/*
-UPDATE PLAYER POINTS
-*/
 
 await saveStatDirect(
-
 playerId,
+statKey,
+newValue
+);
 
+await saveStatDirect(
+playerId,
 "points",
-
 newPoints
-
 );
 
 
 /*
-UPDATE TEAM SCORE
-
-This is the requested change.
-
-When a made shot is added or removed,
-the team score changes by the same
-number of points.
+UPDATE TEAM SCORE.
+THIS ALSO UPDATES THE INDIVIDUAL
++/- OF THE ON-COURT PLAYERS.
 */
 
 const team =
 playerTeamMap[playerId];
 
-if(team){
-
-const column =
-team === "home"
-? "home_score"
-: "away_score";
-
-
-const currentTeamScore =
-Number(
-currentGame[column] || 0
+await updateScore(
+team,
+amount * pointsToAdd
 );
-
-
-const newTeamScore =
-Math.max(
-
-0,
-
-currentTeamScore
-+
-(amount * pointsToAdd)
-
-);
-
-
-/*
-UPDATE TEAM SCORE IN SUPABASE
-*/
-
-const {
-
-data,
-error
-
-} = await supabaseClient
-
-.from("games")
-
-.update({
-
-[column]:
-newTeamScore
-
-})
-
-.eq(
-
-"id",
-
-currentGame.id
-
-)
-
-.select()
-
-.single();
-
-
-if(error){
-
-console.error(
-
-"Team score update error:",
-
-error
-
-);
-
-showStatus(
-
-"Player stats saved, but team score could not be updated."
-
-);
-
-}
-
-else{
-
-/*
-UPDATE CURRENT GAME
-*/
-
-currentGame =
-data;
-
-
-/*
-UPDATE SCOREBOARD
-*/
-
-document.getElementById(
-
-team + "Score"
-
-).textContent =
-newTeamScore;
-
-}
-
-}
-
-
-/*
-REFRESH ONLY PLAYER ROW
-*/
 
 await refreshPlayerRow(
-
 playerId
-
 );
 
 return;
@@ -1906,10 +1749,6 @@ return;
 }
 
 
-/*
-ALL OTHER STATS
-*/
-
 await saveStatDirect(
 
 playerId,
@@ -1920,15 +1759,8 @@ newValue
 
 );
 
-
-/*
-REFRESH ONLY PLAYER ROW
-*/
-
 await refreshPlayerRow(
-
 playerId
-
 );
 
 }
@@ -1997,10 +1829,6 @@ Number(
 s.defensive_rebounds || 0
 );
 
-
-/*
-PLAYER ROW
-*/
 
 row.innerHTML = `
 
@@ -2578,6 +2406,17 @@ if(currentlyOn){
 playerOnCourt[playerId] =
 false;
 
+
+/*
+SAVE SUB OUT STATUS TO SUPABASE
+*/
+
+await saveStatDirect(
+playerId,
+"on_court",
+false
+);
+
 await refreshPlayerRow(
 playerId
 );
@@ -2631,6 +2470,17 @@ SUB IN
 playerOnCourt[playerId] =
 true;
 
+
+/*
+SAVE SUB IN STATUS TO SUPABASE
+*/
+
+await saveStatDirect(
+playerId,
+"on_court",
+true
+);
+
 await refreshPlayerRow(
 playerId
 );
@@ -2643,7 +2493,7 @@ showStatus(
 
 
 /* =========================================
-CLOCK
+CLOCK DISPLAY
 ========================================= */
 
 function updateClockDisplay(){
@@ -2676,6 +2526,59 @@ String(seconds)
 
 
 /* =========================================
+SAVE CLOCK TO SUPABASE
+========================================= */
+
+async function saveClockState(){
+
+if(!currentGame)
+return;
+
+const {
+
+data,
+error
+
+} = await supabaseClient
+
+.from("games")
+
+.update({
+
+clock_seconds:
+clockSeconds,
+
+clock_running:
+clockRunning
+
+})
+
+.eq(
+"id",
+currentGame.id
+)
+
+.select()
+.single();
+
+if(error){
+
+console.error(
+"Clock save error:",
+error
+);
+
+return;
+
+}
+
+currentGame =
+data;
+
+}
+
+
+/* =========================================
 START CLOCK
 ========================================= */
 
@@ -2697,6 +2600,14 @@ return;
 clockRunning =
 true;
 
+
+/*
+SAVE RUNNING STATUS
+*/
+
+saveClockState();
+
+
 clockInterval =
 setInterval(
 
@@ -2711,22 +2622,23 @@ return;
 }
 
 
-/*
-1 REAL SECOND =
-1 GAME SECOND
-
-ALL ON COURT PLAYERS
-GET ONE SECOND OF MINUTES.
-*/
-
 clockSeconds--;
 
 updateClockDisplay();
 
 
-if(
-clockSeconds % 1 === 0
-){
+/*
+SAVE CURRENT CLOCK EVERY SECOND
+*/
+
+await saveClockState();
+
+
+/*
+=========================================
+MINUTES ONLY FOR PLAYERS ON COURT
+=========================================
+*/
 
 for(
 const playerId in playerOnCourt
@@ -2760,8 +2672,6 @@ newMinutes
 
 }
 
-}
-
 },
 
 1000
@@ -2775,7 +2685,7 @@ newMinutes
 PAUSE CLOCK
 ========================================= */
 
-function pauseClock(){
+async function pauseClock(){
 
 clockRunning =
 false;
@@ -2791,6 +2701,8 @@ null;
 
 }
 
+await saveClockState();
+
 }
 
 
@@ -2798,7 +2710,7 @@ null;
 RESET CLOCK
 ========================================= */
 
-function resetClock(){
+async function resetClock(){
 
 pauseClock();
 
@@ -2806,6 +2718,8 @@ clockSeconds =
 600;
 
 updateClockDisplay();
+
+await saveClockState();
 
 }
 
@@ -2841,3 +2755,4 @@ loadGame();
 </body>
 
 </html>
+```
