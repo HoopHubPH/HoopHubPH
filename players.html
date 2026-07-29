@@ -145,9 +145,15 @@ async function loadPlayers() {
     playersList.innerHTML = "Loading players...";
 
     const { data, error } = await supabaseClient
-        .from("players")
-        .select("*")
-        .order("created_at", { ascending: false });
+    .from("players")
+    .select(`
+        *,
+        teams (
+            id,
+            name
+        )
+    `)
+    .order("created_at", { ascending: false });
 
     if (error) {
 
@@ -174,19 +180,35 @@ async function loadPlayers() {
 
         playersList.innerHTML += `
 
-        <div class="player-card">
+<div class="player-card">
 
-            <h3>${player.first_name} ${player.last_name}</h3>
+    <h3>
+        ${player.first_name} ${player.last_name}
+    </h3>
 
-            <p><strong>Position:</strong> ${player.position}</p>
+    <p>
+        <strong>Position:</strong>
+        ${player.position || "Not provided"}
+    </p>
 
-            <p><strong>Jersey:</strong> #${player.jersey_number}</p>
+    <p>
+        <strong>Jersey:</strong>
+        #${player.jersey_number}
+    </p>
 
-            <p><strong>Height:</strong> ${player.height}</p>
+    <p>
+        <strong>Height:</strong>
+        ${player.height || "Not provided"}
+    </p>
 
-        </div>
+    <p>
+        <strong>Team:</strong>
+        ${player.teams ? player.teams.name : "No team assigned"}
+    </p>
 
-        `;
+</div>
+
+`;
 
     });
 
