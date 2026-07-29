@@ -204,9 +204,14 @@ async function loadPlayers() {
     </p>
 
     <p>
-        <strong>Team:</strong>
-        ${player.teams ? player.teams.name : "No team assigned"}
-    </p>
+    <strong>Team:</strong>
+    ${player.teams ? player.teams.name : "No team assigned"}
+</p>
+
+<p>
+    <strong>Debug Team ID:</strong>
+    ${player.team_id || "No team ID"}
+</p>
 
 </div>
 
