@@ -510,6 +510,21 @@ nav a:hover{
     border-radius:3px;
     font-size:9px;
     cursor:pointer;
+    transition:0.2s;
+}
+
+
+/* CURRENT GAME STATUS HIGHLIGHT */
+
+.control-button.active{
+    background:#111;
+    color:#fff;
+    box-shadow:0 0 0 2px #ff6b00;
+    transform:scale(1.05);
+}
+
+.control-button:hover{
+    background:#111;
 }
 
 
@@ -765,22 +780,25 @@ Status:
 </strong>
 
 <button
+id="status-live"
 class="control-button"
-onclick="updateGame({status:'Live'})"
+onclick="setGameStatus('Live')"
 >
 LIVE
 </button>
 
 <button
+id="status-half"
 class="control-button"
-onclick="updateGame({status:'Halftime'})"
+onclick="setGameStatus('Halftime')"
 >
 HALF
 </button>
 
 <button
+id="status-final"
 class="control-button"
-onclick="updateGame({status:'Final'})"
+onclick="setGameStatus('Final')"
 >
 FINAL
 </button>
@@ -1024,6 +1042,11 @@ await loadTeamPlayers();
 /* RESTORE QUARTER HIGHLIGHT */
 
 setActivePeriod(data.period);
+
+
+/* RESTORE GAME STATUS HIGHLIGHT */
+
+setActiveStatus(data.status);
 
 
 showStatus(
@@ -2031,7 +2054,6 @@ const newMade =
 Math.max(
 
 0,
-
 currentValue + amount
 
 );
@@ -3520,7 +3542,8 @@ const startingSeconds =
 Math.max(
 0,
 Math.floor(
-Number(clockSeconds || 0)
+Number(clockSeconds || 0
+)
 )
 );
 
@@ -4001,6 +4024,116 @@ document
 );
 
 }
+
+}
+
+
+/* SET ACTIVE GAME STATUS */
+
+function setActiveStatus(status){
+
+/*
+Remove active class from all status buttons
+*/
+
+document
+.querySelectorAll(
+".game-footer-controls .control-button"
+)
+.forEach(
+button => {
+
+button.classList.remove(
+"active"
+);
+
+}
+);
+
+
+/*
+Add active class to selected status
+*/
+
+if(
+status === "Live"
+){
+
+document
+.getElementById(
+"status-live"
+)
+.classList.add(
+"active"
+);
+
+}
+
+else if(
+status === "Halftime"
+){
+
+document
+.getElementById(
+"status-half"
+)
+.classList.add(
+"active"
+);
+
+}
+
+else if(
+status === "Final"
+){
+
+document
+.getElementById(
+"status-final"
+)
+.classList.add(
+"active"
+);
+
+}
+
+}
+
+
+/* SET GAME STATUS */
+
+async function setGameStatus(status){
+
+if(!currentGame){
+
+showStatus(
+"Load a game first."
+);
+
+return;
+
+}
+
+
+/*
+Highlight selected status immediately.
+*/
+
+setActiveStatus(
+status
+);
+
+
+/*
+Save selected status to database.
+*/
+
+await updateGame({
+
+status:
+status
+
+});
 
 }
 
