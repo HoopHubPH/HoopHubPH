@@ -348,6 +348,14 @@ nav a:hover{
     color:#fff;
 }
 
+/* NEW: Disable substitution buttons while clock is running */
+.sub-button:disabled{
+    background:#ddd;
+    color:#999;
+    cursor:not-allowed;
+    opacity:.6;
+}
+
 .stat-control-buttons{
     display:flex;
     justify-content:center;
@@ -646,30 +654,10 @@ let teamPlayersMap={};
 let teamContainerMap={};
 let teamExpandedMap={};
 
-/* =========================================================
-   CLOCK + PLAYER MINUTES SYNCHRONIZATION
-   ========================================================= */
-
 let clockSeconds=600;
 let clockInterval=null;
 let clockRunning=false;
 let clockEndTime=null;
-
-/*
-   IMPORTANT:
-
-   The game clock is now the authoritative timer.
-
-   Player minutes are NOT calculated using Date.now()
-   as an independent running timer.
-
-   Instead, every player has a "minuteBaseSeconds"
-   value representing their saved minutes at the last
-   synchronization point.
-
-   active players accumulate only the amount of
-   GAME CLOCK TIME that has actually elapsed.
-*/
 
 let playerMinuteBaseSeconds={};
 let playerMinuteLastClockSeconds={};
@@ -727,20 +715,45 @@ function showStatus(message){
 
 
 /* =========================================================
-   PLAYER MINUTES
+   SUBSTITUTION BUTTON CONTROL
    ========================================================= */
 
 /*
-   Returns the number of seconds played by a player.
+   Substitution is only allowed when the game clock
+   is paused or stopped.
 
-   The calculation is based ONLY on elapsed GAME CLOCK
-   time.
-
-   If the game clock is paused, the player's minutes
-   remain frozen.
-
-   If the player is on the bench, minutes remain frozen.
+   Clock running = buttons disabled
+   Clock paused/stopped = buttons enabled
 */
+
+function updateSubstitutionButtons(){
+
+    document
+    .querySelectorAll(".sub-button")
+    .forEach(button=>{
+
+        button.disabled=clockRunning;
+
+        if(clockRunning){
+
+            button.title=
+                "Pause the game clock before making a substitution.";
+
+        }
+        else{
+
+            button.title=
+                "Click to make a substitution.";
+
+        }
+
+    });
+}
+
+
+/* =========================================================
+   PLAYER MINUTES
+   ========================================================= */
 
 function getPlayerTotalSeconds(playerId){
 
@@ -765,14 +778,6 @@ function getPlayerTotalSeconds(playerId){
         ? playerMinuteLastClockSeconds[playerId]
         : clockSeconds;
 
-    /*
-       When the clock is running, clockSeconds decreases.
-
-       The difference between the last synchronized clock
-       position and current clock position equals actual
-       game time played.
-    */
-
     if(clockRunning){
 
         const elapsed=
@@ -787,13 +792,6 @@ function getPlayerTotalSeconds(playerId){
     return base;
 }
 
-
-/*
-   Synchronize all active players against the current
-   game clock.
-
-   This is the central synchronization function.
-*/
 
 function synchronizePlayerMinutes(){
 
@@ -849,14 +847,6 @@ function synchronizePlayerMinutes(){
         }
         else{
 
-            /*
-               While paused, keep the synchronization marker
-               aligned with the current clock position.
-
-               This prevents time from being added after
-               the clock is stopped.
-            */
-
             playerMinuteLastClockSeconds[playerId]
                 =clockSeconds;
         }
@@ -865,10 +855,6 @@ function synchronizePlayerMinutes(){
 
 
 function updateVisibleMinutes(){
-
-    /*
-       First synchronize against the actual game clock.
-    */
 
     synchronizePlayerMinutes();
 
@@ -900,13 +886,6 @@ function updateVisibleMinutes(){
     }
 }
 
-
-/*
-   Persist one player's current minutes.
-
-   This function first synchronizes the player with
-   the game clock, then saves the finalized value.
-*/
 
 async function persistPlayerMinutes(playerId){
 
@@ -948,23 +927,11 @@ async function persistPlayerMinutes(playerId){
         ...stats
     };
 
-    /*
-       Save minutes directly because this is a
-       synchronization point:
-       - PAUSE
-       - SUB OUT
-       - QUARTER END
-    */
-
     await saveStatDirect(
         playerId,
         "minutes_played",
         total
     );
-
-    /*
-       The saved value becomes the new base.
-    */
 
     playerMinuteBaseSeconds[playerId]
         =total;
@@ -1002,11 +969,6 @@ function startMinuteDisplay(){
         clearInterval(minuteSyncTimer);
     }
 
-    /*
-       250ms keeps the display responsive,
-       but it does NOT write to Supabase.
-    */
-
     minuteSyncTimer=
         setInterval(
             updateVisibleMinutes,
@@ -1027,15 +989,6 @@ function stopMinuteDisplay(){
     }
 }
 
-
-/*
-   Minutes are persisted every 10 seconds.
-
-   This does NOT affect synchronization.
-
-   It is only a safety backup so that a browser crash
-   does not lose a large amount of accumulated time.
-*/
 
 function startMinutePersistence(){
 
@@ -1189,11 +1142,6 @@ async function loadGame(){
     );
 
 
-    /*
-       Initialize minute synchronization markers
-       AFTER the players are loaded.
-    */
-
     initializePlayerMinuteSynchronization();
 
 
@@ -1202,16 +1150,19 @@ async function loadGame(){
     startMinutePersistence();
 
 
+    /*
+       Set substitution buttons according to
+       the loaded clock state.
+    */
+
+    updateSubstitutionButtons();
+
+
     showStatus(
         "Game loaded successfully."
     );
 }
 
-
-/*
-   Initializes each player's minute synchronization
-   based on the currently loaded game clock.
-*/
 
 function initializePlayerMinuteSynchronization(){
 
@@ -1636,6 +1587,13 @@ async function renderTeamPlayers(team){
             row
         );
     }
+
+    /*
+       Apply current substitution state after
+       rendering new player rows.
+    */
+
+    updateSubstitutionButtons();
 }
 
 
@@ -2398,6 +2356,8 @@ async function refreshPlayerRow(
         player,
         row
     );
+
+    updateSubstitutionButtons();
 }
 
 
@@ -3065,6 +3025,27 @@ async function toggleSubstitution(
     }
 
 
+    /*
+       NEW RULE:
+
+       Substitutions are only allowed when the
+       game clock is paused or stopped.
+
+       This is also checked here in JavaScript
+       as a safety measure in case the button is
+       triggered by another method.
+    */
+
+    if(clockRunning){
+
+        showStatus(
+            "Pause the game clock before making a substitution."
+        );
+
+        return;
+    }
+
+
     const team=
         playerTeamMap[playerId];
 
@@ -3074,11 +3055,6 @@ async function toggleSubstitution(
 
 
     if(on){
-
-        /*
-           Synchronize minutes BEFORE removing
-           the player from the court.
-        */
 
         synchronizePlayerMinutes();
 
@@ -3111,6 +3087,9 @@ async function toggleSubstitution(
         await renderTeamPlayers(
             team
         );
+
+
+        updateSubstitutionButtons();
 
 
         showStatus(
@@ -3150,18 +3129,6 @@ async function toggleSubstitution(
         return;
     }
 
-
-    /*
-       SUB IN:
-
-       The player's current saved minutes become
-       the starting base.
-
-       The current game clock becomes the timing marker.
-
-       If the clock is paused, the player will NOT
-       accumulate minutes until START is pressed.
-    */
 
     const stats=
         await getPlayerGameStats(
@@ -3214,6 +3181,9 @@ async function toggleSubstitution(
     );
 
 
+    updateSubstitutionButtons();
+
+
     showStatus(
         "Player SUB IN."
     );
@@ -3230,11 +3200,6 @@ async function saveClockState(){
         return false;
     }
 
-
-    /*
-       Before saving a running clock,
-       synchronize the clock position.
-    */
 
     if(
         clockRunning&&
@@ -3424,15 +3389,6 @@ async function loadPersistedClock(){
     updateClockDisplay();
 
 
-    /*
-       If the clock was running when the page
-       was refreshed, resume it.
-
-       The player's minute markers start at the
-       current clock position so only future game
-       clock time is added.
-    */
-
     if(
         clockRunning&&
         clockEndTime
@@ -3476,6 +3432,10 @@ async function loadPersistedClock(){
     }
 }
 
+
+/* =========================================================
+   CLOCK DISPLAY
+   ========================================================= */
 
 function updateClockDisplay(){
 
@@ -3555,15 +3515,6 @@ async function startClock(){
     }
 
 
-    /*
-       IMPORTANT:
-
-       Synchronize all players BEFORE starting.
-
-       This means the current clock value becomes
-       the starting reference for all players.
-    */
-
     synchronizePlayerMinutes();
 
 
@@ -3599,6 +3550,16 @@ async function startClock(){
 
 
     clockRunning=true;
+
+
+    /*
+       NEW:
+
+       Disable substitutions immediately when
+       the game clock starts running.
+    */
+
+    updateSubstitutionButtons();
 
 
     await saveClockState();
@@ -3652,10 +3613,6 @@ function startClockInternal(){
                 }
 
 
-                const previousClock=
-                    clockSeconds;
-
-
                 clockSeconds=
 
                     Math.max(
@@ -3676,11 +3633,6 @@ function startClockInternal(){
                     );
 
 
-                /*
-                   Synchronize player minutes using
-                   actual clock movement.
-                */
-
                 synchronizePlayerMinutes();
 
 
@@ -3688,11 +3640,6 @@ function startClockInternal(){
 
                 updateVisibleMinutes();
 
-
-                /*
-                   When clock reaches zero,
-                   immediately finalize the quarter.
-                */
 
                 if(
                     clockSeconds<=0
@@ -3719,28 +3666,11 @@ async function handleClockEnd(){
     }
 
 
-    /*
-       Force clock to zero FIRST.
-    */
-
     clockSeconds=0;
 
 
-    /*
-       Synchronize players one final time.
-
-       This captures the final game-clock seconds.
-    */
-
     synchronizePlayerMinutes();
 
-
-    /*
-       Stop the clock BEFORE saving minutes.
-
-       This guarantees that no additional time
-       can accumulate while saving.
-    */
 
     clockRunning=false;
 
@@ -3760,27 +3690,21 @@ async function handleClockEnd(){
     updateClockDisplay();
 
 
-    /*
-       Save all player minutes at exact quarter end.
-    */
-
     await persistAllPlayerMinutes();
 
-
-    /*
-       Save stopped clock state.
-    */
 
     await saveClockState();
 
 
     /*
-       Reset synchronization markers to zero-clock
-       reference.
+       NEW:
 
-       Players remain on court for the next quarter,
-       but they will not accumulate time until START.
+       Quarter ended, so clock is stopped.
+       Substitutions are allowed again.
     */
+
+    updateSubstitutionButtons();
+
 
     for(
         const playerId of
@@ -3821,13 +3745,16 @@ async function pauseClock(){
 
         updateClockDisplay();
 
+        /*
+           Make sure substitutions are enabled
+           when the clock is already stopped.
+        */
+
+        updateSubstitutionButtons();
+
         return;
     }
 
-
-    /*
-       First calculate the exact current game clock.
-    */
 
     clockSeconds=
 
@@ -3849,17 +3776,8 @@ async function pauseClock(){
         );
 
 
-    /*
-       Synchronize player minutes BEFORE stopping
-       the clock.
-    */
-
     synchronizePlayerMinutes();
 
-
-    /*
-       Stop the game clock immediately.
-    */
 
     clockRunning=false;
 
@@ -3879,18 +3797,19 @@ async function pauseClock(){
     updateClockDisplay();
 
 
-    /*
-       Save the exact synchronized minutes.
-    */
-
     await persistAllPlayerMinutes();
 
 
+    await saveClockState();
+
+
     /*
-       Save paused clock state.
+       NEW:
+
+       Clock is paused, so substitutions are allowed.
     */
 
-    await saveClockState();
+    updateSubstitutionButtons();
 }
 
 
@@ -3904,13 +3823,6 @@ async function resetClock(){
         return;
     }
 
-
-    /*
-       Reset is NOT a player-stat reset.
-
-       Player minutes are finalized up to the current
-       clock position before resetting the clock.
-    */
 
     if(clockRunning){
 
@@ -3957,12 +3869,6 @@ async function resetClock(){
 
     clockSeconds=600;
 
-
-    /*
-       Reset synchronization markers.
-
-       Existing player minutes remain untouched.
-    */
 
     for(
         const playerId of
@@ -4017,6 +3923,16 @@ async function resetClock(){
         "id",
         currentGame.id
     );
+
+
+    /*
+       NEW:
+
+       Reset leaves the clock stopped,
+       so substitutions are allowed.
+    */
+
+    updateSubstitutionButtons();
 }
 
 
@@ -4131,14 +4047,6 @@ async function setPeriod(period){
     }
 
 
-    /*
-       Do not allow quarter changes while clock
-       is running.
-
-       This prevents player minutes from being
-       split incorrectly between quarters.
-    */
-
     if(clockRunning){
 
         showStatus(
@@ -4148,11 +4056,6 @@ async function setPeriod(period){
         return;
     }
 
-
-    /*
-       Make sure all current player minutes are saved
-       before moving to another quarter.
-    */
 
     await persistAllPlayerMinutes();
 
@@ -4166,12 +4069,6 @@ async function setPeriod(period){
         period
     });
 
-
-    /*
-       Reset the clock for the NEW quarter.
-
-       Player stats and player minutes are preserved.
-    */
 
     await resetClock();
 }
