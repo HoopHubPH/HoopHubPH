@@ -1010,8 +1010,7 @@ error
 newScore
 })
 .eq(
-"id",
-currentGame.id
+"id",currentGame.id
 )
 .select()
 .single();
@@ -1174,9 +1173,7 @@ awayTeam.id,
 }
 
 
-/* =========================================
-   LOAD PLAYERS FOR TEAM
-========================================= */
+/* LOAD PLAYERS FOR TEAM */
 
 async function loadPlayersForTeam(
 teamId,
@@ -1197,12 +1194,6 @@ container.innerHTML =
 teamContainerMap[team] =
 containerId;
 
-
-/*
-START COLLAPSED
-
-All bench players are hidden initially.
-*/
 
 teamExpandedMap[team] =
 false;
@@ -1251,19 +1242,9 @@ return;
 }
 
 
-/*
-SAVE COMPLETE TEAM ROSTER
-
-Supports 6, 10, 12, 15 or more players.
-*/
-
 teamPlayersMap[team] =
 data;
 
-
-/*
-LOAD PLAYER DATA AND GAME STATS
-*/
 
 for(
 const player of data
@@ -1287,10 +1268,6 @@ player.id
 );
 
 
-/*
-LOAD EXISTING ON-COURT STATUS
-*/
-
 playerOnCourt[
 player.id
 ] =
@@ -1299,10 +1276,6 @@ stats.on_court === true;
 }
 
 
-/*
-RENDER TEAM
-*/
-
 await renderTeamPlayers(
 team
 );
@@ -1310,38 +1283,7 @@ team
 }
 
 
-/* =========================================
-   RENDER TEAM PLAYERS
-
-   FINAL VIEW ALL SYSTEM
-
-   DEFAULT:
-
-   5 ON-COURT PLAYERS
-   +
-   NO BENCH PLAYERS
-
-   Example with 6 players:
-
-   Player 1  ON COURT
-   Player 2  ON COURT
-   Player 3  ON COURT
-   Player 4  ON COURT
-   Player 5  ON COURT
-
-   [ VIEW ALL (1 MORE) ]
-
-   After clicking:
-
-   Player 1  ON COURT
-   Player 2  ON COURT
-   Player 3  ON COURT
-   Player 4  ON COURT
-   Player 5  ON COURT
-   Player 6  BENCH
-
-   [ SHOW LESS ]
-========================================= */
+/* RENDER TEAM PLAYERS */
 
 async function renderTeamPlayers(team){
 
@@ -1381,10 +1323,6 @@ return;
 }
 
 
-/*
-GET ALL ON-COURT PLAYERS
-*/
-
 const onCourtPlayers =
 allPlayers.filter(
 
@@ -1395,10 +1333,6 @@ playerOnCourt[player.id] === true
 );
 
 
-/*
-GET ALL BENCH PLAYERS
-*/
-
 const benchPlayers =
 allPlayers.filter(
 
@@ -1408,18 +1342,6 @@ playerOnCourt[player.id] !== true
 
 );
 
-
-/*
-=========================================
-VIEW ALL LOGIC
-
-COLLAPSED:
-NO BENCH PLAYERS ARE SHOWN
-
-EXPANDED:
-ALL BENCH PLAYERS ARE SHOWN
-=========================================
-*/
 
 const visibleBenchPlayers =
 
@@ -1434,15 +1356,6 @@ benchPlayers
 [];
 
 
-/*
-=========================================
-DISPLAY ORDER
-
-ON-COURT PLAYERS FIRST
-BENCH PLAYERS SECOND
-=========================================
-*/
-
 const playersToDisplay = [
 
 ...onCourtPlayers,
@@ -1452,17 +1365,9 @@ const playersToDisplay = [
 ];
 
 
-/*
-CLEAR OLD TABLE
-*/
-
 container.innerHTML =
 "";
 
-
-/*
-CREATE TABLE
-*/
 
 const table =
 document.createElement(
@@ -1533,10 +1438,6 @@ table.querySelector(
 );
 
 
-/*
-RENDER VISIBLE PLAYERS
-*/
-
 for(
 const player of playersToDisplay
 ){
@@ -1564,37 +1465,9 @@ row
 }
 
 
-/*
-=========================================
-VIEW ALL BUTTON
-
-HIDDEN COUNT = ALL BENCH PLAYERS
-
-Example:
-
-6 TOTAL PLAYERS
-5 ON COURT
-1 BENCH
-
-hiddenCount = 1
-
-Button:
-
-VIEW ALL (1 MORE)
-=========================================
-*/
-
 const hiddenCount =
 benchPlayers.length;
 
-
-/*
-=========================================
-SHOW VIEW ALL BUTTON
-
-Only show button if there are bench players.
-=========================================
-*/
 
 if(
 hiddenCount > 0
@@ -1630,10 +1503,6 @@ button.className =
 "view-all-button";
 
 
-/*
-EXPANDED STATE
-*/
-
 if(
 teamExpandedMap[team] === true
 ){
@@ -1652,11 +1521,6 @@ team
 };
 
 }
-
-
-/*
-COLLAPSED STATE
-*/
 
 else{
 
@@ -1695,45 +1559,12 @@ viewAllRow
 }
 
 
-/* =========================================
-   VIEW ALL
-
-   SHOW ALL BENCH PLAYERS
-========================================= */
+/* VIEW ALL */
 
 async function viewAllBenchPlayers(team){
 
-console.log(
-"VIEW ALL CLICKED:",
-team
-);
-
-
-if(
-!teamPlayersMap[team]
-){
-
-console.error(
-"Team roster not found:",
-team
-);
-
-return;
-
-}
-
-
-/*
-EXPAND
-*/
-
 teamExpandedMap[team] =
 true;
-
-
-/*
-RENDER EVERYTHING
-*/
 
 await renderTeamPlayers(
 team
@@ -1742,31 +1573,12 @@ team
 }
 
 
-/* =========================================
-   SHOW LESS
-
-   HIDE ALL BENCH PLAYERS
-========================================= */
+/* SHOW LESS */
 
 async function hideExtraBenchPlayers(team){
 
-console.log(
-"SHOW LESS CLICKED:",
-team
-);
-
-
-/*
-COLLAPSE
-*/
-
 teamExpandedMap[team] =
 false;
-
-
-/*
-RENDER ONLY ON-COURT PLAYERS
-*/
 
 await renderTeamPlayers(
 team
@@ -2030,7 +1842,7 @@ playerStatsMap[playerId] = {
 }
 
 
-/* UPDATE PLAYER STAT */
+/* UPDATED SHOOTING LOGIC */
 
 async function updatePlayerStat(
 playerId,
@@ -2050,27 +1862,26 @@ stats[statKey] || 0
 );
 
 
-const newValue =
-Math.max(
-0,
-currentValue + amount
-);
+/* =========================================
+   MADE SHOT
 
+   M+ automatically adds an attempt.
 
-if(
-statKey === "points"
-||
-statKey === "minutes_played"
-||
-statKey === "plus_minus"
-){
+   2PT M+
+   Made +1
+   Attempt +1
+   Points +2
 
-return;
+   3PT M+
+   Made +1
+   Attempt +1
+   Points +3
 
-}
-
-
-/* SHOT MADE */
+   FT M+
+   Made +1
+   Attempt +1
+   Points +1
+========================================= */
 
 if(
 
@@ -2085,6 +1896,27 @@ statKey === "three_pt_made"
 statKey === "ft_made"
 
 ){
+
+const attemptKey =
+
+statKey === "two_pt_made"
+
+?
+
+"two_pt_attempted"
+
+:
+
+statKey === "three_pt_made"
+
+?
+
+"three_pt_attempted"
+
+:
+
+"ft_attempted";
+
 
 const pointsToAdd =
 
@@ -2107,10 +1939,92 @@ statKey === "three_pt_made"
 1;
 
 
+const newMade =
+
+Math.max(
+
+0,
+
+currentValue + amount
+
+);
+
+
+const currentAttempts =
+
+Number(
+stats[attemptKey] || 0
+);
+
+
+const newAttempts =
+
+Math.max(
+
+0,
+
+currentAttempts + amount
+
+);
+
+
+/*
+Prevent made shots from
+being greater than attempts.
+*/
+
+const finalMade =
+
+Math.min(
+
+newMade,
+
+newAttempts
+
+);
+
+
+/*
+Save MADE
+*/
+
 await saveStatDirect(
+
 playerId,
+
 statKey,
-newValue
+
+finalMade
+
+);
+
+
+/*
+Save ATTEMPT
+
+M+ = Attempt +1
+M− = Attempt -1
+*/
+
+await saveStatDirect(
+
+playerId,
+
+attemptKey,
+
+newAttempts
+
+);
+
+
+/*
+Update POINTS
+*/
+
+const currentPoints =
+
+Number(
+stats.points || 0
 );
 
 
@@ -2120,9 +2034,7 @@ Math.max(
 
 0,
 
-Number(
-stats.points || 0
-)
+currentPoints
 
 +
 
@@ -2135,11 +2047,19 @@ pointsToAdd
 
 
 await saveStatDirect(
+
 playerId,
+
 "points",
+
 newPoints
+
 );
 
+
+/*
+UPDATE TEAM SCORE
+*/
 
 const team =
 playerTeamMap[playerId];
@@ -2164,12 +2084,14 @@ team === "home"
 
 
 const oldTeamScore =
+
 Number(
 currentGame[column] || 0
 );
 
 
 const newTeamScore =
+
 Math.max(
 
 0,
@@ -2187,8 +2109,11 @@ pointsToAdd
 
 
 await updateScoreFromPlayer(
+
 team,
+
 newTeamScore
+
 );
 
 }
@@ -2204,12 +2129,31 @@ return;
 }
 
 
-/* NORMAL STAT */
+/* =========================================
+   NORMAL STAT
+
+   AST, STL, BLK, REB, TO, PF
+========================================= */
+
+const newValue =
+
+Math.max(
+
+0,
+
+currentValue + amount
+
+);
+
 
 await saveStatDirect(
+
 playerId,
+
 statKey,
+
 newValue
+
 );
 
 
@@ -2335,9 +2279,13 @@ stats.plus_minus || 0
 
 
 await saveStatDirect(
+
 playerId,
+
 "plus_minus",
+
 currentPlusMinus + amount
+
 );
 
 
@@ -3253,14 +3201,6 @@ showStatus(
 );
 
 
-/*
-REFRESH TEAM DISPLAY
-
-This moves the player to the bench.
-If the team is collapsed, the player
-will be hidden automatically.
-*/
-
 await renderTeamPlayers(
 team
 );
@@ -3333,13 +3273,6 @@ showStatus(
 "Player SUB IN."
 );
 
-
-/*
-REFRESH TEAM DISPLAY
-
-The player moves into the
-on-court section automatically.
-*/
 
 await renderTeamPlayers(
 team
