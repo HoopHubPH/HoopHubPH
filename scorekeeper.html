@@ -1,6 +1,4 @@
-```html
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -105,19 +103,29 @@ nav a:hover{
     font-size:11px;
 }
 
+
+/* =================================
+   NEW SCOREBOARD LAYOUT
+================================= */
+
 .scoreboard{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
+    background:white;
+    border-radius:8px;
+    box-shadow:0 2px 5px rgba(0,0,0,.06);
     margin-bottom:8px;
+    padding:10px;
+    display:grid;
+    grid-template-columns:1fr 1.2fr 1fr;
+    align-items:center;
+    gap:10px;
 }
 
 .team-control{
-    background:white;
-    padding:8px;
+    background:#fafafa;
+    padding:10px;
     border-radius:6px;
     text-align:center;
-    box-shadow:0 2px 5px rgba(0,0,0,.06);
+    border:1px solid #eee;
 }
 
 .team-control h2{
@@ -131,13 +139,17 @@ nav a:hover{
     margin:2px 0 5px;
 }
 
+
+/* =================================
+   CENTER CLOCK
+================================= */
+
 .clock-area{
-    background:white;
+    background:#fafafa;
     padding:8px;
     border-radius:6px;
     text-align:center;
-    margin-bottom:8px;
-    box-shadow:0 2px 5px rgba(0,0,0,.06);
+    border:1px solid #eee;
 }
 
 .clock{
@@ -147,14 +159,23 @@ nav a:hover{
     margin-bottom:5px;
 }
 
+.clock-controls{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:4px;
+    flex-wrap:nowrap;
+}
+
 .clock button{
     background:#111;
     color:white;
     border:0;
     padding:5px 10px;
     border-radius:4px;
-    margin:2px;
     cursor:pointer;
+    font-size:10px;
+    font-weight:bold;
 }
 
 .clock button:hover{
@@ -162,7 +183,10 @@ nav a:hover{
 }
 
 .period-buttons{
-    margin-top:5px;
+    margin-top:7px;
+    display:flex;
+    justify-content:center;
+    gap:4px;
 }
 
 .period-buttons button{
@@ -174,6 +198,15 @@ nav a:hover{
     font-size:10px;
     cursor:pointer;
 }
+
+.period-buttons button:hover{
+    background:#111;
+}
+
+
+/* =================================
+   PLAYER STATS
+================================= */
 
 .controls{
     background:white;
@@ -189,8 +222,8 @@ nav a:hover{
 }
 
 .stats-controls{
-    display:grid;
-    grid-template-columns:1fr 1fr;
+    display:flex;
+    flex-direction:column;
     gap:8px;
 }
 
@@ -198,7 +231,7 @@ nav a:hover{
     background:#fafafa;
     border:1px solid #ddd;
     border-radius:5px;
-    overflow:hidden;
+    overflow-x:auto;
 }
 
 .stat-control>h2{
@@ -225,7 +258,7 @@ nav a:hover{
 }
 
 .player-table td{
-     border-bottom:1px solid #ddd;
+    border-bottom:1px solid #ddd;
     text-align:center;
     padding:3px 3px;
     font-size:9px;
@@ -411,10 +444,51 @@ nav a:hover{
     cursor:pointer;
 }
 
-@media(max-width:900px){
 
-    .stats-controls{
-        grid-template-columns:1fr;
+/* =================================
+   RESPONSIVE
+================================= */
+
+@media(max-width:700px){
+
+    .scoreboard{
+        grid-template-columns:1fr 1.3fr 1fr;
+        gap:5px;
+        padding:6px;
+    }
+
+    .team-control{
+        padding:7px 3px;
+    }
+
+    .team-control h2{
+        font-size:11px;
+    }
+
+    .score{
+        font-size:25px;
+    }
+
+    .clock{
+        font-size:22px;
+    }
+
+    .clock-controls{
+        gap:2px;
+    }
+
+    .clock button{
+        padding:5px 5px;
+        font-size:8px;
+    }
+
+    .period-buttons{
+        gap:2px;
+    }
+
+    .period-buttons button{
+        padding:4px 5px;
+        font-size:8px;
     }
 
     .stat-control{
@@ -422,7 +496,7 @@ nav a:hover{
     }
 
     .player-table{
-        min-width:650px;
+        min-width:850px;
     }
 
 }
@@ -453,7 +527,9 @@ Live Game
 
 </header>
 
+
 <div class="container">
+
 
 <div class="game-selector">
 
@@ -476,9 +552,18 @@ LOAD
 
 </div>
 
+
 <div id="statusMessage"></div>
 
+
+<!-- =================================
+     SCOREBOARD
+================================= -->
+
 <div class="scoreboard">
+
+
+<!-- HOME TEAM -->
 
 <div class="team-control">
 
@@ -495,22 +580,8 @@ id="homeScore"
 
 </div>
 
-<div class="team-control">
 
-<h2 id="awayTeam">
-Away Team
-</h2>
-
-<div
-class="score"
-id="awayScore"
->
-0
-</div>
-
-</div>
-
-</div>
+<!-- CENTER CLOCK -->
 
 <div class="clock-area">
 
@@ -520,6 +591,8 @@ id="gameClock"
 >
 10:00
 </div>
+
+<div class="clock-controls">
 
 <button onclick="startClock()">
 START
@@ -532,6 +605,8 @@ PAUSE
 <button onclick="resetClock()">
 RESET
 </button>
+
+</div>
 
 <div class="period-buttons">
 
@@ -555,11 +630,40 @@ RESET
 
 </div>
 
+
+<!-- AWAY TEAM -->
+
+<div class="team-control">
+
+<h2 id="awayTeam">
+Away Team
+</h2>
+
+<div
+class="score"
+id="awayScore"
+>
+0
+</div>
+
+</div>
+
+
+</div>
+
+
+<!-- =================================
+     PLAYER STATS
+================================= -->
+
 <div class="controls">
 
 <h2>
 PLAYER STATS
 </h2>
+
+
+<!-- HOME PLAYERS -->
 
 <div class="stats-controls">
 
@@ -572,6 +676,9 @@ Home Players
 <div id="homePlayersList"></div>
 
 </div>
+
+
+<!-- AWAY PLAYERS -->
 
 <div class="stat-control">
 
@@ -586,6 +693,7 @@ Away Players
 </div>
 
 </div>
+
 
 <div class="game-footer-controls">
 
@@ -620,7 +728,9 @@ FINAL
 
 </div>
 
+
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -657,27 +767,6 @@ let clockInterval = null;
 let clockRunning = false;
 
 let clockEndTime = null;
-
-
-/*
-=====================================================
-PLAYER MINUTES SYNCHRONIZATION
-=====================================================
-
-minutes_played is an INTEGER column in Supabase.
-
-The game clock runs in real time, so elapsed time
-can contain decimal values such as 0.245 seconds.
-
-We therefore keep fractional seconds locally for
-each player and only send whole seconds to Supabase.
-
-This prevents the error:
-
-invalid input syntax for type integer: "0.245"
-
-=====================================================
-*/
 
 let playerMinutesLastSync = null;
 
@@ -837,12 +926,7 @@ playerCourtOrder = {};
 playerMinutesFractionMap = {};
 
 
-/*
-LOAD CLOCK FIRST.
-*/
-
 await loadPersistedClock();
-
 
 await loadTeamPlayers();
 
@@ -931,10 +1015,6 @@ team+"Score"
 ).textContent =
 newScore;
 
-
-/*
-Update +/- for players currently on court.
-*/
 
 if(amount !== 0){
 
@@ -1225,8 +1305,11 @@ table.innerHTML = `
 <th class="col-stat">PF</th>
 
 <th class="col-shot">2PT</th>
+
 <th class="col-shot">3PT</th>
+
 <th class="col-shot">FG%</th>
+
 <th class="col-shot">FT</th>
 
 <th class="col-plusminus">+/-</th>
@@ -1476,10 +1559,6 @@ currentGame.id
 };
 
 
-/*
-ON COURT
-*/
-
 if(
 statKey === "on_court"
 ){
@@ -1490,15 +1569,6 @@ statKey
 Boolean(value);
 
 }
-
-
-/*
-MINUTES PLAYED
-
-Supabase column is INTEGER.
-
-Only whole seconds are saved.
-*/
 
 else if(
 statKey === "minutes_played"
@@ -1516,13 +1586,6 @@ Number(value || 0)
 
 }
 
-
-/*
-ALL OTHER PLAYER STATS
-
-Save as whole numbers.
-*/
-
 else{
 
 updateObj[
@@ -1537,10 +1600,6 @@ Number(value || 0)
 
 }
 
-
-/*
-AUTOMATICALLY CALCULATE TOTAL REBOUNDS
-*/
 
 if(
 
@@ -1598,10 +1657,6 @@ oreb + dreb
 }
 
 
-/*
-SAVE TO SUPABASE
-*/
-
 const {
 data,
 error
@@ -1634,10 +1689,6 @@ return;
 
 }
 
-
-/*
-UPDATE LOCAL PLAYER STATS
-*/
 
 playerStatsMap[playerId] = {
 
@@ -1705,10 +1756,6 @@ return;
 
 }
 
-
-/*
-SHOT MADE
-*/
 
 if(
 
@@ -1841,10 +1888,6 @@ return;
 
 }
 
-
-/*
-REGULAR STAT
-*/
 
 await saveStatDirect(
 playerId,
@@ -2038,13 +2081,17 @@ const s =
 await getPlayerGameStats(
 player.id
 );
-    const totalFGMade =
+
+
+const totalFGMade =
 Number(s.two_pt_made || 0) +
 Number(s.three_pt_made || 0);
+
 
 const totalFGAttempted =
 Number(s.two_pt_attempted || 0) +
 Number(s.three_pt_attempted || 0);
+
 
 const fgPercentage =
 calculatePercentage(
@@ -2455,13 +2502,16 @@ A−
 </td>
 
 <td>
-<td>
 
 <div class="shot-percent">
+
 ${fgPercentage}
+
 </div>
 
 </td>
+
+<td>
 
 <div class="shot-value">
 
@@ -2650,18 +2700,6 @@ String(secs)
 
 /* =====================================================
    PLAYER MINUTES SYNCHRONIZATION
-   =====================================================
-
-   FIXED:
-
-   Supabase minutes_played is INTEGER.
-
-   We never send decimal values such as 0.245.
-
-   Fractional elapsed seconds are stored locally
-   per player and converted into whole seconds
-   only when a complete second has accumulated.
-
 ===================================================== */
 
 async function syncPlayerMinutes(){
@@ -2750,32 +2788,6 @@ stats.minutes_played || 0
 );
 
 
-/*
-Keep fractional seconds locally.
-
-Example:
-
-0.245
-+
-0.250
-=
-0.495
-
-No database update yet.
-
-Then:
-
-0.495
-+
-0.600
-=
-1.095
-
-Save 1 second to Supabase.
-
-Keep 0.095 locally.
-*/
-
 const previousFraction =
 
 Number(
@@ -2806,11 +2818,6 @@ playerMinutesFractionMap[playerId] =
 
 remainingFraction;
 
-
-/*
-Only save to Supabase when at least
-one complete second has accumulated.
-*/
 
 if(
 wholeSeconds > 0
@@ -2875,11 +2882,6 @@ playerTeamMap[playerId];
 const currentlyOn =
 playerOnCourt[playerId] === true;
 
-
-/*
-Save all minutes accumulated before
-changing the player's court status.
-*/
 
 if(
 clockRunning
@@ -2994,11 +2996,6 @@ playerId
 );
 
 
-/*
-Player starts accumulating minutes
-from this exact moment.
-*/
-
 resetPlayerMinuteSync();
 
 
@@ -3012,11 +3009,6 @@ showStatus(
 /* =====================================================
    CLOCK SYSTEM
 ===================================================== */
-
-
-/* ================================
-   SAVE CLOCK
-================================ */
 
 async function saveClockState(){
 
@@ -3232,12 +3224,6 @@ return;
 
 updateClockDisplay();
 
-
-/*
-Reset the player minute timer AFTER
-the persisted clock has been restored.
-*/
-
 resetPlayerMinuteSync();
 
 
@@ -3333,11 +3319,6 @@ return;
 }
 
 
-/*
-Reset player minute synchronization
-BEFORE starting the clock.
-*/
-
 resetPlayerMinuteSync();
 
 
@@ -3408,18 +3389,8 @@ return;
 }
 
 
-/*
-FIRST:
-Synchronize player minutes.
-*/
-
 await syncPlayerMinutes();
 
-
-/*
-SECOND:
-Calculate remaining game time.
-*/
 
 clockSeconds =
 
@@ -3442,18 +3413,9 @@ Date.now()
 updateClockDisplay();
 
 
-/*
-CLOCK FINISHED
-*/
-
 if(
 clockSeconds <= 0
 ){
-
-/*
-Give players their final seconds
-before stopping the clock.
-*/
 
 await syncPlayerMinutes();
 
@@ -3508,11 +3470,6 @@ if(
 )
 return;
 
-
-/*
-Save all player minutes accumulated
-since the last synchronization.
-*/
 
 await syncPlayerMinutes();
 
@@ -3584,11 +3541,6 @@ if(!currentGame)
 return;
 
 
-/*
-If the clock is running,
-save all player minutes first.
-*/
-
 if(
 clockRunning
 ){
@@ -3655,12 +3607,6 @@ period
 });
 
 
-/*
-When changing quarters,
-the clock resets intentionally
-to 10:00.
-*/
-
 await resetClock();
 
 }
@@ -3677,4 +3623,3 @@ loadGame();
 </body>
 
 </html>
-```
