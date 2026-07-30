@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 
 <html lang="en">
@@ -463,16 +464,14 @@ Game ID:
 type="number"
 id="gameId"
 value="1"
-
 >
 
 <button
 class="load-button"
 onclick="loadGame()"
-
 >
-
-LOAD </button>
+LOAD
+</button>
 
 </div>
 
@@ -598,26 +597,23 @@ Status:
 <button
 class="control-button"
 onclick="updateGame({status:'Live'})"
-
 >
-
-LIVE </button>
+LIVE
+</button>
 
 <button
 class="control-button"
 onclick="updateGame({status:'Halftime'})"
-
 >
-
-HALF </button>
+HALF
+</button>
 
 <button
 class="control-button"
 onclick="updateGame({status:'Final'})"
-
 >
-
-FINAL </button>
+FINAL
+</button>
 
 </div>
 
@@ -661,7 +657,30 @@ let clockRunning = false;
 
 let clockEndTime = null;
 
+
+/*
+=====================================================
+PLAYER MINUTES SYNCHRONIZATION
+=====================================================
+
+minutes_played is an INTEGER column in Supabase.
+
+The game clock runs in real time, so elapsed time
+can contain decimal values such as 0.245 seconds.
+
+We therefore keep fractional seconds locally for
+each player and only send whole seconds to Supabase.
+
+This prevents the error:
+
+invalid input syntax for type integer: "0.245"
+
+=====================================================
+*/
+
 let playerMinutesLastSync = null;
+
+let playerMinutesFractionMap = {};
 
 
 /* ================================
@@ -814,8 +833,15 @@ playerOnCourt = {};
 
 playerCourtOrder = {};
 
+playerMinutesFractionMap = {};
+
+
+/*
+LOAD CLOCK FIRST.
+*/
 
 await loadPersistedClock();
+
 
 await loadTeamPlayers();
 
@@ -904,6 +930,10 @@ team+"Score"
 ).textContent =
 newScore;
 
+
+/*
+Update +/- for players currently on court.
+*/
 
 if(amount !== 0){
 
@@ -1465,12 +1495,9 @@ Boolean(value);
 /*
 MINUTES PLAYED
 
-The database column minutes_played
-is an INTEGER.
+Supabase column is INTEGER.
 
-The value represents TOTAL SECONDS.
-
-Only whole-number seconds are saved.
+Only whole seconds are saved.
 */
 
 else if(
@@ -1483,7 +1510,7 @@ statKey
 Math.max(
 0,
 Math.floor(
-Number(value) || 0
+Number(value || 0)
 )
 );
 
@@ -1504,7 +1531,7 @@ statKey
 Math.max(
 0,
 Math.floor(
-Number(value) || 0
+Number(value || 0)
 )
 );
 
@@ -2562,9 +2589,10 @@ seconds
 ){
 
 const totalSeconds =
+Math.max(
+0,
 Math.floor(
-Number(
-seconds || 0
+Number(seconds || 0)
 )
 );
 
@@ -2604,36 +2632,27 @@ String(secs)
    PLAYER MINUTES SYNCHRONIZATION
    =====================================================
 
-   IMPORTANT:
+   FIXED:
 
-   minutes_played is an INTEGER column.
+   Supabase minutes_played is INTEGER.
 
-   The value stored in the database is TOTAL SECONDS.
+   We never send decimal values such as 0.245.
 
-   Only WHOLE SECONDS are saved.
+   Fractional elapsed seconds are stored locally
+   per player and converted into whole seconds
+   only when a complete second has accumulated.
 
-   Example:
-
-   30 seconds = 30
-   60 seconds = 60
-   90 seconds = 90
-
-   Decimal values such as 0.245 are never saved.
-*/
-
+===================================================== */
 
 async function syncPlayerMinutes(){
 
 if(!currentGame)
 return;
 
+
 if(!clockRunning)
 return;
 
-
-/*
-Initialize the synchronization timestamp.
-*/
 
 if(
 !playerMinutesLastSync
@@ -2646,10 +2665,6 @@ return;
 
 }
 
-
-/*
-Calculate exact real elapsed time.
-*/
 
 const now =
 Date.now();
@@ -2669,12 +2684,6 @@ playerMinutesLastSync
 );
 
 
-/*
-Update timestamp immediately.
-
-This prevents double counting.
-*/
-
 playerMinutesLastSync =
 now;
 
@@ -2684,10 +2693,6 @@ elapsedSeconds <= 0
 )
 return;
 
-
-/*
-Find all players currently on court.
-*/
 
 const activePlayers =
 
@@ -2702,32 +2707,11 @@ playerOnCourt[playerId] === true
 );
 
 
-/*
-No active players means no minutes to add.
-*/
-
 if(
 !activePlayers.length
 )
 return;
 
-
-/*
-Update each active player's minutes.
-
-IMPORTANT:
-minutes_played is an INTEGER column.
-
-We therefore store whole seconds only.
-
-Example:
-0.245 seconds -> 0 seconds
-1.8 seconds   -> 1 second
-2.9 seconds   -> 2 seconds
-
-This prevents:
-invalid input syntax for type integer: "0.245"
-*/
 
 for(
 const playerId of activePlayers
@@ -2747,34 +2731,76 @@ stats.minutes_played || 0
 
 
 /*
-Convert elapsed time to whole seconds
-before saving to Supabase.
+Keep fractional seconds locally.
+
+Example:
+
+0.245
++
+0.250
+=
+0.495
+
+No database update yet.
+
+Then:
+
+0.495
++
+0.600
+=
+1.095
+
+Save 1 second to Supabase.
+
+Keep 0.095 locally.
 */
 
-const elapsedWholeSeconds =
+const previousFraction =
 
-Math.floor(
-elapsedSeconds
+Number(
+playerMinutesFractionMap[playerId] || 0
 );
 
 
-if(
-elapsedWholeSeconds <= 0
-)
-continue;
+const totalElapsed =
 
+previousFraction +
+elapsedSeconds;
+
+
+const wholeSeconds =
+
+Math.floor(
+totalElapsed
+);
+
+
+const remainingFraction =
+
+totalElapsed -
+wholeSeconds;
+
+
+playerMinutesFractionMap[playerId] =
+
+remainingFraction;
+
+
+/*
+Only save to Supabase when at least
+one complete second has accumulated.
+*/
+
+if(
+wholeSeconds > 0
+){
 
 const newMinutes =
 
 oldMinutes +
-elapsedWholeSeconds;
+wholeSeconds;
 
-
-/*
-Save whole seconds only.
-
-The database column remains INTEGER.
-*/
 
 await saveStatDirect(
 
@@ -2786,10 +2812,8 @@ newMinutes
 
 );
 
+}
 
-/*
-Update the visible player row.
-*/
 
 await refreshPlayerRow(
 playerId
@@ -2800,69 +2824,9 @@ playerId
 }
 
 
-/*
-Ensure existing database value is also
-treated as a whole number.
-*/
-
-const oldSeconds =
-
-Math.max(
-
-0,
-
-Math.floor(
-
-Number(
-stats.minutes_played || 0
-)
-
-)
-
-);
-
-
-/*
-Add only whole elapsed seconds.
-*/
-
-const newSeconds =
-
-oldSeconds +
-elapsedSeconds;
-
-
-/*
-Save whole integer seconds.
-*/
-
-await saveStatDirect(
-
-playerId,
-
-"minutes_played",
-
-newSeconds
-
-);
-
-
-/*
-Update visible player row.
-*/
-
-await refreshPlayerRow(
-playerId
-);
-
-}
-
-}
-
-
-/* ================================
+/* =====================================================
    RESET MINUTE SYNC
-================================ */
+===================================================== */
 
 function resetPlayerMinuteSync(){
 
@@ -2893,9 +2857,8 @@ playerOnCourt[playerId] === true;
 
 
 /*
-Before changing player status,
-save all minutes accumulated
-up to this exact moment.
+Save all minutes accumulated before
+changing the player's court status.
 */
 
 if(
@@ -3024,6 +2987,11 @@ showStatus(
 );
 
 }
+
+
+/* =====================================================
+   CLOCK SYSTEM
+===================================================== */
 
 
 /* ================================
@@ -3246,8 +3214,8 @@ updateClockDisplay();
 
 
 /*
-Reset player minute synchronization
-after restoring persisted clock.
+Reset the player minute timer AFTER
+the persisted clock has been restored.
 */
 
 resetPlayerMinuteSync();
@@ -3346,8 +3314,8 @@ return;
 
 
 /*
-Start player minute synchronization
-at the exact moment the clock starts.
+Reset player minute synchronization
+BEFORE starting the clock.
 */
 
 resetPlayerMinuteSync();
@@ -3394,6 +3362,9 @@ clockInterval
 }
 
 
+resetPlayerMinuteSync();
+
+
 clockInterval =
 
 setInterval(
@@ -3420,8 +3391,6 @@ return;
 /*
 FIRST:
 Synchronize player minutes.
-
-Only whole seconds are saved.
 */
 
 await syncPlayerMinutes();
@@ -3462,7 +3431,7 @@ clockSeconds <= 0
 ){
 
 /*
-Save final player seconds
+Give players their final seconds
 before stopping the clock.
 */
 
@@ -3521,8 +3490,8 @@ return;
 
 
 /*
-Save whole seconds accumulated
-before pausing.
+Save all player minutes accumulated
+since the last synchronization.
 */
 
 await syncPlayerMinutes();
@@ -3596,8 +3565,8 @@ return;
 
 
 /*
-If clock is running,
-save accumulated whole seconds first.
+If the clock is running,
+save all player minutes first.
 */
 
 if(
@@ -3668,7 +3637,8 @@ period
 
 /*
 When changing quarters,
-clock resets to 10:00.
+the clock resets intentionally
+to 10:00.
 */
 
 await resetClock();
@@ -3687,3 +3657,4 @@ loadGame();
 </body>
 
 </html>
+```
