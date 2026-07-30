@@ -1,4 +1,4 @@
-html = r'''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -1758,21 +1758,6 @@ Boolean(value);
 
 }
 
-
-/*
-PLUS / MINUS
-
-This is the ONLY special change.
-
-Negative values are allowed.
-
-Examples:
-0 -> -2
--2 -> -5
--5 -> -8
-
-*/
-
 else if(
 statKey === "plus_minus"
 ){
@@ -1785,13 +1770,6 @@ Number(value || 0)
 );
 
 }
-
-
-/*
-ALL OTHER STATS
-
-Still cannot go below zero.
-*/
 
 else{
 
@@ -1807,10 +1785,6 @@ Number(value || 0)
 
 }
 
-
-/*
-UPDATE TOTAL REBOUNDS
-*/
 
 if(
 
@@ -1868,10 +1842,6 @@ oreb + dreb
 }
 
 
-/*
-SAVE TO SUPABASE
-*/
-
 const {
 data,
 error
@@ -1924,11 +1894,6 @@ statKey,
 amount
 ){
 
-/*
-Only players currently on the court
-can have their stats changed.
-*/
-
 if(
 playerOnCourt[playerId] !== true
 ){
@@ -1953,8 +1918,6 @@ Number(
 stats[statKey] || 0
 );
 
-
-/* MADE SHOT */
 
 if(
 
@@ -2035,7 +1998,6 @@ const newAttempts =
 Math.max(
 
 0,
-
 currentAttempts + amount
 );
 
@@ -2051,41 +2013,29 @@ newAttempts
 
 
 await saveStatDirect(
-
 playerId,
-
 statKey,
-
 finalMade
-
 );
 
 
 await saveStatDirect(
-
 playerId,
-
 attemptKey,
-
 newAttempts
-
 );
 
 
 const currentPoints =
-
 Number(
 stats.points || 0
 );
 
 
 const newPoints =
-
 Math.max(
-
 0,
-currentPoints
-+
+currentPoints +
 (
 amount *
 pointsToAdd
@@ -2094,19 +2044,11 @@ pointsToAdd
 
 
 await saveStatDirect(
-
 playerId,
-
 "points",
-
 newPoints
-
 );
 
-
-/*
-UPDATE TEAM SCORE
-*/
 
 const team =
 playerTeamMap[playerId];
@@ -2118,33 +2060,23 @@ currentGame
 ){
 
 const column =
-
 team === "home"
-
 ?
-
 "home_score"
-
 :
-
 "away_score";
 
 
 const oldTeamScore =
-
 Number(
 currentGame[column] || 0
 );
 
 
 const newTeamScore =
-
 Math.max(
-
 0,
-
-oldTeamScore
-+
+oldTeamScore +
 (
 amount *
 pointsToAdd
@@ -2153,11 +2085,8 @@ pointsToAdd
 
 
 await updateScoreFromPlayer(
-
 team,
-
 newTeamScore
-
 );
 
 }
@@ -2167,18 +2096,13 @@ await refreshPlayerRow(
 playerId
 );
 
-
 return;
 
 }
 
 
-/* NORMAL STAT */
-
 const newValue =
-
 Math.max(
-
 0,
 currentValue +
 amount
@@ -2186,13 +2110,9 @@ amount
 
 
 await saveStatDirect(
-
 playerId,
-
 statKey,
-
 newValue
-
 );
 
 
@@ -2215,15 +2135,10 @@ return;
 
 
 const column =
-
 team === "home"
-
 ?
-
 "home_score"
-
 :
-
 "away_score";
 
 
@@ -2284,30 +2199,12 @@ team+"Score"
 newScore;
 
 
-/*
-PLUS / MINUS
-
-Scoring team:
-+ points
-
-Opposing team:
-- points
-
-Negative values are now
-allowed because saveStatDirect()
-does not clamp plus_minus to zero.
-*/
-
 const playersToUpdate =
-
 Object.keys(
 playerOnCourt
 ).filter(
-
 playerId =>
-
 playerOnCourt[playerId] === true
-
 );
 
 
@@ -2332,27 +2229,18 @@ stats.plus_minus || 0
 
 
 const plusMinusChange =
-
 playerTeam === team
-
 ?
-
 amount
-
 :
-
 -amount;
 
 
 await saveStatDirect(
-
 playerId,
-
 "plus_minus",
-
 currentPlusMinus +
 plusMinusChange
-
 );
 
 
@@ -2431,29 +2319,17 @@ playerOnCourt[player.id] === true;
 
 
 row.className =
-
 onCourt
-
 ?
-
 "on-court"
-
 :
-
 "bench";
 
 
 const reb =
-
-Number(
-s.offensive_rebounds || 0
-)
-
+Number(s.offensive_rebounds || 0)
 +
-
-Number(
-s.defensive_rebounds || 0
-);
+Number(s.defensive_rebounds || 0);
 
 
 row.innerHTML = `
@@ -2474,17 +2350,11 @@ player.jersey_number || ""
 <span class="player-name">
 
 ${escapeHTML(
-
 (player.first_name || "")
-
 +
-
 " "
-
 +
-
 (player.last_name || "")
-
 )}
 
 </span>
@@ -2492,9 +2362,7 @@ ${escapeHTML(
 <span class="player-position">
 
 ${escapeHTML(
-
 player.position || "N/A"
-
 )}
 
 </span>
@@ -2943,6 +2811,8 @@ A−
 
 <td>
 
+<div>
+
 <span class="${
 Number(
 s.plus_minus || 0
@@ -2966,6 +2836,8 @@ s.plus_minus || 0
 ${s.plus_minus || 0}
 
 </span>
+
+</div>
 
 </td>
 
@@ -3366,22 +3238,31 @@ team
 }
 
 
-/* CLOCK SAVE - FIXED */
+/* =========================================================
+   CLOCK SAVE
+   FIXED: Preserve paused clockSeconds and never replace it
+   with a stale database value during pause/start cycles.
+========================================================= */
 
 async function saveClockState(){
 
 if(!currentGame)
-return;
+return false;
 
-const updateData = {
 
-clock_seconds:
+const savedClockSeconds =
 Math.max(
 0,
 Math.floor(
 Number(clockSeconds || 0)
 )
-),
+);
+
+
+const updateData = {
+
+clock_seconds:
+savedClockSeconds,
 
 clock_running:
 Boolean(clockRunning),
@@ -3395,6 +3276,7 @@ null
 
 };
 
+
 const {
 data,
 error
@@ -3407,6 +3289,7 @@ currentGame.id
 )
 .select("*")
 .single();
+
 
 if(error){
 
@@ -3423,31 +3306,55 @@ return false;
 
 }
 
-if(data){
 
 /*
-IMPORTANT:
-Only update currentGame with the returned database row.
-Do not overwrite clockSeconds from the returned row.
-The local clockSeconds value is the authoritative paused value.
+IMPORTANT CLOCK FIX:
+
+Do NOT replace the local clockSeconds value with
+data.clock_seconds here.
+
+The local clockSeconds is the authoritative
+paused value.
+
+This prevents this sequence from breaking:
+
+Start
+Pause at 07:32
+Start again
+
+The second START must use 07:32, not a stale
+or zero value returned from Supabase.
 */
 
-currentGame =
-data;
+if(data){
+
+currentGame = {
+    ...currentGame,
+    ...data
+};
+
+/*
+Explicitly preserve the local clock value.
+*/
+
+clockSeconds =
+savedClockSeconds;
 
 }
+
 
 return true;
 
 }
 
 
-/* LOAD CLOCK - FIXED */
+/* LOAD CLOCK */
 
 async function loadPersistedClock(){
 
 if(!currentGame)
 return;
+
 
 const {
 data,
@@ -3462,6 +3369,7 @@ error
 currentGame.id
 )
 .single();
+
 
 if(error){
 
@@ -3487,8 +3395,10 @@ return;
 
 }
 
+
 /*
-If no clock has ever been saved, start at 10:00.
+If no clock has ever been saved,
+start at 10:00.
 */
 
 if(
@@ -3514,6 +3424,11 @@ return;
 
 }
 
+
+/*
+Load the saved paused value first.
+*/
+
 clockSeconds =
 Math.max(
 0,
@@ -3536,9 +3451,11 @@ data.clock_end_time
 :
 null;
 
+
 /*
-If the clock was running when the page was closed or refreshed,
-calculate the remaining time from the saved end timestamp.
+If the clock was running when the page was
+closed or refreshed, calculate the remaining
+time from the saved end timestamp.
 */
 
 if(
@@ -3563,6 +3480,7 @@ Date.now()
 );
 
 }
+
 
 /*
 If the saved clock has already reached zero,
@@ -3592,9 +3510,11 @@ return;
 
 }
 
+
 updateClockDisplay();
 
 resetPlayerMinuteSync();
+
 
 if(
 clockRunning
@@ -3612,7 +3532,8 @@ startClockInternal();
 function updateClockDisplay(){
 
 const minutes =
-Math.floor(clockSeconds / 60
+Math.floor(
+clockSeconds / 60
 );
 
 
@@ -3649,7 +3570,10 @@ seconds
 }
 
 
-/* START CLOCK */
+/* =========================================================
+   START CLOCK
+   FIXED: Always starts from the current paused clockSeconds.
+========================================================= */
 
 async function startClock(){
 
@@ -3670,8 +3594,27 @@ return;
 }
 
 
+const currentRemainingSeconds =
+
+Math.max(
+
+0,
+
+Math.floor(
+Number(
+clockSeconds || 0
+)
+)
+
+);
+
+
+/*
+Do not start if the clock is actually at zero.
+*/
+
 if(
-clockSeconds <= 0
+currentRemainingSeconds <= 0
 ){
 
 showStatus(
@@ -3682,13 +3625,32 @@ return;
 
 }
 
+
 /*
-When starting from a paused state,
-create a new end timestamp using the
-CURRENT paused clockSeconds value.
+IMPORTANT:
+
+Use the CURRENT local clockSeconds value.
+
+This is what prevents the second START
+from resetting the clock to 00:00.
 */
 
-resetPlayerMinuteSync();
+clockSeconds =
+currentRemainingSeconds;
+
+
+/*
+Create a NEW end timestamp from the
+CURRENT remaining paused time.
+
+Example:
+
+Paused at 07:32
+clockSeconds = 452
+
+New end time =
+now + 452 seconds
+*/
 
 clockEndTime =
 
@@ -3697,19 +3659,59 @@ Date.now()
 +
 
 (
-Math.floor(clockSeconds) *
+clockSeconds *
 1000
 );
+
+
+/*
+Set running BEFORE saving so Supabase receives
+the new running state and new end timestamp.
+*/
 
 clockRunning =
 true;
 
+
 /*
-Save the exact current remaining time
-AND the new end timestamp before starting.
+Reset player minute tracking before starting.
 */
 
+resetPlayerMinuteSync();
+
+
+/*
+Save the exact current remaining time and
+new end timestamp.
+
+The saved clock_seconds is the paused value
+from which this run started.
+*/
+
+const saved =
 await saveClockState();
+
+
+if(!saved){
+
+/*
+If saving fails, do not continue running
+locally because the database would be out
+of sync.
+*/
+
+clockRunning =
+false;
+
+clockEndTime =
+null;
+
+return;
+
+}
+
+
+updateClockDisplay();
 
 startClockInternal();
 
@@ -3728,9 +3730,14 @@ clearInterval(
 clockInterval
 );
 
+clockInterval =
+null;
+
 }
 
+
 resetPlayerMinuteSync();
+
 
 clockInterval =
 
@@ -3754,7 +3761,9 @@ return;
 
 }
 
+
 await syncPlayerMinutes();
+
 
 clockSeconds =
 
@@ -3773,13 +3782,16 @@ Date.now()
 
 );
 
+
 updateClockDisplay();
+
 
 if(
 clockSeconds <= 0
 ){
 
 await syncPlayerMinutes();
+
 
 clockSeconds =
 0;
@@ -3790,6 +3802,7 @@ false;
 clockEndTime =
 null;
 
+
 clearInterval(
 clockInterval
 );
@@ -3797,9 +3810,12 @@ clockInterval
 clockInterval =
 null;
 
+
 updateClockDisplay();
 
+
 await saveClockState();
+
 
 resetPlayerMinuteSync();
 
@@ -3816,18 +3832,24 @@ return;
 }
 
 
-/* PAUSE CLOCK - FIXED */
+/* =========================================================
+   PAUSE CLOCK
+   FIXED: Save exact remaining time before stopping.
+========================================================= */
 
 async function pauseClock(){
 
 if(!currentGame)
 return;
 
+
 if(!clockRunning)
 return;
 
+
 /*
 FIRST:
+
 Calculate the exact remaining time while
 the clock is still running.
 */
@@ -3855,9 +3877,14 @@ Date.now()
 
 }
 
+
 /*
 SECOND:
+
 Stop all clock activity immediately.
+
+The current clockSeconds is now the exact
+paused value.
 */
 
 clockRunning =
@@ -3865,6 +3892,7 @@ false;
 
 clockEndTime =
 null;
+
 
 if(
 clockInterval
@@ -3879,20 +3907,30 @@ null;
 
 }
 
+
 /*
 THIRD:
-Update the display with the exact remaining
-time BEFORE saving to Supabase.
+
+Update display using the exact paused value.
 */
 
 updateClockDisplay();
 
 resetPlayerMinuteSync();
 
+
 /*
 FOURTH:
-Save the paused state. clock_seconds contains
-the exact remaining time, and clock_running is false.
+
+Save the paused state.
+
+The important value is:
+
+clock_seconds = current paused value
+
+clock_running = false
+
+clock_end_time = null
 */
 
 await saveClockState();
@@ -3907,6 +3945,7 @@ async function resetClock(){
 if(!currentGame)
 return;
 
+
 if(
 clockRunning
 ){
@@ -3915,11 +3954,13 @@ await syncPlayerMinutes();
 
 }
 
+
 clockRunning =
 false;
 
 clockEndTime =
 null;
+
 
 if(
 clockInterval
@@ -3934,12 +3975,15 @@ null;
 
 }
 
+
 clockSeconds =
 600;
+
 
 updateClockDisplay();
 
 resetPlayerMinuteSync();
+
 
 await saveClockState();
 
@@ -3955,12 +3999,14 @@ period
 if(!currentGame)
 return;
 
+
 await updateGame({
 
 period:
 period
 
 });
+
 
 await resetClock();
 
@@ -3976,10 +4022,3 @@ loadGame();
 </body>
 
 </html>
-'''
-
-path = "/mnt/data/scorekeeper_clock_fixed.html"
-with open(path, "w", encoding="utf-8") as f:
-    f.write(html)
-
-print(path)
