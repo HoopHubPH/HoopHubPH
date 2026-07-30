@@ -1225,9 +1225,8 @@ table.innerHTML = `
 <th class="col-stat">PF</th>
 
 <th class="col-shot">2PT</th>
-
 <th class="col-shot">3PT</th>
-
+<th class="col-shot">FG%</th>
 <th class="col-shot">FT</th>
 
 <th class="col-plusminus">+/-</th>
@@ -2039,6 +2038,19 @@ const s =
 await getPlayerGameStats(
 player.id
 );
+    const totalFGMade =
+Number(s.two_pt_made || 0) +
+Number(s.three_pt_made || 0);
+
+const totalFGAttempted =
+Number(s.two_pt_attempted || 0) +
+Number(s.three_pt_attempted || 0);
+
+const fgPercentage =
+calculatePercentage(
+totalFGMade,
+totalFGAttempted
+);
 
 
 const onCourt =
@@ -2443,6 +2455,13 @@ A−
 </td>
 
 <td>
+<td>
+
+<div class="shot-percent">
+${fgPercentage}
+</div>
+
+</td>
 
 <div class="shot-value">
 
