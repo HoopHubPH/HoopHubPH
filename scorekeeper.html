@@ -104,9 +104,7 @@ nav a:hover{
 }
 
 
-/* =================================
-   SCOREBOARD
-================================= */
+/* SCOREBOARD */
 
 .scoreboard{
     background:white;
@@ -140,9 +138,7 @@ nav a:hover{
 }
 
 
-/* =================================
-   CENTER CLOCK
-================================= */
+/* CLOCK */
 
 .clock-area{
     background:#fafafa;
@@ -204,9 +200,7 @@ nav a:hover{
 }
 
 
-/* =================================
-   PLAYER STATS
-================================= */
+/* PLAYER STATS */
 
 .controls{
     background:white;
@@ -423,9 +417,7 @@ nav a:hover{
 }
 
 
-/* =================================
-   VIEW ALL / SHOW LESS
-================================= */
+/* VIEW ALL */
 
 .view-all-button{
     display:block;
@@ -445,9 +437,7 @@ nav a:hover{
 }
 
 
-/* =================================
-   FOOTER CONTROLS
-================================= */
+/* FOOTER */
 
 .game-footer-controls{
     margin-top:8px;
@@ -472,9 +462,7 @@ nav a:hover{
 }
 
 
-/* =================================
-   RESPONSIVE
-================================= */
+/* RESPONSIVE */
 
 @media(max-width:700px){
 
@@ -532,9 +520,7 @@ nav a:hover{
 
 </head>
 
-
 <body>
-
 
 <header>
 
@@ -559,10 +545,6 @@ Live Game
 
 <div class="container">
 
-
-<!-- =================================
-     GAME SELECTOR
-================================= -->
 
 <div class="game-selector">
 
@@ -589,14 +571,8 @@ LOAD
 <div id="statusMessage"></div>
 
 
-<!-- =================================
-     SCOREBOARD
-================================= -->
-
 <div class="scoreboard">
 
-
-<!-- HOME TEAM -->
 
 <div class="team-control">
 
@@ -613,8 +589,6 @@ id="homeScore"
 
 </div>
 
-
-<!-- CENTER CLOCK -->
 
 <div class="clock-area">
 
@@ -664,8 +638,6 @@ RESET
 </div>
 
 
-<!-- AWAY TEAM -->
-
 <div class="team-control">
 
 <h2 id="awayTeam">
@@ -684,21 +656,14 @@ id="awayScore"
 </div>
 
 
-<!-- =================================
-     PLAYER STATS
-================================= -->
-
 <div class="controls">
 
 <h2>
 PLAYER STATS
 </h2>
 
-
 <div class="stats-controls">
 
-
-<!-- HOME PLAYERS -->
 
 <div class="stat-control">
 
@@ -710,8 +675,6 @@ Home Players
 
 </div>
 
-
-<!-- AWAY PLAYERS -->
 
 <div class="stat-control">
 
@@ -728,10 +691,6 @@ Away Players
 
 </div>
 
-
-<!-- =================================
-     GAME STATUS
-================================= -->
 
 <div class="game-footer-controls">
 
@@ -766,19 +725,14 @@ FINAL
 
 </div>
 
-
 </div>
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
 <script>
 
-
-/* =================================
-   SUPABASE
-================================= */
+/* SUPABASE */
 
 const SUPABASE_URL =
 "https://tkrsyiwffqkgfyooewsf.supabase.co";
@@ -793,9 +747,7 @@ SUPABASE_KEY
 );
 
 
-/* =================================
-   GLOBAL VARIABLES
-================================= */
+/* GLOBAL VARIABLES */
 
 let currentGame = null;
 
@@ -808,6 +760,10 @@ let playerTeamMap = {};
 let playerOnCourt = {};
 
 let playerCourtOrder = {};
+
+let teamPlayersMap = {};
+
+let teamContainerMap = {};
 
 let clockSeconds = 600;
 
@@ -822,9 +778,7 @@ let playerMinutesLastSync = null;
 let playerMinutesFractionMap = {};
 
 
-/* =================================
-   HELPER FUNCTIONS
-================================= */
+/* HELPERS */
 
 function escapeHTML(str){
 
@@ -885,9 +839,7 @@ el.style.display =
 }
 
 
-/* =================================
-   LOAD GAME
-================================= */
+/* LOAD GAME */
 
 async function loadGame(){
 
@@ -972,6 +924,10 @@ playerOnCourt = {};
 
 playerCourtOrder = {};
 
+teamPlayersMap = {};
+
+teamContainerMap = {};
+
 playerMinutesFractionMap = {};
 
 
@@ -987,9 +943,7 @@ showStatus(
 }
 
 
-/* =================================
-   UPDATE SCORE
-================================= */
+/* UPDATE SCORE */
 
 async function updateScore(
 team,
@@ -1068,9 +1022,7 @@ newScore;
 }
 
 
-/* =================================
-   UPDATE GAME
-================================= */
+/* UPDATE GAME */
 
 async function updateGame(
 changes
@@ -1125,9 +1077,7 @@ showStatus(
 }
 
 
-/* =================================
-   LOAD TEAMS
-================================= */
+/* LOAD TEAMS */
 
 async function loadTeamPlayers(){
 
@@ -1159,7 +1109,8 @@ const {
 data:awayTeam
 } = await supabaseClient
 .from("teams")
-.select("id,name")
+.select("id,name"
+)
 .ilike(
 "name",
 awayName
@@ -1203,9 +1154,9 @@ awayTeam.id,
 }
 
 
-/* =================================
-   LOAD PLAYERS
-================================= */
+/* =========================================
+   LOAD PLAYERS FOR TEAM
+========================================= */
 
 async function loadPlayersForTeam(
 teamId,
@@ -1221,6 +1172,12 @@ containerId
 
 container.innerHTML =
 "";
+
+
+/* SAVE TEAM DATA */
+
+teamContainerMap[team] =
+containerId;
 
 
 const {
@@ -1266,11 +1223,77 @@ return;
 }
 
 
+/* SAVE COMPLETE TEAM PLAYER LIST */
+
+teamPlayersMap[team] =
+data;
+
+
+/* SAVE PLAYER DATA */
+
+for(
+const player of data
+){
+
+playerDataMap[
+player.id
+] =
+player;
+
+
+playerTeamMap[
+player.id
+] =
+team;
+
+
+const stats =
+await getPlayerGameStats(
+player.id
+);
+
+
+playerOnCourt[
+player.id
+] =
+stats.on_court === true;
+
+}
+
+
+/* SORT PLAYERS */
+
+const onCourtPlayers =
+data.filter(
+player =>
+playerOnCourt[player.id] === true
+);
+
+
+const benchPlayers =
+data.filter(
+player =>
+playerOnCourt[player.id] !== true
+);
+
+
+/* INITIAL DISPLAY */
+
+const initialPlayers = [
+
+...onCourtPlayers,
+
+...benchPlayers.slice(0,5)
+
+];
+
+
+/* CREATE TABLE */
+
 const table =
 document.createElement(
 "table"
 );
-
 
 table.className =
 "player-table";
@@ -1336,104 +1359,7 @@ table.querySelector(
 );
 
 
-/* =================================
-   LOAD PLAYER DATA
-================================= */
-
-for(
-const player of data
-){
-
-playerDataMap[
-player.id
-] =
-player;
-
-
-playerTeamMap[
-player.id
-] =
-team;
-
-
-const stats =
-await getPlayerGameStats(
-player.id
-);
-
-
-playerOnCourt[
-player.id
-] =
-stats.on_court === true;
-
-
-if(
-playerOnCourt[player.id]
-){
-
-if(
-!playerCourtOrder[team]
-){
-
-playerCourtOrder[team] = [];
-
-}
-
-playerCourtOrder[team].push(
-player.id
-);
-
-}
-
-}
-
-
-/* =================================
-   ORDER PLAYERS
-   ON COURT FIRST
-================================= */
-
-const orderedPlayers = [
-
-...data.filter(
-p => playerOnCourt[p.id]
-),
-
-...data.filter(
-p => !playerOnCourt[p.id]
-)
-
-];
-
-
-/* =================================
-   SHOW ON-COURT PLAYERS
-   + FIRST 5 BENCH PLAYERS
-================================= */
-
-const onCourtPlayers =
-orderedPlayers.filter(
-player =>
-playerOnCourt[player.id] === true
-);
-
-
-const benchPlayers =
-orderedPlayers.filter(
-player =>
-playerOnCourt[player.id] !== true
-);
-
-
-const initialPlayers = [
-
-...onCourtPlayers,
-
-...benchPlayers.slice(0,5)
-
-];
-
+/* RENDER INITIAL PLAYERS */
 
 for(
 const player of initialPlayers
@@ -1462,9 +1388,7 @@ row
 }
 
 
-/* =================================
-   VIEW ALL BUTTON
-================================= */
+/* VIEW ALL BUTTON */
 
 if(
 benchPlayers.length > 5
@@ -1480,16 +1404,17 @@ viewAllRow.id =
 "view-all-row-"+team;
 
 
+viewAllRow.dataset.team =
+team;
+
+
 viewAllRow.innerHTML = `
 
 <td colspan="17">
 
 <button
 class="view-all-button"
-onclick="viewAllBenchPlayers(
-'${team}',
-'${containerId}'
-)"
+onclick="viewAllBenchPlayers('${team}')"
 >
 VIEW ALL (${benchPlayers.length - 5} MORE)
 </button>
@@ -1508,19 +1433,34 @@ viewAllRow
 }
 
 
-/* =================================
-   VIEW ALL BENCH PLAYERS
-================================= */
+/* =========================================
+   FIXED VIEW ALL FUNCTION
+========================================= */
 
 async function viewAllBenchPlayers(
-team,
-containerId
+team
 ){
+
+const containerId =
+teamContainerMap[team];
+
 
 const container =
 document.getElementById(
 containerId
 );
+
+
+if(!container){
+
+console.error(
+"Player container not found for team:",
+team
+);
+
+return;
+
+}
 
 
 const table =
@@ -1539,55 +1479,44 @@ table.querySelector(
 );
 
 
-const viewAllRow =
-document.getElementById(
-"view-all-row-"+team
-);
+if(!tbody)
+return;
 
+
+/* GET THE ORIGINAL TEAM PLAYER LIST */
 
 const allPlayers =
-Object.values(
-playerDataMap
-).filter(
+teamPlayersMap[team] || [];
 
-player =>
 
-playerTeamMap[player.id] === team
-
-);
-
+/* GET CURRENT BENCH PLAYERS */
 
 const benchPlayers =
 allPlayers.filter(
-
 player =>
-
 playerOnCourt[player.id] !== true
-
 );
 
 
-/* =================================
-   GET PLAYERS AFTER FIRST 5
-================================= */
+/* PLAYERS AFTER FIRST FIVE */
 
 const hiddenBenchPlayers =
 benchPlayers.slice(5);
 
 
-/* =================================
-   ADD HIDDEN PLAYERS
-================================= */
+/* ADD ONLY PLAYERS NOT ALREADY VISIBLE */
 
 for(
 const player of hiddenBenchPlayers
 ){
 
-if(
+const existingRow =
 document.getElementById(
 "player-row-"+player.id
-)
-){
+);
+
+
+if(existingRow){
 
 continue;
 
@@ -1604,9 +1533,15 @@ row.id =
 "player-row-"+player.id;
 
 
-if(
-viewAllRow
-){
+/* INSERT BEFORE VIEW ALL ROW */
+
+const viewAllRow =
+document.getElementById(
+"view-all-row-"+team
+);
+
+
+if(viewAllRow){
 
 tbody.insertBefore(
 row,
@@ -1631,24 +1566,23 @@ row
 }
 
 
-/* =================================
-   CHANGE BUTTON TO SHOW LESS
-================================= */
+/* CHANGE BUTTON TO SHOW LESS */
 
-if(
-viewAllRow
-){
+const buttonRow =
+document.getElementById(
+"view-all-row-"+team
+);
 
-viewAllRow.innerHTML = `
+
+if(buttonRow){
+
+buttonRow.innerHTML = `
 
 <td colspan="17">
 
 <button
 class="view-all-button"
-onclick="hideExtraBenchPlayers(
-'${team}',
-'${containerId}'
-)"
+onclick="hideExtraBenchPlayers('${team}')"
 >
 SHOW LESS
 </button>
@@ -1662,44 +1596,32 @@ SHOW LESS
 }
 
 
-/* =================================
-   HIDE EXTRA BENCH PLAYERS
-================================= */
+/* =========================================
+   FIXED SHOW LESS FUNCTION
+========================================= */
 
 function hideExtraBenchPlayers(
-team,
-containerId
+team
 ){
 
 const allPlayers =
-Object.values(
-playerDataMap
-).filter(
-
-player =>
-
-playerTeamMap[player.id] === team
-
-);
+teamPlayersMap[team] || [];
 
 
 const benchPlayers =
 allPlayers.filter(
-
 player =>
-
 playerOnCourt[player.id] !== true
-
 );
 
+
+/* GET PLAYERS AFTER FIRST FIVE */
 
 const hiddenBenchPlayers =
 benchPlayers.slice(5);
 
 
-/* =================================
-   REMOVE EXTRA PLAYERS
-================================= */
+/* REMOVE ONLY EXTRA BENCH PLAYERS */
 
 for(
 const player of hiddenBenchPlayers
@@ -1720,30 +1642,23 @@ row.remove();
 }
 
 
-/* =================================
-   RESTORE VIEW ALL BUTTON
-================================= */
+/* RESTORE VIEW ALL BUTTON */
 
-const viewAllRow =
+const buttonRow =
 document.getElementById(
 "view-all-row-"+team
 );
 
 
-if(
-viewAllRow
-){
+if(buttonRow){
 
-viewAllRow.innerHTML = `
+buttonRow.innerHTML = `
 
 <td colspan="17">
 
 <button
 class="view-all-button"
-onclick="viewAllBenchPlayers(
-'${team}',
-'${containerId}'
-)"
+onclick="viewAllBenchPlayers('${team}')"
 >
 VIEW ALL (${hiddenBenchPlayers.length} MORE)
 </button>
@@ -1757,9 +1672,7 @@ VIEW ALL (${hiddenBenchPlayers.length} MORE)
 }
 
 
-/* =================================
-   PLAYER GAME STATS
-================================= */
+/* PLAYER GAME STATS */
 
 async function getPlayerGameStats(
 playerId
@@ -1860,9 +1773,7 @@ return playerStatsMap[playerId];
 }
 
 
-/* =================================
-   SAVE PLAYER STAT
-================================= */
+/* SAVE PLAYER STAT */
 
 async function saveStatDirect(
 playerId,
@@ -1915,10 +1826,6 @@ Number(value || 0)
 
 }
 
-
-/* =================================
-   AUTO CALCULATE TOTAL REBOUNDS
-================================= */
 
 if(
 
@@ -2020,9 +1927,7 @@ playerStatsMap[playerId] = {
 }
 
 
-/* =================================
-   UPDATE PLAYER STAT
-================================= */
+/* UPDATE PLAYER STAT */
 
 async function updatePlayerStat(
 playerId,
@@ -2049,10 +1954,6 @@ currentValue + amount
 );
 
 
-/* =================================
-   IGNORE DIRECT POINTS/MINUTES/PLUS MINUS
-================================= */
-
 if(
 statKey === "points"
 ||
@@ -2066,9 +1967,7 @@ return;
 }
 
 
-/* =================================
-   SHOT MADE
-================================= */
+/* SHOT MADE */
 
 if(
 
@@ -2202,9 +2101,7 @@ return;
 }
 
 
-/* =================================
-   NORMAL STAT
-================================= */
+/* NORMAL STAT */
 
 await saveStatDirect(
 playerId,
@@ -2220,9 +2117,7 @@ playerId
 }
 
 
-/* =================================
-   UPDATE SCORE FROM PLAYER
-================================= */
+/* UPDATE SCORE FROM PLAYER */
 
 async function updateScoreFromPlayer(
 team,
@@ -2303,11 +2198,6 @@ team+"Score"
 newScore;
 
 
-/* =================================
-   UPDATE PLUS MINUS
-   FOR PLAYERS ON COURT
-================================= */
-
 const playersToUpdate =
 
 Object.keys(
@@ -2357,9 +2247,7 @@ playerId
 }
 
 
-/* =================================
-   REFRESH PLAYER
-================================= */
+/* REFRESH PLAYER */
 
 async function refreshPlayerRow(
 playerId
@@ -2390,9 +2278,7 @@ row
 }
 
 
-/* =================================
-   RENDER PLAYER ROW
-================================= */
+/* RENDER PLAYER */
 
 async function renderPlayerRow(
 player,
@@ -2958,9 +2844,7 @@ ${s.plus_minus || 0}
 }
 
 
-/* =================================
-   STAT BUTTONS
-================================= */
+/* STAT BUTTONS */
 
 function statButtons(
 playerId,
@@ -2996,9 +2880,7 @@ onclick="updatePlayerStat(
 }
 
 
-/* =================================
-   MINUTES FORMAT
-================================= */
+/* MINUTES */
 
 function formatMinutes(
 seconds
@@ -3044,15 +2926,12 @@ String(secs)
 }
 
 
-/* =================================
-   PLAYER MINUTES SYNC
-================================= */
+/* PLAYER MINUTES SYNC */
 
 async function syncPlayerMinutes(){
 
 if(!currentGame)
 return;
-
 
 if(!clockRunning)
 return;
@@ -3169,7 +3048,6 @@ wholeSeconds > 0
 ){
 
 const newMinutes =
-
 oldMinutes +
 wholeSeconds;
 
@@ -3196,9 +3074,7 @@ playerId
 }
 
 
-/* =================================
-   RESET MINUTE SYNC
-================================= */
+/* RESET MINUTE SYNC */
 
 function resetPlayerMinuteSync(){
 
@@ -3208,9 +3084,7 @@ Date.now();
 }
 
 
-/* =================================
-   SUBSTITUTIONS
-================================= */
+/* SUBSTITUTIONS */
 
 async function toggleSubstitution(
 playerId
@@ -3351,9 +3225,7 @@ showStatus(
 }
 
 
-/* =================================
-   CLOCK SYSTEM
-================================= */
+/* CLOCK SAVE */
 
 async function saveClockState(){
 
@@ -3367,7 +3239,8 @@ clock_seconds:
 Math.max(
 0,
 Math.floor(
-Number(clockSeconds || 0)
+Number(clockSeconds || 0
+)
 )
 ),
 
@@ -3422,9 +3295,7 @@ data;
 }
 
 
-/* =================================
-   LOAD CLOCK
-================================= */
+/* LOAD CLOCK */
 
 async function loadPersistedClock(){
 
@@ -3583,9 +3454,7 @@ startClockInternal();
 }
 
 
-/* =================================
-   UPDATE CLOCK DISPLAY
-================================= */
+/* CLOCK DISPLAY */
 
 function updateClockDisplay(){
 
@@ -3628,9 +3497,7 @@ seconds
 }
 
 
-/* =================================
-   START CLOCK
-================================= */
+/* START CLOCK */
 
 async function startClock(){
 
@@ -3691,9 +3558,7 @@ startClockInternal();
 }
 
 
-/* =================================
-   INTERNAL CLOCK
-================================= */
+/* INTERNAL CLOCK */
 
 function startClockInternal(){
 
@@ -3800,9 +3665,7 @@ return;
 }
 
 
-/* =================================
-   PAUSE CLOCK
-================================= */
+/* PAUSE CLOCK */
 
 async function pauseClock(){
 
@@ -3876,9 +3739,7 @@ await saveClockState();
 }
 
 
-/* =================================
-   RESET CLOCK
-================================= */
+/* RESET CLOCK */
 
 async function resetClock(){
 
@@ -3932,9 +3793,7 @@ await saveClockState();
 }
 
 
-/* =================================
-   SET PERIOD
-================================= */
+/* SET PERIOD */
 
 async function setPeriod(
 period
@@ -3957,9 +3816,7 @@ await resetClock();
 }
 
 
-/* =================================
-   AUTO LOAD
-================================= */
+/* AUTO LOAD */
 
 loadGame();
 
