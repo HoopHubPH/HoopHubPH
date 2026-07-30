@@ -1714,6 +1714,11 @@ return playerStatsMap[playerId];
 
 
 /* SAVE PLAYER STAT */
+/*
+ONLY CHANGE:
+plus_minus is now allowed to be negative.
+All other numeric stats still have a minimum of 0.
+*/
 
 async function saveStatDirect(
 playerId,
@@ -1752,6 +1757,42 @@ statKey
 Boolean(value);
 
 }
+
+
+/*
+PLUS / MINUS
+
+This is the ONLY special change.
+
+Negative values are allowed.
+
+Examples:
+0 -> -2
+-2 -> -5
+-5 -> -8
+
+*/
+
+else if(
+statKey === "plus_minus"
+){
+
+updateObj[
+statKey
+] =
+Math.floor(
+Number(value || 0)
+);
+
+}
+
+
+/*
+ALL OTHER STATS
+
+Still cannot go below zero.
+*/
+
 else{
 
 updateObj[
@@ -1766,6 +1807,10 @@ Number(value || 0)
 
 }
 
+
+/*
+UPDATE TOTAL REBOUNDS
+*/
 
 if(
 
@@ -1822,6 +1867,10 @@ oreb + dreb
 
 }
 
+
+/*
+SAVE TO SUPABASE
+*/
 
 const {
 data,
@@ -1905,26 +1954,7 @@ stats[statKey] || 0
 );
 
 
-/* =========================================
-   MADE SHOT
-
-   M+ automatically adds an attempt.
-
-   2PT M+
-   Made +1
-   Attempt +1
-   Points +2
-
-   3PT M+
-   Made +1
-   Attempt +1
-   Points +3
-
-   FT M+
-   Made +1
-   Attempt +1
-   Points +1
-========================================= */
+/* MADE SHOT */
 
 if(
 
@@ -2010,11 +2040,6 @@ currentAttempts + amount
 );
 
 
-/*
-Prevent made shots from
-being greater than attempts.
-*/
-
 const finalMade =
 
 Math.min(
@@ -2022,13 +2047,8 @@ Math.min(
 newMade,
 
 newAttempts
-
 );
 
-
-/*
-Save MADE
-*/
 
 await saveStatDirect(
 
@@ -2041,13 +2061,6 @@ finalMade
 );
 
 
-/*
-Save ATTEMPT
-
-M+ = Attempt +1
-M− = Attempt -1
-*/
-
 await saveStatDirect(
 
 playerId,
@@ -2058,10 +2071,6 @@ newAttempts
 
 );
 
-
-/*
-UPDATE POINTS
-*/
 
 const currentPoints =
 
@@ -2075,16 +2084,12 @@ const newPoints =
 Math.max(
 
 0,
-
 currentPoints
-
 +
-
 (
 amount *
 pointsToAdd
 )
-
 );
 
 
@@ -2101,8 +2106,6 @@ newPoints
 
 /*
 UPDATE TEAM SCORE
-
-NOW ALSO UPDATES PLUS/MINUS FOR BOTH TEAMS
 */
 
 const team =
@@ -2141,31 +2144,13 @@ Math.max(
 0,
 
 oldTeamScore
-
 +
-
 (
 amount *
 pointsToAdd
 )
-
 );
 
-
-/*
-UPDATE THE TEAM SCORE
-
-AND BALANCE +/- FOR BOTH TEAMS
-
-The scoring team's players
-receive +points.
-
-The opposing team's players
-receive -points.
-
-Only players currently on court
-are affected.
-*/
 
 await updateScoreFromPlayer(
 
@@ -2188,20 +2173,15 @@ return;
 }
 
 
-/* =========================================
-   NORMAL STAT
-
-   AST, STL, BLK, REB, TO, PF
-========================================= */
+/* NORMAL STAT */
 
 const newValue =
 
 Math.max(
 
 0,
-
-currentValue + amount
-
+currentValue +
+amount
 );
 
 
@@ -2305,16 +2285,17 @@ newScore;
 
 
 /*
-UPDATED +/- LOGIC
+PLUS / MINUS
 
-The team that scored gets
-+amount.
+Scoring team:
++ points
 
-The opposing team gets
--amount.
+Opposing team:
+- points
 
-Only players currently on court
-are updated.
+Negative values are now
+allowed because saveStatDirect()
+does not clamp plus_minus to zero.
 */
 
 const playersToUpdate =
@@ -2349,18 +2330,6 @@ Number(
 stats.plus_minus || 0
 );
 
-
-/*
-If player belongs to the
-scoring team:
-
-+ points
-
-If player belongs to the
-opposing team:
-
-- points
-*/
 
 const plusMinusChange =
 
@@ -3057,8 +3026,7 @@ const totalSeconds =
 Math.max(
 0,
 Math.floor(
-Number(seconds || 0
-)
+Number(seconds || 0)
 )
 );
 
@@ -3631,8 +3599,7 @@ startClockInternal();
 function updateClockDisplay(){
 
 const minutes =
-Math.floor(
-clockSeconds / 60
+Math.floor(clockSeconds / 60
 );
 
 
