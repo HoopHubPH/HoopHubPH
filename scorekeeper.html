@@ -2627,13 +2627,12 @@ async function syncPlayerMinutes(){
 if(!currentGame)
 return;
 
-
 if(!clockRunning)
 return;
 
 
 /*
-Initialize synchronization timestamp.
+Initialize the synchronization timestamp.
 */
 
 if(
@@ -2649,7 +2648,7 @@ return;
 
 
 /*
-Calculate elapsed time in WHOLE SECONDS.
+Calculate exact real elapsed time.
 */
 
 const now =
@@ -2662,23 +2661,23 @@ Math.max(
 
 0,
 
-Math.floor(
-
 (
 now -
 playerMinutesLastSync
 ) / 1000
 
-)
-
 );
 
 
 /*
-No complete second has passed yet.
+Update timestamp immediately.
 
-Do not update the timestamp.
+This prevents double counting.
 */
+
+playerMinutesLastSync =
+now;
+
 
 if(
 elapsedSeconds <= 0
@@ -2687,21 +2686,7 @@ return;
 
 
 /*
-Move the synchronization timestamp forward
-by the exact number of whole seconds counted.
-
-This prevents fractional seconds such as 0.245
-from ever being stored.
-*/
-
-playerMinutesLastSync +=
-
-elapsedSeconds *
-1000;
-
-
-/*
-Find players currently on court.
+Find all players currently on court.
 */
 
 const activePlayers =
@@ -2729,6 +2714,19 @@ return;
 
 /*
 Update each active player's minutes.
+
+IMPORTANT:
+minutes_played is an INTEGER column.
+
+We therefore store whole seconds only.
+
+Example:
+0.245 seconds -> 0 seconds
+1.8 seconds   -> 1 second
+2.9 seconds   -> 2 seconds
+
+This prevents:
+invalid input syntax for type integer: "0.245"
 */
 
 for(
@@ -2739,6 +2737,67 @@ const stats =
 await getPlayerGameStats(
 playerId
 );
+
+
+const oldMinutes =
+
+Number(
+stats.minutes_played || 0
+);
+
+
+/*
+Convert elapsed time to whole seconds
+before saving to Supabase.
+*/
+
+const elapsedWholeSeconds =
+
+Math.floor(
+elapsedSeconds
+);
+
+
+if(
+elapsedWholeSeconds <= 0
+)
+continue;
+
+
+const newMinutes =
+
+oldMinutes +
+elapsedWholeSeconds;
+
+
+/*
+Save whole seconds only.
+
+The database column remains INTEGER.
+*/
+
+await saveStatDirect(
+
+playerId,
+
+"minutes_played",
+
+newMinutes
+
+);
+
+
+/*
+Update the visible player row.
+*/
+
+await refreshPlayerRow(
+playerId
+);
+
+}
+
+}
 
 
 /*
