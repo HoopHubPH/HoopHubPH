@@ -857,6 +857,16 @@ let clockRunning = false;
 
 let clockEndTime = null;
 
+/*
+IMPORTANT MINUTES SYNC VARIABLES
+
+playerMinutesLastSync is now based on the
+actual clock timestamp instead of the browser
+interval timing.
+
+This prevents the 9:56 vs 10:00 problem.
+*/
+
 let playerMinutesLastSync = null;
 
 let playerMinutesFractionMap = {};
@@ -1032,6 +1042,14 @@ clockRunning = false;
 clockEndTime = null;
 
 clockSeconds = 600;
+
+
+/*
+Reset minute sync before loading
+the persisted clock.
+*/
+
+playerMinutesLastSync = null;
 
 
 await loadPersistedClock();
@@ -2193,8 +2211,6 @@ await refreshPlayerRow(
 playerId
 );
 
-}
-
 
 /* UPDATE SCORE FROM PLAYER */
 
@@ -2912,44 +2928,251 @@ String(secs)
 }
 
 
-/* PLAYER MINUTES SYNC */
+/*
+==================================================
+UPDATED PLAYER MINUTES SYNC
+==================================================
 
-async function syncPlayerMinutes(){
+The old system used:
+
+Date.now() - playerMinutesLastSync
+
+inside a 250ms interval.
+
+That caused timing drift because browser intervals
+are not guaranteed to execute exactly every 250ms.
+
+The new system uses the SAME clockEndTime as the
+actual game clock.
+
+This means:
+
+Game starts at:
+10:00
+
+clockEndTime =
+exact timestamp when the quarter should end.
+
+When a player is on court, we calculate the actual
+elapsed time based on the game clock's timeline.
+
+When the clock reaches 00:00, we force a final sync
+before stopping the clock.
+*/
+
+
+/*
+Get the exact number of seconds that the game clock
+has been running since the last player minute sync.
+
+This is based on the actual clock timeline.
+*/
+
+function getElapsedClockSeconds(){
+
+if(
+!clockRunning ||
+!clockEndTime
+)
+return 0;
+
+
+/*
+The exact remaining time according to the clock.
+*/
+
+const remainingMilliseconds =
+Math.max(
+0,
+clockEndTime -
+Date.now()
+);
+
+
+/*
+Current remaining clock time in seconds.
+
+Ceil is used for display consistency,
+but player minutes use the actual
+millisecond difference below.
+*/
+
+const remainingSeconds =
+remainingMilliseconds /
+1000;
+
+
+/*
+The clock started with 600 seconds,
+or whatever value existed when START
+was pressed.
+
+The exact elapsed amount is calculated
+from the difference between the starting
+clock value and current remaining time.
+
+For syncing, we use the last exact
+remaining timestamp.
+*/
+
+if(
+playerMinutesLastSync === null
+){
+
+return 0;
+
+}
+
+
+/*
+playerMinutesLastSync stores the exact
+remaining clock milliseconds at the
+previous sync.
+
+The difference is the exact game time
+that has elapsed since that sync.
+*/
+
+const elapsedMilliseconds =
+Math.max(
+0,
+playerMinutesLastSync -
+remainingMilliseconds
+);
+
+
+return elapsedMilliseconds / 1000;
+
+}
+
+
+/*
+SYNC PLAYER MINUTES
+
+This function now uses the actual game
+clock timeline instead of browser interval
+timing.
+*/
+
+async function syncPlayerMinutes(
+forceFinal = false
+){
 
 if(!currentGame)
 return;
 
-if(!clockRunning)
-return;
 
-if(!playerMinutesLastSync){
+/*
+If the clock is running, calculate
+the exact remaining milliseconds.
+*/
+
+let currentRemainingMilliseconds = null;
+
+
+if(
+clockRunning &&
+clockEndTime
+){
+
+currentRemainingMilliseconds =
+Math.max(
+0,
+clockEndTime -
+Date.now()
+);
+
+}
+
+
+/*
+If this is the final sync at 00:00,
+the remaining time is exactly zero.
+*/
+
+if(
+forceFinal
+){
+
+currentRemainingMilliseconds =
+0;
+
+}
+
+
+/*
+If we have no previous timestamp,
+initialize it.
+
+For a newly started clock this should
+represent the full current clock value.
+*/
+
+if(
+playerMinutesLastSync === null
+){
+
+if(
+currentRemainingMilliseconds !== null
+){
 
 playerMinutesLastSync =
-Date.now();
+currentRemainingMilliseconds;
+
+}
 
 return;
 
 }
 
-const now =
-Date.now();
 
-const elapsedSeconds =
+/*
+Calculate exact game-time elapsed since
+the last sync.
+
+Because both timestamps come from the
+same clockEndTime timeline, this is not
+affected by setInterval drift.
+*/
+
+let elapsedSeconds = 0;
+
+
+if(
+currentRemainingMilliseconds !== null
+){
+
+elapsedSeconds =
+
 Math.max(
 0,
 (
-now -
-playerMinutesLastSync
+playerMinutesLastSync -
+currentRemainingMilliseconds
 ) / 1000
 );
 
-playerMinutesLastSync =
-now;
+}
+
+
+/*
+Update the sync reference immediately.
+*/
 
 if(
-elapsedSeconds <= 0
-)
-return;
+currentRemainingMilliseconds !== null
+){
+
+playerMinutesLastSync =
+currentRemainingMilliseconds;
+
+}
+
+
+/*
+Add elapsed time to every player
+currently on the court.
+*/
 
 const activePlayers =
 Object.keys(
@@ -2959,10 +3182,12 @@ playerId =>
 playerOnCourt[playerId] === true
 );
 
+
 if(
 !activePlayers.length
 )
 return;
+
 
 for(
 const playerId of activePlayers
@@ -2973,31 +3198,66 @@ await getPlayerGameStats(
 playerId
 );
 
+
+/*
+Current saved whole seconds.
+*/
+
 const oldMinutes =
 Number(
 stats.minutes_played || 0
 );
+
+
+/*
+Previously stored fractional seconds.
+*/
 
 const previousFraction =
 Number(
 playerMinutesFractionMap[playerId] || 0
 );
 
+
+/*
+Add exact elapsed seconds.
+*/
+
 const totalElapsed =
 previousFraction +
 elapsedSeconds;
+
+
+/*
+Save only complete seconds,
+while keeping fractional seconds
+in memory for the next sync.
+*/
 
 const wholeSeconds =
 Math.floor(
 totalElapsed
 );
 
+
 const remainingFraction =
 totalElapsed -
 wholeSeconds;
 
+
 playerMinutesFractionMap[playerId] =
 remainingFraction;
+
+
+/*
+If this is the final quarter clock
+sync, round the remaining fractional
+time down normally.
+
+The important part is that the full
+10-minute timeline has now been
+accounted for.
+*/
 
 if(
 wholeSeconds > 0
@@ -3007,6 +3267,7 @@ const newMinutes =
 oldMinutes +
 wholeSeconds;
 
+
 await saveStatDirect(
 playerId,
 "minutes_played",
@@ -3014,6 +3275,11 @@ newMinutes
 );
 
 }
+
+
+/*
+Refresh the player's displayed minutes.
+*/
 
 await refreshPlayerRow(
 playerId
@@ -3024,12 +3290,39 @@ playerId
 }
 
 
-/* RESET MINUTE SYNC */
+/*
+RESET MINUTE SYNC
+
+When the player substitutions change,
+we reset the minute synchronization
+point to the CURRENT exact clock time.
+
+This ensures a player who SUBS IN does
+not receive minutes from before entering.
+*/
 
 function resetPlayerMinuteSync(){
 
+if(
+clockRunning &&
+clockEndTime
+){
+
 playerMinutesLastSync =
-Date.now();
+Math.max(
+0,
+clockEndTime -
+Date.now()
+);
+
+}
+
+else{
+
+playerMinutesLastSync =
+null;
+
+}
 
 }
 
@@ -3049,11 +3342,24 @@ playerTeamMap[playerId];
 const currentlyOn =
 playerOnCourt[playerId] === true;
 
-if(clockRunning){
+
+/*
+Before SUB OUT, sync the exact time
+the player was on the court.
+
+This ensures their final playing time
+is recorded up to the exact moment
+the substitution happened.
+*/
+
+if(
+clockRunning
+){
 
 await syncPlayerMinutes();
 
 }
+
 
 if(currentlyOn){
 
@@ -3414,6 +3720,19 @@ if(
 clockSeconds <= 0
 ){
 
+/*
+If the persisted clock already reached
+00:00, make sure any players still on
+the court receive their final time.
+
+At this point the player list has not
+yet been loaded, so there is no active
+player data available here.
+
+The normal game flow handles the final
+sync when the clock itself reaches zero.
+*/
+
 clockSeconds =
 0;
 
@@ -3425,8 +3744,6 @@ null;
 
 updateClockDisplay();
 
-await saveClockState();
-
 resetPlayerMinuteSync();
 
 return;
@@ -3435,6 +3752,12 @@ return;
 
 
 updateClockDisplay();
+
+
+/*
+Set the exact minute sync reference
+before restarting the persisted clock.
+*/
 
 resetPlayerMinuteSync();
 
@@ -3561,7 +3884,30 @@ clockRunning =
 true;
 
 
-resetPlayerMinuteSync();
+/*
+IMPORTANT:
+
+Set the player minute sync reference
+to the exact current remaining time
+of the game clock.
+
+This becomes the starting point for
+all player minute calculations.
+*/
+
+playerMinutesLastSync =
+startingSeconds *
+1000;
+
+
+/*
+Reset fractional seconds for the
+new running segment.
+
+Existing saved minutes remain intact.
+*/
+
+playerMinutesFractionMap = {};
 
 
 await saveClockState();
@@ -3616,15 +3962,18 @@ return;
 }
 
 
-const remaining =
+const remainingMilliseconds =
 Math.max(
 0,
-Math.ceil(
-(
 clockEndTime -
 Date.now()
-) / 1000
-)
+);
+
+
+const remaining =
+Math.ceil(
+remainingMilliseconds /
+1000
 );
 
 
@@ -3635,12 +3984,43 @@ remaining;
 updateClockDisplay();
 
 
+/*
+Sync player minutes using the exact
+clock timeline.
+*/
+
 await syncPlayerMinutes();
 
 
+/*
+WHEN CLOCK REACHES ZERO
+
+Force one final player minute sync
+using exactly 0 remaining milliseconds.
+
+This is the key fix that ensures a
+player who played the entire quarter
+gets exactly 10:00 instead of 9:56,
+9:57, etc.
+*/
+
 if(
-clockSeconds <= 0
+remainingMilliseconds <= 0
 ){
+
+/*
+Final sync must happen BEFORE changing
+clockRunning to false.
+*/
+
+await syncPlayerMinutes(
+true
+);
+
+
+/*
+Stop the clock after final minute sync.
+*/
 
 clockSeconds =
 0;
@@ -3666,7 +4046,22 @@ null;
 
 updateClockDisplay();
 
-resetPlayerMinuteSync();
+
+/*
+Reset sync state only AFTER the final
+player minutes have been saved.
+*/
+
+playerMinutesLastSync =
+null;
+
+
+/*
+Keep fractional values from leaking
+into the next quarter.
+*/
+
+playerMinutesFractionMap = {};
 
 
 await saveClockState();
@@ -3699,6 +4094,19 @@ updateClockDisplay();
 return;
 
 }
+
+
+/*
+IMPORTANT:
+
+Before pausing, sync the exact amount
+of game time that has elapsed.
+
+This prevents losing the final seconds
+between the last interval and PAUSE.
+*/
+
+await syncPlayerMinutes();
 
 
 let pausedSeconds =
@@ -3748,7 +4156,17 @@ pausedSeconds;
 
 updateClockDisplay();
 
-resetPlayerMinuteSync();
+
+/*
+The clock is paused, so the minute sync
+reference is cleared.
+
+When START is pressed again, a new
+exact clock timeline will be established.
+*/
+
+playerMinutesLastSync =
+null;
 
 
 const pausedValue =
@@ -3840,6 +4258,10 @@ if(!currentGame)
 return;
 
 
+/*
+Stop clock first.
+*/
+
 clockRunning =
 false;
 
@@ -3863,9 +4285,19 @@ clockSeconds =
 600;
 
 
-updateClockDisplay();
+/*
+Reset minute synchronization.
 
-resetPlayerMinuteSync();
+Existing player minutes are NOT erased.
+*/
+
+playerMinutesLastSync =
+null;
+
+playerMinutesFractionMap = {};
+
+
+updateClockDisplay();
 
 
 const {
