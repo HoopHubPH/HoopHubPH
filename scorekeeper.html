@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -196,6 +197,19 @@ nav a:hover{
 }
 
 .period-buttons button:hover{
+    background:#111;
+}
+
+/* ACTIVE QUARTER HIGHLIGHT */
+
+.period-buttons button.active-period{
+    background:#111;
+    color:#fff;
+    box-shadow:0 0 0 2px #ff6b00;
+    transform:scale(1.05);
+}
+
+.period-buttons button.active-period:hover{
     background:#111;
 }
 
@@ -580,9 +594,7 @@ Live Game
 
 </header>
 
-
 <div class="container">
-
 
 <div class="game-selector">
 
@@ -594,23 +606,22 @@ Game ID:
 type="number"
 id="gameId"
 value="1"
+
 >
 
 <button
 class="load-button"
 onclick="loadGame()"
+
 >
-LOAD
-</button>
+
+LOAD </button>
 
 </div>
 
-
 <div id="statusMessage"></div>
 
-
 <div class="scoreboard">
-
 
 <div class="team-control">
 
@@ -626,7 +637,6 @@ id="homeScore"
 </div>
 
 </div>
-
 
 <div class="clock-area">
 
@@ -675,7 +685,6 @@ RESET
 
 </div>
 
-
 <div class="team-control">
 
 <h2 id="awayTeam">
@@ -693,7 +702,6 @@ id="awayScore"
 
 </div>
 
-
 <div class="controls">
 
 <h2>
@@ -701,7 +709,6 @@ PLAYER STATS
 </h2>
 
 <div class="stats-controls">
-
 
 <div class="stat-control">
 
@@ -713,7 +720,6 @@ Home Players
 
 </div>
 
-
 <div class="stat-control">
 
 <h2 id="awayPlayersTitle">
@@ -724,11 +730,9 @@ Away Players
 
 </div>
 
-
 </div>
 
 </div>
-
 
 <div class="game-footer-controls">
 
@@ -741,30 +745,32 @@ Status:
 <button
 class="control-button"
 onclick="updateGame({status:'Live'})"
+
 >
-LIVE
-</button>
+
+LIVE </button>
 
 <button
 class="control-button"
 onclick="updateGame({status:'Halftime'})"
+
 >
-HALF
-</button>
+
+HALF </button>
 
 <button
 class="control-button"
 onclick="updateGame({status:'Final'})"
+
 >
-FINAL
-</button>
+
+FINAL </button>
 
 </div>
 
 </div>
 
 </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -952,6 +958,13 @@ document.getElementById(
 "awayScore"
 ).textContent =
 data.away_score || 0;
+
+
+/* RESTORE ACTIVE QUARTER BUTTON */
+
+setActivePeriodButton(
+data.period
+);
 
 
 playerStatsMap = {};
@@ -1994,7 +2007,6 @@ const newMade =
 Math.max(
 
 0,
-
 currentValue + amount
 
 );
@@ -2012,7 +2024,6 @@ const newAttempts =
 Math.max(
 
 0,
-
 currentAttempts + amount
 );
 
@@ -3133,17 +3144,6 @@ async function saveClockState(){
 if(!currentGame)
 return false;
 
-
-/*
-IMPORTANT:
-
-If the clock is paused, clockSeconds is the
-authoritative value.
-
-If the clock is running, calculate the latest
-remaining value before saving.
-*/
-
 if(
 clockRunning &&
 clockEndTime
@@ -3232,15 +3232,6 @@ return false;
 }
 
 
-/*
-IMPORTANT:
-
-Do NOT replace the local clock variables
-with the returned database row.
-
-The local state remains authoritative.
-*/
-
 if(data){
 
 currentGame =
@@ -3268,11 +3259,6 @@ async function loadPersistedClock(){
 
 if(!currentGame)
 return;
-
-
-/*
-Stop any old timer before loading.
-*/
 
 if(clockInterval){
 
@@ -3315,11 +3301,6 @@ console.error(
 error
 );
 
-
-/*
-If there is an error, use 10:00.
-*/
-
 clockSeconds =
 600;
 
@@ -3337,10 +3318,6 @@ return;
 
 }
 
-
-/*
-If clock_seconds is NULL, this is a new game.
-*/
 
 if(
 data.clock_seconds === null
@@ -3366,10 +3343,6 @@ return;
 }
 
 
-/*
-Load the saved clock value.
-*/
-
 clockSeconds =
 Math.max(
 0,
@@ -3381,17 +3354,9 @@ data.clock_seconds
 );
 
 
-/*
-Load running state.
-*/
-
 clockRunning =
 data.clock_running === true;
 
-
-/*
-Load end timestamp.
-*/
 
 clockEndTime =
 data.clock_end_time
@@ -3402,11 +3367,6 @@ data.clock_end_time
 :
 null;
 
-
-/*
-If the saved clock was RUNNING,
-calculate the current remaining time.
-*/
 
 if(
 clockRunning &&
@@ -3426,11 +3386,6 @@ Date.now()
 
 }
 
-
-/*
-If clock has reached zero,
-stop it permanently.
-*/
 
 if(
 clockSeconds <= 0
@@ -3456,19 +3411,10 @@ return;
 }
 
 
-/*
-Display the loaded value.
-*/
-
 updateClockDisplay();
 
 resetPlayerMinuteSync();
 
-
-/*
-Resume only if the database says
-the clock was actually running.
-*/
 
 if(
 clockRunning &&
@@ -3490,7 +3436,8 @@ const safeSeconds =
 Math.max(
 0,
 Math.floor(
-Number(clockSeconds || 0)
+Number(clockSeconds || 0
+)
 )
 );
 
@@ -3568,15 +3515,6 @@ return;
 }
 
 
-/*
-IMPORTANT:
-
-The current clockSeconds value is the
-paused value.
-
-We create a NEW end timestamp from it.
-*/
-
 const startingSeconds =
 Math.max(
 0,
@@ -3601,17 +3539,7 @@ true;
 
 resetPlayerMinuteSync();
 
-
-/*
-Save the RUNNING state.
-*/
-
 await saveClockState();
-
-
-/*
-Start the timer.
-*/
 
 startClockInternal();
 
@@ -3621,10 +3549,6 @@ startClockInternal();
 /* INTERNAL CLOCK */
 
 function startClockInternal(){
-
-/*
-Always clear an existing interval first.
-*/
 
 if(clockInterval){
 
@@ -3649,10 +3573,6 @@ clockInterval =
 setInterval(
 async function(){
 
-/*
-If paused, immediately stop this interval.
-*/
-
 if(
 !clockRunning ||
 !clockEndTime
@@ -3670,10 +3590,6 @@ return;
 }
 
 
-/*
-Calculate remaining time.
-*/
-
 const remaining =
 Math.max(
 0,
@@ -3686,27 +3602,14 @@ Date.now()
 );
 
 
-/*
-Update local clock.
-*/
-
 clockSeconds =
 remaining;
 
 
 updateClockDisplay();
 
-
-/*
-Update player minutes.
-*/
-
 await syncPlayerMinutes();
 
-
-/*
-CLOCK REACHED ZERO
-*/
 
 if(
 clockSeconds <= 0
@@ -3738,11 +3641,6 @@ updateClockDisplay();
 
 resetPlayerMinuteSync();
 
-
-/*
-Save the final 00:00 state.
-*/
-
 await saveClockState();
 
 return;
@@ -3764,12 +3662,6 @@ if(!currentGame)
 return;
 
 
-/*
-If already paused, do nothing.
-
-Most importantly, DO NOT reset clockSeconds.
-*/
-
 if(
 !clockRunning
 ){
@@ -3780,13 +3672,6 @@ return;
 
 }
 
-
-/*
-STEP 1
-
-Calculate the exact remaining time BEFORE
-changing clockRunning.
-*/
 
 let pausedSeconds =
 clockSeconds;
@@ -3810,27 +3695,12 @@ Date.now()
 }
 
 
-/*
-STEP 2
-
-Immediately stop the clock.
-
-This prevents the interval from changing
-clockSeconds while we save.
-*/
-
 clockRunning =
 false;
 
 clockEndTime =
 null;
 
-
-/*
-STEP 3
-
-Clear the timer immediately.
-*/
 
 if(clockInterval){
 
@@ -3844,47 +3714,14 @@ null;
 }
 
 
-/*
-STEP 4
-
-Set the paused value.
-
-This is now the permanent local value.
-*/
-
 clockSeconds =
 pausedSeconds;
 
 
-/*
-STEP 5
-
-Update screen immediately.
-*/
-
 updateClockDisplay();
-
-
-/*
-STEP 6
-
-Reset player minute synchronization.
-*/
 
 resetPlayerMinuteSync();
 
-
-/*
-STEP 7
-
-Save EXACTLY the paused value.
-
-We temporarily save directly using the
-local clockSeconds value.
-
-This prevents another calculation from
-changing the saved value.
-*/
 
 const pausedValue =
 Math.max(
@@ -3939,18 +3776,6 @@ return;
 }
 
 
-/*
-IMPORTANT:
-
-Do not take clock_seconds from `data`.
-
-Keep our paused value.
-
-This prevents Supabase response data,
-triggers, or stale values from resetting
-the local clock to zero.
-*/
-
 currentGame =
 {
 ...currentGame,
@@ -3987,10 +3812,6 @@ if(!currentGame)
 return;
 
 
-/*
-Stop clock immediately.
-*/
-
 clockRunning =
 false;
 
@@ -4010,10 +3831,6 @@ null;
 }
 
 
-/*
-Reset local clock.
-*/
-
 clockSeconds =
 600;
 
@@ -4022,10 +3839,6 @@ updateClockDisplay();
 
 resetPlayerMinuteSync();
 
-
-/*
-Save reset state.
-*/
 
 const {
 data,
@@ -4069,10 +3882,6 @@ return;
 }
 
 
-/*
-Keep local clock at 10:00.
-*/
-
 if(data){
 
 currentGame =
@@ -4105,6 +3914,61 @@ updateClockDisplay();
 }
 
 
+/* SET ACTIVE PERIOD BUTTON */
+
+function setActivePeriodButton(period){
+
+const periodButtons =
+document.querySelectorAll(
+".period-buttons button"
+);
+
+
+periodButtons.forEach(
+button => {
+
+button.classList.remove(
+"active-period"
+);
+
+}
+);
+
+
+const periodMap = {
+
+"1st Quarter": "1Q",
+
+"2nd Quarter": "2Q",
+
+"3rd Quarter": "3Q",
+
+"4th Quarter": "4Q"
+
+};
+
+
+periodButtons.forEach(
+button => {
+
+if(
+button.textContent.trim()
+===
+periodMap[period]
+){
+
+button.classList.add(
+"active-period"
+);
+
+}
+
+}
+);
+
+}
+
+
 /* SET PERIOD */
 
 async function setPeriod(
@@ -4114,12 +3978,23 @@ period
 if(!currentGame)
 return;
 
+
 await updateGame({
 
 period:
 period
 
 });
+
+
+/* HIGHLIGHT SELECTED QUARTER */
+
+setActivePeriodButton(
+period
+);
+
+
+/* RESET CLOCK FOR NEW QUARTER */
 
 await resetClock();
 
