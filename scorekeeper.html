@@ -1398,21 +1398,25 @@ row
 
 /* VIEW ALL BUTTON */
 
-const hiddenCount = Math.max(
-    0,
-    benchPlayers.length - 5
-);
+const hiddenCount =
+    Math.max(
+        0,
+        benchPlayers.length - 5
+    );
+
 
 if(hiddenCount > 0){
 
     const viewAllRow =
-        document.createElement("tr");
+        document.createElement(
+            "tr"
+        );
+
 
     viewAllRow.id =
-        "view-all-row-" + team;
-
-    viewAllRow.dataset.team =
+        "view-all-row-" +
         team;
+
 
     viewAllRow.innerHTML = `
 
@@ -1421,18 +1425,22 @@ if(hiddenCount > 0){
             <button
                 type="button"
                 class="view-all-button"
-                onclick="viewAllBenchPlayers('${team}')"
+                onclick="
+                    viewAllBenchPlayers('${team}')
+                "
             >
-                VIEW ALL (${hiddenCount} MORE)
+                VIEW ALL
+                (${hiddenCount} MORE)
             </button>
 
         </td>
 
     `;
 
-    tbody.appendChild(viewAllRow);
 
-}
+    tbody.appendChild(
+        viewAllRow
+    );
 
 }
 
@@ -1441,28 +1449,196 @@ if(hiddenCount > 0){
    FIXED VIEW ALL FUNCTION
 ========================================= */
 
-async function viewAllBenchPlayers(
-team
-){
+async function viewAllBenchPlayers(team){
 
-const containerId =
-teamContainerMap[team];
+    console.log("VIEW ALL CLICKED:", team);
+
+    const containerId =
+        teamContainerMap[team];
+
+    const container =
+        document.getElementById(containerId);
+
+    if(!container){
+
+        console.error(
+            "Container not found:",
+            containerId
+        );
+
+        return;
+
+    }
+
+    const table =
+        container.querySelector(
+            ".player-table"
+        );
+
+    if(!table){
+
+        console.error(
+            "Player table not found for:",
+            team
+        );
+
+        return;
+
+    }
+
+    const tbody =
+        table.querySelector("tbody");
+
+    if(!tbody){
+
+        console.error(
+            "Table body not found for:",
+            team
+        );
+
+        return;
+
+    }
+
+    /*
+    GET ALL PLAYERS FOR THIS TEAM
+    */
+
+    const allPlayers =
+        teamPlayersMap[team] || [];
+
+    console.log(
+        "ALL PLAYERS:",
+        allPlayers
+    );
 
 
-const container =
-document.getElementById(
-containerId
-);
+    /*
+    GET BENCH PLAYERS
+    */
+
+    const benchPlayers =
+        allPlayers.filter(
+            player =>
+                playerOnCourt[player.id] !== true
+        );
+
+    console.log(
+        "BENCH PLAYERS:",
+        benchPlayers
+    );
 
 
-if(!container){
+    /*
+    FIND VIEW ALL ROW
+    */
 
-console.error(
-"Player container not found for team:",
-team
-);
+    const viewAllRow =
+        document.getElementById(
+            "view-all-row-" + team
+        );
 
-return;
+
+    /*
+    ADD ALL HIDDEN BENCH PLAYERS
+    */
+
+    for(
+        const player of benchPlayers
+    ){
+
+        const existingRow =
+            document.getElementById(
+                "player-row-" +
+                player.id
+            );
+
+
+        /*
+        SKIP PLAYERS ALREADY SHOWING
+        */
+
+        if(existingRow){
+
+            continue;
+
+        }
+
+
+        /*
+        CREATE NEW PLAYER ROW
+        */
+
+        const row =
+            document.createElement(
+                "tr"
+            );
+
+        row.id =
+            "player-row-" +
+            player.id;
+
+
+        /*
+        INSERT PLAYER BEFORE
+        VIEW ALL BUTTON
+        */
+
+        if(viewAllRow){
+
+            tbody.insertBefore(
+                row,
+                viewAllRow
+            );
+
+        }
+        else{
+
+            tbody.appendChild(
+                row
+            );
+
+        }
+
+
+        /*
+        RENDER PLAYER
+        */
+
+        await renderPlayerRow(
+            player,
+            row
+        );
+
+    }
+
+
+    /*
+    CHANGE VIEW ALL
+    TO SHOW LESS
+    */
+
+    if(viewAllRow){
+
+        viewAllRow.innerHTML = `
+
+            <td colspan="17">
+
+                <button
+                    type="button"
+                    class="view-all-button"
+                    onclick="
+                        hideExtraBenchPlayers('${team}')
+                    "
+                >
+                    SHOW LESS
+                </button>
+
+            </td>
+
+        `;
+
+    }
 
 }
 
@@ -1604,19 +1780,108 @@ SHOW LESS
    FIXED SHOW LESS FUNCTION
 ========================================= */
 
-function hideExtraBenchPlayers(
-team
-){
+function hideExtraBenchPlayers(team){
 
-const allPlayers =
-teamPlayersMap[team] || [];
+    console.log(
+        "SHOW LESS CLICKED:",
+        team
+    );
 
 
-const benchPlayers =
-allPlayers.filter(
-player =>
-playerOnCourt[player.id] !== true
-);
+    /*
+    GET ALL PLAYERS
+    */
+
+    const allPlayers =
+        teamPlayersMap[team] || [];
+
+
+    /*
+    GET BENCH PLAYERS
+    */
+
+    const benchPlayers =
+        allPlayers.filter(
+            player =>
+                playerOnCourt[player.id] !== true
+        );
+
+
+    /*
+    PLAYERS AFTER THE FIRST 5
+    ARE THE HIDDEN PLAYERS
+    */
+
+    const hiddenBenchPlayers =
+        benchPlayers.slice(5);
+
+
+    /*
+    REMOVE HIDDEN PLAYER ROWS
+    */
+
+    for(
+        const player of hiddenBenchPlayers
+    ){
+
+        const row =
+            document.getElementById(
+                "player-row-" +
+                player.id
+            );
+
+        if(row){
+
+            row.remove();
+
+        }
+
+    }
+
+
+    /*
+    RESTORE VIEW ALL BUTTON
+    */
+
+    const viewAllRow =
+        document.getElementById(
+            "view-all-row-" +
+            team
+        );
+
+
+    if(viewAllRow){
+
+        const hiddenCount =
+            hiddenBenchPlayers.length;
+
+
+        if(hiddenCount > 0){
+
+            viewAllRow.innerHTML = `
+
+                <td colspan="17">
+
+                    <button
+                        type="button"
+                        class="view-all-button"
+                        onclick="
+                            viewAllBenchPlayers('${team}')
+                        "
+                    >
+                        VIEW ALL
+                        (${hiddenCount} MORE)
+                    </button>
+
+                </td>
+
+            `;
+
+        }
+
+    }
+
+}
 
 
 /* GET PLAYERS AFTER FIRST FIVE */
