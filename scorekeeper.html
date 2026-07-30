@@ -4149,6 +4149,21 @@ return;
 
 
 /*
+Prevent changing quarter while game clock is running.
+*/
+
+if(clockRunning){
+
+showStatus(
+"Pause the game clock before changing the quarter."
+);
+
+return;
+
+}
+
+
+/*
 Highlight selected quarter immediately.
 */
 
