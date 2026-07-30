@@ -444,7 +444,22 @@ nav a:hover{
     cursor:pointer;
 }
 
+.view-all-button{
+    display:block;
+    margin:6px auto;
+    background:#111;
+    color:white;
+    border:0;
+    padding:5px 12px;
+    border-radius:4px;
+    font-size:9px;
+    font-weight:bold;
+    cursor:pointer;
+}
 
+.view-all-button:hover{
+    background:#ff6b00;
+}
 /* =================================
    RESPONSIVE
 ================================= */
@@ -1034,34 +1049,83 @@ playerTeamMap[playerId] === team
 );
 
 
+const benchPlayers = orderedPlayers.filter(
+    player => !playerOnCourt[player.id]
+);
+
+const onCourtPlayers = orderedPlayers.filter(
+    player => playerOnCourt[player.id]
+);
+
+const initialPlayers = [
+    ...onCourtPlayers,
+    ...benchPlayers.slice(0,5)
+];
+
 for(
-const playerId of playersToUpdate
+const player of initialPlayers
 ){
 
-const stats =
-await getPlayerGameStats(
-playerId
+const row =
+document.createElement(
+"tr"
 );
 
+row.id =
+"player-row-"+player.id;
 
-const currentPlusMinus =
-Number(
-stats.plus_minus || 0
+tbody.appendChild(
+row
 );
 
-
-await saveStatDirect(
-playerId,
-"plus_minus",
-currentPlusMinus + amount
-);
-
-
-await refreshPlayerRow(
-playerId
+await renderPlayerRow(
+player,
+row
 );
 
 }
+
+
+/* ================================
+   VIEW ALL BENCH PLAYERS
+================================ */
+
+if(
+benchPlayers.length > 5
+){
+
+const viewAllRow =
+document.createElement(
+"tr"
+);
+
+viewAllRow.id =
+"view-all-row-"+team;
+
+viewAllRow.innerHTML = `
+
+<td colspan="17">
+
+<button
+class="view-all-button"
+onclick="viewAllBenchPlayers(
+'${team}',
+'${containerId}'
+)"
+>
+VIEW ALL (${benchPlayers.length - 5} MORE)
+</button>
+
+</td>
+
+`;
+
+tbody.appendChild(
+viewAllRow
+);
+
+}
+
 
 }
 
@@ -1423,7 +1487,223 @@ row
 }
 
 }
+/* ================================
+   VIEW ALL BENCH PLAYERS
+================================ */
 
+async function viewAllBenchPlayers(
+team,
+containerId
+){
+
+const container =
+document.getElementById(
+containerId
+);
+
+const table =
+container.querySelector(
+".player-table"
+);
+
+if(!table)
+return;
+
+const tbody =
+table.querySelector(
+"tbody"
+);
+
+const viewAllRow =
+document.getElementById(
+"view-all-row-"+team
+);
+
+const allPlayers =
+Object.values(
+playerDataMap
+).filter(
+
+player =>
+
+playerTeamMap[player.id] === team
+
+);
+
+
+const benchPlayers =
+allPlayers.filter(
+
+player =>
+
+playerOnCourt[player.id] !== true
+
+);
+
+
+const hiddenBenchPlayers =
+benchPlayers.slice(5);
+
+
+for(
+const player of hiddenBenchPlayers
+){
+
+if(
+document.getElementById(
+"player-row-"+player.id
+)
+){
+
+continue;
+
+}
+
+
+const row =
+document.createElement(
+"tr"
+);
+
+row.id =
+"player-row-"+player.id;
+
+if(
+viewAllRow
+){
+
+tbody.insertBefore(
+row,
+viewAllRow
+);
+
+}
+else{
+
+tbody.appendChild(
+row
+);
+
+}
+
+await renderPlayerRow(
+player,
+row
+);
+
+}
+
+
+if(
+viewAllRow
+){
+
+viewAllRow.innerHTML = `
+
+<td colspan="17">
+
+<button
+class="view-all-button"
+onclick="hideExtraBenchPlayers(
+'${team}',
+'${containerId}'
+)"
+>
+SHOW LESS
+</button>
+
+</td>
+
+`;
+
+}
+
+}
+
+
+/* ================================
+   HIDE EXTRA BENCH PLAYERS
+================================ */
+
+function hideExtraBenchPlayers(
+team,
+containerId
+){
+
+const allPlayers =
+Object.values(
+playerDataMap
+).filter(
+
+player =>
+
+playerTeamMap[player.id] === team
+
+);
+
+
+const benchPlayers =
+allPlayers.filter(
+
+player =>
+
+playerOnCourt[player.id] !== true
+
+);
+
+
+const hiddenBenchPlayers =
+benchPlayers.slice(5);
+
+
+for(
+const player of hiddenBenchPlayers
+){
+
+const row =
+document.getElementById(
+"player-row-"+player.id
+);
+
+if(row){
+
+row.remove();
+
+}
+
+}
+
+
+const viewAllRow =
+document.getElementById(
+"view-all-row-"+team
+);
+
+if(
+viewAllRow
+){
+
+viewAllRow.innerHTML = `
+
+<td colspan="17">
+
+<button
+class="view-all-button"
+onclick="viewAllBenchPlayers(
+'${team}',
+'${containerId}'
+)"
+>
+VIEW ALL (${hiddenBenchPlayers.length} MORE)
+</button>
+
+</td>
+
+`;
+
+}
+
+}
 
 /* ================================
    PLAYER GAME STATS
