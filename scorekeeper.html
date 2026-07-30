@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+html = r'''<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -3366,13 +3366,12 @@ team
 }
 
 
-/* CLOCK SAVE */
+/* CLOCK SAVE - FIXED */
 
 async function saveClockState(){
 
 if(!currentGame)
 return;
-
 
 const updateData = {
 
@@ -3380,25 +3379,21 @@ clock_seconds:
 Math.max(
 0,
 Math.floor(
-Number(clockSeconds || 0
-)
+Number(clockSeconds || 0)
 )
 ),
 
 clock_running:
-clockRunning,
+Boolean(clockRunning),
 
 clock_end_time:
 clockRunning && clockEndTime
 ?
-new Date(
-clockEndTime
-).toISOString()
+new Date(clockEndTime).toISOString()
 :
 null
 
 };
-
 
 const {
 data,
@@ -3407,11 +3402,11 @@ error
 .from("games")
 .update(updateData)
 .eq(
-"id",currentGame.id
+"id",
+currentGame.id
 )
 .select("*")
 .single();
-
 
 if(error){
 
@@ -3420,28 +3415,39 @@ console.error(
 error
 );
 
-return;
+showStatus(
+"Unable to save clock."
+);
+
+return false;
 
 }
 
-
 if(data){
+
+/*
+IMPORTANT:
+Only update currentGame with the returned database row.
+Do not overwrite clockSeconds from the returned row.
+The local clockSeconds value is the authoritative paused value.
+*/
 
 currentGame =
 data;
 
 }
 
+return true;
+
 }
 
 
-/* LOAD CLOCK */
+/* LOAD CLOCK - FIXED */
 
 async function loadPersistedClock(){
 
 if(!currentGame)
 return;
-
 
 const {
 data,
@@ -3456,7 +3462,6 @@ error
 currentGame.id
 )
 .single();
-
 
 if(error){
 
@@ -3482,6 +3487,9 @@ return;
 
 }
 
+/*
+If no clock has ever been saved, start at 10:00.
+*/
 
 if(
 data.clock_seconds === null
@@ -3506,19 +3514,18 @@ return;
 
 }
 
-
 clockSeconds =
 Math.max(
 0,
+Math.floor(
 Number(
 data.clock_seconds
 )
+)
 );
-
 
 clockRunning =
 data.clock_running === true;
-
 
 clockEndTime =
 data.clock_end_time
@@ -3529,6 +3536,10 @@ data.clock_end_time
 :
 null;
 
+/*
+If the clock was running when the page was closed or refreshed,
+calculate the remaining time from the saved end timestamp.
+*/
 
 if(
 clockRunning &&
@@ -3553,6 +3564,10 @@ Date.now()
 
 }
 
+/*
+If the saved clock has already reached zero,
+stop it and save the final 00:00 state.
+*/
 
 if(
 clockSeconds <= 0
@@ -3577,11 +3592,9 @@ return;
 
 }
 
-
 updateClockDisplay();
 
 resetPlayerMinuteSync();
-
 
 if(
 clockRunning
@@ -3669,9 +3682,13 @@ return;
 
 }
 
+/*
+When starting from a paused state,
+create a new end timestamp using the
+CURRENT paused clockSeconds value.
+*/
 
 resetPlayerMinuteSync();
-
 
 clockEndTime =
 
@@ -3680,17 +3697,19 @@ Date.now()
 +
 
 (
-clockSeconds *
+Math.floor(clockSeconds) *
 1000
 );
-
 
 clockRunning =
 true;
 
+/*
+Save the exact current remaining time
+AND the new end timestamp before starting.
+*/
 
 await saveClockState();
-
 
 startClockInternal();
 
@@ -3711,9 +3730,7 @@ clockInterval
 
 }
 
-
 resetPlayerMinuteSync();
-
 
 clockInterval =
 
@@ -3737,9 +3754,7 @@ return;
 
 }
 
-
 await syncPlayerMinutes();
-
 
 clockSeconds =
 
@@ -3758,16 +3773,13 @@ Date.now()
 
 );
 
-
 updateClockDisplay();
-
 
 if(
 clockSeconds <= 0
 ){
 
 await syncPlayerMinutes();
-
 
 clockSeconds =
 0;
@@ -3804,22 +3816,21 @@ return;
 }
 
 
-/* PAUSE CLOCK */
+/* PAUSE CLOCK - FIXED */
 
 async function pauseClock(){
 
 if(!currentGame)
 return;
 
-
-if(
-!clockRunning
-)
+if(!clockRunning)
 return;
 
-
-await syncPlayerMinutes();
-
+/*
+FIRST:
+Calculate the exact remaining time while
+the clock is still running.
+*/
 
 if(
 clockEndTime
@@ -3844,14 +3855,16 @@ Date.now()
 
 }
 
+/*
+SECOND:
+Stop all clock activity immediately.
+*/
 
 clockRunning =
 false;
 
-
 clockEndTime =
 null;
-
 
 if(
 clockInterval
@@ -3866,12 +3879,21 @@ null;
 
 }
 
+/*
+THIRD:
+Update the display with the exact remaining
+time BEFORE saving to Supabase.
+*/
 
 updateClockDisplay();
 
-
 resetPlayerMinuteSync();
 
+/*
+FOURTH:
+Save the paused state. clock_seconds contains
+the exact remaining time, and clock_running is false.
+*/
 
 await saveClockState();
 
@@ -3885,7 +3907,6 @@ async function resetClock(){
 if(!currentGame)
 return;
 
-
 if(
 clockRunning
 ){
@@ -3894,14 +3915,11 @@ await syncPlayerMinutes();
 
 }
 
-
 clockRunning =
 false;
 
-
 clockEndTime =
 null;
-
 
 if(
 clockInterval
@@ -3916,16 +3934,12 @@ null;
 
 }
 
-
 clockSeconds =
 600;
 
-
 updateClockDisplay();
 
-
 resetPlayerMinuteSync();
-
 
 await saveClockState();
 
@@ -3941,14 +3955,12 @@ period
 if(!currentGame)
 return;
 
-
 await updateGame({
 
 period:
 period
 
 });
-
 
 await resetClock();
 
@@ -3964,3 +3976,10 @@ loadGame();
 </body>
 
 </html>
+'''
+
+path = "/mnt/data/scorekeeper_clock_fixed.html"
+with open(path, "w", encoding="utf-8") as f:
+    f.write(html)
+
+print(path)
