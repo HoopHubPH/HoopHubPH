@@ -384,6 +384,19 @@ nav a:hover{
     background:#ff6b00;
 }
 
+/* DISABLED STAT BUTTONS FOR BENCH PLAYERS */
+
+.stat-btn:disabled{
+    background:#ddd;
+    color:#999;
+    cursor:not-allowed;
+    opacity:.6;
+}
+
+.stat-btn:disabled:hover{
+    background:#ddd;
+}
+
 .shot-value{
     font-size:9px;
     font-weight:bold;
@@ -414,6 +427,17 @@ nav a:hover{
 
 .shot-btn.attempt{
     background:#ff6b00;
+}
+
+.shot-btn:disabled{
+    background:#ddd;
+    color:#999;
+    cursor:not-allowed;
+    opacity:.6;
+}
+
+.shot-btn:disabled:hover{
+    background:#ddd;
 }
 
 
@@ -1842,13 +1866,31 @@ playerStatsMap[playerId] = {
 }
 
 
-/* UPDATED SHOOTING LOGIC */
+/* UPDATED SHOOTING LOGIC + ON-COURT STAT CONTROL */
 
 async function updatePlayerStat(
 playerId,
 statKey,
 amount
 ){
+
+/*
+Only players currently on the court
+can have their stats changed.
+*/
+
+if(
+playerOnCourt[playerId] !== true
+){
+
+showStatus(
+"Player is on the bench. SUB IN the player first."
+);
+
+return;
+
+}
+
 
 const stats =
 await getPlayerGameStats(
@@ -1964,7 +2006,6 @@ Math.max(
 0,
 
 currentAttempts + amount
-
 );
 
 
@@ -2018,7 +2059,7 @@ newAttempts
 
 
 /*
-Update POINTS
+UPDATE POINTS
 */
 
 const currentPoints =
@@ -2659,6 +2700,7 @@ s.two_pt_attempted
 
 <button
 class="shot-btn"
+${onCourt ? "" : "disabled"}
 onclick="updatePlayerStat(
 '${player.id}',
 'two_pt_made',
@@ -2670,6 +2712,7 @@ M+
 
 <button
 class="shot-btn"
+${onCourt ? "" : "disabled"}
 onclick="updatePlayerStat(
 '${player.id}',
 'two_pt_made',
@@ -2681,6 +2724,7 @@ M−
 
 <button
 class="shot-btn attempt"
+${onCourt ? "" : "disabled"}
 onclick="updatePlayerStat(
 '${player.id}',
 'two_pt_attempted',
@@ -2692,6 +2736,7 @@ A+
 
 <button
 class="shot-btn"
+${onCourt ? "" : "disabled"}
 onclick="updatePlayerStat(
 '${player.id}',
 'two_pt_attempted',
@@ -2728,6 +2773,7 @@ s.three_pt_attempted
 
 <button
 class="shot-btn"
+${onCourt ? "" : "disabled"}
 onclick="updatePlayerStat(
 '${player.id}',
 'three_pt_made',
@@ -2739,6 +2785,7 @@ M+
 
 <button
 class="shot-btn"
+${onCourt ? "" : "disabled"}
 onclick="updatePlayerStat(
 '${player.id}',
 'three_pt_made',
@@ -2750,6 +2797,7 @@ M−
 
 <button
 class="shot-btn attempt"
+${onCourt ? "" : "disabled"}
 onclick="updatePlayerStat(
 '${player.id}',
 'three_pt_attempted',
@@ -2761,6 +2809,7 @@ A+
 
 <button
 class="shot-btn"
+${onCourt ? "" : "disabled"}
 onclick="updatePlayerStat(
 '${player.id}',
 'three_pt_attempted',
@@ -2815,6 +2864,7 @@ s.ft_attempted
 
 <button
 class="shot-btn"
+${onCourt ? "" : "disabled"}
 onclick="updatePlayerStat(
 '${player.id}',
 'ft_made',
@@ -2826,6 +2876,7 @@ M+
 
 <button
 class="shot-btn"
+${onCourt ? "" : "disabled"}
 onclick="updatePlayerStat(
 '${player.id}',
 'ft_made',
@@ -2837,6 +2888,7 @@ M−
 
 <button
 class="shot-btn attempt"
+${onCourt ? "" : "disabled"}
 onclick="updatePlayerStat(
 '${player.id}',
 'ft_attempted',
@@ -2848,6 +2900,7 @@ A+
 
 <button
 class="shot-btn"
+${onCourt ? "" : "disabled"}
 onclick="updatePlayerStat(
 '${player.id}',
 'ft_attempted',
@@ -2902,10 +2955,15 @@ playerId,
 statKey
 ){
 
+const isOnCourt =
+playerOnCourt[playerId] === true;
+
+
 return `
 
 <button
 class="stat-btn"
+${isOnCourt ? "" : "disabled"}
 onclick="updatePlayerStat(
 '${playerId}',
 '${statKey}',
@@ -2917,6 +2975,7 @@ onclick="updatePlayerStat(
 
 <button
 class="stat-btn minus"
+${isOnCourt ? "" : "disabled"}
 onclick="updatePlayerStat(
 '${playerId}',
 '${statKey}',
@@ -2941,7 +3000,8 @@ const totalSeconds =
 Math.max(
 0,
 Math.floor(
-Number(seconds || 0)
+Number(seconds || 0
+)
 )
 );
 
