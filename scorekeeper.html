@@ -417,7 +417,7 @@ nav a:hover{
 }
 
 
-/* VIEW ALL */
+/* VIEW ALL / SHOW LESS */
 
 .view-all-row{
     background:white!important;
@@ -429,7 +429,7 @@ nav a:hover{
 
 .view-all-row td{
     border-bottom:0;
-    padding:7px;
+    padding:10px;
     text-align:center;
 }
 
@@ -439,9 +439,9 @@ nav a:hover{
     background:#111;
     color:white;
     border:0;
-    padding:5px 12px;
+    padding:7px 18px;
     border-radius:4px;
-    font-size:9px;
+    font-size:10px;
     font-weight:bold;
     cursor:pointer;
 }
@@ -1174,14 +1174,6 @@ awayTeam.id,
 
 /* =========================================
    LOAD PLAYERS FOR TEAM
-
-   NEW VIEW ALL SYSTEM:
-   - All players are loaded.
-   - 5 on-court players always show.
-   - First 5 bench players show initially.
-   - Remaining bench players are hidden.
-   - VIEW ALL expands all remaining bench players.
-   - SHOW LESS collapses them again.
 ========================================= */
 
 async function loadPlayersForTeam(
@@ -1205,7 +1197,9 @@ containerId;
 
 
 /*
-RESET EXPANSION
+START COLLAPSED
+
+All bench players are hidden initially.
 */
 
 teamExpandedMap[team] =
@@ -1256,9 +1250,9 @@ return;
 
 
 /*
-SAVE COMPLETE TEAM PLAYER LIST
+SAVE COMPLETE TEAM ROSTER
 
-This supports 15 players or more.
+Supports 6, 10, 12, 15 or more players.
 */
 
 teamPlayersMap[team] =
@@ -1266,7 +1260,7 @@ data;
 
 
 /*
-SAVE PLAYER DATA
+LOAD PLAYER DATA AND GAME STATS
 */
 
 for(
@@ -1291,6 +1285,10 @@ player.id
 );
 
 
+/*
+LOAD EXISTING ON-COURT STATUS
+*/
+
 playerOnCourt[
 player.id
 ] =
@@ -1312,6 +1310,35 @@ team
 
 /* =========================================
    RENDER TEAM PLAYERS
+
+   FINAL VIEW ALL SYSTEM
+
+   DEFAULT:
+
+   5 ON-COURT PLAYERS
+   +
+   NO BENCH PLAYERS
+
+   Example with 6 players:
+
+   Player 1  ON COURT
+   Player 2  ON COURT
+   Player 3  ON COURT
+   Player 4  ON COURT
+   Player 5  ON COURT
+
+   [ VIEW ALL (1 MORE) ]
+
+   After clicking:
+
+   Player 1  ON COURT
+   Player 2  ON COURT
+   Player 3  ON COURT
+   Player 4  ON COURT
+   Player 5  ON COURT
+   Player 6  BENCH
+
+   [ SHOW LESS ]
 ========================================= */
 
 async function renderTeamPlayers(team){
@@ -1326,44 +1353,74 @@ containerId
 );
 
 
-if(!container)
+if(!container){
+
+console.error(
+"Team container not found:",
+containerId
+);
+
 return;
+
+}
 
 
 const allPlayers =
 teamPlayersMap[team] || [];
 
 
+if(!allPlayers.length){
+
+container.innerHTML =
+"<div style='padding:10px;text-align:center;'>No players assigned.</div>";
+
+return;
+
+}
+
+
 /*
-5 ON-COURT PLAYERS
+GET ALL ON-COURT PLAYERS
 */
 
 const onCourtPlayers =
 allPlayers.filter(
+
 player =>
+
 playerOnCourt[player.id] === true
+
 );
 
 
 /*
-BENCH PLAYERS
-
-Everyone who is not currently on court.
+GET ALL BENCH PLAYERS
 */
 
 const benchPlayers =
 allPlayers.filter(
+
 player =>
+
 playerOnCourt[player.id] !== true
+
 );
 
 
 /*
-ONLY SHOW FIRST 5 BENCH PLAYERS
-UNLESS VIEW ALL IS ACTIVE
+=========================================
+VIEW ALL LOGIC
+
+COLLAPSED:
+NO BENCH PLAYERS ARE SHOWN
+
+EXPANDED:
+ALL BENCH PLAYERS ARE SHOWN
+=========================================
 */
 
 const visibleBenchPlayers =
+
 teamExpandedMap[team] === true
 
 ?
@@ -1372,13 +1429,16 @@ benchPlayers
 
 :
 
-benchPlayers.slice(0,5);
+[];
 
 
 /*
-PLAYERS TO DISPLAY
+=========================================
+DISPLAY ORDER
 
-ON-COURT PLAYERS ALWAYS FIRST
+ON-COURT PLAYERS FIRST
+BENCH PLAYERS SECOND
+=========================================
 */
 
 const playersToDisplay = [
@@ -1388,6 +1448,14 @@ const playersToDisplay = [
 ...visibleBenchPlayers
 
 ];
+
+
+/*
+CLEAR OLD TABLE
+*/
+
+container.innerHTML =
+"";
 
 
 /*
@@ -1452,10 +1520,6 @@ table.innerHTML = `
 `;
 
 
-container.innerHTML =
-"";
-
-
 container.appendChild(
 table
 );
@@ -1468,10 +1532,7 @@ table.querySelector(
 
 
 /*
-RENDER PLAYERS
-
-This includes all 5 on-court players
-and the visible bench players.
+RENDER VISIBLE PLAYERS
 */
 
 for(
@@ -1502,38 +1563,45 @@ row
 
 
 /*
-COUNT HIDDEN BENCH PLAYERS
+=========================================
+VIEW ALL BUTTON
+
+HIDDEN COUNT = ALL BENCH PLAYERS
+
+Example:
+
+6 TOTAL PLAYERS
+5 ON COURT
+1 BENCH
+
+hiddenCount = 1
+
+Button:
+
+VIEW ALL (1 MORE)
+=========================================
 */
 
 const hiddenCount =
-Math.max(
-0,
-benchPlayers.length -
-visibleBenchPlayers.length
-);
+benchPlayers.length;
 
 
 /*
-CREATE VIEW ALL / SHOW LESS ROW
+=========================================
+SHOW VIEW ALL BUTTON
 
-The row is added directly into the same
-table after the player rows.
+Only show button if there are bench players.
+=========================================
 */
 
 if(
-hiddenCount > 0 ||
-teamExpandedMap[team] === true
+hiddenCount > 0
 ){
 
 const viewAllRow =
 document.createElement(
 "tr"
 );
-
-
-viewAllRow.id =
-"view-all-row-"+team;
-
 
 viewAllRow.className =
 "view-all-row";
@@ -1544,7 +1612,6 @@ document.createElement(
 "td"
 );
 
-
 cell.colSpan =
 17;
 
@@ -1554,14 +1621,16 @@ document.createElement(
 "button"
 );
 
-
 button.type =
 "button";
-
 
 button.className =
 "view-all-button";
 
+
+/*
+EXPANDED STATE
+*/
 
 if(
 teamExpandedMap[team] === true
@@ -1581,6 +1650,12 @@ team
 };
 
 }
+
+
+/*
+COLLAPSED STATE
+*/
+
 else{
 
 button.textContent =
@@ -1605,11 +1680,9 @@ cell.appendChild(
 button
 );
 
-
 viewAllRow.appendChild(
 cell
 );
-
 
 tbody.appendChild(
 viewAllRow
@@ -1621,15 +1694,15 @@ viewAllRow
 
 
 /* =========================================
-   VIEW ALL BENCH PLAYERS
+   VIEW ALL
 
-   Shows every bench player for the team.
+   SHOW ALL BENCH PLAYERS
 ========================================= */
 
 async function viewAllBenchPlayers(team){
 
 console.log(
-"VIEW ALL:",
+"VIEW ALL CLICKED:",
 team
 );
 
@@ -1639,7 +1712,7 @@ if(
 ){
 
 console.error(
-"No team players found for:",
+"Team roster not found:",
 team
 );
 
@@ -1649,7 +1722,7 @@ return;
 
 
 /*
-SET TEAM TO EXPANDED
+EXPAND
 */
 
 teamExpandedMap[team] =
@@ -1657,10 +1730,7 @@ true;
 
 
 /*
-RENDER THE ENTIRE TEAM AGAIN
-
-This is intentionally simple and reliable.
-No rows are manually inserted or removed.
+RENDER EVERYTHING
 */
 
 await renderTeamPlayers(
@@ -1673,22 +1743,19 @@ team
 /* =========================================
    SHOW LESS
 
-   Returns the team to:
-   5 on-court players
-   +
-   first 5 bench players
+   HIDE ALL BENCH PLAYERS
 ========================================= */
 
 async function hideExtraBenchPlayers(team){
 
 console.log(
-"SHOW LESS:",
+"SHOW LESS CLICKED:",
 team
 );
 
 
 /*
-SET TEAM TO COLLAPSED
+COLLAPSE
 */
 
 teamExpandedMap[team] =
@@ -1696,9 +1763,7 @@ false;
 
 
 /*
-RENDER TEAM AGAIN
-
-Only 5 bench players will be visible.
+RENDER ONLY ON-COURT PLAYERS
 */
 
 await renderTeamPlayers(
@@ -3186,6 +3251,19 @@ showStatus(
 );
 
 
+/*
+REFRESH TEAM DISPLAY
+
+This moves the player to the bench.
+If the team is collapsed, the player
+will be hidden automatically.
+*/
+
+await renderTeamPlayers(
+team
+);
+
+
 return;
 
 }
@@ -3246,11 +3324,6 @@ playerId
 );
 
 
-await refreshPlayerRow(
-playerId
-);
-
-
 resetPlayerMinuteSync();
 
 
@@ -3262,10 +3335,8 @@ showStatus(
 /*
 REFRESH TEAM DISPLAY
 
-This is needed because a bench player who is
-SUB IN should move into the on-court section,
-and a SUB OUT player should move back into
-the bench section.
+The player moves into the
+on-court section automatically.
 */
 
 await renderTeamPlayers(
