@@ -384,6 +384,7 @@ nav a:hover{
     background:#ff6b00;
 }
 
+
 /* DISABLED STAT BUTTONS FOR BENCH PLAYERS */
 
 .stat-btn:disabled{
@@ -2100,6 +2101,8 @@ newPoints
 
 /*
 UPDATE TEAM SCORE
+
+NOW ALSO UPDATES PLUS/MINUS FOR BOTH TEAMS
 */
 
 const team =
@@ -2148,6 +2151,21 @@ pointsToAdd
 
 );
 
+
+/*
+UPDATE THE TEAM SCORE
+
+AND BALANCE +/- FOR BOTH TEAMS
+
+The scoring team's players
+receive +points.
+
+The opposing team's players
+receive -points.
+
+Only players currently on court
+are affected.
+*/
 
 await updateScoreFromPlayer(
 
@@ -2286,6 +2304,19 @@ team+"Score"
 newScore;
 
 
+/*
+UPDATED +/- LOGIC
+
+The team that scored gets
++amount.
+
+The opposing team gets
+-amount.
+
+Only players currently on court
+are updated.
+*/
+
 const playersToUpdate =
 
 Object.keys(
@@ -2295,10 +2326,6 @@ playerOnCourt
 playerId =>
 
 playerOnCourt[playerId] === true
-
-&&
-
-playerTeamMap[playerId] === team
 
 );
 
@@ -2313,10 +2340,39 @@ playerId
 );
 
 
+const playerTeam =
+playerTeamMap[playerId];
+
+
 const currentPlusMinus =
 Number(
 stats.plus_minus || 0
 );
+
+
+/*
+If player belongs to the
+scoring team:
+
++ points
+
+If player belongs to the
+opposing team:
+
+- points
+*/
+
+const plusMinusChange =
+
+playerTeam === team
+
+?
+
+amount
+
+:
+
+-amount;
 
 
 await saveStatDirect(
@@ -2325,7 +2381,8 @@ playerId,
 
 "plus_minus",
 
-currentPlusMinus + amount
+currentPlusMinus +
+plusMinusChange
 
 );
 
@@ -3382,8 +3439,7 @@ error
 .from("games")
 .update(updateData)
 .eq(
-"id",
-currentGame.id
+"id",currentGame.id
 )
 .select("*")
 .single();
