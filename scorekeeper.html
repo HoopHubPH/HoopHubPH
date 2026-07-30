@@ -1221,6 +1221,12 @@ container.innerHTML =
 return;
 
 }
+    console.log(
+    team.toUpperCase() +
+    " TEAM PLAYERS:",
+    data.length,
+    data
+);
 
 
 /* SAVE COMPLETE TEAM PLAYER LIST */
@@ -1390,43 +1396,41 @@ row
 
 /* VIEW ALL BUTTON */
 
-if(
-benchPlayers.length > 5
-){
+/* VIEW ALL BUTTON */
 
-const viewAllRow =
-document.createElement(
-"tr"
+const hiddenCount = Math.max(
+    0,
+    benchPlayers.length - 5
 );
 
+if(hiddenCount > 0){
 
-viewAllRow.id =
-"view-all-row-"+team;
+    const viewAllRow =
+        document.createElement("tr");
 
+    viewAllRow.id =
+        "view-all-row-" + team;
 
-viewAllRow.dataset.team =
-team;
+    viewAllRow.dataset.team =
+        team;
 
+    viewAllRow.innerHTML = `
 
-viewAllRow.innerHTML = `
+        <td colspan="17">
 
-<td colspan="17">
+            <button
+                type="button"
+                class="view-all-button"
+                onclick="viewAllBenchPlayers('${team}')"
+            >
+                VIEW ALL (${hiddenCount} MORE)
+            </button>
 
-<button
-class="view-all-button"
-onclick="viewAllBenchPlayers('${team}')"
->
-VIEW ALL (${benchPlayers.length - 5} MORE)
-</button>
+        </td>
 
-</td>
+    `;
 
-`;
-
-
-tbody.appendChild(
-viewAllRow
-);
+    tbody.appendChild(viewAllRow);
 
 }
 
