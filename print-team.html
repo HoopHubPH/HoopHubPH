@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Hoop Hub PH | Team Box Score</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#efefef;
+    padding:30px;
+}
+
+.page{
+
+    max-width:1200px;
+    margin:auto;
+
+    background:#fff;
+
+    padding:30px;
+
+    box-shadow:0 0 10px rgba(0,0,0,.15);
+}
+
+.header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    border-bottom:3px solid #ff6b00;
+
+    padding-bottom:15px;
+    margin-bottom:20px;
+}
+
+.logo{
+
+    font-size:30px;
+    font-weight:bold;
+}
+
+.logo span{
+    color:#ff6b00;
+}
+
+.subtitle{
+
+    color:#777;
+    font-size:14px;
+    margin-top:5px;
+}
+
+.game-info{
+
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+
+    margin-bottom:25px;
+}
+
+.info-box{
+
+    border:1px solid #ddd;
+    border-radius:6px;
+
+    padding:10px;
+}
+
+.info-label{
+
+    font-size:11px;
+    color:#777;
+    margin-bottom:5px;
+}
+
+.info-value{
+
+    font-size:18px;
+    font-weight:bold;
+}
+
+.team-title{
+
+    text-align:center;
+
+    font-size:30px;
+
+    margin:20px 0;
+
+    color:#ff6b00;
+}
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    margin-top:10px;
+}
+
+thead{
+
+    background:#111;
+    color:#fff;
+}
+
+th{
+
+    padding:10px 6px;
+
+    font-size:12px;
+}
+
+td{
+
+    padding:8px 6px;
+
+    text-align:center;
+
+    border-bottom:1px solid #ddd;
+
+    font-size:12px;
+}
+
+tbody tr:nth-child(even){
+
+    background:#fafafa;
+}
+
+.player{
+
+    text-align:left;
+    font-weight:bold;
+}
+
+tfoot{
+
+    background:#f5f5f5;
+
+    font-weight:bold;
+}
+
+tfoot td{
+
+    padding:12px 6px;
+}
+
+.buttons{
+
+    margin-top:25px;
+
+    display:flex;
+    justify-content:center;
+    gap:10px;
+}
+
+button{
+
+    background:#ff6b00;
+
+    color:#fff;
+
+    border:none;
+
+    padding:10px 20px;
+
+    border-radius:5px;
+
+    cursor:pointer;
+
+    font-weight:bold;
+}
+
+button:hover{
+
+    background:#111;
+}
+
+@media print{
+
+    body{
+
+        background:#fff;
+
+        padding:0;
+    }
+
+    .page{
+
+        box-shadow:none;
+
+        max-width:none;
+
+        padding:0;
+    }
+
+    .buttons{
+
+        display:none;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+<div class="header">
+
+<div>
+
+<div class="logo">
+HOOP <span>HUB PH</span>
+</div>
+
+<div class="subtitle">
+Official Team Box Score
+</div>
+
+</div>
+
+<div style="text-align:right;">
+
+<div id="printDate"></div>
+
+</div>
+
+</div>
+
+<div class="game-info">
+
+<div class="info-box">
+
+<div class="info-label">
+Game ID
+</div>
+
+<div class="info-value" id="gameId">
+-
+</div>
+
+</div>
+
+<div class="info-box">
+
+<div class="info-label">
+Period
+</div>
+
+<div class="info-value" id="period">
+-
+</div>
+
+</div>
+
+<div class="info-box">
+
+<div class="info-label">
+Status
+</div>
+
+<div class="info-value" id="status">
+-
+</div>
+
+</div>
+
+<div class="info-box">
+
+<div class="info-label">
+Clock
+</div>
+
+<div class="info-value" id="clock">
+-
+</div>
+
+</div>
+
+</div>
+
+<h1 class="team-title" id="teamName">
+
+TEAM NAME
+
+</h1>
+
+<table id="statsTable">
+
+<thead>
+
+<tr>
+
+<th>#</th>
+<th>PLAYER</th>
+<th>MIN</th>
+<th>PTS</th>
+<th>OREB</th>
+<th>DREB</th>
+<th>REB</th>
+<th>AST</th>
+<th>STL</th>
+<th>BLK</th>
+<th>TO</th>
+<th>PF</th>
+<th>FG</th>
+<th>3PT</th>
+<th>FT</th>
+<th>+/-</th>
+
+</tr>
+
+</thead>
+
+<tbody id="playerRows">
+
+<!-- Players will load here -->
+
+</tbody>
+
+<tfoot>
+
+<tr>
+
+<td colspan="3">
+TEAM TOTALS
+</td>
+
+<td id="tPoints">0</td>
+
+<td id="tOreb">0</td>
+
+<td id="tDreb">0</td>
+
+<td id="tReb">0</td>
+
+<td id="tAst">0</td>
+
+<td id="tStl">0</td>
+
+<td id="tBlk">0</td>
+
+<td id="tTo">0</td>
+
+<td id="tPf">0</td>
+
+<td id="tFg">0/0</td>
+
+<td id="t3pt">0/0</td>
+
+<td id="tFt">0/0</td>
+
+<td id="tPlusMinus">0</td>
+
+</tr>
+
+</tfoot>
+
+</table>
+
+<div class="buttons">
+
+<button onclick="window.print()">
+
+🖨 Print Box Score
+
+</button>
+
+<button onclick="window.close()">
+
+Close
+
+</button>
+
+</div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL="https://tkrsyiwffqkgfyooewsf.supabase.co";
+const SUPABASE_KEY="sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
+
+const supabaseClient=
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+const params=new URLSearchParams(window.location.search);
+
+const gameId=Number(params.get("game"));
+const team=params.get("team");
+
+let currentGame=null;
+let players=[];
+let playerStats=[];
+
+function formatClock(seconds){
+
+    seconds=Math.max(0,Number(seconds||0));
+
+    const m=Math.floor(seconds/60);
+    const s=seconds%60;
+
+    return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+
+}
+
+function formatMinutes(sec){
+
+    sec=Math.max(0,Number(sec||0));
+
+    const m=Math.floor(sec/60);
+    const s=sec%60;
+
+    return m+":"+String(s).padStart(2,"0");
+
+}
+
+function shotText(made,attempted){
+
+    return `${made||0}/${attempted||0}`;
+
+}
+
+async function loadGame(){
+
+    const {data,error}=await supabaseClient
+    .from("games")
+    .select("*")
+    .eq("id",gameId)
+    .single();
+
+    if(error){
+
+        alert("Unable to load game.");
+
+        console.error(error);
+
+        return;
+    }
+
+    currentGame=data;
+
+    document.getElementById("gameId").textContent=currentGame.id;
+    document.getElementById("period").textContent=currentGame.period||"-";
+    document.getElementById("status").textContent=currentGame.status||"-";
+    document.getElementById("clock").textContent=formatClock(currentGame.clock_seconds||600);
+
+    document.getElementById("printDate").textContent=
+    new Date().toLocaleString();
+
+    if(team==="home"){
+
+        document.getElementById("teamName").textContent=
+        currentGame.home_team;
+
+    }else{
+
+        document.getElementById("teamName").textContent=
+        currentGame.away_team;
+
+    }
+
+    await loadPlayers();
+
+}
+
+async function loadPlayers(){
+
+    let teamName=
+    team==="home"
+    ?currentGame.home_team
+    :currentGame.away_team;
+
+    const {data:teamData,error:teamError}=await supabaseClient
+    .from("teams")
+    .select("*")
+    .ilike("name",teamName)
+    .single();
+
+    if(teamError){
+
+        console.error(teamError);
+
+        alert("Unable to load team.");
+
+        return;
+    }
+
+    const {data,error}=await supabaseClient
+    .from("players")
+    .select("*")
+    .eq("team_id",teamData.id)
+    .order("jersey_number",{ascending:true});
+
+    if(error){
+
+        console.error(error);
+
+        return;
+    }
+
+    players=data||[];
+
+    await loadStats();
+
+}
+  async function loadStats(){
+
+    const playerIds=players.map(p=>p.id);
+
+    if(playerIds.length===0){
+
+        renderTable();
+
+        return;
+
+    }
+
+    const {data,error}=await supabaseClient
+    .from("player_game_stats")
+    .select("*")
+    .eq("game_id",gameId)
+    .in("player_id",playerIds);
+
+    if(error){
+
+        console.error(error);
+
+        return;
+
+    }
+
+    playerStats=data||[];
+
+    renderTable();
+
+}
+
+function renderTable(){
+
+    const tbody=document.getElementById("playerRows");
+
+    tbody.innerHTML="";
+
+    let totals={
+
+        points:0,
+
+        offensive_rebounds:0,
+
+        defensive_rebounds:0,
+
+        rebounds:0,
+
+        assists:0,
+
+        steals:0,
+
+        blocks:0,
+
+        turnovers:0,
+
+        fouls:0,
+
+        two_pt_made:0,
+
+        two_pt_attempted:0,
+
+        three_pt_made:0,
+
+        three_pt_attempted:0,
+
+        ft_made:0,
+
+        ft_attempted:0,
+
+        plus_minus:0
+
+    };
+
+    players.forEach(player=>{
+
+        const stats=
+
+        playerStats.find(
+
+            s=>s.player_id===player.id
+
+        )||{
+
+            points:0,
+
+            minutes_played:0,
+
+            offensive_rebounds:0,
+
+            defensive_rebounds:0,
+
+            rebounds:0,
+
+            assists:0,
+
+            steals:0,
+
+            blocks:0,
+
+            turnovers:0,
+
+            fouls:0,
+
+            two_pt_made:0,
+
+            two_pt_attempted:0,
+
+            three_pt_made:0,
+
+            three_pt_attempted:0,
+
+            ft_made:0,
+
+            ft_attempted:0,
+
+            plus_minus:0
+
+        };
+
+        Object.keys(totals).forEach(key=>{
+
+            totals[key]+=Number(stats[key]||0);
+
+        });
+
+        const fgMade=
+        Number(stats.two_pt_made||0)+
+        Number(stats.three_pt_made||0);
+
+        const fgAtt=
+        Number(stats.two_pt_attempted||0)+
+        Number(stats.three_pt_attempted||0);
+
+        tbody.innerHTML+=`
+
+<tr>
+
+<td>${player.jersey_number||""}</td>
+
+<td class="player">
+
+${player.first_name} ${player.last_name}
+
+</td>
+
+<td>${formatMinutes(stats.minutes_played)}</td>
+
+<td>${stats.points}</td>
+
+<td>${stats.offensive_rebounds}</td>
+
+<td>${stats.defensive_rebounds}</td>
+
+<td>${stats.rebounds}</td>
+
+<td>${stats.assists}</td>
+
+<td>${stats.steals}</td>
+
+<td>${stats.blocks}</td>
+
+<td>${stats.turnovers}</td>
+
+<td>${stats.fouls}</td>
+
+<td>${shotText(fgMade,fgAtt)}</td>
+
+<td>${shotText(stats.three_pt_made,stats.three_pt_attempted)}</td>
+
+<td>${shotText(stats.ft_made,stats.ft_attempted)}</td>
+
+<td>${stats.plus_minus>0?"+":""}${stats.plus_minus}</td>
+
+</tr>
+
+`;
+
+    });
+
+    document.getElementById("tPoints").textContent=totals.points;
+    document.getElementById("tOreb").textContent=totals.offensive_rebounds;
+    document.getElementById("tDreb").textContent=totals.defensive_rebounds;
+    document.getElementById("tReb").textContent=totals.rebounds;
+    document.getElementById("tAst").textContent=totals.assists;
+    document.getElementById("tStl").textContent=totals.steals;
+    document.getElementById("tBlk").textContent=totals.blocks;
+    document.getElementById("tTo").textContent=totals.turnovers;
+    document.getElementById("tPf").textContent=totals.fouls;
+
+    document.getElementById("tFg").textContent=
+
+    shotText(
+
+        totals.two_pt_made+totals.three_pt_made,
+
+        totals.two_pt_attempted+totals.three_pt_attempted
+
+    );
+
+    document.getElementById("t3pt").textContent=
+
+    shotText(
+
+        totals.three_pt_made,
+
+        totals.three_pt_attempted
+
+    );
+
+    document.getElementById("tFt").textContent=
+
+    shotText(
+
+        totals.ft_made,
+
+        totals.ft_attempted
+
+    );
+
+    document.getElementById("tPlusMinus").textContent=
+
+    (totals.plus_minus>0?"+":"")+totals.plus_minus;
+
+}
+  /* ===========================================
+   PART 4
+=========================================== */
+
+window.onload=async()=>{
+
+    if(!gameId){
+
+        alert("Missing Game ID.");
+
+        return;
+
+    }
+
+    if(team!=="home" && team!=="away"){
+
+        alert("Missing Team.");
+
+        return;
+
+    }
+
+    await loadGame();
+
+};
+
+</script>
+
+  </body>
+</html>
