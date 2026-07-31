@@ -348,7 +348,6 @@ nav a:hover{
     color:#fff;
 }
 
-/* NEW: Disable substitution buttons while clock is running */
 .sub-button:disabled{
     background:#ddd;
     color:#999;
@@ -717,14 +716,6 @@ function showStatus(message){
 /* =========================================================
    SUBSTITUTION BUTTON CONTROL
    ========================================================= */
-
-/*
-   Substitution is only allowed when the game clock
-   is paused or stopped.
-
-   Clock running = buttons disabled
-   Clock paused/stopped = buttons enabled
-*/
 
 function updateSubstitutionButtons(){
 
@@ -1149,11 +1140,6 @@ async function loadGame(){
 
     startMinutePersistence();
 
-
-    /*
-       Set substitution buttons according to
-       the loaded clock state.
-    */
 
     updateSubstitutionButtons();
 
@@ -1587,11 +1573,6 @@ async function renderTeamPlayers(team){
             row
         );
     }
-
-    /*
-       Apply current substitution state after
-       rendering new player rows.
-    */
 
     updateSubstitutionButtons();
 }
@@ -2162,17 +2143,39 @@ async function updatePlayerStat(
                 newScore;
 
 
-            for(
-                const id of
+            /*
+               PLUS/MINUS SYNCHRONIZATION
+
+               Every player currently SUB IN on the
+               scoring team gets +points.
+
+               Every player currently SUB IN on the
+               opposing team gets -points.
+
+               Players on the bench are NOT affected.
+            */
+
+            const activePlayers=
                 Object.keys(
                     playerOnCourt
                 )
+                .filter(
+                    id=>
+                        playerOnCourt[id]===true
+                );
+
+
+            for(
+                const id of activePlayers
             ){
 
-                if(
-                    playerOnCourt[id]!==true
-                ){
+                const playerTeam=
+                    playerTeamMap[id];
 
+
+                if(
+                    !playerTeam
+                ){
                     continue;
                 }
 
@@ -2184,16 +2187,27 @@ async function updatePlayerStat(
 
 
                 const sign=
-                    playerTeamMap[id]===team
+                    playerTeam===team
                     ?1
                     :-1;
 
 
-                ps.plus_minus=
+                const oldPlusMinus=
                     Number(
                         ps.plus_minus||0
-                    )+
-                    sign*delta;
+                    );
+
+
+                const newPlusMinus=
+                    oldPlusMinus+
+                    (
+                        sign*
+                        delta
+                    );
+
+
+                ps.plus_minus=
+                    newPlusMinus;
 
 
                 playerStatsMap[id]={
@@ -2201,15 +2215,33 @@ async function updatePlayerStat(
                 };
 
 
+                /*
+                   Save each active player's
+                   updated +/- value.
+                */
+
                 queueStatSave(
                     id,
                     {
                         plus_minus:
-                            ps.plus_minus
+                            newPlusMinus
                     }
+                );
+
+
+                /*
+                   Refresh the visible row immediately.
+                */
+
+                await refreshPlayerRow(
+                    id
                 );
             }
 
+
+            /*
+               Save the updated team score.
+            */
 
             supabaseClient
             .from("games")
@@ -3025,17 +3057,6 @@ async function toggleSubstitution(
     }
 
 
-    /*
-       NEW RULE:
-
-       Substitutions are only allowed when the
-       game clock is paused or stopped.
-
-       This is also checked here in JavaScript
-       as a safety measure in case the button is
-       triggered by another method.
-    */
-
     if(clockRunning){
 
         showStatus(
@@ -3552,13 +3573,6 @@ async function startClock(){
     clockRunning=true;
 
 
-    /*
-       NEW:
-
-       Disable substitutions immediately when
-       the game clock starts running.
-    */
-
     updateSubstitutionButtons();
 
 
@@ -3696,13 +3710,6 @@ async function handleClockEnd(){
     await saveClockState();
 
 
-    /*
-       NEW:
-
-       Quarter ended, so clock is stopped.
-       Substitutions are allowed again.
-    */
-
     updateSubstitutionButtons();
 
 
@@ -3744,11 +3751,6 @@ async function pauseClock(){
     if(!clockRunning){
 
         updateClockDisplay();
-
-        /*
-           Make sure substitutions are enabled
-           when the clock is already stopped.
-        */
 
         updateSubstitutionButtons();
 
@@ -3802,12 +3804,6 @@ async function pauseClock(){
 
     await saveClockState();
 
-
-    /*
-       NEW:
-
-       Clock is paused, so substitutions are allowed.
-    */
 
     updateSubstitutionButtons();
 }
@@ -3924,13 +3920,6 @@ async function resetClock(){
         currentGame.id
     );
 
-
-    /*
-       NEW:
-
-       Reset leaves the clock stopped,
-       so substitutions are allowed.
-    */
 
     updateSubstitutionButtons();
 }
