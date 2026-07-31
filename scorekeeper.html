@@ -3761,19 +3761,9 @@ async function saveClockState(){
     }
 
     if(
-    clockRunning &&
-    clockEndTime
-){
-
-    clockSeconds=
-        Math.max(
-            0,
-            (
-                clockEndTime -
-                Date.now()
-            ) / 1000
-        );
-}
+        clockRunning &&
+        clockEndTime
+    ){
 
         clockSeconds=
             Math.max(
@@ -3946,15 +3936,10 @@ async function loadPersistedClock(){
             Math.max(
                 0,
                 (
-       clockEndTime=
-
-    Date.now()
-
-    +
-
-    Math.round(
-        clockSeconds * 1000
-    );
+                    clockEndTime -
+                    Date.now()
+                ) / 1000
+            );
     }
 
     if(clockSeconds <= 0){
@@ -4080,48 +4065,6 @@ function updateClockDisplay(){
 
         tenths;
 }
-
-    /*
-    Show normal minutes and seconds
-    above one minute.
-    */
-
-    const totalSeconds=
-        Math.ceil(
-            safeMilliseconds / 1000
-        );
-
-    const minutes=
-        Math.floor(
-            totalSeconds / 60
-        );
-
-    const seconds=
-        totalSeconds % 60;
-
-    clock.textContent=
-
-        String(
-            minutes
-        ).padStart(
-            2,
-            "0"
-        )
-
-        +
-
-        ":"
-
-        +
-
-        String(
-            seconds
-        ).padStart(
-            2,
-            "0"
-        );
-}
-
 
 /* =========================================================
    START CLOCK
