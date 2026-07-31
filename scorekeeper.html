@@ -4592,7 +4592,7 @@ async function setPeriod(period){
    PRINT TEAM STATS
 ============================================ */
 
-function printTeamStats(team){
+async function printTeamStats(team){
 
     if(!currentGame){
         showStatus("Load a game first.");
@@ -4616,8 +4616,11 @@ function printTeamStats(team){
             : "awayPlayersTitle"
         );
 
-    if(!playersList){
-        showStatus("Unable to find the team statistics.");
+    const allPlayers =
+        teamPlayersMap[team] || [];
+
+    if(!playersList || !allPlayers.length){
+        showStatus("Unable to find the complete team roster.");
         return;
     }
 
@@ -4636,13 +4639,64 @@ function printTeamStats(team){
             "teamStatsModal"
         );
 
+    /*
+    Remember whether the bench was already expanded.
+    */
+
+    const wasExpanded =
+        teamExpandedMap[team] === true;
+
+    /*
+    Temporarily render every roster player,
+    including all bench players.
+    */
+
+    teamExpandedMap[team] = true;
+
+    await renderTeamPlayers(team);
+
+    /*
+    Copy the complete table into the preview.
+    */
+
+    previewContent.innerHTML =
+        playersList.innerHTML;
+
+    /*
+    Remove the SHOW LESS row from the printable copy.
+    */
+
+    previewContent
+    .querySelectorAll(".view-all-row")
+    .forEach(row => row.remove());
+
+    /*
+    Remove duplicate IDs from the copied player rows.
+    */
+
+    previewContent
+    .querySelectorAll("[id]")
+    .forEach(element => {
+        element.removeAttribute("id");
+    });
+
+    /*
+    Restore the normal scorekeeper display.
+    */
+
+    teamExpandedMap[team] =
+        wasExpanded;
+
+    await renderTeamPlayers(team);
+
+    /*
+    Set the popup title and display it.
+    */
+
     previewTitle.textContent =
         teamTitle
         ? teamTitle.textContent + " — Team Statistics"
         : "Team Statistics";
-
-    previewContent.innerHTML =
-        playersList.innerHTML;
 
     modal.classList.add("visible");
 }
