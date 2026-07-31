@@ -3761,9 +3761,19 @@ async function saveClockState(){
     }
 
     if(
-        clockRunning &&
-        clockEndTime
-    ){
+    clockRunning &&
+    clockEndTime
+){
+
+    clockSeconds=
+        Math.max(
+            0,
+            (
+                clockEndTime -
+                Date.now()
+            ) / 1000
+        );
+}
 
         clockSeconds=
             Math.max(
@@ -4002,6 +4012,10 @@ async function loadPersistedClock(){
    CLOCK DISPLAY
    ========================================================= */
 
+/* =========================================================
+   CLOCK DISPLAY
+   ========================================================= */
+
 function updateClockDisplay(){
 
     const safeMilliseconds=
@@ -4013,11 +4027,6 @@ function updateClockDisplay(){
                 ) * 1000
             )
         );
-
-    /*
-    Convert the remaining time
-    into tenths of a second.
-    */
 
     const totalTenths=
         Math.ceil(
@@ -4168,15 +4177,13 @@ async function startClock(){
 
     clockEndTime=
 
-        Date.now()
+    Date.now()
 
-        +
+    +
 
-        Math.floor(
-            clockSeconds
-        )*
-
-        1000;
+    Math.round(
+        clockSeconds * 1000
+    );
 
 
     clockRunning=true;
