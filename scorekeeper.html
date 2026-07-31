@@ -1493,11 +1493,83 @@ async function persistAllPlayerMinutes(){
         return;
     }
 
-    await Promise.all(
-        active.map(
-            id=>persistPlayerMinutes(id)
-        )
-    );
+    const referenceClock=
+        Math.max(
+            0,
+            Number(clockSeconds||0)
+        );
+
+    const rows=
+        active.map(playerId=>{
+
+            const total=
+                Math.round(
+                    getPlayerTotalSeconds(playerId)*1000
+                )/1000;
+
+            return {
+                player_id:playerId,
+                game_id:currentGame.id,
+                minutes_played:total,
+                minutes_clock_seconds:referenceClock
+            };
+        });
+
+    const {
+        data,
+        error
+    }=
+    await supabaseClient
+    .from("player_game_stats")
+    .upsert(
+        rows,
+        {
+            onConflict:
+                "player_id,game_id"
+        }
+    )
+    .select();
+
+    if(error){
+
+        console.error(
+            "Player minute batch save error:",
+            error
+        );
+
+        return;
+    }
+
+    const savedRows=
+        new Map(
+            (data||[]).map(
+                row=>[
+                    String(row.player_id),
+                    row
+                ]
+            )
+        );
+
+    rows.forEach(row=>{
+
+        const playerId=
+            String(row.player_id);
+
+        playerStatsMap[playerId]={
+            ...(playerStatsMap[playerId]||{}),
+            ...(savedRows.get(playerId)||{}),
+            minutes_played:
+                row.minutes_played,
+            minutes_clock_seconds:
+                referenceClock
+        };
+
+        playerMinuteBaseSeconds[playerId]=
+            row.minutes_played;
+
+        playerMinuteLastClockSeconds[playerId]=
+            referenceClock;
+    });
 }
 
 
@@ -1539,7 +1611,7 @@ function startMinutePersistence(){
     minutePersistTimer=
         setInterval(
             ()=>persistAllPlayerMinutes(),
-            10000
+            1000
         );
 }
 
