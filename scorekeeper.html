@@ -605,10 +605,20 @@ nav a:hover{
     right:7px;
     z-index:3;
 
-    font-size:14px;
-    line-height:18px;
+    width:24px;
+    height:24px;
+    padding:0;
 
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:transparent;
+    border:0;
     color:#bbb;
+
+    font-size:14px;
+    line-height:1;
     cursor:pointer;
     opacity:.65;
     transition:.2s;
@@ -617,6 +627,7 @@ nav a:hover{
 
 .print-icon:hover{
     color:#ff6b00;
+    background:transparent;
     opacity:1;
     transform:scale(1.05);
 }
@@ -743,11 +754,14 @@ nav a:hover{
 
 <h2 id="homePlayersTitle">Home Players</h2>
 
-<button
-class="print-icon"
-onclick="printTeam('home')"
-title="Print Team Stats">
-🖨️
+<button<button
+    type="button"
+    class="print-icon"
+    onclick="printTeamStats('home')"
+    title="Print Home Team Stats"
+    aria-label="Print Home Team Stats"
+>
+    🖨️
 </button>
 
 </div>
@@ -764,10 +778,13 @@ title="Print Team Stats">
 <h2 id="awayPlayersTitle">Away Players</h2>
 
 <button
-class="print-icon"
-onclick="printTeam('away')"
-title="Print Team Stats">
-🖨️
+    type="button"
+    class="print-icon"
+    onclick="printTeamStats('away')"
+    title="Print Away Team Stats"
+    aria-label="Print Away Team Stats"
+>
+    🖨️
 </button>
 
 </div>
