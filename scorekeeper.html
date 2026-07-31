@@ -598,7 +598,27 @@ nav a:hover{
 .nba-popup-stat-val.highlight {
     color: #ff6b00;
 }
+.print-icon{
 
+    font-size:26px;
+
+    cursor:pointer;
+
+    color:#ff6b00;
+
+    transition:.2s;
+
+    user-select:none;
+
+}
+
+.print-icon:hover{
+
+    color:#111;
+
+    transform:scale(1.15);
+
+}
 @media(max-width:700px){
 
     .scoreboard{
@@ -709,13 +729,42 @@ nav a:hover{
 <div class="stats-controls">
 
 <div class="stat-control">
+
+<div class="team-header">
+
 <h2 id="homePlayersTitle">Home Players</h2>
+
+<button
+class="print-icon"
+onclick="printTeam('home')"
+title="Print Team Stats">
+🖨️
+</button>
+
+</div>
+
 <div id="homePlayersList"></div>
+
+</div>
 </div>
 
 <div class="stat-control">
+
+<div class="team-header">
+
 <h2 id="awayPlayersTitle">Away Players</h2>
+
+<button
+class="print-icon"
+onclick="printTeam('away')"
+title="Print Team Stats">
+🖨️
+</button>
+
+</div>
+
 <div id="awayPlayersList"></div>
+
 </div>
 
 </div>
@@ -4357,7 +4406,25 @@ async function setPeriod(period){
 /* =========================================================
    AUTO LOAD
    ========================================================= */
+/* ============================================
+   PRINT TEAM STATS
+============================================ */
 
+function printTeamStats(team){
+
+    if(!currentGame){
+        showStatus("Load a game first.");
+        return;
+    }
+
+    const gameId = currentGame.id;
+
+    window.open(
+        `print-team.html?game=${gameId}&team=${team}`,
+        "_blank"
+    );
+
+}
 loadGame();
 
 </script>
