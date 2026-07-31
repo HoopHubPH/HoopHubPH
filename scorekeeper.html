@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+html_content = '''<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -297,6 +297,13 @@ nav a:hover{
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
+    cursor:pointer;
+    position:relative;
+}
+
+.player-name:hover{
+    color:#ff6b00;
+    text-decoration:underline;
 }
 
 .player-position{
@@ -475,6 +482,123 @@ nav a:hover{
     transform:scale(1.05);
 }
 
+/* NBA-Style Player Card Popup */
+#nba-player-popup {
+    position: fixed;
+    z-index: 9999;
+    width: 290px;
+    background: linear-gradient(135deg, #111111 0%, #1c1c1c 100%);
+    color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,107,0,0.3);
+    overflow: hidden;
+    display: none;
+    pointer-events: none;
+    font-family: Arial, Helvetica, sans-serif;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+#nba-player-popup.visible {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.nba-popup-header {
+    position: relative;
+    padding: 10px;
+    background: linear-gradient(180deg, rgba(255,107,0,0.15) 0%, rgba(0,0,0,0) 100%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.nba-popup-photo {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #222;
+    border: 2px solid #ff6b00;
+    flex-shrink: 0;
+}
+
+.nba-popup-info {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.nba-popup-name {
+    font-size: 13px;
+    font-weight: bold;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.nba-popup-sub {
+    font-size: 10px;
+    color: #ff6b00;
+    font-weight: bold;
+    margin-top: 2px;
+}
+
+.nba-popup-team {
+    font-size: 9px;
+    color: #aaa;
+    margin-top: 1px;
+}
+
+.nba-popup-section-title {
+    font-size: 8px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #ff6b00;
+    letter-spacing: 0.8px;
+    padding: 5px 10px 2px;
+    background: rgba(0,0,0,0.3);
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.nba-popup-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    padding: 6px 10px;
+    text-align: center;
+}
+
+.nba-popup-stat-box {
+    background: rgba(255,255,255,0.04);
+    padding: 4px 2px;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.03);
+}
+
+.nba-popup-stat-label {
+    font-size: 7px;
+    color: #888;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.nba-popup-stat-val {
+    font-size: 10px;
+    font-weight: bold;
+    color: #fff;
+    margin-top: 1px;
+}
+
+.nba-popup-stat-val.highlight {
+    color: #ff6b00;
+}
+
 @media(max-width:700px){
 
     .scoreboard{
@@ -627,6 +751,44 @@ FINAL
 
 </div>
 
+<!-- NBA Style Hover Popup Container -->
+<div id="nba-player-popup">
+    <div class="nba-popup-header">
+        <img id="pop-photo" class="nba-popup-photo" src="" alt="Player Photo">
+        <div class="nba-popup-info">
+            <div id="pop-name" class="nba-popup-name">--</div>
+            <div id="pop-sub" class="nba-popup-sub">#-- | --</div>
+            <div id="pop-team" class="nba-popup-team">--</div>
+        </div>
+    </div>
+    
+    <div class="nba-popup-section-title">Season Averages</div>
+    <div class="nba-popup-grid">
+        <div class="nba-popup-stat-box"><div class="nba-popup-stat-label">GP</div><div id="pop-gp" class="nba-popup-stat-val">0</div></div>
+        <div class="nba-popup-stat-box"><div class="nba-popup-stat-label">MPG</div><div id="pop-mpg" class="nba-popup-stat-val">0.0</div></div>
+        <div class="nba-popup-stat-box"><div class="nba-popup-stat-label">PPG</div><div id="pop-ppg" class="nba-popup-stat-val highlight">0.0</div></div>
+        <div class="nba-popup-stat-box"><div class="nba-popup-stat-label">RPG</div><div id="pop-rpg" class="nba-popup-stat-val">0.0</div></div>
+        <div class="nba-popup-stat-box"><div class="nba-popup-stat-label">APG</div><div id="pop-apg" class="nba-popup-stat-val">0.0</div></div>
+        <div class="nba-popup-stat-box"><div class="nba-popup-stat-label">SPG</div><div id="pop-spg" class="nba-popup-stat-val">0.0</div></div>
+        <div class="nba-popup-stat-box"><div class="nba-popup-stat-label">BPG</div><div id="pop-bpg" class="nba-popup-stat-val">0.0</div></div>
+        <div class="nba-popup-stat-box"><div class="nba-popup-stat-label">FG%</div><div id="pop-fgpct" class="nba-popup-stat-val">0%</div></div>
+        <div class="nba-popup-stat-box"><div class="nba-popup-stat-label">3P%</div><div id="pop-3ppct" class="nba-popup-stat-val">0%</div></div>
+        <div class="nba-popup-stat-box"><div class="nba-popup-stat-label">FT%</div><div id="pop-ftpct" class="nba-popup-stat-val">0%</div></div>
+    </div>
+
+    <div class="nba-popup-section-title">Current Game Stats</div>
+    <div class="nba-popup-grid">
+        <div class="nba-popup-stat-box"><div class="nba-popup-stat-label">MIN</div><div id="pop-cg-min" class="nba-popup-stat-val">0:00</div></div>
+        <div class="nba-popup-stat-box"><div class="nba-popup-stat-label">PTS</div><div id="pop-cg-pts" class="nba-popup-stat-val highlight">0</div></div>
+        <div class="nba-popup-stat-box"><div class="nba-popup-stat-label">REB</div><div id="pop-cg-reb" class="nba-popup-stat-val">0</div></div>
+        <div class="nba-popup-stat-box"><div class="nba-popup-stat-label">AST</div><div id="pop-cg-ast" class="nba-popup-stat-val">0</div></div>
+        <div class="nba-popup-stat-box"><div class="nba-popup-stat-label">STL</div><div id="pop-cg-stl" class="nba-popup-stat-val">0</div></div>
+        <div class="nba-popup-stat-box"><div class="nba-popup-stat-label">BLK</div><div id="pop-cg-blk" class="nba-popup-stat-val">0</div></div>
+        <div class="nba-popup-stat-box"><div class="nba-popup-stat-label">TO</div><div id="pop-cg-to" class="nba-popup-stat-val">0</div></div>
+        <div class="nba-popup-stat-box"><div class="nba-popup-stat-label">+/-</div><div id="pop-cg-pm" class="nba-popup-stat-val">0</div></div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
@@ -668,6 +830,8 @@ let statSaveQueue=new Map();
 let statSaveTimers=new Map();
 let statSaveInFlight=new Set();
 
+let hoveredPlayerId=null;
+let hoverTimer=null;
 
 /* =========================================================
    GENERAL HELPERS
@@ -710,6 +874,118 @@ function showStatus(message){
     showStatus.timer=setTimeout(()=>{
         el.style.display="none";
     },2500);
+}
+
+
+/* =========================================================
+   HOVER POPUP LOGIC
+   ========================================================= */
+
+function defaultPhotoUrl(gender) {
+    return "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=150&auto=format&fit=crop&q=80";
+}
+
+function handlePlayerHover(e, playerId) {
+    hoveredPlayerId = playerId;
+    updatePopupContent(playerId);
+    
+    const popup = document.getElementById("nba-player-popup");
+    popup.classList.add("visible");
+    positionPopup(e);
+}
+
+function handlePlayerMove(e) {
+    if (hoveredPlayerId) {
+        positionPopup(e);
+    }
+}
+
+function handlePlayerLeave() {
+    hoveredPlayerId = null;
+    const popup = document.getElementById("nba-player-popup");
+    popup.classList.remove("visible");
+}
+
+function positionPopup(e) {
+    const popup = document.getElementById("nba-player-popup");
+    const gap = 15;
+    let x = e.clientX + gap;
+    let y = e.clientY + gap;
+    
+    const popWidth = 290;
+    const popHeight = popup.offsetHeight || 320;
+    
+    if (x + popWidth > window.innerWidth) {
+        x = e.clientX - popWidth - gap;
+    }
+    if (y + popHeight > window.innerHeight) {
+        y = e.clientY - popHeight - gap;
+    }
+    
+    if (x < 10) x = 10;
+    if (y < 10) y = 10;
+    
+    popup.style.left = x + "px";
+    popup.style.top = y + "px";
+}
+
+function updatePopupContent(playerId) {
+    const player = playerDataMap[playerId];
+    if (!player) return;
+
+    const teamKey = playerTeamMap[playerId];
+    let teamName = "Unknown Team";
+    if (currentGame) {
+        teamName = teamKey === "home" ? (currentGame.home_team || "Home Team") : (currentGame.away_team || "Away Team");
+    }
+
+    const photoUrl = player.photo_url || player.image_url || player.avatar_url || defaultPhotoUrl();
+
+    document.getElementById("pop-photo").src = photoUrl;
+    document.getElementById("pop-name").textContent = ((player.first_name || "") + " " + (player.last_name || "")).trim() || "Player";
+    document.getElementById("pop-sub").textContent = `#${player.jersey_number || "00"} | ${player.position || "N/A"}`;
+    document.getElementById("pop-team").textContent = teamName;
+
+    // Season Averages (from database or defaults)
+    const gp = Number(player.games_played || player.gp || 0);
+    const mpg = Number(player.mpg || player.minutes_per_game || 0).toFixed(1);
+    const ppg = Number(player.ppg || player.points_per_game || 0).toFixed(1);
+    const rpg = Number(player.rpg || player.rebounds_per_game || 0).toFixed(1);
+    const apg = Number(player.apg || player.assists_per_game || 0).toFixed(1);
+    const spg = Number(player.spg || player.steals_per_game || 0).toFixed(1);
+    const bpg = Number(player.bpg || player.blocks_per_game || 0).toFixed(1);
+    
+    const fgPct = player.fg_pct != null ? Math.round(player.fg_pct) + "%" : calculatePercentage(player.season_fg_made, player.season_fg_att);
+    const threePct = player.three_pct != null ? Math.round(player.three_pct) + "%" : calculatePercentage(player.season_3pt_made, player.season_3pt_att);
+    const ftPct = player.ft_pct != null ? Math.round(player.ft_pct) + "%" : calculatePercentage(player.season_ft_made, player.season_ft_att);
+
+    document.getElementById("pop-gp").textContent = gp;
+    document.getElementById("pop-mpg").textContent = mpg;
+    document.getElementById("pop-ppg").textContent = ppg;
+    document.getElementById("pop-rpg").textContent = rpg;
+    document.getElementById("pop-apg").textContent = apg;
+    document.getElementById("pop-spg").textContent = spg;
+    document.getElementById("pop-bpg").textContent = bpg;
+    document.getElementById("pop-fgpct").textContent = fgPct;
+    document.getElementById("pop-3ppct").textContent = threePct;
+    document.getElementById("pop-ftpct").textContent = ftPct;
+
+    // Current Game Live Stats
+    const cg = playerStatsMap[playerId] || {};
+    const totalSecs = getPlayerTotalSeconds(playerId);
+    
+    document.getElementById("pop-cg-min").textContent = formatMinutes(totalSecs);
+    document.getElementById("pop-cg-pts").textContent = cg.points || 0;
+    document.getElementById("pop-cg-reb").textContent = (Number(cg.offensive_rebounds || 0) + Number(cg.defensive_rebounds || 0));
+    document.getElementById("pop-cg-ast").textContent = cg.assists || 0;
+    document.getElementById("pop-cg-stl").textContent = cg.steals || 0;
+    document.getElementById("pop-cg-blk").textContent = cg.blocks || 0;
+    document.getElementById("pop-cg-to").textContent = cg.turnovers || 0;
+
+    const pm = Number(cg.plus_minus || 0);
+    const pmEl = document.getElementById("pop-cg-pm");
+    pmEl.textContent = (pm > 0 ? "+" : "") + pm;
+    pmEl.className = "nba-popup-stat-val " + (pm > 0 ? "plus-value" : pm < 0 ? "minus-value" : "");
 }
 
 
@@ -874,6 +1150,10 @@ function updateVisibleMinutes(){
                     getPlayerTotalSeconds(playerId)
                 );
         }
+    }
+
+    if (hoveredPlayerId) {
+        updatePopupContent(hoveredPlayerId);
     }
 }
 
@@ -2291,6 +2571,9 @@ async function updatePlayerStat(
 
         );
 
+        if (hoveredPlayerId === playerId) {
+            updatePopupContent(playerId);
+        }
 
         return;
     }
@@ -2355,6 +2638,10 @@ async function updatePlayerStat(
         playerId,
         changes
     );
+
+    if (hoveredPlayerId === playerId) {
+        updatePopupContent(playerId);
+    }
 }
 
 
@@ -2448,7 +2735,10 @@ ${escapeHTML(
 
 <td class="col-player">
 
-<span class="player-name">
+<span class="player-name"
+    onmouseenter="handlePlayerHover(event, '${player.id}')"
+    onmousemove="handlePlayerMove(event)"
+    onmouseleave="handlePlayerLeave()">
 ${escapeHTML(
     (player.first_name||"")+
     " "+
@@ -3624,6 +3914,7 @@ function startClockInternal(){
                     clockInterval=null;
 
                     return;
+
                 }
 
 
@@ -4073,3 +4364,9 @@ loadGame();
 
 </body>
 </html>
+'''
+
+with open('scorekeeper.html', 'w', encoding='utf-8') as f:
+    f.write(html_content)
+
+print("scorekeeper.html successfully updated and saved.")
