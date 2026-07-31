@@ -209,6 +209,7 @@ nav a:hover{
 }
 
 .stat-control{
+    position:relative;
     background:#fafafa;
     border:1px solid #ddd;
     border-radius:5px;
@@ -599,17 +600,25 @@ nav a:hover{
     color: #ff6b00;
 }
 .print-icon{
+    position:absolute;
+    top:4px;
+    right:7px;
+    z-index:3;
 
-    font-size:26px;
+    font-size:14px;
+    line-height:18px;
 
+    color:#bbb;
     cursor:pointer;
-
-    color:#ff6b00;
-
+    opacity:.65;
     transition:.2s;
-
     user-select:none;
+}
 
+.print-icon:hover{
+    color:#ff6b00;
+    opacity:1;
+    transform:scale(1.05);
 }
 
 .print-icon:hover{
