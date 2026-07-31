@@ -841,6 +841,24 @@ nav a:hover{
         display:none!important;
     }
 }
+    .team-total-row td{
+    background:#111!important;
+    color:#fff!important;
+    font-weight:bold;
+    border-top:3px solid #ff6b00;
+    padding-top:8px;
+    padding-bottom:8px;
+}
+
+.team-total-row .team-total-label{
+    color:#ff6b00!important;
+    text-align:left!important;
+    white-space:nowrap;
+}
+
+.team-total-row .shot-percent{
+    color:#ff6b00;
+}
 </style>
 </head>
 
@@ -4591,7 +4609,259 @@ async function setPeriod(period){
 /* ============================================
    PRINT TEAM STATS
 ============================================ */
+function addTeamTotalsRow(
+    previewContent,
+    players
+){
 
+    const totals={
+
+        minutes:0,
+        points:0,
+
+        offensive_rebounds:0,
+        defensive_rebounds:0,
+
+        assists:0,
+        steals:0,
+        blocks:0,
+        turnovers:0,
+        fouls:0,
+
+        two_pt_made:0,
+        two_pt_attempted:0,
+
+        three_pt_made:0,
+        three_pt_attempted:0,
+
+        ft_made:0,
+        ft_attempted:0,
+
+        plus_minus:0
+    };
+
+
+    players.forEach(player=>{
+
+        const stats=
+            playerStatsMap[player.id] || {};
+
+        totals.minutes +=
+            Number(
+                getPlayerTotalSeconds(
+                    player.id
+                ) || 0
+            );
+
+        totals.points +=
+            Number(stats.points || 0);
+
+        totals.offensive_rebounds +=
+            Number(
+                stats.offensive_rebounds || 0
+            );
+
+        totals.defensive_rebounds +=
+            Number(
+                stats.defensive_rebounds || 0
+            );
+
+        totals.assists +=
+            Number(stats.assists || 0);
+
+        totals.steals +=
+            Number(stats.steals || 0);
+
+        totals.blocks +=
+            Number(stats.blocks || 0);
+
+        totals.turnovers +=
+            Number(stats.turnovers || 0);
+
+        totals.fouls +=
+            Number(stats.fouls || 0);
+
+        totals.two_pt_made +=
+            Number(stats.two_pt_made || 0);
+
+        totals.two_pt_attempted +=
+            Number(
+                stats.two_pt_attempted || 0
+            );
+
+        totals.three_pt_made +=
+            Number(stats.three_pt_made || 0);
+
+        totals.three_pt_attempted +=
+            Number(
+                stats.three_pt_attempted || 0
+            );
+
+        totals.ft_made +=
+            Number(stats.ft_made || 0);
+
+        totals.ft_attempted +=
+            Number(stats.ft_attempted || 0);
+
+        totals.plus_minus +=
+            Number(stats.plus_minus || 0);
+    });
+
+
+    const totalRebounds=
+
+        totals.offensive_rebounds +
+
+        totals.defensive_rebounds;
+
+
+    const fieldGoalsMade=
+
+        totals.two_pt_made +
+
+        totals.three_pt_made;
+
+
+    const fieldGoalsAttempted=
+
+        totals.two_pt_attempted +
+
+        totals.three_pt_attempted;
+
+
+    const tbody=
+        previewContent.querySelector(
+            "tbody"
+        );
+
+
+    if(!tbody){
+        return;
+    }
+
+
+    const row=
+        document.createElement(
+            "tr"
+        );
+
+
+    row.className=
+        "team-total-row";
+
+
+    row.innerHTML=`
+
+<td></td>
+
+<td class="team-total-label">
+TEAM TOTAL
+</td>
+
+<td>
+${formatMinutes(totals.minutes)}
+</td>
+
+<td>
+${totals.points}
+</td>
+
+<td>
+${totals.offensive_rebounds}
+</td>
+
+<td>
+${totals.defensive_rebounds}
+</td>
+
+<td>
+${totalRebounds}
+</td>
+
+<td>
+${totals.assists}
+</td>
+
+<td>
+${totals.steals}
+</td>
+
+<td>
+${totals.blocks}
+</td>
+
+<td>
+${totals.turnovers}
+</td>
+
+<td>
+${totals.fouls}
+</td>
+
+<td>
+<div class="shot-value">
+${totals.two_pt_made}/${totals.two_pt_attempted}
+</div>
+
+<div class="shot-percent">
+${calculatePercentage(
+    totals.two_pt_made,
+    totals.two_pt_attempted
+)}
+</div>
+</td>
+
+<td>
+<div class="shot-value">
+${totals.three_pt_made}/${totals.three_pt_attempted}
+</div>
+
+<div class="shot-percent">
+${calculatePercentage(
+    totals.three_pt_made,
+    totals.three_pt_attempted
+)}
+</div>
+</td>
+
+<td>
+<div class="shot-value">
+${fieldGoalsMade}/${fieldGoalsAttempted}
+</div>
+
+<div class="shot-percent">
+${calculatePercentage(
+    fieldGoalsMade,
+    fieldGoalsAttempted
+)}
+</div>
+</td>
+
+<td>
+<div class="shot-value">
+${totals.ft_made}/${totals.ft_attempted}
+</div>
+
+<div class="shot-percent">
+${calculatePercentage(
+    totals.ft_made,
+    totals.ft_attempted
+)}
+</div>
+</td>
+
+<td>
+${totals.plus_minus > 0 ? "+" : ""}
+${totals.plus_minus}
+</td>
+
+`;
+
+
+    tbody.appendChild(
+        row
+    );
+}
 async function printTeamStats(team){
 
     if(!currentGame){
@@ -4679,6 +4949,15 @@ async function printTeamStats(team){
     .forEach(element => {
         element.removeAttribute("id");
     });
+    /*
+Add the computed team totals
+to the bottom of the preview.
+*/
+
+addTeamTotalsRow(
+    previewContent,
+    allPlayers
+);
 
     /*
     Restore the normal scorekeeper display.
