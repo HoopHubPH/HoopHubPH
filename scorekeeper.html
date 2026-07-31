@@ -685,6 +685,162 @@ nav a:hover{
         min-width:850px;
     }
 }
+    /* TEAM STATISTICS PRINT PREVIEW */
+
+.team-stats-modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    background:rgba(0,0,0,.65);
+    padding:20px;
+    align-items:center;
+    justify-content:center;
+}
+
+.team-stats-modal.visible{
+    display:flex;
+}
+
+.team-stats-modal-content{
+    position:relative;
+    width:95%;
+    max-width:1200px;
+    max-height:92vh;
+    overflow:hidden;
+    background:#fff;
+    border-radius:8px;
+    box-shadow:0 10px 35px rgba(0,0,0,.35);
+}
+
+.team-stats-modal-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:12px 15px;
+    background:#111;
+    color:#fff;
+}
+
+.team-stats-modal-header h2{
+    margin:0;
+    font-size:17px;
+}
+
+.team-stats-close{
+    width:30px;
+    height:30px;
+    padding:0;
+    background:transparent;
+    color:#bbb;
+    border:0;
+    font-size:22px;
+    cursor:pointer;
+}
+
+.team-stats-close:hover{
+    color:#ff6b00;
+}
+
+.team-stats-preview{
+    max-height:calc(92vh - 115px);
+    padding:15px;
+    overflow:auto;
+}
+
+/* Hide scorekeeper control buttons inside the preview */
+.team-stats-preview button{
+    display:none!important;
+}
+
+.team-stats-modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    padding:10px 15px;
+    border-top:1px solid #ddd;
+    background:#f7f7f7;
+}
+
+.team-stats-modal-actions button{
+    padding:8px 16px;
+    border:0;
+    border-radius:5px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.preview-close-button{
+    background:#ddd;
+    color:#222;
+}
+
+.preview-print-button{
+    background:#ff6b00;
+    color:#fff;
+}
+
+.preview-print-button:hover{
+    background:#e65f00;
+}
+
+@media(max-width:700px){
+
+    .team-stats-modal{
+        padding:8px;
+    }
+
+    .team-stats-modal-content{
+        width:100%;
+        max-height:96vh;
+    }
+
+    .team-stats-preview{
+        max-height:calc(96vh - 115px);
+    }
+}
+
+/* PRINT ONLY THE POPUP */
+
+@media print{
+
+    body *{
+        visibility:hidden!important;
+    }
+
+    #teamStatsModal,
+    #teamStatsModal *{
+        visibility:visible!important;
+    }
+
+    #teamStatsModal{
+        display:block!important;
+        position:absolute;
+        inset:0;
+        padding:0;
+        background:#fff;
+    }
+
+    .team-stats-modal-content{
+        width:100%;
+        max-width:none;
+        max-height:none;
+        overflow:visible;
+        border-radius:0;
+        box-shadow:none;
+    }
+
+    .team-stats-preview{
+        max-height:none;
+        overflow:visible;
+    }
+
+    .team-stats-close,
+    .team-stats-modal-actions{
+        display:none!important;
+    }
+}
 </style>
 </head>
 
@@ -4443,17 +4599,122 @@ function printTeamStats(team){
         return;
     }
 
-    const gameId = currentGame.id;
+    const isHome =
+        team === "home";
 
-    window.open(
-        `print-team.html?game=${gameId}&team=${team}`,
-        "_blank"
-    );
+    const playersList =
+        document.getElementById(
+            isHome
+            ? "homePlayersList"
+            : "awayPlayersList"
+        );
 
+    const teamTitle =
+        document.getElementById(
+            isHome
+            ? "homePlayersTitle"
+            : "awayPlayersTitle"
+        );
+
+    if(!playersList){
+        showStatus("Unable to find the team statistics.");
+        return;
+    }
+
+    const previewTitle =
+        document.getElementById(
+            "teamStatsModalTitle"
+        );
+
+    const previewContent =
+        document.getElementById(
+            "teamStatsPreviewContent"
+        );
+
+    const modal =
+        document.getElementById(
+            "teamStatsModal"
+        );
+
+    previewTitle.textContent =
+        teamTitle
+        ? teamTitle.textContent + " — Team Statistics"
+        : "Team Statistics";
+
+    previewContent.innerHTML =
+        playersList.innerHTML;
+
+    modal.classList.add("visible");
+}
+
+
+function closeTeamStatsPreview(){
+
+    const modal =
+        document.getElementById(
+            "teamStatsModal"
+        );
+
+    modal.classList.remove("visible");
 }
 loadGame();
 
 </script>
+<div
+    id="teamStatsModal"
+    class="team-stats-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="teamStatsModalTitle"
+>
 
+    <div class="team-stats-modal-content">
+
+        <div class="team-stats-modal-header">
+
+            <h2 id="teamStatsModalTitle">
+                Team Statistics
+            </h2>
+
+            <button
+                type="button"
+                class="team-stats-close"
+                onclick="closeTeamStatsPreview()"
+                title="Close"
+                aria-label="Close statistics preview"
+            >
+                &times;
+            </button>
+
+        </div>
+
+        <div
+            id="teamStatsPreviewContent"
+            class="team-stats-preview"
+        ></div>
+
+        <div class="team-stats-modal-actions">
+
+            <button
+                type="button"
+                class="preview-close-button"
+                onclick="closeTeamStatsPreview()"
+            >
+                CLOSE
+            </button>
+
+            <button
+                type="button"
+                class="preview-print-button"
+                onclick="window.print()"
+            >
+                PRINT
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 </body>
 </html>
