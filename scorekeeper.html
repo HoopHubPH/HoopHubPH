@@ -1427,30 +1427,55 @@ async function persistPlayerMinutes(playerId){
             getPlayerTotalSeconds(playerId)*1000
         )/1000;
 
-    const saved=
-        Number(stats.minutes_played||0);
+    const referenceClock=
+        Math.max(
+            0,
+            Number(clockSeconds||0)
+        );
 
-    if(total<=saved+0.001){
+    const {
+        data,
+        error
+    }=
+    await supabaseClient
+    .from("player_game_stats")
+    .upsert(
+        {
+            player_id:playerId,
+            game_id:currentGame.id,
+            minutes_played:total,
+            minutes_clock_seconds:referenceClock
+        },
+        {
+            onConflict:
+                "player_id,game_id"
+        }
+    )
+    .select()
+    .single();
+
+    if(error){
+
+        console.error(
+            "Player minute save error:",
+            error
+        );
+
         return;
     }
 
-    stats.minutes_played=total;
-
     playerStatsMap[playerId]={
-        ...stats
+        ...stats,
+        ...(data||{}),
+        minutes_played:total,
+        minutes_clock_seconds:referenceClock
     };
-
-    await saveStatDirect(
-        playerId,
-        "minutes_played",
-        total
-    );
 
     playerMinuteBaseSeconds[playerId]
         =total;
 
     playerMinuteLastClockSeconds[playerId]
-        =clockSeconds;
+        =referenceClock;
 }
 
 
@@ -1679,13 +1704,39 @@ function initializePlayerMinuteSynchronization(){
         const stats=
             playerStatsMap[playerId]||{};
 
-        playerMinuteBaseSeconds[playerId]=
+        let synchronizedTotal=
             Math.max(
                 0,
                 Number(
                     stats.minutes_played||0
                 )
             );
+
+
+        const savedClock=
+            Number(
+                stats.minutes_clock_seconds
+            );
+
+
+        if(
+            clockRunning&&
+            playerOnCourt[playerId]===true&&
+            stats.minutes_clock_seconds!==null&&
+            stats.minutes_clock_seconds!==undefined&&
+            Number.isFinite(savedClock)
+        ){
+
+            synchronizedTotal+=
+                Math.max(
+                    0,
+                    savedClock-clockSeconds
+                );
+        }
+
+
+        playerMinuteBaseSeconds[playerId]=
+            synchronizedTotal;
 
         playerMinuteLastClockSeconds[playerId]
             =clockSeconds;
@@ -2131,6 +2182,8 @@ async function getPlayerGameStats(playerId){
         points:0,
 
         minutes_played:0,
+
+        minutes_clock_seconds:null,
 
         offensive_rebounds:0,
 
@@ -4147,6 +4200,9 @@ async function startClock(){
 
 
     await saveClockState();
+
+
+    await persistAllPlayerMinutes();
 
 
     startClockInternal();
