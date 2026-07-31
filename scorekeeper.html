@@ -4014,52 +4014,63 @@ function updateClockDisplay(){
             )
         );
 
-    const clock=
-        document.getElementById(
-            "gameClock"
-        );
-
     /*
-    Show tenths during the final minute.
+    Convert the remaining time
+    into tenths of a second.
     */
 
-    if(safeMilliseconds < 60000){
+    const totalTenths=
+        Math.ceil(
+            safeMilliseconds / 100
+        );
 
-        const wholeSeconds=
-            Math.floor(
-                safeMilliseconds / 1000
-            );
+    const minutes=
+        Math.floor(
+            totalTenths / 600
+        );
 
-        const tenths=
-            Math.floor(
-                (
-                    safeMilliseconds % 1000
-                ) / 100
-            );
+    const seconds=
+        Math.floor(
+            (
+                totalTenths % 600
+            ) / 10
+        );
 
-        clock.textContent=
+    const tenths=
+        totalTenths % 10;
 
-            "00:"
+    document.getElementById(
+        "gameClock"
+    ).textContent=
 
-            +
+        String(
+            minutes
+        ).padStart(
+            2,
+            "0"
+        )
 
-            String(
-                wholeSeconds
-            ).padStart(
-                2,
-                "0"
-            )
+        +
 
-            +
+        ":"
 
-            "."
+        +
 
-            +
+        String(
+            seconds
+        ).padStart(
+            2,
+            "0"
+        )
 
-            tenths;
+        +
 
-        return;
-    }
+        "."
+
+        +
+
+        tenths;
+}
 
     /*
     Show normal minutes and seconds
