@@ -3760,25 +3760,28 @@ async function saveClockState(){
         return false;
     }
 
-
     if(
-        clockRunning&&
+        clockRunning &&
         clockEndTime
     ){
 
         clockSeconds=
             Math.max(
                 0,
-                Math.ceil(
-                    (
-                        clockEndTime-
-                        Date.now()
-                    )/
-                    1000
-                )
+                (
+                    clockEndTime -
+                    Date.now()
+                ) / 1000
             );
     }
 
+    const remainingMilliseconds=
+        Math.max(
+            0,
+            Math.round(
+                clockSeconds * 1000
+            )
+        );
 
     const {
         data,
@@ -3788,24 +3791,34 @@ async function saveClockState(){
     .from("games")
     .update({
 
+        /*
+        Keep this old column for compatibility.
+        */
+
         clock_seconds:
-            Math.floor(
+            Math.ceil(
                 clockSeconds
             ),
+
+        /*
+        This new column preserves tenths.
+        */
+
+        clock_milliseconds:
+            remainingMilliseconds,
 
         clock_running:
             clockRunning,
 
         clock_end_time:
 
-            clockRunning&&clockEndTime
+            clockRunning && clockEndTime
 
             ?new Date(
                 clockEndTime
             ).toISOString()
 
             :null
-
     })
     .eq(
         "id",
@@ -3813,7 +3826,6 @@ async function saveClockState(){
     )
     .select("*")
     .single();
-
 
     if(error){
 
@@ -3825,7 +3837,6 @@ async function saveClockState(){
         return false;
     }
 
-
     if(data){
 
         currentGame={
@@ -3835,7 +3846,6 @@ async function saveClockState(){
             ...data
         };
     }
-
 
     return true;
 }
@@ -3854,7 +3864,7 @@ async function loadPersistedClock(){
     await supabaseClient
     .from("games")
     .select(
-        "clock_seconds,clock_running,clock_end_time"
+        "clock_seconds,clock_milliseconds,clock_running,clock_end_time"
     )
     .eq(
         "id",
@@ -3862,16 +3872,13 @@ async function loadPersistedClock(){
     )
     .single();
 
-
     if(
-        error||
+        error ||
         !data
     ){
 
         clockSeconds=600;
-
         clockRunning=false;
-
         clockEndTime=null;
 
         updateClockDisplay();
@@ -3879,21 +3886,37 @@ async function loadPersistedClock(){
         return;
     }
 
+    /*
+    Use milliseconds when available.
+    Otherwise, use the old seconds value.
+    */
 
-    clockSeconds=
-        Math.max(
-            0,
-            Math.floor(
+    if(
+        data.clock_milliseconds !== null &&
+        data.clock_milliseconds !== undefined
+    ){
+
+        clockSeconds=
+            Math.max(
+                0,
                 Number(
-                    data.clock_seconds??600
-                )
-            )
-        );
+                    data.clock_milliseconds
+                ) / 1000
+            );
+    }
+    else{
 
+        clockSeconds=
+            Math.max(
+                0,
+                Number(
+                    data.clock_seconds ?? 600
+                )
+            );
+    }
 
     clockRunning=
-        data.clock_running===true;
-
+        data.clock_running === true;
 
     clockEndTime=
         data.clock_end_time
@@ -3904,38 +3927,30 @@ async function loadPersistedClock(){
 
         :null;
 
-
     if(
-        clockRunning&&
+        clockRunning &&
         clockEndTime
     ){
 
         clockSeconds=
             Math.max(
-
                 0,
+                (
+       clockEndTime=
 
-                Math.ceil(
+    Date.now()
 
-                    (
-                        clockEndTime-
-                        Date.now()
-                    )/
+    +
 
-                    1000
-
-                )
-
-            );
+    Math.round(
+        clockSeconds * 1000
+    );
     }
 
-
-    if(clockSeconds<=0){
+    if(clockSeconds <= 0){
 
         clockSeconds=0;
-
         clockRunning=false;
-
         clockEndTime=null;
 
         updateClockDisplay();
@@ -3945,12 +3960,10 @@ async function loadPersistedClock(){
         return;
     }
 
-
     updateClockDisplay();
 
-
     if(
-        clockRunning&&
+        clockRunning &&
         clockEndTime
     ){
 
@@ -3962,36 +3975,28 @@ async function loadPersistedClock(){
         ){
 
             if(
-                playerOnCourt[id]===true
+                playerOnCourt[id] === true
             ){
 
                 const stats=
-                    playerStatsMap[id]||{};
-
+                    playerStatsMap[id] || {};
 
                 playerMinuteBaseSeconds[id]=
-
                     Math.max(
-
                         0,
-
                         Number(
-                            stats.minutes_played||0
+                            stats.minutes_played || 0
                         )
-
                     );
 
-
-                playerMinuteLastClockSeconds[id]
-                    =clockSeconds;
+                playerMinuteLastClockSeconds[id]=
+                    clockSeconds;
             }
         }
-
 
         startClockInternal();
     }
 }
-
 
 /* =========================================================
    CLOCK DISPLAY
@@ -3999,31 +4004,85 @@ async function loadPersistedClock(){
 
 function updateClockDisplay(){
 
-    const safe=
-
+    const safeMilliseconds=
         Math.max(
-
             0,
-
-            Math.floor(
+            Math.ceil(
                 Number(
-                    clockSeconds||0
-                )
+                    clockSeconds || 0
+                ) * 1000
             )
-
         );
 
+    const clock=
+        document.getElementById(
+            "gameClock"
+        );
 
-    document.getElementById(
-        "gameClock"
-    ).textContent=
+    /*
+    Show tenths during the final minute.
+    */
 
-        String(
+    if(safeMilliseconds < 60000){
 
+        const wholeSeconds=
             Math.floor(
-                safe/60
+                safeMilliseconds / 1000
+            );
+
+        const tenths=
+            Math.floor(
+                (
+                    safeMilliseconds % 1000
+                ) / 100
+            );
+
+        clock.textContent=
+
+            "00:"
+
+            +
+
+            String(
+                wholeSeconds
+            ).padStart(
+                2,
+                "0"
             )
 
+            +
+
+            "."
+
+            +
+
+            tenths;
+
+        return;
+    }
+
+    /*
+    Show normal minutes and seconds
+    above one minute.
+    */
+
+    const totalSeconds=
+        Math.ceil(
+            safeMilliseconds / 1000
+        );
+
+    const minutes=
+        Math.floor(
+            totalSeconds / 60
+        );
+
+    const seconds=
+        totalSeconds % 60;
+
+    clock.textContent=
+
+        String(
+            minutes
         ).padStart(
             2,
             "0"
@@ -4036,7 +4095,7 @@ function updateClockDisplay(){
         +
 
         String(
-            safe%60
+            seconds
         ).padStart(
             2,
             "0"
@@ -4167,24 +4226,18 @@ function startClockInternal(){
                 }
 
 
-                clockSeconds=
+               clockSeconds=
 
-                    Math.max(
+    Math.max(
 
-                        0,
+        0,
 
-                        Math.ceil(
+        (
+            clockEndTime -
+            Date.now()
+        ) / 1000
 
-                            (
-                                clockEndTime-
-                                Date.now()
-                            )/
-
-                            1000
-
-                        )
-
-                    );
+    );
 
 
                 synchronizePlayerMinutes();
@@ -4300,22 +4353,16 @@ async function pauseClock(){
 
     clockSeconds=
 
-        Math.max(
+    Math.max(
 
-            0,
+        0,
 
-            Math.ceil(
+        (
+            clockEndTime -
+            Date.now()
+        ) / 1000
 
-                (
-                    clockEndTime-
-                    Date.now()
-                )/
-
-                1000
-
-            )
-
-        );
+    );
 
 
     synchronizePlayerMinutes();
@@ -4364,22 +4411,16 @@ async function resetClock(){
 
         clockSeconds=
 
-            Math.max(
+    Math.max(
 
-                0,
+        0,
 
-                Math.ceil(
+        (
+            clockEndTime -
+            Date.now()
+        ) / 1000
 
-                    (
-                        clockEndTime-
-                        Date.now()
-                    )/
-
-                    1000
-
-                )
-
-            );
+    );
 
         synchronizePlayerMinutes();
     }
@@ -4448,13 +4489,15 @@ async function resetClock(){
     .from("games")
     .update({
 
-        clock_seconds:600,
+    clock_seconds:600,
 
-        clock_running:false,
+    clock_milliseconds:600000,
 
-        clock_end_time:null
+    clock_running:false,
 
-    })
+    clock_end_time:null
+
+})
     .eq(
         "id",
         currentGame.id
