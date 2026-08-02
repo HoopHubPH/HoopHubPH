@@ -1098,7 +1098,7 @@ body.auth-pending > *:not(#scorekeeperAuthScreen):not(script){
 <a href="index.html" class="logo">HOOP <span>HUB PH</span></a>
 
 <nav>
-<a href="super-admin.html">Dashboard</a>
+<a id="adminDashboardLink" href="super-admin.html">Dashboard</a>
 <a href="index.html">Home</a>
 <a href="live-game.html">Live Game</a>
 <button
@@ -1389,13 +1389,16 @@ async function initializeSecureScorekeeper(){
         .eq("id",userData.user.id)
         .maybeSingle();
 
-        const hasSuperAdminAccess=
+        const hasAuthorizedRole=
             !profileError &&
             profile &&
-            profile.role==="super_admin" &&
-            profile.status==="active";
+            profile.status==="active" &&
+            (
+                profile.role==="super_admin" ||
+                profile.role==="scorekeeper"
+            );
 
-        if(!hasSuperAdminAccess){
+        if(!hasAuthorizedRole){
             setScorekeeperAuthMessage(
                 "This account is not authorized to open the scorekeeper."
             );
@@ -1419,7 +1422,24 @@ async function initializeSecureScorekeeper(){
             "scorekeeperAuthScreen"
         ).hidden=true;
 
-        await loadGame();
+        const dashboardLink=
+            document.getElementById(
+                "adminDashboardLink"
+            );
+
+        if(profile.role==="super_admin"){
+            await loadGame();
+        }else{
+            dashboardLink.style.display="none";
+
+            document.getElementById(
+                "gameId"
+            ).value="";
+
+            showStatus(
+                "Enter a Game ID assigned to your scorekeeper account."
+            );
+        }
 
     }catch(error){
 
@@ -1454,6 +1474,58 @@ async function logoutScorekeeper(){
     }
 
     await redirectToLogin(true);
+}
+
+
+async function canCurrentUserAccessGame(gameId){
+
+    if(
+        !authenticatedUser ||
+        !authenticatedProfile ||
+        authenticatedProfile.status!=="active"
+    ){
+        return false;
+    }
+
+    if(
+        authenticatedProfile.role===
+        "super_admin"
+    ){
+        return true;
+    }
+
+    if(
+        authenticatedProfile.role!==
+        "scorekeeper"
+    ){
+        return false;
+    }
+
+    const {
+        data:assignment,
+        error:assignmentError
+    }=
+    await supabaseClient
+    .from("game_scorekeepers")
+    .select("game_id")
+    .eq("game_id",gameId)
+    .eq(
+        "scorekeeper_id",
+        authenticatedUser.id
+    )
+    .eq("active",true)
+    .maybeSingle();
+
+    if(assignmentError){
+        console.error(
+            "Unable to verify game assignment:",
+            assignmentError
+        );
+
+        return false;
+    }
+
+    return Boolean(assignment);
 }
 
 let currentGame=null;
@@ -2327,6 +2399,20 @@ async function loadGame(){
 
         showStatus(
             "Enter a valid Game ID."
+        );
+
+        return;
+    }
+
+    const canAccessGame=
+        await canCurrentUserAccessGame(
+            gameId
+        );
+
+    if(!canAccessGame){
+
+        showStatus(
+            "You are not assigned to this game."
         );
 
         return;
