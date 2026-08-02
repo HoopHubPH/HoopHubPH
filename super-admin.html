@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="HoopHub PH Super Admin dashboard.">
+  <title>Super Admin | HoopHub PH</title>
+
+  <style>
+    :root {
+      --orange: #ff6b00;
+      --orange-dark: #db5c00;
+      --orange-soft: #fff1e7;
+      --ink: #171717;
+      --muted: #68707d;
+      --line: #e5e7eb;
+      --background: #f4f5f7;
+      --surface: #ffffff;
+      --sidebar: #171717;
+      --success: #067647;
+      --success-soft: #ecfdf3;
+      --shadow: 0 8px 28px rgba(17, 24, 39, 0.07);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--background);
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .auth-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      background: #111111;
+    }
+
+    .auth-screen[hidden] {
+      display: none;
+    }
+
+    .auth-message {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .spinner {
+      width: 22px;
+      height: 22px;
+      border: 3px solid rgba(255, 255, 255, 0.25);
+      border-top-color: var(--orange);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .app-shell[hidden] {
+      display: none;
+    }
+
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 60;
+      height: 66px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #ffffff;
+      background: #111111;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .topbar-left,
+    .topbar-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .topbar-left {
+      gap: 16px;
+    }
+
+    .topbar-right {
+      gap: 12px;
+    }
+
+    .menu-button {
+      display: none;
+      width: 38px;
+      height: 38px;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .brand {
+      color: #ffffff;
+      font-size: 21px;
+      font-weight: 850;
+      letter-spacing: -0.4px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .brand span {
+      color: var(--orange);
+    }
+
+    .account-summary {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      line-height: 1.2;
+    }
+
+    .account-summary strong {
+      max-width: 200px;
+      overflow: hidden;
+      font-size: 13px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .account-summary span {
+      margin-top: 3px;
+      color: #aeb4bd;
+      font-size: 11px;
+    }
+
+    .logout-button {
+      height: 36px;
+      padding: 0 14px;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: border-color 0.18s ease, background 0.18s ease;
+    }
+
+    .logout-button:hover {
+      background: rgba(255, 107, 0, 0.17);
+      border-color: rgba(255, 107, 0, 0.55);
+    }
+
+    .sidebar {
+      position: fixed;
+      inset: 66px auto 0 0;
+      z-index: 50;
+      width: 246px;
+      padding: 22px 14px;
+      overflow-y: auto;
+      color: #ffffff;
+      background: var(--sidebar);
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .nav-label {
+      margin: 14px 12px 8px;
+      color: #777f8b;
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: 1.25px;
+      text-transform: uppercase;
+    }
+
+    .nav-link {
+      min-height: 43px;
+      margin-bottom: 4px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      color: #d6d9de;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: color 0.18s ease, background 0.18s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-link.active {
+      box-shadow: inset 3px 0 0 var(--orange);
+    }
+
+    .nav-icon {
+      width: 25px;
+      height: 25px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 25px;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.09);
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .nav-link.active .nav-icon {
+      background: var(--orange);
+    }
+
+    .nav-coming {
+      margin-left: auto;
+      color: #8b929c;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 66px 0 0 0;
+      z-index: 40;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .main-content {
+      min-height: 100vh;
+      margin-left: 246px;
+      padding: 96px clamp(22px, 3vw, 44px) 44px;
+    }
+
+    .content-wrap {
+      width: min(1220px, 100%);
+      margin: 0 auto;
+    }
+
+    .page-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 22px;
+    }
+
+    .page-heading h1 {
+      font-size: clamp(27px, 3vw, 36px);
+      letter-spacing: -1px;
+    }
+
+    .page-heading p {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .role-badge {
+      min-height: 34px;
+      padding: 0 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--success);
+      background: var(--success-soft);
+      border: 1px solid #abefc6;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .role-badge::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      background: #17b26a;
+      border-radius: 50%;
+    }
+
+    .stats-grid {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 15px;
+    }
+
+    .stat-card {
+      min-height: 138px;
+      padding: 21px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .stat-symbol {
+      width: 33px;
+      height: 33px;
+      display: grid;
+      place-items: center;
+      color: var(--orange);
+      background: var(--orange-soft);
+      border-radius: 9px;
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .stat-value {
+      margin-top: 16px;
+      font-size: 31px;
+      font-weight: 850;
+      letter-spacing: -1px;
+    }
+
+    .stat-helper {
+      margin-top: 4px;
+      color: #9298a1;
+      font-size: 11px;
+    }
+
+    .section-grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.8fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-header {
+      min-height: 68px;
+      padding: 18px 21px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-header h2 {
+      font-size: 17px;
+      letter-spacing: -0.3px;
+    }
+
+    .panel-header p {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .panel-tag {
+      padding: 6px 9px;
+      color: #8c4a13;
+      background: var(--orange-soft);
+      border-radius: 999px;
+      font-size: 9px;
+      font-weight: 850;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .quick-grid {
+      padding: 17px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+    }
+
+    .quick-card {
+      min-height: 112px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: var(--ink);
+      background: #fafafa;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      text-decoration: none;
+      transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .quick-card:hover {
+      border-color: rgba(255, 107, 0, 0.5);
+      box-shadow: 0 8px 20px rgba(17, 24, 39, 0.07);
+      transform: translateY(-2px);
+    }
+
+    .quick-card strong {
+      font-size: 14px;
+    }
+
+    .quick-card span {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .quick-arrow {
+      align-self: flex-end;
+      color: var(--orange) !important;
+      font-size: 17px !important;
+      font-weight: 850;
+    }
+
+    .setup-list {
+      padding: 9px 20px 15px;
+    }
+
+    .setup-item {
+      padding: 16px 0;
+      display: grid;
+      grid-template-columns: 30px 1fr;
+      gap: 11px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .setup-item:last-child {
+      border-bottom: 0;
+    }
+
+    .setup-number {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      color: var(--orange);
+      background: var(--orange-soft);
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .setup-item strong {
+      display: block;
+      font-size: 13px;
+    }
+
+    .setup-item p {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .footer-note {
+      margin-top: 20px;
+      color: #8c929b;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    @media (max-width: 1060px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .section-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 780px) {
+      .menu-button {
+        display: inline-flex;
+      }
+
+      .sidebar {
+        transform: translateX(-105%);
+        transition: transform 0.2s ease;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay.open {
+        display: block;
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding-top: 92px;
+      }
+
+      .account-summary {
+        display: none;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .topbar {
+        padding: 0 14px;
+      }
+
+      .topbar-left {
+        gap: 10px;
+      }
+
+      .brand {
+        font-size: 18px;
+      }
+
+      .logout-button {
+        padding: 0 11px;
+      }
+
+      .main-content {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .page-heading {
+        flex-direction: column;
+      }
+
+      .stats-grid,
+      .quick-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-card {
+        min-height: 122px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-message">
+      <span class="spinner" aria-hidden="true"></span>
+      <span>Verifying Super Admin access...</span>
+    </div>
+  </div>
+
+  <div id="appShell" class="app-shell" hidden>
+    <header class="topbar">
+      <div class="topbar-left">
+        <button
+          id="menuButton"
+          class="menu-button"
+          type="button"
+          aria-label="Open navigation"
+          aria-controls="sidebar"
+          aria-expanded="false"
+        >☰</button>
+        <a class="brand" href="super-admin.html">HOOP <span>HUB PH</span></a>
+      </div>
+
+      <div class="topbar-right">
+        <div class="account-summary">
+          <strong id="headerAccountName">HoopHub PH Owner</strong>
+          <span>Super Admin</span>
+        </div>
+        <button id="logoutButton" class="logout-button" type="button">Log Out</button>
+      </div>
+    </header>
+
+    <aside id="sidebar" class="sidebar" aria-label="Super Admin navigation">
+      <p class="nav-label">Overview</p>
+      <a class="nav-link active" href="super-admin.html">
+        <span class="nav-icon">OV</span>
+        Dashboard
+      </a>
+
+      <p class="nav-label">Basketball</p>
+      <a class="nav-link" href="leagues.html">
+        <span class="nav-icon">LG</span>
+        Leagues
+      </a>
+      <a class="nav-link" href="tournaments.html">
+        <span class="nav-icon">TR</span>
+        Tournaments
+      </a>
+      <a class="nav-link" href="teams.html">
+        <span class="nav-icon">TM</span>
+        Teams
+      </a>
+      <a class="nav-link" href="players.html">
+        <span class="nav-icon">PL</span>
+        Players
+      </a>
+      <a class="nav-link" href="scorekeeper.html">
+        <span class="nav-icon">SK</span>
+        Scorekeeper
+      </a>
+
+      <p class="nav-label">Administration</p>
+      <a class="nav-link" href="#upcoming-admin-tools">
+        <span class="nav-icon">AC</span>
+        Accounts
+        <span class="nav-coming">Next</span>
+      </a>
+      <a class="nav-link" href="#upcoming-admin-tools">
+        <span class="nav-icon">AL</span>
+        Activity Logs
+        <span class="nav-coming">Next</span>
+      </a>
+      <a class="nav-link" href="#upcoming-admin-tools">
+        <span class="nav-icon">AN</span>
+        Announcements
+        <span class="nav-coming">Next</span>
+      </a>
+    </aside>
+
+    <div id="sidebarOverlay" class="sidebar-overlay" aria-hidden="true"></div>
+
+    <main class="main-content">
+      <div class="content-wrap">
+        <section class="page-heading">
+          <div>
+            <h1 id="welcomeHeading">Welcome, HoopHub PH Owner</h1>
+            <p>Monitor the platform and open any HoopHub PH management area.</p>
+          </div>
+          <span class="role-badge">Active Super Admin</span>
+        </section>
+
+        <section class="stats-grid" aria-label="Platform totals">
+          <article class="stat-card">
+            <div class="stat-top">
+              <span class="stat-label">Leagues</span>
+              <span class="stat-symbol">LG</span>
+            </div>
+            <div id="leagueCount" class="stat-value">—</div>
+            <p class="stat-helper">All accessible league records</p>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-top">
+              <span class="stat-label">Teams</span>
+              <span class="stat-symbol">TM</span>
+            </div>
+            <div id="teamCount" class="stat-value">—</div>
+            <p class="stat-helper">Registered team records</p>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-top">
+              <span class="stat-label">Players</span>
+              <span class="stat-symbol">PL</span>
+            </div>
+            <div id="playerCount" class="stat-value">—</div>
+            <p class="stat-helper">Registered player profiles</p>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-top">
+              <span class="stat-label">Games</span>
+              <span class="stat-symbol">GM</span>
+            </div>
+            <div id="gameCount" class="stat-value">—</div>
+            <p class="stat-helper">All available game records</p>
+          </article>
+        </section>
+
+        <section class="section-grid">
+          <article class="panel">
+            <header class="panel-header">
+              <div>
+                <h2>Platform Management</h2>
+                <p>Open an existing HoopHub PH management page.</p>
+              </div>
+              <span class="panel-tag">Quick Access</span>
+            </header>
+
+            <div class="quick-grid">
+              <a class="quick-card" href="leagues.html">
+                <strong>Manage Leagues</strong>
+                <span>Create, review, and maintain league information.</span>
+                <span class="quick-arrow">→</span>
+              </a>
+
+              <a class="quick-card" href="teams.html">
+                <strong>Manage Teams</strong>
+                <span>Open registered team profiles and rosters.</span>
+                <span class="quick-arrow">→</span>
+              </a>
+
+              <a class="quick-card" href="players.html">
+                <strong>View Players</strong>
+                <span>Review player profiles and available records.</span>
+                <span class="quick-arrow">→</span>
+              </a>
+
+              <a class="quick-card" href="scorekeeper.html">
+                <strong>Open Scorekeeper</strong>
+                <span>Access live-game clock and statistics controls.</span>
+                <span class="quick-arrow">→</span>
+              </a>
+
+              <a class="quick-card" href="tournaments.html">
+                <strong>View Tournaments</strong>
+                <span>Open current tournament and competition pages.</span>
+                <span class="quick-arrow">→</span>
+              </a>
+
+              <a class="quick-card" href="index.html">
+                <strong>View Public Website</strong>
+                <span>Return to the public HoopHub PH homepage.</span>
+                <span class="quick-arrow">→</span>
+              </a>
+            </div>
+          </article>
+
+          <article id="upcoming-admin-tools" class="panel">
+            <header class="panel-header">
+              <div>
+                <h2>Upcoming Admin Tools</h2>
+                <p>The next secure management modules.</p>
+              </div>
+              <span class="panel-tag">Next Phase</span>
+            </header>
+
+            <div class="setup-list">
+              <div class="setup-item">
+                <span class="setup-number">1</span>
+                <div>
+                  <strong>Account Approvals</strong>
+                  <p>Approve commissioners and manage account status.</p>
+                </div>
+              </div>
+
+              <div class="setup-item">
+                <span class="setup-number">2</span>
+                <div>
+                  <strong>League Assignments</strong>
+                  <p>Assign commissioners without allowing cross-league access.</p>
+                </div>
+              </div>
+
+              <div class="setup-item">
+                <span class="setup-number">3</span>
+                <div>
+                  <strong>Game Assignments</strong>
+                  <p>Restrict scorekeepers to specifically assigned games.</p>
+                </div>
+              </div>
+
+              <div class="setup-item">
+                <span class="setup-number">4</span>
+                <div>
+                  <strong>Activity Logs</strong>
+                  <p>Record approvals, corrections, suspensions, and finalizations.</p>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <p id="lastUpdated" class="footer-note">Dashboard totals are loading...</p>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://tkrsyiwffqkgfyooewsf.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
+
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    const authScreen = document.getElementById("authScreen");
+    const appShell = document.getElementById("appShell");
+    const logoutButton = document.getElementById("logoutButton");
+    const menuButton = document.getElementById("menuButton");
+    const sidebar = document.getElementById("sidebar");
+    const sidebarOverlay = document.getElementById("sidebarOverlay");
+
+    function displayAccount(profile, user) {
+      const emailName = user.email ? user.email.split("@")[0] : "Owner";
+      const displayName = profile.full_name.trim() || emailName;
+
+      document.getElementById("headerAccountName").textContent = displayName;
+      document.getElementById("welcomeHeading").textContent = `Welcome, ${displayName}`;
+    }
+
+    async function returnToLogin(signOutFirst = false) {
+      if (signOutFirst) {
+        await supabaseClient.auth.signOut();
+      }
+
+      window.location.replace("login.html");
+    }
+
+    async function requireSuperAdmin() {
+      try {
+        const { data: userData, error: userError } =
+          await supabaseClient.auth.getUser();
+
+        if (userError || !userData.user) {
+          await returnToLogin(false);
+          return;
+        }
+
+        const { data: profile, error: profileError } = await supabaseClient
+          .from("profiles")
+          .select("full_name, role, status")
+          .eq("id", userData.user.id)
+          .maybeSingle();
+
+        const hasAccess =
+          !profileError &&
+          profile &&
+          profile.role === "super_admin" &&
+          profile.status === "active";
+
+        if (!hasAccess) {
+          await returnToLogin(true);
+          return;
+        }
+
+        displayAccount(profile, userData.user);
+        authScreen.hidden = true;
+        appShell.hidden = false;
+        await loadDashboardCounts();
+      } catch (error) {
+        console.error("Authorization check failed:", error);
+        await returnToLogin(true);
+      }
+    }
+
+    async function loadTableCount(tableName, elementId) {
+      const element = document.getElementById(elementId);
+
+      try {
+        const { count, error } = await supabaseClient
+          .from(tableName)
+          .select("*", { count: "exact", head: true });
+
+        if (error) {
+          console.warn(`Unable to load ${tableName} count:`, error.message);
+          element.textContent = "—";
+          element.title = "This total will appear after its table access is configured.";
+          return;
+        }
+
+        element.textContent = Number(count || 0).toLocaleString();
+      } catch (error) {
+        console.warn(`Unable to load ${tableName} count:`, error);
+        element.textContent = "—";
+      }
+    }
+
+    async function loadDashboardCounts() {
+      await Promise.all([
+        loadTableCount("leagues", "leagueCount"),
+        loadTableCount("teams", "teamCount"),
+        loadTableCount("players", "playerCount"),
+        loadTableCount("games", "gameCount")
+      ]);
+
+      document.getElementById("lastUpdated").textContent =
+        `Dashboard checked ${new Date().toLocaleString("en-PH")}`;
+    }
+
+    function closeSidebar() {
+      sidebar.classList.remove("open");
+      sidebarOverlay.classList.remove("open");
+      menuButton.setAttribute("aria-expanded", "false");
+    }
+
+    function toggleSidebar() {
+      const willOpen = !sidebar.classList.contains("open");
+      sidebar.classList.toggle("open", willOpen);
+      sidebarOverlay.classList.toggle("open", willOpen);
+      menuButton.setAttribute("aria-expanded", String(willOpen));
+    }
+
+    menuButton.addEventListener("click", toggleSidebar);
+    sidebarOverlay.addEventListener("click", closeSidebar);
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        closeSidebar();
+      }
+    });
+
+    document.querySelectorAll(".sidebar .nav-link").forEach(function (link) {
+      link.addEventListener("click", closeSidebar);
+    });
+
+    logoutButton.addEventListener("click", async function () {
+      logoutButton.disabled = true;
+      logoutButton.textContent = "Logging Out...";
+      await returnToLogin(true);
+    });
+
+    requireSuperAdmin();
+  </script>
+</body>
+
+</html>
