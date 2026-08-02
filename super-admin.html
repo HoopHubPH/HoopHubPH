@@ -64,7 +64,7 @@
       align-items: center;
       gap: 12px;
       font-size: 14px;
-      font-weight: 700;
+      font-weight: bold;
     }
 
     .spinner {
@@ -131,7 +131,7 @@
     .brand {
       color: #ffffff;
       font-size: 21px;
-      font-weight: 850;
+      font-weight: bold;
       letter-spacing: -0.4px;
       text-decoration: none;
       white-space: nowrap;
@@ -170,7 +170,7 @@
       border: 1px solid rgba(255, 255, 255, 0.14);
       border-radius: 8px;
       font-size: 12px;
-      font-weight: 800;
+      font-weight: bold;
       cursor: pointer;
       transition: border-color 0.18s ease, background 0.18s ease;
     }
@@ -196,7 +196,7 @@
       margin: 14px 12px 8px;
       color: #777f8b;
       font-size: 10px;
-      font-weight: 850;
+      font-weight: bold;
       letter-spacing: 1.25px;
       text-transform: uppercase;
     }
@@ -211,7 +211,7 @@
       color: #d6d9de;
       border-radius: 9px;
       font-size: 13px;
-      font-weight: 700;
+      font-weight: bold;
       text-decoration: none;
       transition: color 0.18s ease, background 0.18s ease;
     }
@@ -236,7 +236,7 @@
       background: rgba(255, 255, 255, 0.09);
       border-radius: 7px;
       font-size: 11px;
-      font-weight: 850;
+      font-weight: bold;
     }
 
     .nav-link.active .nav-icon {
@@ -247,7 +247,7 @@
       margin-left: auto;
       color: #8b929c;
       font-size: 9px;
-      font-weight: 800;
+      font-weight: bold;
       letter-spacing: 0.4px;
       text-transform: uppercase;
     }
@@ -301,7 +301,7 @@
       border: 1px solid #abefc6;
       border-radius: 999px;
       font-size: 11px;
-      font-weight: 850;
+      font-weight: bold;
       white-space: nowrap;
     }
 
@@ -339,7 +339,7 @@
     .stat-label {
       color: var(--muted);
       font-size: 12px;
-      font-weight: 750;
+      font-weight: bold;
     }
 
     .stat-symbol {
@@ -351,13 +351,13 @@
       background: var(--orange-soft);
       border-radius: 9px;
       font-size: 11px;
-      font-weight: 850;
+      font-weight: bold;
     }
 
     .stat-value {
       margin-top: 16px;
       font-size: 31px;
-      font-weight: 850;
+      font-weight: bold;
       letter-spacing: -1px;
     }
 
@@ -409,7 +409,7 @@
       background: var(--orange-soft);
       border-radius: 999px;
       font-size: 9px;
-      font-weight: 850;
+      font-weight: bold;
       letter-spacing: 0.5px;
       text-transform: uppercase;
       white-space: nowrap;
@@ -456,7 +456,7 @@
       align-self: flex-end;
       color: var(--orange) !important;
       font-size: 17px !important;
-      font-weight: 850;
+      font-weight: bold;
     }
 
     .setup-list {
@@ -484,7 +484,7 @@
       background: var(--orange-soft);
       border-radius: 8px;
       font-size: 11px;
-      font-weight: 850;
+      font-weight: bold;
     }
 
     .setup-item strong {
@@ -579,6 +579,7 @@
         min-height: 122px;
       }
     }
+
   </style>
 </head>
 
@@ -643,15 +644,13 @@
       </a>
 
       <p class="nav-label">Administration</p>
-      <a class="nav-link" href="#upcoming-admin-tools">
+      <a id="accountManagementLink" class="nav-link" href="./account-management.html">
         <span class="nav-icon">AC</span>
         Accounts
-        <span class="nav-coming">Next</span>
       </a>
-      <a class="nav-link" href="#upcoming-admin-tools">
+      <a class="nav-link" href="account-management.html#activity-log">
         <span class="nav-icon">AL</span>
         Activity Logs
-        <span class="nav-coming">Next</span>
       </a>
       <a class="nav-link" href="#upcoming-admin-tools">
         <span class="nav-icon">AN</span>
@@ -728,8 +727,14 @@
               </a>
 
               <a class="quick-card" href="teams.html">
-                <strong>Manage Teams</strong>
-                <span>Open registered team profiles and rosters.</span>
+                <strong>View Public Teams</strong>
+                <span>Open the public read-only team directory.</span>
+                <span class="quick-arrow">→</span>
+              </a>
+
+              <a class="quick-card" href="commissioner-dashboard.html#createTeamPanel">
+                <strong>Create Team</strong>
+                <span>Create and register a team in an active league.</span>
                 <span class="quick-arrow">→</span>
               </a>
 
@@ -739,9 +744,27 @@
                 <span class="quick-arrow">→</span>
               </a>
 
+              <a class="quick-card" href="add-player.html">
+                <strong>Add Player</strong>
+                <span>Create an official player record for an approved league team.</span>
+                <span class="quick-arrow">→</span>
+              </a>
+
               <a class="quick-card" href="scorekeeper.html">
                 <strong>Open Scorekeeper</strong>
                 <span>Access live-game clock and statistics controls.</span>
+                <span class="quick-arrow">→</span>
+              </a>
+
+              <a class="quick-card" href="account-management.html">
+                <strong>Manage Accounts</strong>
+                <span>Approve users, change roles, and control account status.</span>
+                <span class="quick-arrow">→</span>
+              </a>
+
+              <a class="quick-card" href="account-management.html#activity-log">
+                <strong>View Activity Logs</strong>
+                <span>Review account changes and scorekeeper assignments.</span>
                 <span class="quick-arrow">→</span>
               </a>
 
@@ -762,8 +785,8 @@
           <article id="upcoming-admin-tools" class="panel">
             <header class="panel-header">
               <div>
-                <h2>Upcoming Admin Tools</h2>
-                <p>The next secure management modules.</p>
+                <h2>Next Platform Modules</h2>
+                <p>The next role-based HoopHub PH workspaces.</p>
               </div>
               <span class="panel-tag">Next Phase</span>
             </header>
@@ -772,32 +795,32 @@
               <div class="setup-item">
                 <span class="setup-number">1</span>
                 <div>
-                  <strong>Account Approvals</strong>
-                  <p>Approve commissioners and manage account status.</p>
+                  <strong>Commissioner Workspace</strong>
+                  <p>Manage assigned leagues, seasons, schedules, and approvals.</p>
                 </div>
               </div>
 
               <div class="setup-item">
                 <span class="setup-number">2</span>
                 <div>
-                  <strong>League Assignments</strong>
-                  <p>Assign commissioners without allowing cross-league access.</p>
+                  <strong>Coach Registration</strong>
+                  <p>Connect approved coaches to specific teams and rosters.</p>
                 </div>
               </div>
 
               <div class="setup-item">
                 <span class="setup-number">3</span>
                 <div>
-                  <strong>Game Assignments</strong>
-                  <p>Restrict scorekeepers to specifically assigned games.</p>
+                  <strong>Player Invitations</strong>
+                  <p>Let players accept team invitations and manage profiles.</p>
                 </div>
               </div>
 
               <div class="setup-item">
                 <span class="setup-number">4</span>
                 <div>
-                  <strong>Activity Logs</strong>
-                  <p>Record approvals, corrections, suspensions, and finalizations.</p>
+                  <strong>Announcements and Reports</strong>
+                  <p>Publish platform notices and generate league reports.</p>
                 </div>
               </div>
             </div>
@@ -937,6 +960,12 @@
 
     document.querySelectorAll(".sidebar .nav-link").forEach(function (link) {
       link.addEventListener("click", closeSidebar);
+    });
+
+    document.getElementById("accountManagementLink").addEventListener("click", function (event) {
+      event.preventDefault();
+      closeSidebar();
+      window.location.assign("./account-management.html");
     });
 
     logoutButton.addEventListener("click", async function () {
