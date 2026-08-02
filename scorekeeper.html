@@ -266,6 +266,14 @@ nav{
     color:#fff;
 }
 
+.clock-card button:disabled{
+    border-color:#ddd;
+    background:#f1f1f1;
+    color:#aaa;
+    cursor:not-allowed;
+    opacity:.65;
+}
+
 .clock button{
     background:#111;
     color:#fff;
@@ -1062,8 +1070,8 @@ nav{
 <button onclick="startClock()">START</button>
 <button onclick="pauseClock()">PAUSE</button>
 <button onclick="resetClock()">RESET</button>
-<button onclick="adjustGameClock(-1)" title="Remove 1 second from game clock">−1</button>
-<button onclick="adjustGameClock(1)" title="Add 1 second to game clock">+1</button>
+<button class="manual-time-adjustment" onclick="adjustGameClock(-1)" title="Remove 1 second from game clock">−1</button>
+<button class="manual-time-adjustment" onclick="adjustGameClock(1)" title="Add 1 second to game clock">+1</button>
 </div>
 
 </div>
@@ -1078,8 +1086,8 @@ nav{
 <div class="shot-clock-controls">
 <button onclick="resetShotClock(24)" title="Reset shot clock to 24 seconds">24</button>
 <button onclick="resetShotClock(14)" title="Reset shot clock to 14 seconds">14</button>
-<button onclick="adjustShotClock(-1)" title="Remove 1 second">−1</button>
-<button onclick="adjustShotClock(1)" title="Add 1 second">+1</button>
+<button class="manual-time-adjustment" onclick="adjustShotClock(-1)" title="Remove 1 second from shot clock">−1</button>
+<button class="manual-time-adjustment" onclick="adjustShotClock(1)" title="Add 1 second to shot clock">+1</button>
 </div>
 </div>
 
@@ -1534,6 +1542,27 @@ function updateSubstitutionButtons(){
 
         }
 
+    });
+
+
+    document
+    .querySelectorAll(
+        ".manual-time-adjustment"
+    )
+    .forEach(button=>{
+
+        button.disabled=clockRunning;
+
+        if(clockRunning){
+
+            button.title=
+                "Pause the game clock before adjusting time.";
+        }
+        else{
+
+            button.title=
+                "Manual time adjustment available while paused.";
+        }
     });
 }
 
@@ -4467,6 +4496,15 @@ async function adjustShotClock(amount){
         return;
     }
 
+    if(clockRunning){
+
+        showStatus(
+            "Pause the game clock before adjusting time."
+        );
+
+        return;
+    }
+
     const adjustment=Number(amount);
 
     if(!Number.isFinite(adjustment)){
@@ -5328,6 +5366,15 @@ async function adjustGameClock(amount){
 
         showStatus(
             "Load a game first."
+        );
+
+        return;
+    }
+
+    if(clockRunning){
+
+        showStatus(
+            "Pause the game clock before adjusting time."
         );
 
         return;
