@@ -1858,6 +1858,20 @@ async function reconcileManualMinuteOverrides(playerIds){
             continue;
         }
 
+        /*
+        Only accept a manual downward correction while
+        the game clock is paused. This prevents a delayed
+        save or another open scorekeeper tab from making
+        stopped player minutes appear to keep running.
+        */
+
+        if(
+            clockRunning ||
+            databaseTotal >= lastPersisted
+        ){
+            continue;
+        }
+
         playerMinuteBaseSeconds[playerId]=
             databaseTotal;
 
@@ -1891,7 +1905,7 @@ async function reconcileManualMinuteOverrides(playerIds){
         );
 
         showStatus(
-            "Manual Supabase minutes update applied."
+            "Manual Supabase minutes reset applied."
         );
 
         return true;
