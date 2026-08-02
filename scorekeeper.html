@@ -1269,7 +1269,7 @@ HALF
 <button id="status-final"
 class="control-button"
 onclick="setGameStatus('Final')">
-FINAL
+FINALIZE GAME
 </button>
 
 </div>
@@ -2517,6 +2517,10 @@ async function loadGame(){
 
     setActiveStatus(
         data.status
+    );
+
+    setFinalizedLock(
+        String(data.status||"").toLowerCase()==="final"
     );
 
 
@@ -6060,14 +6064,129 @@ async function setGameStatus(status){
     }
 
 
-    setActiveStatus(
-        status
+    if(String(currentGame.status||"").toLowerCase()==="final"){
+        showStatus("This game is finalized and locked.");
+        return;
+    }
+
+    if(status==="Final"){
+        await finalizeCurrentGame();
+        return;
+    }
+
+    setActiveStatus(status);
+    await updateGame({status});
+}
+
+
+function setFinalizedLock(locked){
+
+    document.querySelectorAll(
+        ".clock-controls button, .shot-clock-controls button, "+
+        ".period-buttons button, .stat-btn, .shot-btn, .sub-button, "+
+        "#status-live, #status-half, #status-final"
+    ).forEach(button=>{
+        button.disabled=Boolean(locked);
+    });
+
+    const finalButton=document.getElementById("status-final");
+    if(finalButton){
+        finalButton.textContent=locked ? "GAME FINALIZED" : "FINALIZE GAME";
+    }
+}
+
+
+async function flushAllPendingStats(){
+
+    for(const playerId of Object.keys(playerStatsMap)){
+        await flushStatSave(playerId);
+    }
+
+    const deadline=Date.now()+5000;
+
+    while(
+        (statSaveQueue.size>0 || statSaveInFlight.size>0) &&
+        Date.now()<deadline
+    ){
+        await new Promise(resolve=>setTimeout(resolve,50));
+
+        for(const playerId of Object.keys(playerStatsMap)){
+            await flushStatSave(playerId);
+        }
+    }
+
+    if(statSaveQueue.size>0 || statSaveInFlight.size>0){
+        throw new Error("Some player statistics are still saving. Please try again.");
+    }
+}
+
+
+async function finalizeCurrentGame(){
+
+    if(clockRunning){
+        showStatus("Pause the game clock before finalizing the game.");
+        return;
+    }
+
+    const homeScore=Number(document.getElementById("homeScore").textContent||0);
+    const awayScore=Number(document.getElementById("awayScore").textContent||0);
+
+    if(homeScore===awayScore){
+        showStatus("A basketball game cannot be finalized while the score is tied.");
+        return;
+    }
+
+    const confirmed=window.confirm(
+        "Finalize this game? The final score, player totals and league standings will be saved and the game will be locked."
     );
 
+    if(!confirmed){
+        return;
+    }
 
-    await updateGame({
-        status
-    });
+    const finalButton=document.getElementById("status-final");
+    finalButton.disabled=true;
+    finalButton.textContent="FINALIZING...";
+
+    try{
+        showStatus("Saving final player statistics...");
+        await persistAllPlayerMinutes(true);
+        await flushAllPendingStats();
+
+        const {data,error}=await supabaseClient.rpc(
+            "finalize_basketball_game",
+            {p_game_id:currentGame.id}
+        );
+
+        if(error){
+            throw error;
+        }
+
+        const result=Array.isArray(data) ? data[0] : data;
+
+        currentGame={
+            ...currentGame,
+            status:"Final",
+            finalized_at:result?.finalized_at||new Date().toISOString()
+        };
+
+        setActiveStatus("Final");
+        setFinalizedLock(true);
+        stopMinuteDisplay();
+        stopMinutePersistence();
+
+        showStatus(
+            result?.already_finalized
+                ? "This game was already finalized."
+                : "Game finalized. Player totals and league standings are updated."
+        );
+    }
+    catch(error){
+        console.error("Finalize game error:",error);
+        finalButton.disabled=false;
+        finalButton.textContent="FINALIZE GAME";
+        showStatus("Unable to finalize game: "+(error.message||"Unknown error"));
+    }
 }
 
 
