@@ -1,485 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Leagues | Hoop Hub PH</title>
-
-    <style>
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f5f5f5;
-            color: #222;
-        }
-
-        header {
-            background: #111;
-            color: white;
-            padding: 18px 8%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-       .logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: white;
-    text-decoration: none;
-}
-
-.logo:visited {
-    color: white;
-}
-
-.logo:hover {
-    color: white;
-}
-
-.logo span {
-    color: #ff6b00;
-}
-
-        .logo span {
-            color: #ff6b00;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 25px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        nav a:hover {
-            color: #ff6b00;
-        }
-
-        .hero {
-            background: #111;
-            color: white;
-            text-align: center;
-            padding: 70px 20px;
-        }
-
-        .hero h1 {
-            font-size: 45px;
-            margin-bottom: 15px;
-        }
-
-        .hero h1 span {
-            color: #ff6b00;
-        }
-
-        .hero p {
-            color: #ccc;
-            font-size: 18px;
-        }
-
-        .section {
-            padding: 60px 8%;
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .section-title h2 {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-
-        .section-title p {
-            color: #666;
-        }
-
-        .leagues {
-            display: grid;
-            grid-template-columns:
-                repeat(auto-fit, minmax(260px, 1fr));
-
-            gap: 25px;
-        }
-
-        .league-card {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-
-            box-shadow:
-                0 5px 20px rgba(0,0,0,0.08);
-        }
-
-        .league-icon {
-            font-size: 45px;
-            margin-bottom: 15px;
-        }
-
-        .league-card h3 {
-            margin-bottom: 10px;
-        }
-
-        .league-card p {
-            color: #666;
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-
-        .league-info {
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        .league-info strong {
-            color: #ff6b00;
-        }
-
-        .view-button {
-            display: inline-block;
-            background: #ff6b00;
-            color: white;
-            text-decoration: none;
-
-            padding: 12px 20px;
-
-            border-radius: 5px;
-
-            font-weight: bold;
-        }
-
-        .register {
-            background: #ff6b00;
-            color: white;
-            text-align: center;
-            padding: 70px 20px;
-        }
-
-        .register h2 {
-            font-size: 35px;
-            margin-bottom: 15px;
-        }
-
-        .register p {
-            margin-bottom: 25px;
-        }
-
-        .register a {
-            display: inline-block;
-            background: white;
-            color: #ff6b00;
-
-            padding: 15px 30px;
-
-            border-radius: 5px;
-
-            text-decoration: none;
-
-            font-weight: bold;
-        }
-
-        footer {
-            background: #111;
-            color: white;
-            text-align: center;
-            padding: 30px;
-        }
-
-        footer p {
-            color: #aaa;
-            margin-top: 10px;
-        }
-
-        @media (max-width: 768px) {
-
-            header {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            nav a {
-                margin: 0 7px;
-                font-size: 12px;
-            }
-
-            .hero h1 {
-                font-size: 35px;
-            }
-
-        }
-
-    </style>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leagues | Hoop Hub PH</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Arial,Helvetica,sans-serif;background:#f5f5f5;color:#222}
+    header{background:#111;color:#fff;padding:18px 8%;display:flex;justify-content:space-between;align-items:center}
+    .logo{font-size:24px;font-weight:bold;color:#fff;text-decoration:none}
+    .logo:visited,.logo:hover{color:#fff}.logo span{color:#ff6b00}
+    nav a{color:#fff;text-decoration:none;margin-left:25px;font-weight:bold;font-size:14px}
+    nav a:hover{color:#ff6b00}
+    .hero{background:#111;color:#fff;text-align:center;padding:70px 20px}
+    .hero h1{font-size:45px;margin-bottom:15px}.hero h1 span{color:#ff6b00}
+    .hero p{color:#ccc;font-size:18px}
+    .section{padding:60px 8%}.section-title{text-align:center;margin-bottom:40px}
+    .section-title h2{font-size:32px;margin-bottom:10px}.section-title p{color:#666}
+    .leagues{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:25px}
+    .league-card{display:flex;flex-direction:column;background:#fff;border-radius:10px;padding:30px;box-shadow:0 5px 20px rgba(0,0,0,.08);transition:transform .18s ease,box-shadow .18s ease}
+    .league-card:hover{transform:translateY(-3px);box-shadow:0 9px 26px rgba(0,0,0,.12)}
+    .league-icon{font-size:45px;margin-bottom:15px}.league-card h3{margin-bottom:10px}
+    .league-card p{color:#666;line-height:1.5;margin-bottom:20px}
+    .league-info{margin-top:auto;margin-bottom:20px;font-size:14px;line-height:1.8}
+    .league-info strong{color:#ff6b00}.status{display:inline-block;padding:4px 8px;border-radius:20px;background:#fff1e7;color:#c75200;font-size:11px;font-weight:bold;text-transform:uppercase}
+    .view-button{display:inline-block;align-self:flex-start;background:#ff6b00;color:#fff;text-decoration:none;padding:12px 20px;border-radius:5px;font-weight:bold}
+    .state-card{grid-column:1/-1;background:#fff;padding:40px;border-radius:10px;text-align:center;color:#68707d;box-shadow:0 5px 20px rgba(0,0,0,.08)}
+    .state-card.error{color:#b42318;background:#fff4f2}
+    .register{background:#ff6b00;color:#fff;text-align:center;padding:70px 20px}
+    .register h2{font-size:35px;margin-bottom:15px}.register p{margin-bottom:25px}
+    .register a{display:inline-block;background:#fff;color:#ff6b00;padding:15px 30px;border-radius:5px;text-decoration:none;font-weight:bold}
+    .register[hidden]{display:none}
+    footer{background:#111;color:#fff;text-align:center;padding:30px}footer p{color:#aaa;margin-top:10px}
+    @media(max-width:768px){
+      header{flex-direction:column;gap:15px}nav{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+      nav a{margin:0;font-size:12px}.hero h1{font-size:35px}.section{padding:45px 20px}
+    }
+  </style>
 </head>
-
-
 <body>
-
-
-    <!-- NAVIGATION -->
-
-     <header>
-
-    <a href="index.html" class="logo">
-        HOOP <span>HUB PH</span>
-    </a>
-
+  <header>
+    <a href="index.html" class="logo">HOOP <span>HUB PH</span></a>
     <nav>
-
-        <a href="index.html">Home</a>
-
-        <a href="leagues.html">Leagues</a>
-
-        <a href="teams.html">Teams</a>
-
-        <a href="players.html">Players</a>
-
-        <a href="tournaments.html">Tournaments</a>
-
-        <a href="live-game.html">Live Game</a>
-
+      <a href="index.html">Home</a><a href="leagues.html">Leagues</a>
+      <a href="teams.html">Teams</a><a href="players.html">Players</a>
+      <a href="tournaments.html">Tournaments</a><a href="live-game.html">Live Game</a>
     </nav>
+  </header>
 
-</header>
+  <section class="hero">
+    <h1>FIND A <span>LEAGUE</span></h1>
+    <p>Discover basketball leagues and competitions across the Philippines.</p>
+  </section>
 
-
-    <!-- PAGE HERO -->
-
-    <section class="hero">
-
-        <h1>
-
-            FIND A <span>LEAGUE</span>
-
-        </h1>
-
-        <p>
-
-            Discover basketball leagues and competitions
-            across the Philippines.
-
-        </p>
-
-    </section>
-
-
-    <!-- LEAGUES -->
-
+  <main>
     <section class="section">
-
-
-        <div class="section-title">
-
-            <h2>
-                FEATURED LEAGUES
-            </h2>
-
-            <p>
-                Explore basketball communities near you.
-            </p>
-
-        </div>
-
-
-        <div class="leagues">
-
-
-            <!-- LEAGUE 1 -->
-
-            <div class="league-card">
-
-                <div class="league-icon">
-                    🏀
-                </div>
-
-                <h3>
-                    Barangay Basketball League
-                </h3>
-
-                <p>
-
-                    Community basketball competition
-                    for local players and teams.
-
-                </p>
-
-                <div class="league-info">
-
-                    <strong>
-                        Location:
-                    </strong>
-
-                    Quezon City
-
-                    <br><br>
-
-                    <strong>
-                        Category:
-                    </strong>
-
-                    Open Division
-
-                </div>
-
-                <a href="league1.html" class="view-button">
-    VIEW LEAGUE
-</a>
-
-            </div>
-
-
-            <!-- LEAGUE 2 -->
-
-            <div class="league-card">
-
-                <div class="league-icon">
-                    🏆
-                </div>
-
-                <h3>
-                    Manila Amateur Basketball League
-                </h3>
-
-                <p>
-
-                    Competitive basketball league
-                    for amateur players.
-
-                </p>
-
-                <div class="league-info">
-
-                    <strong>
-                        Location:
-                    </strong>
-
-                    Manila
-
-                    <br><br>
-
-                    <strong>
-                        Category:
-                    </strong>
-
-                    Amateur
-
-                </div>
-
-                <a href="#" class="view-button">
-                    VIEW LEAGUE
-                </a>
-
-            </div>
-
-
-            <!-- LEAGUE 3 -->
-
-            <div class="league-card">
-
-                <div class="league-icon">
-                    🏀
-                </div>
-
-                <h3>
-                    Metro Manila Youth League
-                </h3>
-
-                <p>
-
-                    Youth basketball development
-                    and competitive games.
-
-                </p>
-
-                <div class="league-info">
-
-                    <strong>
-                        Location:
-                    </strong>
-
-                    Metro Manila
-
-                    <br><br>
-
-                    <strong>
-                        Category:
-                    </strong>
-
-                    Youth
-
-                </div>
-
-                <a href="#" class="view-button">
-                    VIEW LEAGUE
-                </a>
-
-            </div>
-
-
-        </div>
-
+      <div class="section-title">
+        <h2>FEATURED LEAGUES</h2>
+        <p>Explore basketball communities near you.</p>
+      </div>
+      <div id="leaguesList" class="leagues">
+        <div class="state-card">Loading leagues...</div>
+      </div>
     </section>
 
-
-    <!-- ORGANIZER CTA -->
-
-    <section class="register">
-
-        <h2>
-            ARE YOU A LEAGUE ORGANIZER?
-        </h2>
-
-        <p>
-
-            Register your basketball league
-            and connect with players and teams.
-
-        </p>
-
-        <a href="#">
-            REGISTER YOUR LEAGUE
-        </a>
-
+    <section id="organizerCta" class="register" hidden>
+      <h2>ARE YOU A LEAGUE ORGANIZER?</h2>
+      <p>Register your basketball league and connect with players and teams.</p>
+      <a href="create-league.html">REGISTER YOUR LEAGUE</a>
     </section>
+  </main>
 
+  <footer>
+    <h3>🏀 HOOP HUB PH</h3>
+    <p>Connecting Philippine basketball, one community at a time.</p>
+    <p>© 2026 Hoop Hub PH. All rights reserved.</p>
+  </footer>
 
-    <!-- FOOTER -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    (()=>{
+      const LEAGUES_SUPABASE_URL="https://tkrsyiwffqkgfyooewsf.supabase.co";
+      const LEAGUES_SUPABASE_KEY="sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
+      const db=window.supabase.createClient(LEAGUES_SUPABASE_URL,LEAGUES_SUPABASE_KEY);
+      const list=document.getElementById("leaguesList");
 
-    <footer>
+      const escapeHtml=value=>String(value??"").replace(/[&<>'"]/g,char=>({
+        "&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"
+      })[char]);
 
-        <h3>
-            🏀 HOOP HUB PH
-        </h3>
+      function renderLeagues(leagues){
+        if(!leagues.length){
+          list.innerHTML='<div class="state-card">No leagues have been published yet.</div>';
+          return;
+        }
 
-        <p>
+        list.innerHTML=leagues.map((league,index)=>{
+          const icon=index%2===0?"🏀":"🏆";
+          const description=league.description||"Community basketball competition for local players and teams.";
+          return `<article class="league-card">
+            <div class="league-icon">${icon}</div>
+            <h3>${escapeHtml(league.name||"Unnamed League")}</h3>
+            <p>${escapeHtml(description)}</p>
+            <div class="league-info">
+              <strong>Location:</strong> ${escapeHtml(league.location||"To be announced")}<br>
+              <strong>Division:</strong> ${escapeHtml(league.division||"Open Division")}<br>
+              <strong>Season:</strong> ${escapeHtml(league.season||"—")}<br>
+              <span class="status">${escapeHtml(league.status||"Active")}</span>
+            </div>
+            <a href="league1.html?id=${encodeURIComponent(league.id)}" class="view-button">VIEW LEAGUE</a>
+          </article>`;
+        }).join("");
+      }
 
-            Connecting Philippine basketball,
-            one community at a time.
+      async function loadLeagues(){
+        const {data,error}=await db.from("leagues").select("id,name,location,season,division,description,status,created_at").order("created_at",{ascending:false});
+        if(error) throw error;
+        renderLeagues(data||[]);
+      }
 
-        </p>
+      async function showAuthorizedOrganizerControl(){
+        const {data:{session}}=await db.auth.getSession();
+        if(!session?.user) return;
+        const {data:profile,error}=await db.from("profiles").select("role,status").eq("id",session.user.id).maybeSingle();
+        if(!error&&profile?.status==="active"&&["super_admin","commissioner"].includes(profile.role)){
+          document.getElementById("organizerCta").hidden=false;
+        }
+      }
 
-        <p>
+      async function initialize(){
+        try{await loadLeagues()}
+        catch(error){
+          console.error("Unable to load leagues:",error);
+          list.innerHTML=`<div class="state-card error">Unable to load leagues: ${escapeHtml(error.message||"Unknown error")}</div>`;
+        }
+        try{await showAuthorizedOrganizerControl()}
+        catch(error){console.error("Unable to verify organizer controls:",error)}
+      }
 
-            © 2026 Hoop Hub PH.
-            All rights reserved.
-
-        </p>
-
-    </footer>
-
-
+      initialize();
+    })();
+  </script>
 </body>
-
 </html>
