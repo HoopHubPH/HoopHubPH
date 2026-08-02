@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manage HoopHub PH accounts and scorekeeper assignments.">
+  <title>Account Management | HoopHub PH</title>
+
+  <style>
+    :root {
+      --orange: #ff6b00;
+      --orange-dark: #dc5d00;
+      --orange-soft: #fff1e7;
+      --ink: #171717;
+      --muted: #68707d;
+      --line: #e5e7eb;
+      --background: #f4f5f7;
+      --surface: #ffffff;
+      --sidebar: #171717;
+      --success: #067647;
+      --success-soft: #ecfdf3;
+      --warning: #b54708;
+      --warning-soft: #fffaeb;
+      --danger: #b42318;
+      --danger-soft: #fef3f2;
+      --blue: #175cd3;
+      --blue-soft: #eff8ff;
+      --shadow: 0 8px 28px rgba(17, 24, 39, 0.07);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--background);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .auth-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      background: #111111;
+    }
+
+    .auth-screen[hidden],
+    .app-shell[hidden] {
+      display: none;
+    }
+
+    .auth-message {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .spinner {
+      width: 22px;
+      height: 22px;
+      border: 3px solid rgba(255, 255, 255, 0.25);
+      border-top-color: var(--orange);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 80;
+      height: 66px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #ffffff;
+      background: #111111;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .topbar-left,
+    .topbar-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .topbar-left {
+      gap: 16px;
+    }
+
+    .topbar-right {
+      gap: 12px;
+    }
+
+    .menu-button {
+      display: none;
+      width: 38px;
+      height: 38px;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .brand {
+      color: #ffffff;
+      font-size: 21px;
+      font-weight: 850;
+      letter-spacing: -0.4px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .brand span {
+      color: var(--orange);
+    }
+
+    .account-summary {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      line-height: 1.2;
+    }
+
+    .account-summary strong {
+      max-width: 220px;
+      overflow: hidden;
+      font-size: 13px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .account-summary span {
+      margin-top: 3px;
+      color: #aeb4bd;
+      font-size: 11px;
+    }
+
+    .logout-button {
+      height: 36px;
+      padding: 0 14px;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .logout-button:hover {
+      color: #ffffff;
+      background: rgba(255, 107, 0, 0.17);
+      border-color: rgba(255, 107, 0, 0.55);
+    }
+
+    .sidebar {
+      position: fixed;
+      inset: 66px auto 0 0;
+      z-index: 60;
+      width: 246px;
+      padding: 22px 14px;
+      overflow-y: auto;
+      color: #ffffff;
+      background: var(--sidebar);
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .nav-label {
+      margin: 14px 12px 8px;
+      color: #777f8b;
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: 1.25px;
+      text-transform: uppercase;
+    }
+
+    .nav-link {
+      min-height: 43px;
+      margin-bottom: 4px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      color: #d6d9de;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: color 0.18s ease, background 0.18s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-link.active {
+      box-shadow: inset 3px 0 0 var(--orange);
+    }
+
+    .nav-icon {
+      width: 25px;
+      height: 25px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 25px;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.09);
+      border-radius: 7px;
+      font-size: 10px;
+      font-weight: 850;
+    }
+
+    .nav-link.active .nav-icon {
+      background: var(--orange);
+    }
+
+    .nav-coming {
+      margin-left: auto;
+      color: #8b929c;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 66px 0 0 0;
+      z-index: 50;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .main-content {
+      min-height: 100vh;
+      margin-left: 246px;
+      padding: 96px clamp(22px, 3vw, 44px) 48px;
+    }
+
+    .content-wrap {
+      width: min(1250px, 100%);
+      margin: 0 auto;
+    }
+
+    .page-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 22px;
+    }
+
+    .page-heading h1 {
+      font-size: clamp(27px, 3vw, 36px);
+      letter-spacing: -1px;
+    }
+
+    .page-heading p {
+      max-width: 720px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .refresh-button,
+    .primary-button,
+    .secondary-button,
+    .danger-button {
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.16s ease, background 0.16s ease;
+    }
+
+    .refresh-button,
+    .secondary-button {
+      color: #344054;
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+    }
+
+    .primary-button {
+      color: #ffffff;
+      background: var(--orange);
+      border: 1px solid var(--orange);
+    }
+
+    .primary-button:hover:not(:disabled) {
+      background: var(--orange-dark);
+      transform: translateY(-1px);
+    }
+
+    .secondary-button:hover:not(:disabled),
+    .refresh-button:hover:not(:disabled) {
+      color: var(--orange-dark);
+      border-color: rgba(255, 107, 0, 0.55);
+    }
+
+    .danger-button {
+      color: var(--danger);
+      background: #ffffff;
+      border: 1px solid #fda29b;
+    }
+
+    .danger-button:hover:not(:disabled) {
+      background: var(--danger-soft);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .stats-grid {
+      margin-top: 26px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .stat-card {
+      min-height: 122px;
+      padding: 19px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .stat-value {
+      margin-top: 13px;
+      font-size: 30px;
+      font-weight: 850;
+      letter-spacing: -1px;
+    }
+
+    .stat-helper {
+      margin-top: 4px;
+      color: #9298a1;
+      font-size: 10px;
+    }
+
+    .notice {
+      margin-top: 18px;
+      padding: 13px 15px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      color: #475467;
+      background: #f9fafb;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .notice strong {
+      color: var(--ink);
+    }
+
+    .notice-mark {
+      width: 22px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 22px;
+      color: var(--orange);
+      background: var(--orange-soft);
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .panel {
+      margin-top: 18px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-header {
+      min-height: 70px;
+      padding: 17px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-header h2 {
+      font-size: 17px;
+      letter-spacing: -0.3px;
+    }
+
+    .panel-header p {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .filter-grid {
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) 190px 190px;
+      gap: 11px;
+      background: #fcfcfd;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .field-label {
+      display: block;
+      margin-bottom: 7px;
+      color: #344054;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .control {
+      width: 100%;
+      height: 42px;
+      padding: 0 12px;
+      color: var(--ink);
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    .control:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.12);
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 850px;
+    }
+
+    th {
+      padding: 12px 17px;
+      color: #667085;
+      background: #fafafa;
+      border-bottom: 1px solid var(--line);
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: 0.55px;
+      text-align: left;
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 14px 17px;
+      border-bottom: 1px solid var(--line);
+      font-size: 12px;
+      vertical-align: middle;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    tbody tr:hover {
+      background: #fcfcfd;
+    }
+
+    .account-cell {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 36px;
+      color: #9a4b0d;
+      background: var(--orange-soft);
+      border: 1px solid #fed7aa;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .account-name {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .account-email {
+      max-width: 300px;
+      margin-top: 3px;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 11px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .you-tag {
+      padding: 3px 6px;
+      color: var(--orange-dark);
+      background: var(--orange-soft);
+      border-radius: 999px;
+      font-size: 8px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 8px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      font-size: 9px;
+      font-weight: 850;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .role-super_admin {
+      color: #9a3412;
+      background: var(--orange-soft);
+      border-color: #fed7aa;
+    }
+
+    .role-commissioner {
+      color: #6941c6;
+      background: #f4f3ff;
+      border-color: #d9d6fe;
+    }
+
+    .role-coach {
+      color: var(--blue);
+      background: var(--blue-soft);
+      border-color: #b2ddff;
+    }
+
+    .role-player {
+      color: #344054;
+      background: #f2f4f7;
+      border-color: #d0d5dd;
+    }
+
+    .role-scorekeeper {
+      color: #027a48;
+      background: #ecfdf3;
+      border-color: #abefc6;
+    }
+
+    .status-active {
+      color: var(--success);
+      background: var(--success-soft);
+      border-color: #abefc6;
+    }
+
+    .status-pending {
+      color: var(--warning);
+      background: var(--warning-soft);
+      border-color: #fedf89;
+    }
+
+    .status-suspended,
+    .status-rejected {
+      color: var(--danger);
+      background: var(--danger-soft);
+      border-color: #fecdca;
+    }
+
+    .manage-button {
+      height: 32px;
+      padding: 0 11px;
+      color: var(--orange-dark);
+      background: #ffffff;
+      border: 1px solid rgba(255, 107, 0, 0.45);
+      border-radius: 7px;
+      font-size: 10px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .manage-button:hover {
+      background: var(--orange-soft);
+    }
+
+    .empty-state {
+      padding: 42px 20px !important;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .activity-list {
+      padding: 4px 20px 8px;
+    }
+
+    .activity-item {
+      padding: 15px 0;
+      display: grid;
+      grid-template-columns: 32px minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 11px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .activity-item:last-child {
+      border-bottom: 0;
+    }
+
+    .activity-symbol {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      color: var(--orange-dark);
+      background: var(--orange-soft);
+      border-radius: 8px;
+      font-size: 9px;
+      font-weight: 850;
+    }
+
+    .activity-title {
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .activity-detail {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .activity-time {
+      color: #8d939c;
+      font-size: 9px;
+      white-space: nowrap;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.66);
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      width: min(680px, 100%);
+      max-height: min(780px, calc(100vh - 40px));
+      overflow-y: auto;
+      background: #ffffff;
+      border-radius: 14px;
+      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
+    }
+
+    .modal-header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      min-height: 72px;
+      padding: 17px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .modal-header h2 {
+      font-size: 18px;
+    }
+
+    .modal-header p {
+      max-width: 510px;
+      margin-top: 4px;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 11px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .close-button {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 34px;
+      color: #667085;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 13px;
+    }
+
+    .protected-note {
+      display: none;
+      margin-top: 13px;
+      padding: 11px 12px;
+      color: var(--warning);
+      background: var(--warning-soft);
+      border: 1px solid #fedf89;
+      border-radius: 8px;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .protected-note.visible {
+      display: block;
+    }
+
+    .modal-actions {
+      margin-top: 17px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 9px;
+    }
+
+    .assignment-section {
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+
+    .assignment-section[hidden] {
+      display: none;
+    }
+
+    .subsection-heading h3 {
+      font-size: 15px;
+    }
+
+    .subsection-heading p {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
+    .assignment-form {
+      margin-top: 13px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 9px;
+    }
+
+    .assignment-list {
+      margin-top: 13px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      overflow: hidden;
+    }
+
+    .assignment-row {
+      min-height: 58px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .assignment-row:last-child {
+      border-bottom: 0;
+    }
+
+    .assignment-game {
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .assignment-meta {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .assignment-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .small-button {
+      height: 29px;
+      padding: 0 9px;
+      color: #344054;
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 6px;
+      font-size: 9px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .small-button.revoke {
+      color: var(--danger);
+      border-color: #fda29b;
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 1000;
+      max-width: min(390px, calc(100vw - 40px));
+      padding: 12px 14px;
+      display: none;
+      color: #ffffff;
+      background: #202020;
+      border-left: 4px solid var(--orange);
+      border-radius: 8px;
+      box-shadow: 0 16px 38px rgba(0, 0, 0, 0.22);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    .toast.error {
+      border-left-color: #f04438;
+    }
+
+    @media (max-width: 1060px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .filter-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .search-field {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 780px) {
+      .menu-button {
+        display: inline-flex;
+      }
+
+      .sidebar {
+        transform: translateX(-105%);
+        transition: transform 0.2s ease;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay.open {
+        display: block;
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding-top: 92px;
+      }
+
+      .account-summary {
+        display: none;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .topbar {
+        padding: 0 14px;
+      }
+
+      .topbar-left {
+        gap: 10px;
+      }
+
+      .brand {
+        font-size: 18px;
+      }
+
+      .main-content {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .page-heading {
+        flex-direction: column;
+      }
+
+      .stats-grid,
+      .filter-grid,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .search-field {
+        grid-column: auto;
+      }
+
+      .assignment-form {
+        grid-template-columns: 1fr;
+      }
+
+      .assignment-form .primary-button {
+        width: 100%;
+      }
+
+      .activity-item {
+        grid-template-columns: 30px minmax(0, 1fr);
+      }
+
+      .activity-time {
+        grid-column: 2;
+      }
+
+      .modal-backdrop {
+        padding: 0;
+        align-items: flex-end;
+      }
+
+      .modal {
+        max-height: 92vh;
+        border-radius: 14px 14px 0 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-message">
+      <span class="spinner" aria-hidden="true"></span>
+      <span>Verifying Super Admin access...</span>
+    </div>
+  </div>
+
+  <div id="appShell" class="app-shell" hidden>
+    <header class="topbar">
+      <div class="topbar-left">
+        <button
+          id="menuButton"
+          class="menu-button"
+          type="button"
+          aria-label="Open navigation"
+          aria-controls="sidebar"
+          aria-expanded="false"
+        >☰</button>
+        <a class="brand" href="super-admin.html">HOOP <span>HUB PH</span></a>
+      </div>
+
+      <div class="topbar-right">
+        <div class="account-summary">
+          <strong id="headerAccountName">HoopHub PH Owner</strong>
+          <span>Super Admin</span>
+        </div>
+        <button id="logoutButton" class="logout-button" type="button">Log Out</button>
+      </div>
+    </header>
+
+    <aside id="sidebar" class="sidebar" aria-label="Super Admin navigation">
+      <p class="nav-label">Overview</p>
+      <a class="nav-link" href="super-admin.html">
+        <span class="nav-icon">OV</span>
+        Dashboard
+      </a>
+
+      <p class="nav-label">Basketball</p>
+      <a class="nav-link" href="leagues.html">
+        <span class="nav-icon">LG</span>
+        Leagues
+      </a>
+      <a class="nav-link" href="tournaments.html">
+        <span class="nav-icon">TR</span>
+        Tournaments
+      </a>
+      <a class="nav-link" href="teams.html">
+        <span class="nav-icon">TM</span>
+        Teams
+      </a>
+      <a class="nav-link" href="players.html">
+        <span class="nav-icon">PL</span>
+        Players
+      </a>
+      <a class="nav-link" href="scorekeeper.html">
+        <span class="nav-icon">SK</span>
+        Scorekeeper
+      </a>
+
+      <p class="nav-label">Administration</p>
+      <a class="nav-link active" href="account-management.html">
+        <span class="nav-icon">AC</span>
+        Accounts
+      </a>
+      <a class="nav-link" href="#activity-log">
+        <span class="nav-icon">AL</span>
+        Activity Logs
+      </a>
+      <a class="nav-link" href="#">
+        <span class="nav-icon">AN</span>
+        Announcements
+        <span class="nav-coming">Next</span>
+      </a>
+    </aside>
+
+    <div id="sidebarOverlay" class="sidebar-overlay" aria-hidden="true"></div>
+
+    <main class="main-content">
+      <div class="content-wrap">
+        <section class="page-heading">
+          <div>
+            <h1>Account Management</h1>
+            <p>
+              Approve accounts, control platform roles and status, and assign
+              scorekeepers to individual games.
+            </p>
+          </div>
+          <button id="refreshButton" class="refresh-button" type="button">Refresh Data</button>
+        </section>
+
+        <section class="stats-grid" aria-label="Account totals">
+          <article class="stat-card">
+            <span class="stat-label">Total Accounts</span>
+            <div id="totalAccountCount" class="stat-value">—</div>
+            <p class="stat-helper">All registered profiles</p>
+          </article>
+
+          <article class="stat-card">
+            <span class="stat-label">Pending Approval</span>
+            <div id="pendingAccountCount" class="stat-value">—</div>
+            <p class="stat-helper">Waiting for review</p>
+          </article>
+
+          <article class="stat-card">
+            <span class="stat-label">Active Accounts</span>
+            <div id="activeAccountCount" class="stat-value">—</div>
+            <p class="stat-helper">Currently permitted</p>
+          </article>
+
+          <article class="stat-card">
+            <span class="stat-label">Suspended / Rejected</span>
+            <div id="blockedAccountCount" class="stat-value">—</div>
+            <p class="stat-helper">Currently blocked</p>
+          </article>
+        </section>
+
+        <div class="notice">
+          <span class="notice-mark">i</span>
+          <div>
+            <strong>Account creation:</strong> For now, create the email login under
+            Supabase Authentication. It will then appear here for role approval and
+            assignment. A public registration page will be added in the next phase.
+          </div>
+        </div>
+
+        <section class="panel" aria-labelledby="accountsHeading">
+          <header class="panel-header">
+            <div>
+              <h2 id="accountsHeading">Platform Accounts</h2>
+              <p id="accountResultText">Loading registered accounts...</p>
+            </div>
+          </header>
+
+          <div class="filter-grid">
+            <div class="search-field">
+              <label class="field-label" for="accountSearch">Search account</label>
+              <input
+                id="accountSearch"
+                class="control"
+                type="search"
+                placeholder="Search name or email"
+                autocomplete="off"
+              >
+            </div>
+
+            <div>
+              <label class="field-label" for="roleFilter">Role</label>
+              <select id="roleFilter" class="control">
+                <option value="all">All roles</option>
+                <option value="super_admin">Super Admin</option>
+                <option value="commissioner">Commissioner</option>
+                <option value="coach">Coach / Manager</option>
+                <option value="player">Player</option>
+                <option value="scorekeeper">Scorekeeper</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="field-label" for="statusFilter">Status</label>
+              <select id="statusFilter" class="control">
+                <option value="all">All statuses</option>
+                <option value="pending">Pending</option>
+                <option value="active">Active</option>
+                <option value="suspended">Suspended</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Account</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th>Assignments</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="accountTableBody">
+                <tr>
+                  <td class="empty-state" colspan="6">Loading accounts...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="activity-log" class="panel" aria-labelledby="activityHeading">
+          <header class="panel-header">
+            <div>
+              <h2 id="activityHeading">Recent Activity</h2>
+              <p>Latest account and scorekeeper-assignment actions.</p>
+            </div>
+          </header>
+          <div id="activityList" class="activity-list">
+            <div class="empty-state">Loading activity...</div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div
+    id="accountModalBackdrop"
+    class="modal-backdrop"
+    role="presentation"
+    aria-hidden="true"
+  >
+    <section
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="accountModalTitle"
+    >
+      <header class="modal-header">
+        <div>
+          <h2 id="accountModalTitle">Manage Account</h2>
+          <p id="accountModalEmail"></p>
+        </div>
+        <button id="closeModalButton" class="close-button" type="button" aria-label="Close">×</button>
+      </header>
+
+      <div class="modal-body">
+        <div class="form-grid">
+          <div>
+            <label class="field-label" for="accountRoleSelect">Account role</label>
+            <select id="accountRoleSelect" class="control">
+              <option value="super_admin">Super Admin</option>
+              <option value="commissioner">Commissioner</option>
+              <option value="coach">Coach / Manager</option>
+              <option value="player">Player</option>
+              <option value="scorekeeper">Scorekeeper</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="field-label" for="accountStatusSelect">Account status</label>
+            <select id="accountStatusSelect" class="control">
+              <option value="pending">Pending</option>
+              <option value="active">Active</option>
+              <option value="suspended">Suspended</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="protectedAccountNote" class="protected-note">
+          Your own Super Admin role and status are protected to prevent an accidental lockout.
+        </div>
+
+        <div class="modal-actions">
+          <button id="cancelAccountButton" class="secondary-button" type="button">Cancel</button>
+          <button id="saveAccountButton" class="primary-button" type="button">Save Account</button>
+        </div>
+
+        <section id="assignmentSection" class="assignment-section" hidden>
+          <div class="subsection-heading">
+            <h3>Scorekeeper Game Assignments</h3>
+            <p>Only active assignments can open and update a game in the scorekeeper.</p>
+          </div>
+
+          <div class="assignment-form">
+            <input
+              id="assignmentGameId"
+              class="control"
+              type="number"
+              min="1"
+              step="1"
+              list="gameOptions"
+              placeholder="Enter Game ID"
+            >
+            <datalist id="gameOptions"></datalist>
+            <button id="assignGameButton" class="primary-button" type="button">Assign Game</button>
+          </div>
+
+          <div id="assignmentList" class="assignment-list"></div>
+        </section>
+      </div>
+    </section>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://tkrsyiwffqkgfyooewsf.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
+
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+    const ROLE_LABELS = Object.freeze({
+      super_admin: "Super Admin",
+      commissioner: "Commissioner",
+      coach: "Coach / Manager",
+      player: "Player",
+      scorekeeper: "Scorekeeper"
+    });
+
+    const STATUS_LABELS = Object.freeze({
+      pending: "Pending",
+      active: "Active",
+      suspended: "Suspended",
+      rejected: "Rejected"
+    });
+
+    let currentAdminUser = null;
+    let currentAdminProfile = null;
+    let selectedAccountId = null;
+    let allProfiles = [];
+    let allAssignments = [];
+    let allGames = [];
+    let allActivity = [];
+    let toastTimer = null;
+
+    const authScreen = document.getElementById("authScreen");
+    const appShell = document.getElementById("appShell");
+    const accountTableBody = document.getElementById("accountTableBody");
+    const activityList = document.getElementById("activityList");
+    const accountSearch = document.getElementById("accountSearch");
+    const roleFilter = document.getElementById("roleFilter");
+    const statusFilter = document.getElementById("statusFilter");
+    const modalBackdrop = document.getElementById("accountModalBackdrop");
+    const roleSelect = document.getElementById("accountRoleSelect");
+    const statusSelect = document.getElementById("accountStatusSelect");
+    const saveAccountButton = document.getElementById("saveAccountButton");
+    const assignmentSection = document.getElementById("assignmentSection");
+    const assignmentList = document.getElementById("assignmentList");
+    const assignmentGameId = document.getElementById("assignmentGameId");
+    const assignGameButton = document.getElementById("assignGameButton");
+
+    function escapeHtml(value) {
+      const element = document.createElement("div");
+      element.textContent = String(value ?? "");
+      return element.innerHTML;
+    }
+
+    function displayName(profile) {
+      const fullName = String(profile.full_name || "").trim();
+      if (fullName) return fullName;
+      const email = String(profile.email || "Account");
+      return email.split("@")[0] || "Account";
+    }
+
+    function initials(profile) {
+      const name = displayName(profile)
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(part => part.charAt(0))
+        .join("");
+      return name || "HH";
+    }
+
+    function formatDate(value, includeTime = false) {
+      if (!value) return "—";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "—";
+
+      const options = includeTime
+        ? {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit"
+          }
+        : {
+            year: "numeric",
+            month: "short",
+            day: "numeric"
+          };
+
+      return new Intl.DateTimeFormat("en-PH", options).format(date);
+    }
+
+    function showToast(message, type = "success") {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.className = `toast show${type === "error" ? " error" : ""}`;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.className = "toast";
+      }, 3600);
+    }
+
+    function friendlyError(error, fallback) {
+      const message = String(error?.message || "").replace(/^.*?exception:\s*/i, "");
+      return message || fallback;
+    }
+
+    async function returnToLogin(signOutFirst = false) {
+      if (signOutFirst) {
+        await supabaseClient.auth.signOut();
+      }
+      window.location.replace("login.html");
+    }
+
+    async function requireSuperAdmin() {
+      try {
+        const { data: userData, error: userError } =
+          await supabaseClient.auth.getUser();
+
+        if (userError || !userData.user) {
+          await returnToLogin(false);
+          return;
+        }
+
+        const { data: profile, error: profileError } = await supabaseClient
+          .from("profiles")
+          .select("id, email, full_name, role, status")
+          .eq("id", userData.user.id)
+          .maybeSingle();
+
+        const hasAccess =
+          !profileError &&
+          profile &&
+          profile.role === "super_admin" &&
+          profile.status === "active";
+
+        if (!hasAccess) {
+          await returnToLogin(true);
+          return;
+        }
+
+        currentAdminUser = userData.user;
+        currentAdminProfile = profile;
+        document.getElementById("headerAccountName").textContent = displayName(profile);
+        authScreen.hidden = true;
+        appShell.hidden = false;
+
+        await loadAllData();
+      } catch (error) {
+        console.error("Account Management authorization failed:", error);
+        await returnToLogin(true);
+      }
+    }
+
+    async function loadAllData() {
+      const refreshButton = document.getElementById("refreshButton");
+      refreshButton.disabled = true;
+      refreshButton.textContent = "Refreshing...";
+
+      try {
+        const [profilesResult, assignmentsResult, gamesResult, activityResult] =
+          await Promise.all([
+            supabaseClient
+              .from("profiles")
+              .select("id, email, full_name, role, status, created_at, updated_at")
+              .order("created_at", { ascending: false }),
+
+            supabaseClient
+              .from("game_scorekeepers")
+              .select("game_id, scorekeeper_id, active, assigned_at, updated_at")
+              .order("updated_at", { ascending: false }),
+
+            supabaseClient
+              .from("games")
+              .select("id, home_team, away_team")
+              .order("id", { ascending: false }),
+
+            supabaseClient
+              .from("activity_logs")
+              .select("id, actor_id, action, target_type, target_id, details, created_at")
+              .order("created_at", { ascending: false })
+              .limit(50)
+          ]);
+
+        const firstError =
+          profilesResult.error ||
+          assignmentsResult.error ||
+          gamesResult.error ||
+          activityResult.error;
+
+        if (firstError) {
+          throw firstError;
+        }
+
+        allProfiles = profilesResult.data || [];
+        allAssignments = assignmentsResult.data || [];
+        allGames = gamesResult.data || [];
+        allActivity = activityResult.data || [];
+
+        renderSummary();
+        renderAccounts();
+        renderGameOptions();
+        renderActivity();
+
+        if (selectedAccountId && modalBackdrop.classList.contains("open")) {
+          openAccountModal(selectedAccountId);
+        }
+      } catch (error) {
+        console.error("Unable to load Account Management data:", error);
+        showToast(
+          friendlyError(error, "Unable to load account data."),
+          "error"
+        );
+      } finally {
+        refreshButton.disabled = false;
+        refreshButton.textContent = "Refresh Data";
+      }
+    }
+
+    function renderSummary() {
+      const total = allProfiles.length;
+      const pending = allProfiles.filter(profile => profile.status === "pending").length;
+      const active = allProfiles.filter(profile => profile.status === "active").length;
+      const blocked = allProfiles.filter(profile =>
+        profile.status === "suspended" || profile.status === "rejected"
+      ).length;
+
+      document.getElementById("totalAccountCount").textContent = total.toLocaleString();
+      document.getElementById("pendingAccountCount").textContent = pending.toLocaleString();
+      document.getElementById("activeAccountCount").textContent = active.toLocaleString();
+      document.getElementById("blockedAccountCount").textContent = blocked.toLocaleString();
+    }
+
+    function filteredProfiles() {
+      const searchValue = accountSearch.value.trim().toLowerCase();
+      const selectedRole = roleFilter.value;
+      const selectedStatus = statusFilter.value;
+
+      return allProfiles.filter(profile => {
+        const searchableText = `${profile.full_name || ""} ${profile.email || ""}`.toLowerCase();
+        const matchesSearch = !searchValue || searchableText.includes(searchValue);
+        const matchesRole = selectedRole === "all" || profile.role === selectedRole;
+        const matchesStatus = selectedStatus === "all" || profile.status === selectedStatus;
+        return matchesSearch && matchesRole && matchesStatus;
+      });
+    }
+
+    function activeAssignmentCount(profileId) {
+      return allAssignments.filter(assignment =>
+        assignment.scorekeeper_id === profileId && assignment.active === true
+      ).length;
+    }
+
+    function renderAccounts() {
+      const profiles = filteredProfiles();
+      document.getElementById("accountResultText").textContent =
+        `${profiles.length.toLocaleString()} of ${allProfiles.length.toLocaleString()} accounts shown`;
+
+      if (!profiles.length) {
+        accountTableBody.innerHTML = `
+          <tr>
+            <td class="empty-state" colspan="6">No accounts match these filters.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      accountTableBody.innerHTML = profiles.map(profile => {
+        const isCurrentUser = currentAdminUser && profile.id === currentAdminUser.id;
+        const assignments = activeAssignmentCount(profile.id);
+        const assignmentText = profile.role === "scorekeeper"
+          ? `${assignments} active`
+          : "—";
+
+        return `
+          <tr>
+            <td>
+              <div class="account-cell">
+                <div class="avatar">${escapeHtml(initials(profile))}</div>
+                <div>
+                  <div class="account-name">
+                    ${escapeHtml(displayName(profile))}
+                    ${isCurrentUser ? '<span class="you-tag">You</span>' : ""}
+                  </div>
+                  <div class="account-email">${escapeHtml(profile.email || "No email")}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="badge role-${escapeHtml(profile.role)}">
+                ${escapeHtml(ROLE_LABELS[profile.role] || profile.role)}
+              </span>
+            </td>
+            <td>
+              <span class="badge status-${escapeHtml(profile.status)}">
+                ${escapeHtml(STATUS_LABELS[profile.status] || profile.status)}
+              </span>
+            </td>
+            <td>${escapeHtml(formatDate(profile.created_at))}</td>
+            <td>${escapeHtml(assignmentText)}</td>
+            <td>
+              <button
+                class="manage-button"
+                type="button"
+                data-account-id="${escapeHtml(profile.id)}"
+              >Manage</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderGameOptions() {
+      document.getElementById("gameOptions").innerHTML = allGames.map(game => {
+        const label = gameLabel(game);
+        return `<option value="${escapeHtml(game.id)}">${escapeHtml(label)}</option>`;
+      }).join("");
+    }
+
+    function gameLabel(game) {
+      if (!game) return "Unknown game";
+      const home = String(game.home_team || "Home Team");
+      const away = String(game.away_team || "Away Team");
+      return `Game #${game.id} — ${home} vs ${away}`;
+    }
+
+    function activityDescription(item) {
+      const details = item.details || {};
+
+      if (item.action === "account_updated") {
+        const email = details.email || "Account";
+        const previousRole = ROLE_LABELS[details.previous_role] || details.previous_role || "Unknown";
+        const newRole = ROLE_LABELS[details.new_role] || details.new_role || "Unknown";
+        const previousStatus = STATUS_LABELS[details.previous_status] || details.previous_status || "Unknown";
+        const newStatus = STATUS_LABELS[details.new_status] || details.new_status || "Unknown";
+        return `${email}: ${previousRole} / ${previousStatus} → ${newRole} / ${newStatus}`;
+      }
+
+      if (
+        item.action === "scorekeeper_assignment_activated" ||
+        item.action === "scorekeeper_assignment_revoked"
+      ) {
+        const email = details.scorekeeper_email || "Scorekeeper";
+        const verb = item.action.endsWith("revoked") ? "removed from" : "assigned to";
+        return `${email} was ${verb} Game #${details.game_id ?? "—"}`;
+      }
+
+      return item.target_id ? `Target: ${item.target_id}` : "Platform action recorded";
+    }
+
+    function renderActivity() {
+      if (!allActivity.length) {
+        activityList.innerHTML = '<div class="empty-state">No management activity has been recorded yet.</div>';
+        return;
+      }
+
+      const profileById = new Map(allProfiles.map(profile => [profile.id, profile]));
+
+      activityList.innerHTML = allActivity.map(item => {
+        const actor = profileById.get(item.actor_id);
+        const actorLabel = actor ? displayName(actor) : "System";
+        const title = item.action === "account_updated"
+          ? "Account updated"
+          : item.action === "scorekeeper_assignment_activated"
+            ? "Game assignment activated"
+            : item.action === "scorekeeper_assignment_revoked"
+              ? "Game assignment revoked"
+              : String(item.action || "Activity").replaceAll("_", " ");
+
+        const symbol = item.action === "account_updated" ? "AC" : "GM";
+
+        return `
+          <div class="activity-item">
+            <div class="activity-symbol">${escapeHtml(symbol)}</div>
+            <div>
+              <div class="activity-title">${escapeHtml(title)}</div>
+              <div class="activity-detail">
+                ${escapeHtml(activityDescription(item))} · by ${escapeHtml(actorLabel)}
+              </div>
+            </div>
+            <div class="activity-time">${escapeHtml(formatDate(item.created_at, true))}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function openAccountModal(accountId) {
+      const profile = allProfiles.find(item => item.id === accountId);
+      if (!profile) {
+        showToast("The selected account is no longer available.", "error");
+        return;
+      }
+
+      selectedAccountId = accountId;
+      const isOwnAccount = currentAdminUser && currentAdminUser.id === profile.id;
+
+      document.getElementById("accountModalTitle").textContent = displayName(profile);
+      document.getElementById("accountModalEmail").textContent = profile.email || "No email";
+      roleSelect.value = profile.role;
+      statusSelect.value = profile.status;
+      roleSelect.disabled = Boolean(isOwnAccount);
+      statusSelect.disabled = Boolean(isOwnAccount);
+      saveAccountButton.disabled = Boolean(isOwnAccount);
+      document.getElementById("protectedAccountNote").classList.toggle(
+        "visible",
+        Boolean(isOwnAccount)
+      );
+
+      assignmentSection.hidden = profile.role !== "scorekeeper";
+      assignmentGameId.value = "";
+      renderSelectedAssignments();
+
+      modalBackdrop.classList.add("open");
+      modalBackdrop.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeAccountModal() {
+      modalBackdrop.classList.remove("open");
+      modalBackdrop.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      selectedAccountId = null;
+    }
+
+    function renderSelectedAssignments() {
+      if (!selectedAccountId) return;
+
+      const assignments = allAssignments.filter(
+        assignment => assignment.scorekeeper_id === selectedAccountId
+      );
+
+      if (!assignments.length) {
+        assignmentList.innerHTML = '<div class="empty-state">No games have been assigned to this scorekeeper.</div>';
+        return;
+      }
+
+      const gameById = new Map(allGames.map(game => [String(game.id), game]));
+
+      assignmentList.innerHTML = assignments.map(assignment => {
+        const game = gameById.get(String(assignment.game_id));
+        const isActive = assignment.active === true;
+
+        return `
+          <div class="assignment-row">
+            <div>
+              <div class="assignment-game">${escapeHtml(gameLabel(game || { id: assignment.game_id }))}</div>
+              <div class="assignment-meta">
+                ${isActive ? "Active assignment" : "Inactive assignment"} · Updated ${escapeHtml(formatDate(assignment.updated_at, true))}
+              </div>
+            </div>
+            <div class="assignment-actions">
+              <span class="badge ${isActive ? "status-active" : "status-suspended"}">
+                ${isActive ? "Active" : "Inactive"}
+              </span>
+              <button
+                class="small-button ${isActive ? "revoke" : ""}"
+                type="button"
+                data-assignment-game="${escapeHtml(assignment.game_id)}"
+                data-assignment-active="${isActive ? "false" : "true"}"
+              >${isActive ? "Revoke" : "Reactivate"}</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function saveSelectedAccount() {
+      const profile = allProfiles.find(item => item.id === selectedAccountId);
+      if (!profile) return;
+
+      const nextRole = roleSelect.value;
+      const nextStatus = statusSelect.value;
+
+      if (
+        (nextStatus === "suspended" || nextStatus === "rejected") &&
+        profile.status !== nextStatus
+      ) {
+        const confirmed = window.confirm(
+          `Change ${profile.email} to ${STATUS_LABELS[nextStatus]}? This account will lose access.`
+        );
+        if (!confirmed) return;
+      }
+
+      saveAccountButton.disabled = true;
+      saveAccountButton.textContent = "Saving...";
+
+      try {
+        const { error } = await supabaseClient.rpc("admin_update_account", {
+          target_user_id: profile.id,
+          new_role: nextRole,
+          new_status: nextStatus
+        });
+
+        if (error) throw error;
+
+        showToast("Account role and status updated.");
+        await loadAllData();
+      } catch (error) {
+        console.error("Account update failed:", error);
+        showToast(
+          friendlyError(error, "Unable to update this account."),
+          "error"
+        );
+      } finally {
+        saveAccountButton.disabled = false;
+        saveAccountButton.textContent = "Save Account";
+      }
+    }
+
+    async function setAssignment(gameId, active) {
+      const profile = allProfiles.find(item => item.id === selectedAccountId);
+      if (!profile) return;
+
+      if (profile.role !== "scorekeeper" || profile.status !== "active") {
+        showToast("The account must be an active scorekeeper before assigning a game.", "error");
+        return;
+      }
+
+      if (!Number.isSafeInteger(gameId) || gameId <= 0) {
+        showToast("Enter a valid Game ID.", "error");
+        return;
+      }
+
+      if (!active) {
+        const confirmed = window.confirm(
+          `Revoke this scorekeeper's access to Game #${gameId}?`
+        );
+        if (!confirmed) return;
+      }
+
+      assignGameButton.disabled = true;
+
+      try {
+        const { error } = await supabaseClient.rpc(
+          "admin_set_scorekeeper_assignment",
+          {
+            target_user_id: profile.id,
+            target_game_id: gameId,
+            assignment_active: active
+          }
+        );
+
+        if (error) throw error;
+
+        showToast(active ? "Game assigned successfully." : "Game assignment revoked.");
+        assignmentGameId.value = "";
+        await loadAllData();
+      } catch (error) {
+        console.error("Assignment update failed:", error);
+        showToast(
+          friendlyError(error, "Unable to update this assignment."),
+          "error"
+        );
+      } finally {
+        assignGameButton.disabled = false;
+      }
+    }
+
+    function closeSidebar() {
+      document.getElementById("sidebar").classList.remove("open");
+      document.getElementById("sidebarOverlay").classList.remove("open");
+      document.getElementById("menuButton").setAttribute("aria-expanded", "false");
+    }
+
+    document.getElementById("menuButton").addEventListener("click", function () {
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("sidebarOverlay");
+      const willOpen = !sidebar.classList.contains("open");
+      sidebar.classList.toggle("open", willOpen);
+      overlay.classList.toggle("open", willOpen);
+      this.setAttribute("aria-expanded", String(willOpen));
+    });
+
+    document.getElementById("sidebarOverlay").addEventListener("click", closeSidebar);
+    document.querySelectorAll(".sidebar .nav-link").forEach(link => {
+      link.addEventListener("click", closeSidebar);
+    });
+
+    accountSearch.addEventListener("input", renderAccounts);
+    roleFilter.addEventListener("change", renderAccounts);
+    statusFilter.addEventListener("change", renderAccounts);
+    document.getElementById("refreshButton").addEventListener("click", loadAllData);
+
+    accountTableBody.addEventListener("click", function (event) {
+      const button = event.target.closest("[data-account-id]");
+      if (button) openAccountModal(button.dataset.accountId);
+    });
+
+    assignmentList.addEventListener("click", function (event) {
+      const button = event.target.closest("[data-assignment-game]");
+      if (!button) return;
+      const gameId = Number(button.dataset.assignmentGame);
+      const active = button.dataset.assignmentActive === "true";
+      setAssignment(gameId, active);
+    });
+
+    assignGameButton.addEventListener("click", function () {
+      setAssignment(Number(assignmentGameId.value), true);
+    });
+
+    saveAccountButton.addEventListener("click", saveSelectedAccount);
+    document.getElementById("closeModalButton").addEventListener("click", closeAccountModal);
+    document.getElementById("cancelAccountButton").addEventListener("click", closeAccountModal);
+
+    modalBackdrop.addEventListener("click", function (event) {
+      if (event.target === modalBackdrop) closeAccountModal();
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        if (modalBackdrop.classList.contains("open")) {
+          closeAccountModal();
+        } else {
+          closeSidebar();
+        }
+      }
+    });
+
+    document.getElementById("logoutButton").addEventListener("click", async function () {
+      this.disabled = true;
+      this.textContent = "Logging Out...";
+      await returnToLogin(true);
+    });
+
+    requireSuperAdmin();
+  </script>
+</body>
+
+</html>
