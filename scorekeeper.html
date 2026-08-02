@@ -50,6 +50,30 @@ nav a:hover{
     color:#ff6b00;
 }
 
+nav{
+    display:flex;
+    align-items:center;
+}
+
+.fullscreen-button{
+    width:24px;
+    height:22px;
+    margin-left:8px;
+    padding:0;
+    border:1px solid #555;
+    border-radius:3px;
+    background:transparent;
+    color:#bbb;
+    font-size:12px;
+    font-weight:normal;
+    cursor:pointer;
+}
+
+.fullscreen-button:hover{
+    border-color:#ff6b00;
+    color:#ff6b00;
+}
+
 .container{
     width:100%;
     padding:8px;
@@ -137,26 +161,65 @@ nav a:hover{
     border:1px solid #eee;
 }
 
+.clock-display-row{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    align-items:stretch;
+    gap:6px;
+    margin-bottom:6px;
+}
+
+.clock-card{
+    min-width:0;
+    min-height:64px;
+    padding:6px;
+    border:1px solid #e8ddd4;
+    border-radius:6px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    gap:5px;
+}
+
+.game-clock-panel{
+    background:#fff;
+}
+
+.shot-clock-panel{
+    background:#fff8f2;
+}
+
+.clock-card-header{
+    min-width:0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:5px;
+}
+
+.clock-label,
+.shot-clock-label{
+    min-width:0;
+    padding:0;
+    color:#766a61;
+    font-size:8px;
+    font-weight:bold;
+    letter-spacing:.8px;
+    text-align:left;
+}
+
 .clock{
-    font-size:28px;
+    font-size:25px;
     font-weight:bold;
     color:#ff6b00;
-    margin-bottom:5px;
+    margin:0;
+    line-height:1;
 }
 
 .clock-controls{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    gap:4px;
-}
-
-.clock-adjustments{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    gap:4px;
-    margin-top:4px;
+    display:grid;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:3px;
 }
 
 /* =========================
@@ -166,57 +229,41 @@ nav a:hover{
 .shot-clock-panel{
     width:100%;
     max-width:100%;
-    margin:5px auto 0;
-    padding:4px;
-    background:#111;
-    border-radius:5px;
-    color:white;
-    display:grid;
-    grid-template-columns:1fr auto;
-    align-items:center;
-    gap:3px 5px;
-}
-
-.shot-clock-label{
-    font-size:8px;
-    font-weight:bold;
-    letter-spacing:1px;
-    color:#ccc;
-    text-align:left;
-    padding-left:2px;
+    margin:0;
 }
 
 .shot-clock{
     margin:0;
     min-width:28px;
-    font-size:19px;
+    font-size:25px;
     line-height:1;
     font-weight:bold;
-    color:#ff3b30;
+    color:#e85b21;
     text-align:right;
 }
 
 .shot-clock-controls{
-    grid-column:1 / -1;
     display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:2px;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:3px;
 }
 
-.shot-clock-controls button{
+.clock-card button{
     min-width:0;
-    padding:3px 1px;
-    border:0;
-    border-radius:3px;
-    background:#333;
-    color:white;
+    padding:4px 2px;
+    border:1px solid #ead2c0;
+    border-radius:4px;
+    background:#fff;
+    color:#5f4c40;
     font-size:8px;
     font-weight:bold;
     cursor:pointer;
 }
 
-.shot-clock-controls button:hover{
+.clock-card button:hover{
+    border-color:#ff6b00;
     background:#ff6b00;
+    color:#fff;
 }
 
 .clock button{
@@ -728,37 +775,45 @@ nav a:hover{
     }
 
     .clock{
-        font-size:22px;
+        font-size:19px;
     }
 
     .clock-controls{
         gap:2px;
     }
 
-    .clock button{
-        padding:5px;
-        font-size:8px;
+    .clock-card{
+        min-height:58px;
+        padding:4px;
+        gap:4px;
     }
 
-    .shot-clock-panel{
-        margin-top:4px;
-        padding:3px;
-        gap:2px 3px;
-    }
-
+    .clock-label,
     .shot-clock-label{
         font-size:7px;
-        letter-spacing:.6px;
+        letter-spacing:.4px;
     }
 
     .shot-clock{
-        min-width:25px;
-        font-size:17px;
+        min-width:22px;
+        font-size:19px;
     }
 
-    .shot-clock-controls button{
+    .clock-card button{
         padding:3px 0;
-        font-size:7px;
+        font-size:6.5px;
+    }
+
+    .fullscreen-button{
+        width:21px;
+        height:20px;
+        margin-left:5px;
+        font-size:10px;
+    }
+
+    .clock-display-row{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:3px;
     }
 
     .period-buttons{
@@ -959,6 +1014,16 @@ nav a:hover{
 <nav>
 <a href="index.html">Home</a>
 <a href="live-game.html">Live Game</a>
+<button
+    type="button"
+    id="fullscreenButton"
+    class="fullscreen-button"
+    onclick="toggleFullscreen()"
+    title="Open scorekeeper in fullscreen"
+    aria-label="Open scorekeeper in fullscreen"
+>
+⛶
+</button>
 </nav>
 </header>
 
@@ -981,22 +1046,31 @@ nav a:hover{
 
 <div class="clock-area">
 
+<div class="clock-display-row">
+
+<div class="game-clock-panel clock-card">
+
+<div class="clock-card-header">
+<div class="clock-label">GAME CLOCK</div>
 <div class="clock" id="gameClock">10:00</div>
+</div>
 
 <div class="clock-controls">
 <button onclick="startClock()">START</button>
 <button onclick="pauseClock()">PAUSE</button>
 <button onclick="resetClock()">RESET</button>
+<button onclick="adjustGameClock(-1)" title="Remove 1 second from game clock">−1</button>
+<button onclick="adjustGameClock(1)" title="Add 1 second to game clock">+1</button>
 </div>
 
-<div class="clock-adjustments">
-<button onclick="adjustGameClock(-1)">−1 SEC</button>
-<button onclick="adjustGameClock(1)">+1 SEC</button>
 </div>
 
-<div class="shot-clock-panel">
+<div class="shot-clock-panel clock-card">
+
+<div class="clock-card-header">
 <div class="shot-clock-label">SHOT CLOCK</div>
 <div class="shot-clock" id="shotClock">24</div>
+</div>
 
 <div class="shot-clock-controls">
 <button onclick="resetShotClock(24)" title="Reset shot clock to 24 seconds">24</button>
@@ -1004,6 +1078,8 @@ nav a:hover{
 <button onclick="adjustShotClock(-1)" title="Remove 1 second">−1</button>
 <button onclick="adjustShotClock(1)" title="Add 1 second">+1</button>
 </div>
+</div>
+
 </div>
 
 <div class="period-buttons">
@@ -1233,6 +1309,88 @@ function showStatus(message){
         el.style.display="none";
     },2500);
 }
+
+
+/* =========================================================
+   FULLSCREEN
+   ========================================================= */
+
+function updateFullscreenButton(){
+
+    const button=
+        document.getElementById(
+            "fullscreenButton"
+        );
+
+    if(!button){
+        return;
+    }
+
+    const isFullscreen=
+        Boolean(
+            document.fullscreenElement
+        );
+
+    button.textContent=
+        isFullscreen
+        ?"✕"
+        :"⛶";
+
+    button.title=
+        isFullscreen
+        ?"Exit fullscreen"
+        :"Open scorekeeper in fullscreen";
+
+    button.setAttribute(
+        "aria-label",
+        button.title
+    );
+}
+
+
+async function toggleFullscreen(){
+
+    try{
+
+        if(!document.fullscreenElement){
+
+            if(!document.fullscreenEnabled){
+
+                showStatus(
+                    "Fullscreen is not supported by this browser."
+                );
+
+                return;
+            }
+
+            await document.documentElement
+            .requestFullscreen();
+        }
+        else{
+
+            await document.exitFullscreen();
+        }
+    }
+    catch(error){
+
+        console.error(
+            "Fullscreen error:",
+            error
+        );
+
+        showStatus(
+            "Unable to open fullscreen mode."
+        );
+    }
+}
+
+
+document.addEventListener(
+    "fullscreenchange",
+    updateFullscreenButton
+);
+
+updateFullscreenButton();
 
 
 /* =========================================================
