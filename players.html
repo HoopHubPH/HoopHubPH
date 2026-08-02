@@ -2,25 +2,19 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Players | Hoop Hub PH</title>
 
 <style>
-
-    .logo {
+.logo {
     font-size: 24px;
     font-weight: bold;
     color: white;
     text-decoration: none;
 }
 
-.logo:visited {
-    color: white;
-}
-
+.logo:visited,
 .logo:hover {
     color: white;
 }
@@ -63,73 +57,41 @@ h2{
 }
 
 .player-card{
-
     background:white;
-
     border-radius:12px;
-
     padding:20px;
-
     box-shadow:0 5px 15px rgba(0,0,0,.08);
-
 }
 
 .player-card h3{
-
     margin-bottom:10px;
-
 }
 
 .player-card p{
-
     margin:6px 0;
-
 }
-
 </style>
-
 </head>
 
 <body>
 
 <header>
-
-<a href="index.html" style="text-decoration:none; color:white;">
-    <h1>HOOP HUB <span>PH</span></h1>
-</a>
-
+    <a href="index.html" style="text-decoration:none; color:white;">
+        <h1>HOOP HUB <span>PH</span></h1>
+    </a>
 </header>
 
 <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;">
+        <h2>Players Directory</h2>
+    </div>
 
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;">
-
-    <h2>Players Directory</h2>
-
-    <a href="add-player.html"
-       style="
-       background:#ff6b00;
-       color:white;
-       padding:12px 20px;
-       text-decoration:none;
-       border-radius:8px;
-       font-weight:bold;">
-       + Add Player
-    </a>
-
+    <div id="playersList">Loading players...</div>
 </div>
 
-<div id="playersList">
-
-Loading players...
-
-</div>
-
-</div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-
 const SUPABASE_URL = "https://tkrsyiwffqkgfyooewsf.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
 
@@ -139,91 +101,49 @@ const supabaseClient = window.supabase.createClient(
 );
 
 async function loadPlayers() {
-
     const playersList = document.getElementById("playersList");
-
     playersList.innerHTML = "Loading players...";
 
     const { data, error } = await supabaseClient
-    .from("players")
-    .select(`
-        *,
-        teams (
-            id,
-            name
-        )
-    `)
-    .order("created_at", { ascending: false });
+        .from("players")
+        .select(`
+            *,
+            teams (
+                id,
+                name
+            )
+        `)
+        .order("created_at", { ascending: false });
 
-   if (error) {
-
-    playersList.innerHTML =
-        "<h3>Unable to load players: " +
-        error.message +
-        "</h3>";
-
-    console.error("PLAYER LOAD ERROR:", error);
-
-    return;
-}
+    if (error) {
+        playersList.innerHTML =
+            "<h3>Unable to load players: " + error.message + "</h3>";
+        console.error("PLAYER LOAD ERROR:", error);
+        return;
+    }
 
     if (data.length === 0) {
-
-        playersList.innerHTML =
-            "<h3>No players have been added yet.</h3>";
-
+        playersList.innerHTML = "<h3>No players have been added yet.</h3>";
         return;
-
     }
 
     playersList.innerHTML = "";
 
     data.forEach(player => {
-
         playersList.innerHTML += `
-
-<div class="player-card">
-
-    <h3>
-        ${player.first_name} ${player.last_name}
-    </h3>
-
-    <p>
-        <strong>Position:</strong>
-        ${player.position || "Not provided"}
-    </p>
-
-    <p>
-        <strong>Jersey:</strong>
-        #${player.jersey_number}
-    </p>
-
-    <p>
-        <strong>Height:</strong>
-        ${player.height || "Not provided"}
-    </p>
-
-    <p>
-    <strong>Team:</strong>
-    ${player.teams ? player.teams.name : "No team assigned"}
-</p>
-
-<p>
-    <strong>Debug Team ID:</strong>
-    ${player.team_id || "No team ID"}
-</p>
-
-</div>
-
-`;
-
+            <div class="player-card">
+                <h3>${player.first_name} ${player.last_name}</h3>
+                <p><strong>Position:</strong> ${player.position || "Not provided"}</p>
+                <p><strong>Jersey:</strong> #${player.jersey_number}</p>
+                <p><strong>Height:</strong> ${player.height || "Not provided"}</p>
+                <p><strong>Team:</strong> ${player.teams ? player.teams.name : "No team assigned"}</p>
+                <p><strong>Debug Team ID:</strong> ${player.team_id || "No team ID"}</p>
+            </div>
+        `;
     });
-
 }
 
 loadPlayers();
-
 </script>
 </body>
-
 </html>
