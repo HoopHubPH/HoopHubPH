@@ -150,12 +150,63 @@ nav a:hover{
     align-items:center;
     gap:4px;
 }
-    .clock-adjustments{
+
+.clock-adjustments{
     display:flex;
     justify-content:center;
     align-items:center;
     gap:4px;
     margin-top:4px;
+}
+
+/* =========================
+   SHOT CLOCK
+========================= */
+
+.shot-clock-panel{
+    width:150px;
+    max-width:100%;
+    margin:8px auto 0;
+    padding:7px;
+    background:#111;
+    border-radius:6px;
+    color:white;
+}
+
+.shot-clock-label{
+    font-size:9px;
+    font-weight:bold;
+    letter-spacing:1px;
+    color:#ccc;
+}
+
+.shot-clock{
+    margin:2px 0 5px;
+    font-size:22px;
+    line-height:1;
+    font-weight:bold;
+    color:#ff3b30;
+}
+
+.shot-clock-controls{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:4px;
+}
+
+.shot-clock-controls button{
+    padding:4px 5px;
+    border:0;
+    border-radius:4px;
+    background:#333;
+    color:white;
+    font-size:9px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.shot-clock-controls button:hover{
+    background:#ff6b00;
 }
 
 .clock button{
@@ -906,10 +957,22 @@ nav a:hover{
 <button onclick="pauseClock()">PAUSE</button>
 <button onclick="resetClock()">RESET</button>
 </div>
-    
-    <div class="clock-adjustments">
+
+<div class="clock-adjustments">
 <button onclick="adjustGameClock(-1)">−1 SEC</button>
 <button onclick="adjustGameClock(1)">+1 SEC</button>
+</div>
+
+<div class="shot-clock-panel">
+<div class="shot-clock-label">SHOT CLOCK</div>
+<div class="shot-clock" id="shotClock">24</div>
+
+<div class="shot-clock-controls">
+<button onclick="resetShotClock(24)">RESET 24</button>
+<button onclick="resetShotClock(14)">RESET 14</button>
+<button onclick="adjustShotClock(-1)">−1 SEC</button>
+<button onclick="adjustShotClock(1)">+1 SEC</button>
+</div>
 </div>
 
 <div class="period-buttons">
@@ -1080,6 +1143,9 @@ let clockSeconds=600;
 let clockInterval=null;
 let clockRunning=false;
 let clockEndTime=null;
+
+let shotClockSeconds=24;
+let shotClockEndTime=null;
 
 let playerMinuteBaseSeconds={};
 let playerMinuteLastClockSeconds={};
@@ -3899,6 +3965,212 @@ async function toggleSubstitution(
 
 
 /* =========================================================
+   SHOT CLOCK
+   ========================================================= */
+
+function updateShotClockDisplay(){
+
+    const safeSeconds=
+        Math.max(
+            0,
+            Number(shotClockSeconds || 0)
+        );
+
+    const displayValue=
+        safeSeconds > 5
+        ?String(Math.ceil(safeSeconds))
+        :(
+            Math.ceil(safeSeconds * 10) / 10
+        ).toFixed(1);
+
+    document.getElementById(
+        "shotClock"
+    ).textContent=displayValue;
+}
+
+
+async function resetShotClock(seconds){
+
+    if(!currentGame){
+
+        showStatus(
+            "Load a game first."
+        );
+
+        return;
+    }
+
+    const resetValue=Number(seconds);
+
+    if(
+        resetValue !== 24 &&
+        resetValue !== 14
+    ){
+        return;
+    }
+
+    if(
+        clockRunning &&
+        clockEndTime
+    ){
+
+        clockSeconds=
+            Math.max(
+                0,
+                (
+                    clockEndTime -
+                    Date.now()
+                ) / 1000
+            );
+    }
+
+    if(
+        clockRunning &&
+        shotClockEndTime
+    ){
+
+        shotClockSeconds=
+            Math.max(
+                0,
+                (
+                    shotClockEndTime -
+                    Date.now()
+                ) / 1000
+            );
+
+        if(shotClockSeconds <= 0){
+
+            shotClockSeconds=0;
+            shotClockEndTime=null;
+        }
+    }
+
+    shotClockSeconds=
+        Math.min(
+            resetValue,
+            Math.max(
+                0,
+                Number(clockSeconds || 0)
+            )
+        );
+
+    if(
+        clockRunning &&
+        shotClockSeconds > 0
+    ){
+
+        shotClockEndTime=
+            Date.now() +
+            Math.round(
+                shotClockSeconds * 1000
+            );
+    }
+    else{
+
+        shotClockEndTime=null;
+    }
+
+    updateShotClockDisplay();
+
+    await saveClockState();
+
+    showStatus(
+        "Shot clock reset to " +
+        resetValue +
+        " seconds."
+    );
+}
+
+
+async function adjustShotClock(amount){
+
+    if(!currentGame){
+
+        showStatus(
+            "Load a game first."
+        );
+
+        return;
+    }
+
+    const adjustment=Number(amount);
+
+    if(!Number.isFinite(adjustment)){
+        return;
+    }
+
+    if(
+        clockRunning &&
+        clockEndTime
+    ){
+
+        clockSeconds=
+            Math.max(
+                0,
+                (
+                    clockEndTime -
+                    Date.now()
+                ) / 1000
+            );
+    }
+
+    if(
+        clockRunning &&
+        shotClockEndTime
+    ){
+
+        shotClockSeconds=
+            Math.max(
+                0,
+                (
+                    shotClockEndTime -
+                    Date.now()
+                ) / 1000
+            );
+    }
+
+    shotClockSeconds=
+        Math.min(
+            Math.max(
+                0,
+                Number(shotClockSeconds || 0) +
+                adjustment
+            ),
+            Math.max(
+                0,
+                Number(clockSeconds || 0)
+            )
+        );
+
+    if(
+        clockRunning &&
+        shotClockSeconds > 0
+    ){
+
+        shotClockEndTime=
+            Date.now() +
+            Math.round(
+                shotClockSeconds * 1000
+            );
+    }
+    else{
+
+        shotClockEndTime=null;
+    }
+
+    updateShotClockDisplay();
+
+    await saveClockState();
+
+    showStatus(
+        adjustment > 0
+        ?"Added 1 second to the shot clock."
+        :"Removed 1 second from the shot clock."
+    );
+}
+
+
+/* =========================================================
    CLOCK
    ========================================================= */
 
@@ -3923,11 +4195,40 @@ async function saveClockState(){
             );
     }
 
+    if(
+        clockRunning &&
+        shotClockEndTime
+    ){
+
+        shotClockSeconds=
+            Math.max(
+                0,
+                (
+                    shotClockEndTime -
+                    Date.now()
+                ) / 1000
+            );
+
+        if(shotClockSeconds <= 0){
+
+            shotClockSeconds=0;
+            shotClockEndTime=null;
+        }
+    }
+
     const remainingMilliseconds=
         Math.max(
             0,
             Math.round(
                 clockSeconds * 1000
+            )
+        );
+
+    const shotClockRemainingMilliseconds=
+        Math.max(
+            0,
+            Math.round(
+                shotClockSeconds * 1000
             )
         );
 
@@ -3964,6 +4265,19 @@ async function saveClockState(){
 
             ?new Date(
                 clockEndTime
+            ).toISOString()
+
+            :null,
+
+        shot_clock_milliseconds:
+            shotClockRemainingMilliseconds,
+
+        shot_clock_end_time:
+
+            clockRunning && shotClockEndTime
+
+            ?new Date(
+                shotClockEndTime
             ).toISOString()
 
             :null
@@ -4012,7 +4326,7 @@ async function loadPersistedClock(){
     await supabaseClient
     .from("games")
     .select(
-        "clock_seconds,clock_milliseconds,clock_running,clock_end_time"
+        "clock_seconds,clock_milliseconds,clock_running,clock_end_time,shot_clock_milliseconds,shot_clock_end_time"
     )
     .eq(
         "id",
@@ -4029,7 +4343,11 @@ async function loadPersistedClock(){
         clockRunning=false;
         clockEndTime=null;
 
+        shotClockSeconds=24;
+        shotClockEndTime=null;
+
         updateClockDisplay();
+        updateShotClockDisplay();
 
         return;
     }
@@ -4075,6 +4393,23 @@ async function loadPersistedClock(){
 
         :null;
 
+    shotClockSeconds=
+        Math.max(
+            0,
+            Number(
+                data.shot_clock_milliseconds ?? 24000
+            ) / 1000
+        );
+
+    shotClockEndTime=
+        data.shot_clock_end_time
+
+        ?new Date(
+            data.shot_clock_end_time
+        ).getTime()
+
+        :null;
+
     if(
         clockRunning &&
         clockEndTime
@@ -4090,13 +4425,58 @@ async function loadPersistedClock(){
             );
     }
 
+    if(clockRunning){
+
+        if(shotClockEndTime){
+
+            shotClockSeconds=
+                Math.max(
+                    0,
+                    (
+                        shotClockEndTime -
+                        Date.now()
+                    ) / 1000
+                );
+        }
+        else if(shotClockSeconds > 0){
+
+            shotClockSeconds=
+                Math.min(
+                    shotClockSeconds,
+                    clockSeconds
+                );
+
+            shotClockEndTime=
+                Date.now() +
+                Math.round(
+                    shotClockSeconds * 1000
+                );
+        }
+    }
+
+    shotClockSeconds=
+        Math.min(
+            Math.max(0,shotClockSeconds),
+            Math.max(0,clockSeconds)
+        );
+
+    if(shotClockSeconds <= 0){
+
+        shotClockSeconds=0;
+        shotClockEndTime=null;
+    }
+
     if(clockSeconds <= 0){
 
         clockSeconds=0;
         clockRunning=false;
         clockEndTime=null;
 
+        shotClockSeconds=0;
+        shotClockEndTime=null;
+
         updateClockDisplay();
+        updateShotClockDisplay();
 
         await saveClockState();
 
@@ -4104,6 +4484,7 @@ async function loadPersistedClock(){
     }
 
     updateClockDisplay();
+    updateShotClockDisplay();
 
     if(
         clockRunning &&
@@ -4136,6 +4517,8 @@ async function loadPersistedClock(){
                     clockSeconds;
             }
         }
+
+        await saveClockState();
 
         startClockInternal();
     }
@@ -4266,18 +4649,44 @@ async function startClock(){
     }
 
 
+    const clockStartTime=Date.now();
+
     clockEndTime=
 
-    Date.now()
+        clockStartTime
 
-    +
+        +
 
-    Math.round(
-        clockSeconds * 1000
-    );
+        Math.round(
+            clockSeconds * 1000
+        );
+
+    shotClockSeconds=
+        Math.min(
+            Math.max(
+                0,
+                Number(shotClockSeconds || 0)
+            ),
+            clockSeconds
+        );
+
+    if(shotClockSeconds > 0){
+
+        shotClockEndTime=
+            clockStartTime +
+            Math.round(
+                shotClockSeconds * 1000
+            );
+    }
+    else{
+
+        shotClockEndTime=null;
+    }
 
 
     clockRunning=true;
+
+    updateShotClockDisplay();
 
 
     updateSubstitutionButtons();
@@ -4306,24 +4715,20 @@ function startClockInternal(){
         );
     }
 
-
     if(
-        !clockRunning||
+        !clockRunning ||
         !clockEndTime
     ){
 
         return;
     }
 
-
     clockInterval=
-
         setInterval(
-
             ()=>{
 
                 if(
-                    !clockRunning||
+                    !clockRunning ||
                     !clockEndTime
                 ){
 
@@ -4334,41 +4739,68 @@ function startClockInternal(){
                     clockInterval=null;
 
                     return;
-
                 }
 
+                const now=Date.now();
 
-               clockSeconds=
+                clockSeconds=
+                    Math.max(
+                        0,
+                        (
+                            clockEndTime -
+                            now
+                        ) / 1000
+                    );
 
-    Math.max(
+                if(shotClockEndTime){
 
-        0,
+                    shotClockSeconds=
+                        Math.max(
+                            0,
+                            (
+                                shotClockEndTime -
+                                now
+                            ) / 1000
+                        );
 
-        (
-            clockEndTime -
-            Date.now()
-        ) / 1000
+                    if(shotClockSeconds <= 0){
 
-    );
+                        shotClockSeconds=0;
+                        shotClockEndTime=null;
 
+                        void saveClockState();
+
+                        showStatus(
+                            "Shot clock ended."
+                        );
+                    }
+                }
+
+                if(shotClockSeconds > clockSeconds){
+
+                    shotClockSeconds=clockSeconds;
+
+                    if(shotClockEndTime){
+
+                        shotClockEndTime=
+                            now +
+                            Math.round(
+                                shotClockSeconds * 1000
+                            );
+                    }
+                }
 
                 synchronizePlayerMinutes();
 
-
                 updateClockDisplay();
-
+                updateShotClockDisplay();
                 updateVisibleMinutes();
 
+                if(clockSeconds <= 0){
 
-                if(
-                    clockSeconds<=0
-                ){
-
-                    handleClockEnd();
+                    void handleClockEnd();
                 }
-
             },
-
             100
         );
 }
@@ -4386,6 +4818,7 @@ async function handleClockEnd(){
 
 
     clockSeconds=0;
+    shotClockSeconds=0;
 
 
     synchronizePlayerMinutes();
@@ -4394,6 +4827,7 @@ async function handleClockEnd(){
     clockRunning=false;
 
     clockEndTime=null;
+    shotClockEndTime=null;
 
 
     if(clockInterval){
@@ -4407,6 +4841,7 @@ async function handleClockEnd(){
 
 
     updateClockDisplay();
+    updateShotClockDisplay();
 
 
     await persistAllPlayerMinutes();
@@ -4452,38 +4887,43 @@ async function pauseClock(){
         return;
     }
 
-
     if(!clockRunning){
 
         updateClockDisplay();
-
+        updateShotClockDisplay();
         updateSubstitutionButtons();
 
         return;
     }
 
+    const now=Date.now();
 
     clockSeconds=
+        Math.max(
+            0,
+            (
+                clockEndTime -
+                now
+            ) / 1000
+        );
 
-    Math.max(
+    if(shotClockEndTime){
 
-        0,
-
-        (
-            clockEndTime -
-            Date.now()
-        ) / 1000
-
-    );
-
+        shotClockSeconds=
+            Math.max(
+                0,
+                (
+                    shotClockEndTime -
+                    now
+                ) / 1000
+            );
+    }
 
     synchronizePlayerMinutes();
 
-
     clockRunning=false;
-
     clockEndTime=null;
-
+    shotClockEndTime=null;
 
     if(clockInterval){
 
@@ -4494,18 +4934,15 @@ async function pauseClock(){
         clockInterval=null;
     }
 
-
     updateClockDisplay();
-
+    updateShotClockDisplay();
 
     await persistAllPlayerMinutes();
-
-
     await saveClockState();
-
 
     updateSubstitutionButtons();
 }
+
 
 /* =========================================================
    MANUAL CLOCK ADJUSTMENT
@@ -4523,7 +4960,7 @@ async function adjustGameClock(amount){
     }
 
 
-    const adjustment =
+    const adjustment=
         Number(amount);
 
 
@@ -4533,8 +4970,9 @@ async function adjustGameClock(amount){
 
 
     /*
-    Save actual elapsed playing time before manually
-    changing the game clock.
+    Record actual elapsed playing time before changing
+    the clock. A manual correction must not add to or
+    remove any player's minutes played.
     */
 
     if(
@@ -4542,7 +4980,7 @@ async function adjustGameClock(amount){
         clockEndTime
     ){
 
-        clockSeconds =
+        clockSeconds=
             Math.max(
                 0,
                 (
@@ -4551,21 +4989,14 @@ async function adjustGameClock(amount){
                 ) / 1000
             );
 
-
         synchronizePlayerMinutes();
-
-
-        /*
-        Change the real ending time while running.
-        */
 
         clockEndTime +=
             Math.round(
                 adjustment * 1000
             );
 
-
-        clockSeconds =
+        clockSeconds=
             Math.max(
                 0,
                 (
@@ -4573,15 +5004,10 @@ async function adjustGameClock(amount){
                     Date.now()
                 ) / 1000
             );
-
     }
     else{
 
-        /*
-        Change the stored time while paused.
-        */
-
-        clockSeconds =
+        clockSeconds=
             Math.max(
                 0,
                 Number(clockSeconds || 0) +
@@ -4589,15 +5015,65 @@ async function adjustGameClock(amount){
             );
     }
 
+    if(
+        clockRunning &&
+        shotClockEndTime
+    ){
+
+        shotClockSeconds=
+            Math.max(
+                0,
+                (
+                    shotClockEndTime -
+                    Date.now()
+                ) / 1000
+            );
+
+        if(shotClockSeconds <= 0){
+
+            shotClockSeconds=0;
+            shotClockEndTime=null;
+        }
+    }
+
+    shotClockSeconds=
+        Math.min(
+            Math.max(
+                0,
+                Number(shotClockSeconds || 0)
+            ),
+            Math.max(
+                0,
+                Number(clockSeconds || 0)
+            )
+        );
+
+    if(
+        clockRunning &&
+        shotClockSeconds > 0
+    ){
+
+        shotClockEndTime=
+            Date.now() +
+            Math.round(
+                shotClockSeconds * 1000
+            );
+    }
+    else{
+
+        shotClockEndTime=null;
+    }
+
 
     /*
-    Prevent a manual clock correction from adding or
-    removing time from players' minutes played.
+    Rebase active players to the corrected clock value.
     */
 
     for(
         const playerId of
-        Object.keys(playerOnCourt)
+        Object.keys(
+            playerOnCourt
+        )
     ){
 
         if(
@@ -4606,17 +5082,14 @@ async function adjustGameClock(amount){
 
             playerMinuteLastClockSeconds[
                 playerId
-            ] = clockSeconds;
+            ]=clockSeconds;
         }
     }
 
 
     updateClockDisplay();
+    updateShotClockDisplay();
 
-
-    /*
-    End the clock properly if subtraction reaches zero.
-    */
 
     if(
         clockRunning &&
@@ -4629,20 +5102,17 @@ async function adjustGameClock(amount){
     }
 
 
-    /*
-    Save the corrected clock to Supabase.
-    */
-
     await saveClockState();
 
 
     showStatus(
         adjustment > 0
-        ? "Added 1 second to the game clock."
-        : "Removed 1 second from the game clock."
+        ?"Added 1 second to the game clock."
+        :"Removed 1 second from the game clock."
     );
 }
-    
+
+
 /* =========================================================
    RESET CLOCK
    ========================================================= */
@@ -4680,6 +5150,8 @@ async function resetClock(){
 
     clockEndTime=null;
 
+    shotClockEndTime=null;
+
 
     if(clockInterval){
 
@@ -4692,6 +5164,8 @@ async function resetClock(){
 
 
     clockSeconds=600;
+
+    shotClockSeconds=24;
 
 
     for(
@@ -4731,6 +5205,8 @@ async function resetClock(){
 
     updateClockDisplay();
 
+    updateShotClockDisplay();
+
 
     await supabaseClient
     .from("games")
@@ -4742,7 +5218,11 @@ async function resetClock(){
 
     clock_running:false,
 
-    clock_end_time:null
+    clock_end_time:null,
+
+    shot_clock_milliseconds:24000,
+
+    shot_clock_end_time:null
 
 })
     .eq(
