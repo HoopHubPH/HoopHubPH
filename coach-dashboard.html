@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="HoopHub PH Coach and Team Manager dashboard.">
+  <title>Coach Dashboard | HoopHub PH</title>
+
+  <style>
+    :root {
+      --orange: #ff6b00;
+      --orange-dark: #db5c00;
+      --orange-soft: #fff1e7;
+      --ink: #171717;
+      --muted: #667085;
+      --line: #e5e7eb;
+      --background: #f4f5f7;
+      --surface: #ffffff;
+      --sidebar: #171717;
+      --success: #067647;
+      --success-soft: #ecfdf3;
+      --shadow: 0 8px 28px rgba(17, 24, 39, .07);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--background);
+    }
+
+    button, select, a { font: inherit; }
+
+    .auth-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: #111;
+    }
+
+    .auth-screen[hidden], .app-shell[hidden] { display: none; }
+
+    .auth-message { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 800; }
+
+    .spinner {
+      width: 22px;
+      height: 22px;
+      border: 3px solid rgba(255,255,255,.25);
+      border-top-color: var(--orange);
+      border-radius: 50%;
+      animation: spin .75s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 60;
+      height: 66px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #fff;
+      background: #111;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .topbar-left, .topbar-right { display: flex; align-items: center; gap: 14px; }
+    .brand { color: #fff; font-size: 21px; font-weight: 900; text-decoration: none; }
+    .brand span { color: var(--orange); }
+    .account-summary { text-align: right; }
+    .account-summary strong, .account-summary span { display: block; }
+    .account-summary strong { font-size: 12px; }
+    .account-summary span { margin-top: 3px; color: #aeb4bd; font-size: 10px; }
+
+    .logout-button, .menu-button {
+      height: 36px;
+      color: #fff;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .logout-button { padding: 0 13px; }
+    .menu-button { display: none; width: 38px; font-size: 19px; }
+
+    .sidebar {
+      position: fixed;
+      inset: 66px auto 0 0;
+      z-index: 50;
+      width: 238px;
+      padding: 22px 14px;
+      overflow-y: auto;
+      color: #fff;
+      background: var(--sidebar);
+    }
+
+    .nav-label {
+      margin: 17px 10px 8px;
+      color: #818894;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    .nav-label:first-child { margin-top: 0; }
+
+    .nav-link {
+      min-height: 42px;
+      margin-bottom: 5px;
+      padding: 0 11px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #d1d5db;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,107,0,.16); }
+    .nav-link.active { box-shadow: inset 3px 0 var(--orange); }
+
+    .nav-icon {
+      width: 25px;
+      height: 25px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: #303030;
+      border-radius: 6px;
+      font-size: 8px;
+      font-weight: 900;
+    }
+
+    .coming { margin-left: auto; color: #fdbb8c; font-size: 8px; text-transform: uppercase; }
+
+    .main-content { min-height: 100vh; margin-left: 238px; padding: 94px 26px 34px; }
+    .content-wrap { width: min(1220px, 100%); margin: 0 auto; }
+
+    .page-heading {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .eyebrow { color: var(--orange-dark); font-size: 10px; font-weight: 900; letter-spacing: 1.2px; text-transform: uppercase; }
+    h1 { margin-top: 6px; font-size: clamp(25px, 4vw, 37px); letter-spacing: -1.1px; }
+    .page-heading p { margin-top: 8px; color: var(--muted); font-size: 12px; line-height: 1.55; }
+
+    .control {
+      min-width: 250px;
+      height: 40px;
+      padding: 0 11px;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .stats-grid { margin-bottom: 18px; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 13px; }
+    .stat-card, .panel { background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); }
+    .stat-card { min-height: 104px; padding: 18px; border-radius: 11px; }
+    .stat-card span, .stat-card strong { display: block; }
+    .stat-card span { color: var(--muted); font-size: 9px; font-weight: 900; letter-spacing: .8px; text-transform: uppercase; }
+    .stat-card strong { margin-top: 10px; font-size: 27px; }
+
+    .panel { margin-bottom: 17px; border-radius: 12px; overflow: hidden; }
+    .panel-header { min-height: 70px; padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-bottom: 1px solid var(--line); }
+    .panel-header h2 { font-size: 16px; }
+    .panel-header p { margin-top: 4px; color: var(--muted); font-size: 10px; }
+
+    .status-badge { padding: 6px 9px; display: inline-flex; color: var(--success); background: var(--success-soft); border-radius: 999px; font-size: 9px; font-weight: 900; text-transform: uppercase; }
+
+    .team-details { padding: 18px; display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
+    .detail-box { padding: 13px; background: #fafafa; border: 1px solid var(--line); border-radius: 8px; }
+    .detail-box span, .detail-box strong { display: block; }
+    .detail-box span { color: var(--muted); font-size: 9px; font-weight: 850; text-transform: uppercase; }
+    .detail-box strong { margin-top: 7px; font-size: 12px; }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; min-width: 720px; border-collapse: collapse; }
+    th, td { padding: 13px 17px; text-align: left; border-bottom: 1px solid var(--line); font-size: 10px; }
+    th { color: var(--muted); background: #fafafa; font-size: 8px; font-weight: 900; letter-spacing: .7px; text-transform: uppercase; }
+    td strong { font-size: 11px; }
+    .empty-state { padding: 34px 18px; color: var(--muted); text-align: center; font-size: 11px; line-height: 1.6; }
+
+    .module-grid { padding: 18px; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 11px; }
+    .module-card { min-height: 94px; padding: 15px; background: #fafafa; border: 1px solid var(--line); border-radius: 9px; }
+    .module-card strong, .module-card span { display: block; }
+    .module-card strong { font-size: 12px; }
+    .module-card span { margin-top: 7px; color: var(--muted); font-size: 9px; line-height: 1.45; }
+    .sidebar-overlay { display: none; }
+
+    @media (max-width: 900px) {
+      .menu-button { display: inline-flex; align-items: center; justify-content: center; }
+      .sidebar { transform: translateX(-100%); transition: transform .2s ease; }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { position: fixed; inset: 66px 0 0; z-index: 40; display: block; background: rgba(0,0,0,.42); }
+      .main-content { margin-left: 0; }
+    }
+
+    @media (max-width: 680px) {
+      .topbar { padding: 0 14px; }
+      .account-summary { display: none; }
+      .main-content { padding: 86px 14px 28px; }
+      .page-heading { align-items: stretch; flex-direction: column; }
+      .control { width: 100%; min-width: 0; }
+      .stats-grid, .team-details, .module-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-message"><span class="spinner"></span>Checking team access...</div>
+  </div>
+
+  <div id="appShell" class="app-shell" hidden>
+    <header class="topbar">
+      <div class="topbar-left">
+        <button id="menuButton" class="menu-button" type="button" aria-label="Open menu">☰</button>
+        <a class="brand" href="index.html">HOOP <span>HUB PH</span></a>
+      </div>
+      <div class="topbar-right">
+        <div class="account-summary">
+          <strong id="headerAccountName">Coach</strong>
+          <span id="headerRole">Coach / Team Manager</span>
+        </div>
+        <button id="logoutButton" class="logout-button" type="button">Log Out</button>
+      </div>
+    </header>
+
+    <aside id="sidebar" class="sidebar">
+      <p class="nav-label">Team Workspace</p>
+      <a class="nav-link active" href="coach-dashboard.html"><span class="nav-icon">DB</span> Dashboard</a>
+      <a class="nav-link" href="#rosterPanel"><span class="nav-icon">RO</span> Team Roster</a>
+      <a class="nav-link" href="#modules"><span class="nav-icon">IV</span> Player Invites <span class="coming">Next</span></a>
+      <a class="nav-link" href="#modules"><span class="nav-icon">LU</span> Starting Lineup <span class="coming">Next</span></a>
+      <a class="nav-link" href="#modules"><span class="nav-icon">AT</span> Attendance <span class="coming">Next</span></a>
+
+      <p class="nav-label">Team Records</p>
+      <a class="nav-link" href="#modules"><span class="nav-icon">GM</span> Games <span class="coming">Next</span></a>
+      <a class="nav-link" href="#modules"><span class="nav-icon">ST</span> Statistics <span class="coming">Next</span></a>
+      <a class="nav-link" href="#modules"><span class="nav-icon">CR</span> Corrections <span class="coming">Next</span></a>
+      <a id="superAdminLink" class="nav-link" href="super-admin.html" hidden><span class="nav-icon">SA</span> Super Admin</a>
+    </aside>
+
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <main class="main-content">
+      <div class="content-wrap">
+        <section class="page-heading">
+          <div>
+            <div class="eyebrow">Coach / Team Manager</div>
+            <h1>Team Dashboard</h1>
+            <p>Manage only the team and roster assigned to your account.</p>
+          </div>
+          <select id="teamSelect" class="control" aria-label="Select assigned team"></select>
+        </section>
+
+        <section class="stats-grid">
+          <article class="stat-card"><span>Assigned Teams</span><strong id="teamCount">0</strong></article>
+          <article class="stat-card"><span>Roster Players</span><strong id="playerCount">0</strong></article>
+          <article class="stat-card"><span>Active Assignments</span><strong id="activeAssignmentCount">0</strong></article>
+        </section>
+
+        <section class="panel">
+          <header class="panel-header">
+            <div><h2 id="teamName">Assigned Team</h2><p>Current team workspace and league assignment.</p></div>
+            <span id="staffRoleBadge" class="status-badge">Coach</span>
+          </header>
+          <div id="teamDetails" class="team-details"></div>
+        </section>
+
+        <section id="rosterPanel" class="panel">
+          <header class="panel-header">
+            <div><h2>Current Player Roster</h2><p>Official player records connected to this team.</p></div>
+          </header>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Player</th><th>Jersey</th><th>Position</th><th>Height</th></tr></thead>
+              <tbody id="playerTableBody"><tr><td class="empty-state" colspan="4">Loading roster...</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="modules" class="panel">
+          <header class="panel-header">
+            <div><h2>Coach Modules</h2><p>Official game statistics remain protected and read-only.</p></div>
+          </header>
+          <div class="module-grid">
+            <article class="module-card"><strong>Team Profile</strong><span>Edit the team identity, location, and logo.</span></article>
+            <article class="module-card"><strong>Roster Submission</strong><span>Invite players and submit the official season roster.</span></article>
+            <article class="module-card"><strong>Lineup & Attendance</strong><span>Submit starters and confirm scheduled-game attendance.</span></article>
+            <article class="module-card"><strong>Team Statistics</strong><span>View verified game-by-game team and player statistics.</span></article>
+            <article class="module-card"><strong>Correction Requests</strong><span>Request corrections without directly editing official statistics.</span></article>
+            <article class="module-card"><strong>Game Schedule</strong><span>View league games assigned to the team.</span></article>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://tkrsyiwffqkgfyooewsf.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let currentUser = null;
+    let currentProfile = null;
+    let assignments = [];
+    let teams = [];
+    let leagues = [];
+    let players = [];
+
+    const authScreen = document.getElementById("authScreen");
+    const appShell = document.getElementById("appShell");
+    const teamSelect = document.getElementById("teamSelect");
+
+    function escapeHtml(value) {
+      const element = document.createElement("div");
+      element.textContent = String(value ?? "");
+      return element.innerHTML;
+    }
+
+    function displayName(profile) {
+      return String(profile?.full_name || profile?.email || "Coach").trim();
+    }
+
+    function staffRoleLabel(value) {
+      return { head_coach: "Head Coach", assistant_coach: "Assistant Coach", team_manager: "Team Manager" }[value] || value || "Coach";
+    }
+
+    async function returnToLogin(signOutFirst = false) {
+      if (signOutFirst) await supabaseClient.auth.signOut();
+      window.location.replace("login.html");
+    }
+
+    async function authorize() {
+      try {
+        const { data: userData, error: userError } = await supabaseClient.auth.getUser();
+        if (userError || !userData.user) return returnToLogin(false);
+
+        const { data: profile, error: profileError } = await supabaseClient
+          .from("profiles")
+          .select("id, email, full_name, role, status")
+          .eq("id", userData.user.id)
+          .maybeSingle();
+
+        const allowedRole = profile?.role === "coach" || profile?.role === "super_admin";
+        if (profileError || !profile || profile.status !== "active" || !allowedRole) {
+          return returnToLogin(true);
+        }
+
+        currentUser = userData.user;
+        currentProfile = profile;
+        document.getElementById("headerAccountName").textContent = displayName(profile);
+        document.getElementById("headerRole").textContent = profile.role === "super_admin" ? "Super Admin Preview" : "Coach / Team Manager";
+        document.getElementById("superAdminLink").hidden = profile.role !== "super_admin";
+
+        await loadWorkspace();
+        authScreen.hidden = true;
+        appShell.hidden = false;
+      } catch (error) {
+        console.error("Coach authorization failed:", error);
+        await returnToLogin(true);
+      }
+    }
+
+    async function loadWorkspace() {
+      if (currentProfile.role === "super_admin") {
+        const { data, error } = await supabaseClient
+          .from("team_coaches")
+          .select("league_id, team_id, coach_id, staff_role, active, updated_at")
+          .eq("active", true);
+        if (error) throw error;
+        assignments = data || [];
+      } else {
+        const { data, error } = await supabaseClient
+          .from("team_coaches")
+          .select("league_id, team_id, coach_id, staff_role, active, updated_at")
+          .eq("coach_id", currentUser.id)
+          .eq("active", true);
+        if (error) throw error;
+        assignments = data || [];
+      }
+
+      const teamIds = [...new Set(assignments.map(item => item.team_id))];
+      const leagueIds = [...new Set(assignments.map(item => item.league_id))];
+
+      if (teamIds.length) {
+        const [teamResult, playerResult] = await Promise.all([
+          supabaseClient.from("teams").select("id, name, logo_url, location, created_at").in("id", teamIds).order("name"),
+          supabaseClient.from("players").select("id, first_name, last_name, position, jersey_number, height, team_id").in("team_id", teamIds).order("first_name")
+        ]);
+        if (teamResult.error) throw teamResult.error;
+        if (playerResult.error) throw playerResult.error;
+        teams = teamResult.data || [];
+        players = playerResult.data || [];
+      }
+
+      if (leagueIds.length) {
+        const { data, error } = await supabaseClient
+          .from("leagues")
+          .select("id, name, location, season, division, status")
+          .in("id", leagueIds);
+        if (error) throw error;
+        leagues = data || [];
+      }
+
+      renderOptions();
+      renderWorkspace();
+    }
+
+    function renderOptions() {
+      const uniqueTeamIds = [...new Set(assignments.map(item => item.team_id))];
+      document.getElementById("teamCount").textContent = uniqueTeamIds.length.toLocaleString();
+      document.getElementById("activeAssignmentCount").textContent = assignments.length.toLocaleString();
+      teamSelect.innerHTML = uniqueTeamIds.length
+        ? uniqueTeamIds.map(teamId => {
+            const team = teams.find(item => item.id === teamId);
+            const assignment = assignments.find(item => item.team_id === teamId);
+            return `<option value="${escapeHtml(teamId)}" data-league-id="${escapeHtml(assignment?.league_id || "")}">${escapeHtml(team?.name || "Unknown team")}</option>`;
+          }).join("")
+        : '<option value="">No assigned teams</option>';
+    }
+
+    function renderWorkspace() {
+      const teamId = teamSelect.value;
+      const team = teams.find(item => item.id === teamId);
+      const assignment = assignments.find(item => item.team_id === teamId);
+      const league = leagues.find(item => item.id === assignment?.league_id);
+      const roster = players.filter(item => item.team_id === teamId);
+
+      document.getElementById("playerCount").textContent = roster.length.toLocaleString();
+
+      if (!team || !assignment) {
+        document.getElementById("teamName").textContent = "No Team Assigned";
+        document.getElementById("staffRoleBadge").textContent = "Waiting";
+        document.getElementById("teamDetails").innerHTML = '<div class="empty-state" style="grid-column:1/-1">Ask the Super Admin to assign a team to this account.</div>';
+        document.getElementById("playerTableBody").innerHTML = '<tr><td class="empty-state" colspan="4">No assigned team.</td></tr>';
+        return;
+      }
+
+      document.getElementById("teamName").textContent = team.name;
+      document.getElementById("staffRoleBadge").textContent = staffRoleLabel(assignment.staff_role);
+      document.getElementById("teamDetails").innerHTML = `
+        <div class="detail-box"><span>League</span><strong>${escapeHtml(league?.name || "Not set")}</strong></div>
+        <div class="detail-box"><span>Team Location</span><strong>${escapeHtml(team.location || "Not set")}</strong></div>
+        <div class="detail-box"><span>Season</span><strong>${escapeHtml(league?.season || "Not set")}</strong></div>
+        <div class="detail-box"><span>Division</span><strong>${escapeHtml(league?.division || "Not set")}</strong></div>
+      `;
+
+      document.getElementById("playerTableBody").innerHTML = roster.length
+        ? roster.map(player => `
+            <tr>
+              <td><strong>${escapeHtml(`${player.first_name || ""} ${player.last_name || ""}`.trim() || "Unnamed player")}</strong></td>
+              <td>${escapeHtml(player.jersey_number ?? "—")}</td>
+              <td>${escapeHtml(player.position || "—")}</td>
+              <td>${escapeHtml(player.height || "—")}</td>
+            </tr>
+          `).join("")
+        : '<tr><td class="empty-state" colspan="4">No player records are connected to this team.</td></tr>';
+    }
+
+    function closeSidebar() {
+      document.getElementById("sidebar").classList.remove("open");
+      document.getElementById("sidebarOverlay").classList.remove("open");
+    }
+
+    teamSelect.addEventListener("change", renderWorkspace);
+    document.getElementById("menuButton").addEventListener("click", function () {
+      document.getElementById("sidebar").classList.toggle("open");
+      document.getElementById("sidebarOverlay").classList.toggle("open");
+    });
+    document.getElementById("sidebarOverlay").addEventListener("click", closeSidebar);
+    document.querySelectorAll(".sidebar .nav-link").forEach(link => link.addEventListener("click", closeSidebar));
+    document.getElementById("logoutButton").addEventListener("click", async function () {
+      this.disabled = true;
+      this.textContent = "Logging Out...";
+      await returnToLogin(true);
+    });
+
+    authorize();
+  </script>
+</body>
+
+</html>
