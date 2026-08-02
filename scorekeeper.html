@@ -1014,15 +1014,91 @@ nav{
 .team-total-row .shot-percent{
     color:#ff6b00;
 }
+
+/* =========================================================
+   SECURE PAGE ACCESS
+   ========================================================= */
+
+body.auth-pending{
+    overflow:hidden;
+}
+
+body.auth-pending > *:not(#scorekeeperAuthScreen):not(script){
+    visibility:hidden!important;
+}
+
+.scorekeeper-auth-screen{
+    position:fixed;
+    inset:0;
+    z-index:99999;
+    display:grid;
+    place-items:center;
+    background:#111;
+    color:#fff;
+    visibility:visible!important;
+}
+
+.scorekeeper-auth-screen[hidden]{
+    display:none;
+}
+
+.scorekeeper-auth-message{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:13px;
+    font-weight:bold;
+}
+
+.scorekeeper-auth-spinner{
+    width:20px;
+    height:20px;
+    border:3px solid rgba(255,255,255,.25);
+    border-top-color:#ff6b00;
+    border-radius:50%;
+    animation:scorekeeperAuthSpin .75s linear infinite;
+}
+
+@keyframes scorekeeperAuthSpin{
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+.logout-button{
+    height:22px;
+    margin-left:7px;
+    padding:0 7px;
+    border:1px solid #555;
+    border-radius:3px;
+    background:transparent;
+    color:#bbb;
+    font-size:9px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.logout-button:hover{
+    border-color:#ff6b00;
+    color:#ff6b00;
+}
 </style>
 </head>
 
-<body>
+<body class="auth-pending">
+
+<div id="scorekeeperAuthScreen" class="scorekeeper-auth-screen">
+    <div class="scorekeeper-auth-message">
+        <span class="scorekeeper-auth-spinner" aria-hidden="true"></span>
+        <span id="scorekeeperAuthMessage">Verifying Scorekeeper access...</span>
+    </div>
+</div>
 
 <header>
 <a href="index.html" class="logo">HOOP <span>HUB PH</span></a>
 
 <nav>
+<a href="super-admin.html">Dashboard</a>
 <a href="index.html">Home</a>
 <a href="live-game.html">Live Game</a>
 <button
@@ -1034,6 +1110,15 @@ nav{
     aria-label="Open scorekeeper in fullscreen"
 >
 ⛶
+</button>
+<button
+    type="button"
+    id="scorekeeperLogoutButton"
+    class="logout-button"
+    onclick="logoutScorekeeper()"
+    title="Log out of HoopHub PH"
+>
+LOG OUT
 </button>
 </nav>
 </header>
@@ -1244,6 +1329,132 @@ window.supabase.createClient(
 SUPABASE_URL,
 SUPABASE_KEY
 );
+
+let authenticatedUser=null;
+let authenticatedProfile=null;
+
+
+/* =========================================================
+   SCOREKEEPER PAGE AUTHORIZATION
+   ========================================================= */
+
+function setScorekeeperAuthMessage(message){
+
+    const messageElement=
+        document.getElementById(
+            "scorekeeperAuthMessage"
+        );
+
+    if(messageElement){
+        messageElement.textContent=message;
+    }
+}
+
+
+async function redirectToLogin(signOutFirst=false){
+
+    if(signOutFirst){
+        await supabaseClient.auth.signOut();
+    }
+
+    window.location.replace("login.html");
+}
+
+
+async function initializeSecureScorekeeper(){
+
+    try{
+
+        const {
+            data:userData,
+            error:userError
+        }=
+        await supabaseClient.auth.getUser();
+
+        if(
+            userError ||
+            !userData.user
+        ){
+            await redirectToLogin(false);
+            return;
+        }
+
+        const {
+            data:profile,
+            error:profileError
+        }=
+        await supabaseClient
+        .from("profiles")
+        .select("role,status")
+        .eq("id",userData.user.id)
+        .maybeSingle();
+
+        const hasSuperAdminAccess=
+            !profileError &&
+            profile &&
+            profile.role==="super_admin" &&
+            profile.status==="active";
+
+        if(!hasSuperAdminAccess){
+            setScorekeeperAuthMessage(
+                "This account is not authorized to open the scorekeeper."
+            );
+
+            await new Promise(resolve =>
+                setTimeout(resolve,900)
+            );
+
+            await redirectToLogin(true);
+            return;
+        }
+
+        authenticatedUser=userData.user;
+        authenticatedProfile=profile;
+
+        document.body.classList.remove(
+            "auth-pending"
+        );
+
+        document.getElementById(
+            "scorekeeperAuthScreen"
+        ).hidden=true;
+
+        await loadGame();
+
+    }catch(error){
+
+        console.error(
+            "Scorekeeper authorization failed:",
+            error
+        );
+
+        setScorekeeperAuthMessage(
+            "Unable to verify access. Returning to login..."
+        );
+
+        await new Promise(resolve =>
+            setTimeout(resolve,900)
+        );
+
+        await redirectToLogin(true);
+    }
+}
+
+
+async function logoutScorekeeper(){
+
+    const logoutButton=
+        document.getElementById(
+            "scorekeeperLogoutButton"
+        );
+
+    if(logoutButton){
+        logoutButton.disabled=true;
+        logoutButton.textContent="WAIT...";
+    }
+
+    await redirectToLogin(true);
+}
 
 let currentGame=null;
 
@@ -6195,7 +6406,7 @@ function closeTeamStatsPreview(){
 
     modal.classList.remove("visible");
 }
-loadGame();
+initializeSecureScorekeeper();
 
 </script>
 <div
