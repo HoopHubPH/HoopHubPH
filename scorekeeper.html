@@ -150,6 +150,13 @@ nav a:hover{
     align-items:center;
     gap:4px;
 }
+    .clock-adjustments{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:4px;
+    margin-top:4px;
+}
 
 .clock button{
     background:#111;
@@ -898,6 +905,11 @@ nav a:hover{
 <button onclick="startClock()">START</button>
 <button onclick="pauseClock()">PAUSE</button>
 <button onclick="resetClock()">RESET</button>
+</div>
+    
+    <div class="clock-adjustments">
+<button onclick="adjustGameClock(-1)">−1 SEC</button>
+<button onclick="adjustGameClock(1)">+1 SEC</button>
 </div>
 
 <div class="period-buttons">
@@ -4495,7 +4507,142 @@ async function pauseClock(){
     updateSubstitutionButtons();
 }
 
+/* =========================================================
+   MANUAL CLOCK ADJUSTMENT
+   ========================================================= */
 
+async function adjustGameClock(amount){
+
+    if(!currentGame){
+
+        showStatus(
+            "Load a game first."
+        );
+
+        return;
+    }
+
+
+    const adjustment =
+        Number(amount);
+
+
+    if(!Number.isFinite(adjustment)){
+        return;
+    }
+
+
+    /*
+    Save actual elapsed playing time before manually
+    changing the game clock.
+    */
+
+    if(
+        clockRunning &&
+        clockEndTime
+    ){
+
+        clockSeconds =
+            Math.max(
+                0,
+                (
+                    clockEndTime -
+                    Date.now()
+                ) / 1000
+            );
+
+
+        synchronizePlayerMinutes();
+
+
+        /*
+        Change the real ending time while running.
+        */
+
+        clockEndTime +=
+            Math.round(
+                adjustment * 1000
+            );
+
+
+        clockSeconds =
+            Math.max(
+                0,
+                (
+                    clockEndTime -
+                    Date.now()
+                ) / 1000
+            );
+
+    }
+    else{
+
+        /*
+        Change the stored time while paused.
+        */
+
+        clockSeconds =
+            Math.max(
+                0,
+                Number(clockSeconds || 0) +
+                adjustment
+            );
+    }
+
+
+    /*
+    Prevent a manual clock correction from adding or
+    removing time from players' minutes played.
+    */
+
+    for(
+        const playerId of
+        Object.keys(playerOnCourt)
+    ){
+
+        if(
+            playerOnCourt[playerId] === true
+        ){
+
+            playerMinuteLastClockSeconds[
+                playerId
+            ] = clockSeconds;
+        }
+    }
+
+
+    updateClockDisplay();
+
+
+    /*
+    End the clock properly if subtraction reaches zero.
+    */
+
+    if(
+        clockRunning &&
+        clockSeconds <= 0
+    ){
+
+        await handleClockEnd();
+
+        return;
+    }
+
+
+    /*
+    Save the corrected clock to Supabase.
+    */
+
+    await saveClockState();
+
+
+    showStatus(
+        adjustment > 0
+        ? "Added 1 second to the game clock."
+        : "Removed 1 second from the game clock."
+    );
+}
+    
 /* =========================================================
    RESET CLOCK
    ========================================================= */
