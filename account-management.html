@@ -825,6 +825,14 @@
       gap: 9px;
     }
 
+    .assignment-form.three-columns {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    }
+
+    .assignment-form.four-columns {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(130px, .7fr) auto;
+    }
+
     .assignment-list {
       margin-top: 13px;
       border: 1px solid var(--line);
@@ -980,7 +988,9 @@
         grid-column: auto;
       }
 
-      .assignment-form {
+      .assignment-form,
+      .assignment-form.three-columns,
+      .assignment-form.four-columns {
         grid-template-columns: 1fr;
       }
 
@@ -1290,6 +1300,54 @@
 
           <div id="assignmentList" class="assignment-list"></div>
         </section>
+
+        <section id="commissionerAssignmentSection" class="assignment-section" hidden>
+          <div class="subsection-heading">
+            <h3>Commissioner League Assignments</h3>
+            <p>A commissioner can manage only the leagues actively assigned here.</p>
+          </div>
+
+          <div class="assignment-form">
+            <select id="commissionerLeagueSelect" class="control" aria-label="League"></select>
+            <button id="assignCommissionerButton" class="primary-button" type="button">Assign League</button>
+          </div>
+
+          <div id="commissionerAssignmentList" class="assignment-list"></div>
+        </section>
+
+        <section id="coachAssignmentSection" class="assignment-section" hidden>
+          <div class="subsection-heading">
+            <h3>Coach / Team Manager Assignments</h3>
+            <p>Select a league and team. The team will be registered in that league automatically if needed.</p>
+          </div>
+
+          <div class="assignment-form four-columns">
+            <select id="coachLeagueSelect" class="control" aria-label="League"></select>
+            <select id="coachTeamSelect" class="control" aria-label="Team"></select>
+            <select id="coachStaffRoleSelect" class="control" aria-label="Staff role">
+              <option value="head_coach">Head Coach</option>
+              <option value="assistant_coach">Assistant Coach</option>
+              <option value="team_manager">Team Manager</option>
+            </select>
+            <button id="assignCoachButton" class="primary-button" type="button">Assign Team</button>
+          </div>
+
+          <div id="coachAssignmentList" class="assignment-list"></div>
+        </section>
+
+        <section id="playerLinkSection" class="assignment-section" hidden>
+          <div class="subsection-heading">
+            <h3>Player Profile Link</h3>
+            <p>Connect this login account to one official player record. Official statistics remain read-only.</p>
+          </div>
+
+          <div class="assignment-form">
+            <select id="playerRecordSelect" class="control" aria-label="Player record"></select>
+            <button id="linkPlayerButton" class="primary-button" type="button">Link Player</button>
+          </div>
+
+          <div id="playerLinkList" class="assignment-list"></div>
+        </section>
       </div>
     </section>
   </div>
@@ -1328,6 +1386,13 @@
     let allAssignments = [];
     let allGames = [];
     let allActivity = [];
+    let allLeagues = [];
+    let allTeams = [];
+    let allPlayers = [];
+    let allCommissionerAssignments = [];
+    let allLeagueTeams = [];
+    let allCoachAssignments = [];
+    let allPlayerLinks = [];
     let toastTimer = null;
 
     const authScreen = document.getElementById("authScreen");
@@ -1345,6 +1410,20 @@
     const assignmentList = document.getElementById("assignmentList");
     const assignmentGameId = document.getElementById("assignmentGameId");
     const assignGameButton = document.getElementById("assignGameButton");
+    const commissionerAssignmentSection = document.getElementById("commissionerAssignmentSection");
+    const commissionerLeagueSelect = document.getElementById("commissionerLeagueSelect");
+    const commissionerAssignmentList = document.getElementById("commissionerAssignmentList");
+    const assignCommissionerButton = document.getElementById("assignCommissionerButton");
+    const coachAssignmentSection = document.getElementById("coachAssignmentSection");
+    const coachLeagueSelect = document.getElementById("coachLeagueSelect");
+    const coachTeamSelect = document.getElementById("coachTeamSelect");
+    const coachStaffRoleSelect = document.getElementById("coachStaffRoleSelect");
+    const coachAssignmentList = document.getElementById("coachAssignmentList");
+    const assignCoachButton = document.getElementById("assignCoachButton");
+    const playerLinkSection = document.getElementById("playerLinkSection");
+    const playerRecordSelect = document.getElementById("playerRecordSelect");
+    const playerLinkList = document.getElementById("playerLinkList");
+    const linkPlayerButton = document.getElementById("linkPlayerButton");
 
     function escapeHtml(value) {
       const element = document.createElement("div");
@@ -1459,7 +1538,19 @@
       refreshButton.textContent = "Refreshing...";
 
       try {
-        const [profilesResult, assignmentsResult, gamesResult, activityResult] =
+        const [
+          profilesResult,
+          assignmentsResult,
+          gamesResult,
+          activityResult,
+          leaguesResult,
+          teamsResult,
+          playersResult,
+          commissionerAssignmentsResult,
+          leagueTeamsResult,
+          coachAssignmentsResult,
+          playerLinksResult
+        ] =
           await Promise.all([
             supabaseClient
               .from("profiles")
@@ -1480,14 +1571,55 @@
               .from("activity_logs")
               .select("id, actor_id, action, target_type, target_id, details, created_at")
               .order("created_at", { ascending: false })
-              .limit(50)
+              .limit(50),
+
+            supabaseClient
+              .from("leagues")
+              .select("id, name, location, status")
+              .order("name"),
+
+            supabaseClient
+              .from("teams")
+              .select("id, name, location")
+              .order("name"),
+
+            supabaseClient
+              .from("players")
+              .select("id, first_name, last_name, team_id, jersey_number")
+              .order("first_name"),
+
+            supabaseClient
+              .from("league_commissioners")
+              .select("league_id, commissioner_id, active, assigned_at, updated_at")
+              .order("updated_at", { ascending: false }),
+
+            supabaseClient
+              .from("league_teams")
+              .select("league_id, team_id, registration_status, updated_at"),
+
+            supabaseClient
+              .from("team_coaches")
+              .select("league_id, team_id, coach_id, staff_role, active, assigned_at, updated_at")
+              .order("updated_at", { ascending: false }),
+
+            supabaseClient
+              .from("player_accounts")
+              .select("player_id, user_id, active, linked_at, updated_at")
+              .order("updated_at", { ascending: false })
           ]);
 
         const firstError =
           profilesResult.error ||
           assignmentsResult.error ||
           gamesResult.error ||
-          activityResult.error;
+          activityResult.error ||
+          leaguesResult.error ||
+          teamsResult.error ||
+          playersResult.error ||
+          commissionerAssignmentsResult.error ||
+          leagueTeamsResult.error ||
+          coachAssignmentsResult.error ||
+          playerLinksResult.error;
 
         if (firstError) {
           throw firstError;
@@ -1497,10 +1629,18 @@
         allAssignments = assignmentsResult.data || [];
         allGames = gamesResult.data || [];
         allActivity = activityResult.data || [];
+        allLeagues = leaguesResult.data || [];
+        allTeams = teamsResult.data || [];
+        allPlayers = playersResult.data || [];
+        allCommissionerAssignments = commissionerAssignmentsResult.data || [];
+        allLeagueTeams = leagueTeamsResult.data || [];
+        allCoachAssignments = coachAssignmentsResult.data || [];
+        allPlayerLinks = playerLinksResult.data || [];
 
         renderSummary();
         renderAccounts();
         renderGameOptions();
+        renderHierarchyOptions();
         renderActivity();
 
         if (selectedAccountId && modalBackdrop.classList.contains("open")) {
@@ -1552,6 +1692,36 @@
       ).length;
     }
 
+    function hierarchyAssignmentText(profile) {
+      if (profile.role === "scorekeeper") {
+        const count = activeAssignmentCount(profile.id);
+        return `${count} active game${count === 1 ? "" : "s"}`;
+      }
+
+      if (profile.role === "commissioner") {
+        const count = allCommissionerAssignments.filter(item =>
+          item.commissioner_id === profile.id && item.active === true
+        ).length;
+        return `${count} active league${count === 1 ? "" : "s"}`;
+      }
+
+      if (profile.role === "coach") {
+        const count = allCoachAssignments.filter(item =>
+          item.coach_id === profile.id && item.active === true
+        ).length;
+        return `${count} active team${count === 1 ? "" : "s"}`;
+      }
+
+      if (profile.role === "player") {
+        const linked = allPlayerLinks.some(item =>
+          item.user_id === profile.id && item.active === true
+        );
+        return linked ? "Player linked" : "Not linked";
+      }
+
+      return "Full access";
+    }
+
     function renderAccounts() {
       const profiles = filteredProfiles();
       document.getElementById("accountResultText").textContent =
@@ -1568,10 +1738,7 @@
 
       accountTableBody.innerHTML = profiles.map(profile => {
         const isCurrentUser = currentAdminUser && profile.id === currentAdminUser.id;
-        const assignments = activeAssignmentCount(profile.id);
-        const assignmentText = profile.role === "scorekeeper"
-          ? `${assignments} active`
-          : "—";
+        const assignmentText = hierarchyAssignmentText(profile);
 
         return `
           <tr>
@@ -1618,6 +1785,34 @@
       }).join("");
     }
 
+    function renderHierarchyOptions() {
+      commissionerLeagueSelect.innerHTML = allLeagues.length
+        ? allLeagues.map(league => `
+            <option value="${escapeHtml(league.id)}">
+              ${escapeHtml(league.name)}${league.status !== "active" ? ` (${escapeHtml(league.status)})` : ""}
+            </option>
+          `).join("")
+        : '<option value="">No leagues available</option>';
+
+      coachLeagueSelect.innerHTML = commissionerLeagueSelect.innerHTML;
+      coachTeamSelect.innerHTML = allTeams.length
+        ? allTeams.map(team => `
+            <option value="${escapeHtml(team.id)}">${escapeHtml(team.name)}</option>
+          `).join("")
+        : '<option value="">No teams available</option>';
+
+      const linkedPlayerIds = new Set(
+        allPlayerLinks.filter(item => item.active === true).map(item => item.player_id)
+      );
+      playerRecordSelect.innerHTML = allPlayers.length
+        ? allPlayers.map(player => {
+            const fullName = `${player.first_name || ""} ${player.last_name || ""}`.trim();
+            const linkedLabel = linkedPlayerIds.has(player.id) ? " — already linked" : "";
+            return `<option value="${escapeHtml(player.id)}">${escapeHtml(fullName || "Unnamed player")}${escapeHtml(linkedLabel)}</option>`;
+          }).join("")
+        : '<option value="">No player records available</option>';
+    }
+
     function gameLabel(game) {
       if (!game) return "Unknown game";
       const home = String(game.home_team || "Home Team");
@@ -1646,6 +1841,23 @@
         return `${email} was ${verb} Game #${details.game_id ?? "—"}`;
       }
 
+      if (item.action === "commissioner_assigned" || item.action === "commissioner_unassigned") {
+        const profile = allProfiles.find(entry => entry.id === details.commissioner_id);
+        const verb = item.action === "commissioner_assigned" ? "assigned to" : "removed from";
+        return `${profile ? displayName(profile) : "Commissioner"} was ${verb} ${leagueLabel(item.target_id)}`;
+      }
+
+      if (item.action === "coach_assigned" || item.action === "coach_unassigned") {
+        const profile = allProfiles.find(entry => entry.id === details.coach_id);
+        const verb = item.action === "coach_assigned" ? "assigned to" : "removed from";
+        return `${profile ? displayName(profile) : "Coach"} was ${verb} ${teamLabel(item.target_id)}`;
+      }
+
+      if (item.action === "player_account_linked" || item.action === "player_account_unlinked") {
+        const verb = item.action === "player_account_linked" ? "linked" : "unlinked";
+        return `${playerLabel(item.target_id)} account was ${verb}`;
+      }
+
       return item.target_id ? `Target: ${item.target_id}` : "Platform action recorded";
     }
 
@@ -1660,15 +1872,19 @@
       activityList.innerHTML = allActivity.map(item => {
         const actor = profileById.get(item.actor_id);
         const actorLabel = actor ? displayName(actor) : "System";
-        const title = item.action === "account_updated"
-          ? "Account updated"
-          : item.action === "scorekeeper_assignment_activated"
-            ? "Game assignment activated"
-            : item.action === "scorekeeper_assignment_revoked"
-              ? "Game assignment revoked"
-              : String(item.action || "Activity").replaceAll("_", " ");
+        const title = String(item.action || "Activity")
+          .replaceAll("_", " ")
+          .replace(/^./, character => character.toUpperCase());
 
-        const symbol = item.action === "account_updated" ? "AC" : "GM";
+        const symbol = item.action === "account_updated"
+          ? "AC"
+          : item.action.includes("commissioner")
+            ? "CM"
+            : item.action.includes("coach")
+              ? "CH"
+              : item.action.includes("player")
+                ? "PL"
+                : "GM";
 
         return `
           <div class="activity-item">
@@ -1708,8 +1924,14 @@
       );
 
       assignmentSection.hidden = profile.role !== "scorekeeper";
+      commissionerAssignmentSection.hidden = profile.role !== "commissioner";
+      coachAssignmentSection.hidden = profile.role !== "coach";
+      playerLinkSection.hidden = profile.role !== "player";
       assignmentGameId.value = "";
       renderSelectedAssignments();
+      renderSelectedCommissionerAssignments();
+      renderSelectedCoachAssignments();
+      renderSelectedPlayerLinks();
 
       modalBackdrop.classList.add("open");
       modalBackdrop.setAttribute("aria-hidden", "false");
@@ -1763,6 +1985,132 @@
           </div>
         `;
       }).join("");
+    }
+
+    function leagueLabel(leagueId) {
+      const league = allLeagues.find(item => item.id === leagueId);
+      return league ? league.name : "Unknown league";
+    }
+
+    function teamLabel(teamId) {
+      const team = allTeams.find(item => item.id === teamId);
+      return team ? team.name : "Unknown team";
+    }
+
+    function playerLabel(playerId) {
+      const player = allPlayers.find(item => item.id === playerId);
+      if (!player) return "Unknown player";
+      return `${player.first_name || ""} ${player.last_name || ""}`.trim() || "Unnamed player";
+    }
+
+    function staffRoleLabel(value) {
+      return {
+        head_coach: "Head Coach",
+        assistant_coach: "Assistant Coach",
+        team_manager: "Team Manager"
+      }[value] || value;
+    }
+
+    function renderSelectedCommissionerAssignments() {
+      if (!selectedAccountId) return;
+      const assignments = allCommissionerAssignments.filter(item =>
+        item.commissioner_id === selectedAccountId
+      );
+
+      if (!assignments.length) {
+        commissionerAssignmentList.innerHTML = '<div class="empty-state">No leagues assigned to this commissioner.</div>';
+        return;
+      }
+
+      commissionerAssignmentList.innerHTML = assignments.map(item => `
+        <div class="assignment-row">
+          <div>
+            <div class="assignment-game">${escapeHtml(leagueLabel(item.league_id))}</div>
+            <div class="assignment-meta">
+              ${item.active ? "Active assignment" : "Inactive assignment"} · Updated ${escapeHtml(formatDate(item.updated_at, true))}
+            </div>
+          </div>
+          <div class="assignment-actions">
+            <span class="badge ${item.active ? "status-active" : "status-suspended"}">
+              ${item.active ? "Active" : "Inactive"}
+            </span>
+            <button
+              class="small-button ${item.active ? "revoke" : ""}"
+              type="button"
+              data-commissioner-league="${escapeHtml(item.league_id)}"
+              data-assignment-active="${item.active ? "false" : "true"}"
+            >${item.active ? "Revoke" : "Reactivate"}</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderSelectedCoachAssignments() {
+      if (!selectedAccountId) return;
+      const assignments = allCoachAssignments.filter(item =>
+        item.coach_id === selectedAccountId
+      );
+
+      if (!assignments.length) {
+        coachAssignmentList.innerHTML = '<div class="empty-state">No teams assigned to this coach or manager.</div>';
+        return;
+      }
+
+      coachAssignmentList.innerHTML = assignments.map(item => `
+        <div class="assignment-row">
+          <div>
+            <div class="assignment-game">${escapeHtml(teamLabel(item.team_id))}</div>
+            <div class="assignment-meta">
+              ${escapeHtml(leagueLabel(item.league_id))} · ${escapeHtml(staffRoleLabel(item.staff_role))} · ${item.active ? "Active" : "Inactive"}
+            </div>
+          </div>
+          <div class="assignment-actions">
+            <span class="badge ${item.active ? "status-active" : "status-suspended"}">
+              ${item.active ? "Active" : "Inactive"}
+            </span>
+            <button
+              class="small-button ${item.active ? "revoke" : ""}"
+              type="button"
+              data-coach-league="${escapeHtml(item.league_id)}"
+              data-coach-team="${escapeHtml(item.team_id)}"
+              data-coach-role="${escapeHtml(item.staff_role)}"
+              data-assignment-active="${item.active ? "false" : "true"}"
+            >${item.active ? "Revoke" : "Reactivate"}</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderSelectedPlayerLinks() {
+      if (!selectedAccountId) return;
+      const links = allPlayerLinks.filter(item => item.user_id === selectedAccountId);
+
+      if (!links.length) {
+        playerLinkList.innerHTML = '<div class="empty-state">This account is not linked to a player record.</div>';
+        return;
+      }
+
+      playerLinkList.innerHTML = links.map(item => `
+        <div class="assignment-row">
+          <div>
+            <div class="assignment-game">${escapeHtml(playerLabel(item.player_id))}</div>
+            <div class="assignment-meta">
+              ${item.active ? "Active player link" : "Inactive player link"} · Updated ${escapeHtml(formatDate(item.updated_at, true))}
+            </div>
+          </div>
+          <div class="assignment-actions">
+            <span class="badge ${item.active ? "status-active" : "status-suspended"}">
+              ${item.active ? "Linked" : "Unlinked"}
+            </span>
+            <button
+              class="small-button ${item.active ? "revoke" : ""}"
+              type="button"
+              data-player-record="${escapeHtml(item.player_id)}"
+              data-assignment-active="${item.active ? "false" : "true"}"
+            >${item.active ? "Unlink" : "Relink"}</button>
+          </div>
+        </div>
+      `).join("");
     }
 
     async function saveSelectedAccount() {
@@ -1857,6 +2205,134 @@
       }
     }
 
+    async function setCommissionerAssignment(leagueId, active) {
+      const profile = allProfiles.find(item => item.id === selectedAccountId);
+      if (!profile) return;
+
+      if (profile.role !== "commissioner" || profile.status !== "active") {
+        showToast("The account must be an active commissioner before assigning a league.", "error");
+        return;
+      }
+
+      if (!leagueId) {
+        showToast("Select a league.", "error");
+        return;
+      }
+
+      if (!active && !window.confirm(`Remove this commissioner from ${leagueLabel(leagueId)}?`)) {
+        return;
+      }
+
+      assignCommissionerButton.disabled = true;
+      try {
+        const { error } = await supabaseClient.rpc("admin_set_commissioner_assignment", {
+          target_user_id: profile.id,
+          target_league_id: leagueId,
+          assignment_active: active
+        });
+        if (error) throw error;
+        showToast(active ? "Commissioner assigned to league." : "Commissioner assignment revoked.");
+        await loadAllData();
+      } catch (error) {
+        console.error("Commissioner assignment failed:", error);
+        showToast(friendlyError(error, "Unable to update the league assignment."), "error");
+      } finally {
+        assignCommissionerButton.disabled = false;
+      }
+    }
+
+    async function setCoachAssignment(leagueId, teamId, staffRole, active) {
+      const profile = allProfiles.find(item => item.id === selectedAccountId);
+      if (!profile) return;
+
+      if (profile.role !== "coach" || profile.status !== "active") {
+        showToast("The account must be an active coach or manager before assigning a team.", "error");
+        return;
+      }
+
+      if (!leagueId || !teamId) {
+        showToast("Select both a league and a team.", "error");
+        return;
+      }
+
+      if (!active && !window.confirm(`Remove this account from ${teamLabel(teamId)}?`)) {
+        return;
+      }
+
+      assignCoachButton.disabled = true;
+      try {
+        if (active) {
+          const { error: registrationError } = await supabaseClient
+            .from("league_teams")
+            .upsert({
+              league_id: leagueId,
+              team_id: teamId,
+              registration_status: "approved",
+              registered_by: currentAdminUser.id,
+              approved_by: currentAdminUser.id,
+              approved_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            }, { onConflict: "league_id,team_id" });
+
+          if (registrationError) throw registrationError;
+        }
+
+        const { error } = await supabaseClient.rpc("admin_set_coach_assignment", {
+          target_user_id: profile.id,
+          target_league_id: leagueId,
+          target_team_id: teamId,
+          target_staff_role: staffRole,
+          assignment_active: active
+        });
+        if (error) throw error;
+
+        showToast(active ? "Coach assigned to team." : "Coach assignment revoked.");
+        await loadAllData();
+      } catch (error) {
+        console.error("Coach assignment failed:", error);
+        showToast(friendlyError(error, "Unable to update the team assignment."), "error");
+      } finally {
+        assignCoachButton.disabled = false;
+      }
+    }
+
+    async function setPlayerLink(playerId, active) {
+      const profile = allProfiles.find(item => item.id === selectedAccountId);
+      if (!profile) return;
+
+      if (profile.role !== "player" || profile.status !== "active") {
+        showToast("The account must be an active player before linking a player record.", "error");
+        return;
+      }
+
+      if (!playerId) {
+        showToast("Select a player record.", "error");
+        return;
+      }
+
+      if (!active && !window.confirm(`Unlink ${playerLabel(playerId)} from this account?`)) {
+        return;
+      }
+
+      linkPlayerButton.disabled = true;
+      try {
+        const { error } = await supabaseClient.rpc("admin_link_player_account", {
+          target_user_id: profile.id,
+          target_player_id: playerId,
+          link_active: active
+        });
+        if (error) throw error;
+
+        showToast(active ? "Player account linked." : "Player account unlinked.");
+        await loadAllData();
+      } catch (error) {
+        console.error("Player link failed:", error);
+        showToast(friendlyError(error, "Unable to update the player link."), "error");
+      } finally {
+        linkPlayerButton.disabled = false;
+      }
+    }
+
     function closeSidebar() {
       document.getElementById("sidebar").classList.remove("open");
       document.getElementById("sidebarOverlay").classList.remove("open");
@@ -1897,6 +2373,52 @@
 
     assignGameButton.addEventListener("click", function () {
       setAssignment(Number(assignmentGameId.value), true);
+    });
+
+    assignCommissionerButton.addEventListener("click", function () {
+      setCommissionerAssignment(commissionerLeagueSelect.value, true);
+    });
+
+    commissionerAssignmentList.addEventListener("click", function (event) {
+      const button = event.target.closest("[data-commissioner-league]");
+      if (!button) return;
+      setCommissionerAssignment(
+        button.dataset.commissionerLeague,
+        button.dataset.assignmentActive === "true"
+      );
+    });
+
+    assignCoachButton.addEventListener("click", function () {
+      setCoachAssignment(
+        coachLeagueSelect.value,
+        coachTeamSelect.value,
+        coachStaffRoleSelect.value,
+        true
+      );
+    });
+
+    coachAssignmentList.addEventListener("click", function (event) {
+      const button = event.target.closest("[data-coach-team]");
+      if (!button) return;
+      setCoachAssignment(
+        button.dataset.coachLeague,
+        button.dataset.coachTeam,
+        button.dataset.coachRole,
+        button.dataset.assignmentActive === "true"
+      );
+    });
+
+    linkPlayerButton.addEventListener("click", function () {
+      setPlayerLink(playerRecordSelect.value, true);
+    });
+
+    playerLinkList.addEventListener("click", function (event) {
+      const button = event.target.closest("[data-player-record]");
+      if (!button) return;
+      setPlayerLink(
+        button.dataset.playerRecord,
+        button.dataset.assignmentActive === "true"
+      );
     });
 
     saveAccountButton.addEventListener("click", saveSelectedAccount);
