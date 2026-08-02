@@ -1259,6 +1259,7 @@ let shotClockEndTime=null;
 
 let playerMinuteBaseSeconds={};
 let playerMinuteLastClockSeconds={};
+let playerMinuteLastPersisted={};
 
 let minuteSyncTimer=null;
 let minutePersistTimer=null;
@@ -1746,12 +1747,165 @@ async function persistPlayerMinutes(playerId){
 
     playerMinuteLastClockSeconds[playerId]
         =referenceClock;
+
+    playerMinuteLastPersisted[playerId]
+        =total;
 }
 
 
-async function persistAllPlayerMinutes(){
+/* =========================================================
+   ACCEPT MANUAL MINUTE EDITS FROM SUPABASE
+   ========================================================= */
+
+async function reconcileManualMinuteOverrides(playerIds){
+
+    if(
+        !currentGame ||
+        !playerIds.length
+    ){
+        return false;
+    }
+
+    const {
+        data,
+        error
+    }=
+    await supabaseClient
+    .from("player_game_stats")
+    .select(
+        "player_id,minutes_played,minutes_clock_seconds"
+    )
+    .eq(
+        "game_id",
+        currentGame.id
+    )
+    .in(
+        "player_id",
+        playerIds
+    );
+
+    if(error){
+
+        console.error(
+            "Manual minute check error:",
+            error
+        );
+
+        return false;
+    }
+
+    const changedPlayers=[];
+
+    for(const row of data||[]){
+
+        const playerId=
+            String(row.player_id);
+
+        const databaseTotal=
+            Math.max(
+                0,
+                Number(
+                    row.minutes_played || 0
+                )
+            );
+
+        const lastPersisted=
+            playerMinuteLastPersisted[playerId];
+
+        if(lastPersisted === undefined){
+
+            playerMinuteLastPersisted[playerId]=
+                databaseTotal;
+
+            continue;
+        }
+
+        if(
+            Math.abs(
+                databaseTotal -
+                lastPersisted
+            ) < 0.0005
+        ){
+            continue;
+        }
+
+        playerMinuteBaseSeconds[playerId]=
+            databaseTotal;
+
+        playerMinuteLastClockSeconds[playerId]=
+            Math.max(
+                0,
+                Number(clockSeconds || 0)
+            );
+
+        playerMinuteLastPersisted[playerId]=
+            databaseTotal;
+
+        playerStatsMap[playerId]={
+            ...(playerStatsMap[playerId] || {}),
+            ...row,
+            minutes_played:databaseTotal,
+            minutes_clock_seconds:
+                playerMinuteLastClockSeconds[playerId]
+        };
+
+        changedPlayers.push(playerId);
+    }
+
+    if(changedPlayers.length){
+
+        await Promise.all(
+            changedPlayers.map(
+                playerId=>
+                    refreshPlayerRow(playerId)
+            )
+        );
+
+        showStatus(
+            "Manual Supabase minutes update applied."
+        );
+
+        return true;
+    }
+
+    return false;
+}
+
+
+async function persistAllPlayerMinutes(force=false){
+
+    if(!currentGame){
+        return;
+    }
+
+    const loadedPlayers=
+        Object.keys(playerOnCourt);
+
+    if(!loadedPlayers.length){
+        return;
+    }
+
+    await reconcileManualMinuteOverrides(
+        loadedPlayers
+    );
 
     synchronizePlayerMinutes();
+
+    /*
+    While paused, the recurring timer only watches for
+    manual Supabase edits. Clock events pass force=true
+    when a final save is required.
+    */
+
+    if(
+        !clockRunning &&
+        !force
+    ){
+
+        updateVisibleMinutes();
+
+        return;
+    }
 
     const active=
         Object.keys(playerOnCourt)
@@ -1839,6 +1993,9 @@ async function persistAllPlayerMinutes(){
 
         playerMinuteLastClockSeconds[playerId]=
             referenceClock;
+
+        playerMinuteLastPersisted[playerId]=
+            row.minutes_played;
     });
 }
 
@@ -1997,6 +2154,7 @@ async function loadGame(){
 
     playerMinuteBaseSeconds={};
     playerMinuteLastClockSeconds={};
+    playerMinuteLastPersisted={};
 
 
     statSaveQueue.clear();
@@ -2563,6 +2721,21 @@ async function getPlayerGameStats(playerId){
 
     if(playerStatsMap[playerId]){
 
+        if(
+            playerMinuteLastPersisted[playerId] ===
+            undefined
+        ){
+
+            playerMinuteLastPersisted[playerId]=
+                Math.max(
+                    0,
+                    Number(
+                        playerStatsMap[playerId]
+                        .minutes_played || 0
+                    )
+                );
+        }
+
         return playerStatsMap[playerId];
     }
 
@@ -2606,6 +2779,15 @@ async function getPlayerGameStats(playerId){
 
         ...(data||{})
     };
+
+    playerMinuteLastPersisted[playerId]=
+        Math.max(
+            0,
+            Number(
+                playerStatsMap[playerId]
+                .minutes_played || 0
+            )
+        );
 
 
     return playerStatsMap[playerId];
@@ -4887,7 +5069,7 @@ async function startClock(){
     await saveClockState();
 
 
-    await persistAllPlayerMinutes();
+    await persistAllPlayerMinutes(true);
 
 
     startClockInternal();
@@ -5036,7 +5218,7 @@ async function handleClockEnd(){
     updateShotClockDisplay();
 
 
-    await persistAllPlayerMinutes();
+    await persistAllPlayerMinutes(true);
 
 
     await saveClockState();
@@ -5129,7 +5311,7 @@ async function pauseClock(){
     updateClockDisplay();
     updateShotClockDisplay();
 
-    await persistAllPlayerMinutes();
+    await persistAllPlayerMinutes(true);
     await saveClockState();
 
     updateSubstitutionButtons();
@@ -5335,7 +5517,7 @@ async function resetClock(){
     }
 
 
-    await persistAllPlayerMinutes();
+    await persistAllPlayerMinutes(true);
 
 
     clockRunning=false;
@@ -5548,7 +5730,7 @@ async function setPeriod(period){
     }
 
 
-    await persistAllPlayerMinutes();
+    await persistAllPlayerMinutes(true);
 
 
     setActivePeriod(
