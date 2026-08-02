@@ -164,43 +164,53 @@ nav a:hover{
 ========================= */
 
 .shot-clock-panel{
-    width:150px;
+    width:100%;
     max-width:100%;
-    margin:8px auto 0;
-    padding:7px;
+    margin:5px auto 0;
+    padding:4px;
     background:#111;
-    border-radius:6px;
+    border-radius:5px;
     color:white;
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:center;
+    gap:3px 5px;
 }
 
 .shot-clock-label{
-    font-size:9px;
+    font-size:8px;
     font-weight:bold;
     letter-spacing:1px;
     color:#ccc;
+    text-align:left;
+    padding-left:2px;
 }
 
 .shot-clock{
-    margin:2px 0 5px;
-    font-size:22px;
+    margin:0;
+    min-width:28px;
+    font-size:19px;
     line-height:1;
     font-weight:bold;
     color:#ff3b30;
+    text-align:right;
 }
 
 .shot-clock-controls{
+    grid-column:1 / -1;
     display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:4px;
+    grid-template-columns:repeat(4,1fr);
+    gap:2px;
 }
 
 .shot-clock-controls button{
-    padding:4px 5px;
+    min-width:0;
+    padding:3px 1px;
     border:0;
-    border-radius:4px;
+    border-radius:3px;
     background:#333;
     color:white;
-    font-size:9px;
+    font-size:8px;
     font-weight:bold;
     cursor:pointer;
 }
@@ -730,6 +740,27 @@ nav a:hover{
         font-size:8px;
     }
 
+    .shot-clock-panel{
+        margin-top:4px;
+        padding:3px;
+        gap:2px 3px;
+    }
+
+    .shot-clock-label{
+        font-size:7px;
+        letter-spacing:.6px;
+    }
+
+    .shot-clock{
+        min-width:25px;
+        font-size:17px;
+    }
+
+    .shot-clock-controls button{
+        padding:3px 0;
+        font-size:7px;
+    }
+
     .period-buttons{
         gap:2px;
     }
@@ -968,10 +999,10 @@ nav a:hover{
 <div class="shot-clock" id="shotClock">24</div>
 
 <div class="shot-clock-controls">
-<button onclick="resetShotClock(24)">RESET 24</button>
-<button onclick="resetShotClock(14)">RESET 14</button>
-<button onclick="adjustShotClock(-1)">−1 SEC</button>
-<button onclick="adjustShotClock(1)">+1 SEC</button>
+<button onclick="resetShotClock(24)" title="Reset shot clock to 24 seconds">24</button>
+<button onclick="resetShotClock(14)" title="Reset shot clock to 14 seconds">14</button>
+<button onclick="adjustShotClock(-1)" title="Remove 1 second">−1</button>
+<button onclick="adjustShotClock(1)" title="Add 1 second">+1</button>
 </div>
 </div>
 
