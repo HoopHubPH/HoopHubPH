@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="HoopHub PH Commissioner dashboard.">
+  <title>Commissioner Dashboard | HoopHub PH</title>
+
+  <style>
+    :root {
+      --orange: #ff6b00;
+      --orange-dark: #db5c00;
+      --orange-soft: #fff1e7;
+      --ink: #171717;
+      --muted: #667085;
+      --line: #e5e7eb;
+      --background: #f4f5f7;
+      --surface: #ffffff;
+      --sidebar: #171717;
+      --success: #067647;
+      --success-soft: #ecfdf3;
+      --warning: #b54708;
+      --warning-soft: #fffaeb;
+      --shadow: 0 8px 28px rgba(17, 24, 39, 0.07);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--background);
+    }
+
+    button,
+    select,
+    a {
+      font: inherit;
+    }
+
+    .auth-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      background: #111111;
+    }
+
+    .auth-screen[hidden],
+    .app-shell[hidden] {
+      display: none;
+    }
+
+    .auth-message {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .spinner {
+      width: 22px;
+      height: 22px;
+      border: 3px solid rgba(255, 255, 255, 0.25);
+      border-top-color: var(--orange);
+      border-radius: 50%;
+      animation: spin .75s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 60;
+      height: 66px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #ffffff;
+      background: #111111;
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    .topbar-left,
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand {
+      color: #ffffff;
+      font-size: 21px;
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .brand span {
+      color: var(--orange);
+    }
+
+    .account-summary {
+      text-align: right;
+    }
+
+    .account-summary strong,
+    .account-summary span {
+      display: block;
+    }
+
+    .account-summary strong {
+      font-size: 12px;
+    }
+
+    .account-summary span {
+      margin-top: 3px;
+      color: #aeb4bd;
+      font-size: 10px;
+    }
+
+    .logout-button,
+    .menu-button {
+      height: 36px;
+      color: #ffffff;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .logout-button {
+      padding: 0 13px;
+    }
+
+    .menu-button {
+      display: none;
+      width: 38px;
+      font-size: 19px;
+    }
+
+    .sidebar {
+      position: fixed;
+      inset: 66px auto 0 0;
+      z-index: 50;
+      width: 238px;
+      padding: 22px 14px;
+      overflow-y: auto;
+      color: #ffffff;
+      background: var(--sidebar);
+    }
+
+    .nav-label {
+      margin: 17px 10px 8px;
+      color: #818894;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    .nav-label:first-child {
+      margin-top: 0;
+    }
+
+    .nav-link {
+      min-height: 42px;
+      margin-bottom: 5px;
+      padding: 0 11px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #d1d5db;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: #ffffff;
+      background: rgba(255, 107, 0, .16);
+    }
+
+    .nav-link.active {
+      box-shadow: inset 3px 0 var(--orange);
+    }
+
+    .nav-icon {
+      width: 25px;
+      height: 25px;
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      background: #303030;
+      border-radius: 6px;
+      font-size: 8px;
+      font-weight: 900;
+    }
+
+    .coming {
+      margin-left: auto;
+      color: #fdbb8c;
+      font-size: 8px;
+      text-transform: uppercase;
+    }
+
+    .main-content {
+      min-height: 100vh;
+      margin-left: 238px;
+      padding: 94px 26px 34px;
+    }
+
+    .content-wrap {
+      width: min(1220px, 100%);
+      margin: 0 auto;
+    }
+
+    .page-heading {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .eyebrow {
+      color: var(--orange-dark);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin-top: 6px;
+      font-size: clamp(25px, 4vw, 37px);
+      letter-spacing: -1.1px;
+    }
+
+    .page-heading p {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .control {
+      min-width: 235px;
+      height: 40px;
+      padding: 0 11px;
+      color: var(--ink);
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .stats-grid {
+      margin-bottom: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 13px;
+    }
+
+    .stat-card,
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card {
+      min-height: 104px;
+      padding: 18px;
+      border-radius: 11px;
+    }
+
+    .stat-card span,
+    .stat-card strong {
+      display: block;
+    }
+
+    .stat-card span {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+    }
+
+    .stat-card strong {
+      margin-top: 10px;
+      font-size: 27px;
+    }
+
+    .panel {
+      margin-bottom: 17px;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      min-height: 70px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-header h2 {
+      font-size: 16px;
+    }
+
+    .panel-header p {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .status-badge {
+      padding: 6px 9px;
+      display: inline-flex;
+      color: var(--success);
+      background: var(--success-soft);
+      border-radius: 999px;
+      font-size: 9px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .league-details {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .detail-box {
+      padding: 13px;
+      background: #fafafa;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .detail-box span,
+    .detail-box strong {
+      display: block;
+    }
+
+    .detail-box span {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .detail-box strong {
+      margin-top: 7px;
+      font-size: 12px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 680px;
+    }
+
+    th,
+    td {
+      padding: 13px 17px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      font-size: 10px;
+    }
+
+    th {
+      color: var(--muted);
+      background: #fafafa;
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+    }
+
+    td strong {
+      font-size: 11px;
+    }
+
+    .empty-state {
+      padding: 34px 18px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .module-grid {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 11px;
+    }
+
+    .module-card {
+      min-height: 94px;
+      padding: 15px;
+      background: #fafafa;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+    }
+
+    .module-card strong,
+    .module-card span {
+      display: block;
+    }
+
+    .module-card strong {
+      font-size: 12px;
+    }
+
+    .module-card span {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.45;
+    }
+
+    .sidebar-overlay {
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .menu-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform .2s ease;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay.open {
+        position: fixed;
+        inset: 66px 0 0;
+        z-index: 40;
+        display: block;
+        background: rgba(0, 0, 0, .42);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .topbar {
+        padding: 0 14px;
+      }
+
+      .account-summary {
+        display: none;
+      }
+
+      .main-content {
+        padding: 86px 14px 28px;
+      }
+
+      .page-heading {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .control {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .stats-grid,
+      .league-details,
+      .module-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-message">
+      <span class="spinner" aria-hidden="true"></span>
+      Checking commissioner access...
+    </div>
+  </div>
+
+  <div id="appShell" class="app-shell" hidden>
+    <header class="topbar">
+      <div class="topbar-left">
+        <button id="menuButton" class="menu-button" type="button" aria-label="Open menu">☰</button>
+        <a class="brand" href="index.html">HOOP <span>HUB PH</span></a>
+      </div>
+      <div class="topbar-right">
+        <div class="account-summary">
+          <strong id="headerAccountName">Commissioner</strong>
+          <span id="headerRole">League Commissioner</span>
+        </div>
+        <button id="logoutButton" class="logout-button" type="button">Log Out</button>
+      </div>
+    </header>
+
+    <aside id="sidebar" class="sidebar">
+      <p class="nav-label">League Workspace</p>
+      <a class="nav-link active" href="commissioner-dashboard.html">
+        <span class="nav-icon">DB</span> Dashboard
+      </a>
+      <a class="nav-link" href="#modules"><span class="nav-icon">SE</span> Seasons <span class="coming">Next</span></a>
+      <a class="nav-link" href="#teamsPanel"><span class="nav-icon">TM</span> Teams</a>
+      <a class="nav-link" href="#modules"><span class="nav-icon">SC</span> Schedule <span class="coming">Next</span></a>
+      <a class="nav-link" href="#modules"><span class="nav-icon">ST</span> Standings <span class="coming">Next</span></a>
+
+      <p class="nav-label">Game Control</p>
+      <a class="nav-link" href="#modules"><span class="nav-icon">SK</span> Scorekeepers <span class="coming">Next</span></a>
+      <a class="nav-link" href="#modules"><span class="nav-icon">RV</span> Game Review <span class="coming">Next</span></a>
+      <a class="nav-link" href="#modules"><span class="nav-icon">RP</span> Reports <span class="coming">Next</span></a>
+      <a id="superAdminLink" class="nav-link" href="super-admin.html" hidden><span class="nav-icon">SA</span> Super Admin</a>
+    </aside>
+
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <main class="main-content">
+      <div class="content-wrap">
+        <section class="page-heading">
+          <div>
+            <div class="eyebrow">League Commissioner</div>
+            <h1>Commissioner Dashboard</h1>
+            <p>Manage only the league or tournament assigned to your account.</p>
+          </div>
+          <select id="leagueSelect" class="control" aria-label="Select assigned league"></select>
+        </section>
+
+        <section class="stats-grid" aria-label="League summary">
+          <article class="stat-card">
+            <span>Assigned Leagues</span>
+            <strong id="leagueCount">0</strong>
+          </article>
+          <article class="stat-card">
+            <span>Approved Teams</span>
+            <strong id="approvedTeamCount">0</strong>
+          </article>
+          <article class="stat-card">
+            <span>Pending Teams</span>
+            <strong id="pendingTeamCount">0</strong>
+          </article>
+        </section>
+
+        <section class="panel">
+          <header class="panel-header">
+            <div>
+              <h2 id="leagueName">Assigned League</h2>
+              <p>Current league workspace and access boundary.</p>
+            </div>
+            <span id="leagueStatus" class="status-badge">Active</span>
+          </header>
+          <div id="leagueDetails" class="league-details"></div>
+        </section>
+
+        <section id="teamsPanel" class="panel">
+          <header class="panel-header">
+            <div>
+              <h2>Registered Teams</h2>
+              <p>Teams connected to the selected league.</p>
+            </div>
+          </header>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Team</th>
+                  <th>Location</th>
+                  <th>Registration</th>
+                  <th>Updated</th>
+                </tr>
+              </thead>
+              <tbody id="teamTableBody">
+                <tr><td class="empty-state" colspan="4">Loading teams...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="modules" class="panel">
+          <header class="panel-header">
+            <div>
+              <h2>Commissioner Modules</h2>
+              <p>These modules will be connected next, one secured workflow at a time.</p>
+            </div>
+          </header>
+          <div class="module-grid">
+            <article class="module-card"><strong>Seasons & Divisions</strong><span>Create seasons, divisions, tournaments, and brackets.</span></article>
+            <article class="module-card"><strong>Team & Roster Approval</strong><span>Review team registrations, coaches, and submitted player rosters.</span></article>
+            <article class="module-card"><strong>Game Scheduling</strong><span>Schedule matchups and assign scorekeepers to games.</span></article>
+            <article class="module-card"><strong>Game Review</strong><span>Review submitted box scores, corrections, fouls, and suspensions.</span></article>
+            <article class="module-card"><strong>Standings</strong><span>Publish finalized results and calculate league standings.</span></article>
+            <article class="module-card"><strong>Reports</strong><span>Generate league, team, game, and player reports.</span></article>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://tkrsyiwffqkgfyooewsf.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let currentUser = null;
+    let currentProfile = null;
+    let assignedLeagues = [];
+    let leagueTeams = [];
+    let teams = [];
+
+    const authScreen = document.getElementById("authScreen");
+    const appShell = document.getElementById("appShell");
+    const leagueSelect = document.getElementById("leagueSelect");
+
+    function escapeHtml(value) {
+      const element = document.createElement("div");
+      element.textContent = String(value ?? "");
+      return element.innerHTML;
+    }
+
+    function displayName(profile) {
+      return String(profile?.full_name || profile?.email || "Commissioner").trim();
+    }
+
+    function formatDate(value) {
+      if (!value) return "—";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "—";
+      return new Intl.DateTimeFormat("en-PH", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      }).format(date);
+    }
+
+    async function returnToLogin(signOutFirst = false) {
+      if (signOutFirst) await supabaseClient.auth.signOut();
+      window.location.replace("login.html");
+    }
+
+    async function authorize() {
+      try {
+        const { data: userData, error: userError } = await supabaseClient.auth.getUser();
+        if (userError || !userData.user) {
+          await returnToLogin(false);
+          return;
+        }
+
+        const { data: profile, error: profileError } = await supabaseClient
+          .from("profiles")
+          .select("id, email, full_name, role, status")
+          .eq("id", userData.user.id)
+          .maybeSingle();
+
+        const allowedRole = profile?.role === "commissioner" || profile?.role === "super_admin";
+        if (profileError || !profile || profile.status !== "active" || !allowedRole) {
+          await returnToLogin(true);
+          return;
+        }
+
+        currentUser = userData.user;
+        currentProfile = profile;
+        document.getElementById("headerAccountName").textContent = displayName(profile);
+        document.getElementById("headerRole").textContent = profile.role === "super_admin"
+          ? "Super Admin Preview"
+          : "League Commissioner";
+        document.getElementById("superAdminLink").hidden = profile.role !== "super_admin";
+
+        await loadWorkspace();
+        authScreen.hidden = true;
+        appShell.hidden = false;
+      } catch (error) {
+        console.error("Commissioner authorization failed:", error);
+        await returnToLogin(true);
+      }
+    }
+
+    async function loadWorkspace() {
+      let leagueIds = [];
+
+      if (currentProfile.role === "super_admin") {
+        const { data, error } = await supabaseClient
+          .from("leagues")
+          .select("id, name, location, season, division, status, created_at, updated_at")
+          .order("name");
+        if (error) throw error;
+        assignedLeagues = data || [];
+        leagueIds = assignedLeagues.map(item => item.id);
+      } else {
+        const { data: assignments, error: assignmentError } = await supabaseClient
+          .from("league_commissioners")
+          .select("league_id")
+          .eq("commissioner_id", currentUser.id)
+          .eq("active", true);
+        if (assignmentError) throw assignmentError;
+
+        leagueIds = (assignments || []).map(item => item.league_id);
+        if (leagueIds.length) {
+          const { data, error } = await supabaseClient
+            .from("leagues")
+            .select("id, name, location, season, division, status, created_at, updated_at")
+            .in("id", leagueIds)
+            .order("name");
+          if (error) throw error;
+          assignedLeagues = data || [];
+        } else {
+          assignedLeagues = [];
+        }
+      }
+
+      if (leagueIds.length) {
+        const { data: registrations, error: registrationError } = await supabaseClient
+          .from("league_teams")
+          .select("league_id, team_id, registration_status, registered_at, updated_at")
+          .in("league_id", leagueIds);
+        if (registrationError) throw registrationError;
+        leagueTeams = registrations || [];
+
+        const teamIds = [...new Set(leagueTeams.map(item => item.team_id))];
+        if (teamIds.length) {
+          const { data: teamRows, error: teamError } = await supabaseClient
+            .from("teams")
+            .select("id, name, location, logo_url, created_at")
+            .in("id", teamIds)
+            .order("name");
+          if (teamError) throw teamError;
+          teams = teamRows || [];
+        }
+      }
+
+      renderLeagueOptions();
+      renderWorkspace();
+    }
+
+    function renderLeagueOptions() {
+      document.getElementById("leagueCount").textContent = assignedLeagues.length.toLocaleString();
+      leagueSelect.innerHTML = assignedLeagues.length
+        ? assignedLeagues.map(league => `
+            <option value="${escapeHtml(league.id)}">${escapeHtml(league.name)}</option>
+          `).join("")
+        : '<option value="">No assigned leagues</option>';
+    }
+
+    function renderWorkspace() {
+      const selectedId = leagueSelect.value || assignedLeagues[0]?.id || "";
+      const league = assignedLeagues.find(item => item.id === selectedId);
+
+      if (!league) {
+        document.getElementById("leagueName").textContent = "No League Assigned";
+        document.getElementById("leagueStatus").textContent = "Waiting";
+        document.getElementById("leagueDetails").innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            Ask the Super Admin to assign an active league to this commissioner account.
+          </div>
+        `;
+        document.getElementById("teamTableBody").innerHTML = '<tr><td class="empty-state" colspan="4">No assigned league.</td></tr>';
+        document.getElementById("approvedTeamCount").textContent = "0";
+        document.getElementById("pendingTeamCount").textContent = "0";
+        return;
+      }
+
+      const registrations = leagueTeams.filter(item => item.league_id === league.id);
+      const approved = registrations.filter(item => item.registration_status === "approved");
+      const pending = registrations.filter(item => item.registration_status === "pending");
+
+      document.getElementById("leagueName").textContent = league.name;
+      document.getElementById("leagueStatus").textContent = league.status || "active";
+      document.getElementById("approvedTeamCount").textContent = approved.length.toLocaleString();
+      document.getElementById("pendingTeamCount").textContent = pending.length.toLocaleString();
+      document.getElementById("leagueDetails").innerHTML = `
+        <div class="detail-box"><span>Location</span><strong>${escapeHtml(league.location || "Not set")}</strong></div>
+        <div class="detail-box"><span>Season</span><strong>${escapeHtml(league.season || "Not set")}</strong></div>
+        <div class="detail-box"><span>Division</span><strong>${escapeHtml(league.division || "Not set")}</strong></div>
+        <div class="detail-box"><span>Last Updated</span><strong>${escapeHtml(formatDate(league.updated_at || league.created_at))}</strong></div>
+      `;
+
+      const teamById = new Map(teams.map(team => [team.id, team]));
+      document.getElementById("teamTableBody").innerHTML = registrations.length
+        ? registrations.map(registration => {
+            const team = teamById.get(registration.team_id) || {};
+            return `
+              <tr>
+                <td><strong>${escapeHtml(team.name || "Unknown team")}</strong></td>
+                <td>${escapeHtml(team.location || "—")}</td>
+                <td><span class="status-badge">${escapeHtml(registration.registration_status)}</span></td>
+                <td>${escapeHtml(formatDate(registration.updated_at || registration.registered_at))}</td>
+              </tr>
+            `;
+          }).join("")
+        : '<tr><td class="empty-state" colspan="4">No teams are registered in this league yet.</td></tr>';
+    }
+
+    function closeSidebar() {
+      document.getElementById("sidebar").classList.remove("open");
+      document.getElementById("sidebarOverlay").classList.remove("open");
+    }
+
+    leagueSelect.addEventListener("change", renderWorkspace);
+    document.getElementById("menuButton").addEventListener("click", function () {
+      document.getElementById("sidebar").classList.toggle("open");
+      document.getElementById("sidebarOverlay").classList.toggle("open");
+    });
+    document.getElementById("sidebarOverlay").addEventListener("click", closeSidebar);
+    document.querySelectorAll(".sidebar .nav-link").forEach(link => link.addEventListener("click", closeSidebar));
+    document.getElementById("logoutButton").addEventListener("click", async function () {
+      this.disabled = true;
+      this.textContent = "Logging Out...";
+      await returnToLogin(true);
+    });
+
+    authorize();
+  </script>
+</body>
+
+</html>
