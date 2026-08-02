@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="HoopHub PH Player dashboard and verified statistics.">
+  <title>Player Dashboard | HoopHub PH</title>
+
+  <style>
+    :root {
+      --orange: #ff6b00;
+      --orange-dark: #db5c00;
+      --orange-soft: #fff1e7;
+      --ink: #171717;
+      --muted: #667085;
+      --line: #e5e7eb;
+      --background: #f4f5f7;
+      --surface: #fff;
+      --sidebar: #171717;
+      --success: #067647;
+      --success-soft: #ecfdf3;
+      --shadow: 0 8px 28px rgba(17,24,39,.07);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--background);
+    }
+
+    button, select, a { font: inherit; }
+    .auth-screen { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; color: #fff; background: #111; }
+    .auth-screen[hidden], .app-shell[hidden] { display: none; }
+    .auth-message { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 800; }
+    .spinner { width: 22px; height: 22px; border: 3px solid rgba(255,255,255,.25); border-top-color: var(--orange); border-radius: 50%; animation: spin .75s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .topbar { position: fixed; inset: 0 0 auto; z-index: 60; height: 66px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; color: #fff; background: #111; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .topbar-left, .topbar-right { display: flex; align-items: center; gap: 14px; }
+    .brand { color: #fff; font-size: 21px; font-weight: 900; text-decoration: none; }
+    .brand span { color: var(--orange); }
+    .account-summary { text-align: right; }
+    .account-summary strong, .account-summary span { display: block; }
+    .account-summary strong { font-size: 12px; }
+    .account-summary span { margin-top: 3px; color: #aeb4bd; font-size: 10px; }
+
+    .logout-button, .menu-button { height: 36px; color: #fff; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); border-radius: 8px; font-size: 11px; font-weight: 850; cursor: pointer; }
+    .logout-button { padding: 0 13px; }
+    .menu-button { display: none; width: 38px; font-size: 19px; }
+
+    .sidebar { position: fixed; inset: 66px auto 0 0; z-index: 50; width: 238px; padding: 22px 14px; overflow-y: auto; color: #fff; background: var(--sidebar); }
+    .nav-label { margin: 17px 10px 8px; color: #818894; font-size: 9px; font-weight: 900; letter-spacing: 1.2px; text-transform: uppercase; }
+    .nav-label:first-child { margin-top: 0; }
+    .nav-link { min-height: 42px; margin-bottom: 5px; padding: 0 11px; display: flex; align-items: center; gap: 10px; color: #d1d5db; border-radius: 8px; font-size: 11px; font-weight: 800; text-decoration: none; }
+    .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,107,0,.16); }
+    .nav-link.active { box-shadow: inset 3px 0 var(--orange); }
+    .nav-icon { width: 25px; height: 25px; display: grid; place-items: center; color: #fff; background: #303030; border-radius: 6px; font-size: 8px; font-weight: 900; }
+    .coming { margin-left: auto; color: #fdbb8c; font-size: 8px; text-transform: uppercase; }
+
+    .main-content { min-height: 100vh; margin-left: 238px; padding: 94px 26px 34px; }
+    .content-wrap { width: min(1220px,100%); margin: 0 auto; }
+    .page-heading { margin-bottom: 20px; display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; }
+    .eyebrow { color: var(--orange-dark); font-size: 10px; font-weight: 900; letter-spacing: 1.2px; text-transform: uppercase; }
+    h1 { margin-top: 6px; font-size: clamp(25px,4vw,37px); letter-spacing: -1.1px; }
+    .page-heading p { margin-top: 8px; color: var(--muted); font-size: 12px; line-height: 1.55; }
+
+    .control { min-width: 250px; height: 40px; padding: 0 11px; color: var(--ink); background: #fff; border: 1px solid #d0d5dd; border-radius: 8px; font-size: 11px; font-weight: 750; }
+    .profile-card, .stat-card, .panel { background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); }
+
+    .profile-card { margin-bottom: 18px; padding: 20px; display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 18px; border-radius: 12px; }
+    .player-photo { width: 78px; height: 78px; display: grid; place-items: center; overflow: hidden; color: #fff; background: #222; border: 3px solid var(--orange-soft); border-radius: 50%; font-size: 22px; font-weight: 900; }
+    .player-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-name { font-size: 22px; font-weight: 900; }
+    .profile-meta { margin-top: 7px; color: var(--muted); font-size: 11px; }
+    .verified-badge { padding: 7px 10px; color: var(--success); background: var(--success-soft); border-radius: 999px; font-size: 9px; font-weight: 900; text-transform: uppercase; }
+
+    .stats-grid { margin-bottom: 18px; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 13px; }
+    .stat-card { min-height: 104px; padding: 18px; border-radius: 11px; }
+    .stat-card span, .stat-card strong { display: block; }
+    .stat-card span { color: var(--muted); font-size: 9px; font-weight: 900; letter-spacing: .8px; text-transform: uppercase; }
+    .stat-card strong { margin-top: 10px; font-size: 27px; }
+
+    .panel { margin-bottom: 17px; border-radius: 12px; overflow: hidden; }
+    .panel-header { min-height: 70px; padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-bottom: 1px solid var(--line); }
+    .panel-header h2 { font-size: 16px; }
+    .panel-header p { margin-top: 4px; color: var(--muted); font-size: 10px; }
+    .readonly-note { padding: 6px 9px; color: #344054; background: #f2f4f7; border-radius: 999px; font-size: 8px; font-weight: 900; text-transform: uppercase; }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; min-width: 900px; border-collapse: collapse; }
+    th, td { padding: 13px 15px; text-align: left; border-bottom: 1px solid var(--line); font-size: 10px; }
+    th { color: var(--muted); background: #fafafa; font-size: 8px; font-weight: 900; letter-spacing: .7px; text-transform: uppercase; }
+    td strong { font-size: 11px; }
+    .empty-state { padding: 34px 18px; color: var(--muted); text-align: center; font-size: 11px; line-height: 1.6; }
+
+    .module-grid { padding: 18px; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 11px; }
+    .module-card { min-height: 94px; padding: 15px; background: #fafafa; border: 1px solid var(--line); border-radius: 9px; }
+    .module-card strong, .module-card span { display: block; }
+    .module-card strong { font-size: 12px; }
+    .module-card span { margin-top: 7px; color: var(--muted); font-size: 9px; line-height: 1.45; }
+    .sidebar-overlay { display: none; }
+
+    @media (max-width: 900px) {
+      .menu-button { display: inline-flex; align-items: center; justify-content: center; }
+      .sidebar { transform: translateX(-100%); transition: transform .2s ease; }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { position: fixed; inset: 66px 0 0; z-index: 40; display: block; background: rgba(0,0,0,.42); }
+      .main-content { margin-left: 0; }
+    }
+
+    @media (max-width: 680px) {
+      .topbar { padding: 0 14px; }
+      .account-summary { display: none; }
+      .main-content { padding: 86px 14px 28px; }
+      .page-heading { align-items: stretch; flex-direction: column; }
+      .control { width: 100%; min-width: 0; }
+      .profile-card { grid-template-columns: auto minmax(0,1fr); }
+      .verified-badge { grid-column: 1 / -1; width: max-content; }
+      .stats-grid, .module-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-message"><span class="spinner"></span>Loading verified player profile...</div>
+  </div>
+
+  <div id="appShell" class="app-shell" hidden>
+    <header class="topbar">
+      <div class="topbar-left">
+        <button id="menuButton" class="menu-button" type="button" aria-label="Open menu">☰</button>
+        <a class="brand" href="index.html">HOOP <span>HUB PH</span></a>
+      </div>
+      <div class="topbar-right">
+        <div class="account-summary"><strong id="headerAccountName">Player</strong><span id="headerRole">Player Account</span></div>
+        <button id="logoutButton" class="logout-button" type="button">Log Out</button>
+      </div>
+    </header>
+
+    <aside id="sidebar" class="sidebar">
+      <p class="nav-label">Player Workspace</p>
+      <a class="nav-link active" href="player-dashboard.html"><span class="nav-icon">DB</span> Dashboard</a>
+      <a class="nav-link" href="#profilePanel"><span class="nav-icon">PF</span> Player Profile</a>
+      <a class="nav-link" href="#gameStatsPanel"><span class="nav-icon">GM</span> Game Statistics</a>
+      <a class="nav-link" href="#modules"><span class="nav-icon">TM</span> Team History <span class="coming">Next</span></a>
+      <a class="nav-link" href="#modules"><span class="nav-icon">AW</span> Awards <span class="coming">Next</span></a>
+      <a class="nav-link" href="#modules"><span class="nav-icon">CR</span> Corrections <span class="coming">Next</span></a>
+      <a id="superAdminLink" class="nav-link" href="super-admin.html" hidden><span class="nav-icon">SA</span> Super Admin</a>
+    </aside>
+
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <main class="main-content">
+      <div class="content-wrap">
+        <section class="page-heading">
+          <div>
+            <div class="eyebrow">Verified Player Account</div>
+            <h1>Player Dashboard</h1>
+            <p>View your official profile and statistics recorded from verified games.</p>
+          </div>
+          <select id="playerSelect" class="control" aria-label="Select linked player"></select>
+        </section>
+
+        <section id="profilePanel" class="profile-card">
+          <div id="playerPhoto" class="player-photo">HH</div>
+          <div><div id="playerName" class="profile-name">Linked Player</div><div id="playerMeta" class="profile-meta">Loading profile...</div></div>
+          <span class="verified-badge">Verified Profile</span>
+        </section>
+
+        <section class="stats-grid">
+          <article class="stat-card"><span>Games</span><strong id="gameCount">0</strong></article>
+          <article class="stat-card"><span>Total Points</span><strong id="totalPoints">0</strong></article>
+          <article class="stat-card"><span>Rebounds</span><strong id="totalRebounds">0</strong></article>
+          <article class="stat-card"><span>Assists</span><strong id="totalAssists">0</strong></article>
+        </section>
+
+        <section id="gameStatsPanel" class="panel">
+          <header class="panel-header">
+            <div><h2>Official Game-by-Game Statistics</h2><p>Statistics recorded by authorized scorekeepers.</p></div>
+            <span class="readonly-note">Read Only</span>
+          </header>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Game</th><th>PTS</th><th>REB</th><th>AST</th><th>STL</th><th>BLK</th><th>TO</th><th>Fouls</th><th>Minutes</th></tr></thead>
+              <tbody id="statsTableBody"><tr><td class="empty-state" colspan="9">Loading statistics...</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="modules" class="panel">
+          <header class="panel-header"><div><h2>Player Features</h2><p>Personal information may be updated later; official records remain protected.</p></div></header>
+          <div class="module-grid">
+            <article class="module-card"><strong>Personal Profile</strong><span>Add a photo, birthday, hometown, height, and preferred position.</span></article>
+            <article class="module-card"><strong>Team Invitations</strong><span>Accept or reject invitations from approved team managers.</span></article>
+            <article class="module-card"><strong>Career Statistics</strong><span>View verified totals across previous and current teams.</span></article>
+            <article class="module-card"><strong>Awards</strong><span>Display official league awards and achievements.</span></article>
+            <article class="module-card"><strong>Share Profile</strong><span>Download or share a public HoopHub PH player profile.</span></article>
+            <article class="module-card"><strong>Correction Requests</strong><span>Request personal-information corrections without editing game statistics.</span></article>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://tkrsyiwffqkgfyooewsf.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let currentUser = null;
+    let currentProfile = null;
+    let playerLinks = [];
+    let players = [];
+    let teams = [];
+    let stats = [];
+    let games = [];
+
+    const authScreen = document.getElementById("authScreen");
+    const appShell = document.getElementById("appShell");
+    const playerSelect = document.getElementById("playerSelect");
+
+    function escapeHtml(value) {
+      const element = document.createElement("div");
+      element.textContent = String(value ?? "");
+      return element.innerHTML;
+    }
+
+    function fullName(player) {
+      return `${player?.first_name || ""} ${player?.last_name || ""}`.trim() || "Unnamed Player";
+    }
+
+    function initials(player) {
+      return fullName(player).split(/\s+/).slice(0,2).map(part => part[0]).join("").toUpperCase() || "HH";
+    }
+
+    function numberValue(value) {
+      const number = Number(value);
+      return Number.isFinite(number) ? number : 0;
+    }
+
+    function minutesLabel(value) {
+      const totalSeconds = Math.max(0, Math.round(numberValue(value)));
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${minutes}:${String(seconds).padStart(2,"0")}`;
+    }
+
+    async function returnToLogin(signOutFirst = false) {
+      if (signOutFirst) await supabaseClient.auth.signOut();
+      window.location.replace("login.html");
+    }
+
+    async function authorize() {
+      try {
+        const { data: userData, error: userError } = await supabaseClient.auth.getUser();
+        if (userError || !userData.user) return returnToLogin(false);
+
+        const { data: profile, error: profileError } = await supabaseClient
+          .from("profiles")
+          .select("id, email, full_name, role, status")
+          .eq("id", userData.user.id)
+          .maybeSingle();
+
+        const allowedRole = profile?.role === "player" || profile?.role === "super_admin";
+        if (profileError || !profile || profile.status !== "active" || !allowedRole) return returnToLogin(true);
+
+        currentUser = userData.user;
+        currentProfile = profile;
+        document.getElementById("headerAccountName").textContent = profile.full_name || profile.email || "Player";
+        document.getElementById("headerRole").textContent = profile.role === "super_admin" ? "Super Admin Preview" : "Player Account";
+        document.getElementById("superAdminLink").hidden = profile.role !== "super_admin";
+
+        await loadWorkspace();
+        authScreen.hidden = true;
+        appShell.hidden = false;
+      } catch (error) {
+        console.error("Player authorization failed:", error);
+        await returnToLogin(true);
+      }
+    }
+
+    async function loadWorkspace() {
+      let linksQuery = supabaseClient
+        .from("player_accounts")
+        .select("player_id, user_id, active, updated_at")
+        .eq("active", true);
+
+      if (currentProfile.role !== "super_admin") linksQuery = linksQuery.eq("user_id", currentUser.id);
+      const { data: links, error: linkError } = await linksQuery;
+      if (linkError) throw linkError;
+      playerLinks = links || [];
+
+      const playerIds = [...new Set(playerLinks.map(item => item.player_id))];
+      if (playerIds.length) {
+        const [playerResult, statsResult] = await Promise.all([
+          supabaseClient.from("players").select("id, first_name, last_name, position, jersey_number, height, photo_url, team_id").in("id", playerIds),
+          supabaseClient.from("player_game_stats").select("player_id, game_id, points, rebounds, assists, steals, blocks, turnovers, fouls, minutes_clock_seconds, minutes_played").in("player_id", playerIds)
+        ]);
+        if (playerResult.error) throw playerResult.error;
+        if (statsResult.error) throw statsResult.error;
+        players = playerResult.data || [];
+        stats = statsResult.data || [];
+
+        const teamIds = [...new Set(players.map(item => item.team_id).filter(Boolean))];
+        const gameIds = [...new Set(stats.map(item => item.game_id).filter(value => value != null))];
+        const extraQueries = [];
+        extraQueries.push(teamIds.length
+          ? supabaseClient.from("teams").select("id, name, location").in("id", teamIds)
+          : Promise.resolve({ data: [], error: null }));
+        extraQueries.push(gameIds.length
+          ? supabaseClient.from("games").select("id, home_team, away_team, status, period").in("id", gameIds)
+          : Promise.resolve({ data: [], error: null }));
+        const [teamResult, gameResult] = await Promise.all(extraQueries);
+        if (teamResult.error) throw teamResult.error;
+        if (gameResult.error) throw gameResult.error;
+        teams = teamResult.data || [];
+        games = gameResult.data || [];
+      }
+
+      renderOptions();
+      renderWorkspace();
+    }
+
+    function renderOptions() {
+      playerSelect.hidden = currentProfile.role !== "super_admin" || players.length < 2;
+      playerSelect.innerHTML = players.length
+        ? players.map(player => `<option value="${escapeHtml(player.id)}">${escapeHtml(fullName(player))}</option>`).join("")
+        : '<option value="">No linked player</option>';
+    }
+
+    function renderWorkspace() {
+      const playerId = playerSelect.value || players[0]?.id || "";
+      const player = players.find(item => item.id === playerId);
+      const playerStats = stats.filter(item => item.player_id === playerId);
+
+      if (!player) {
+        document.getElementById("playerName").textContent = "No Player Linked";
+        document.getElementById("playerMeta").textContent = "Ask the Super Admin to link this account to an official player record.";
+        document.getElementById("statsTableBody").innerHTML = '<tr><td class="empty-state" colspan="9">No linked player record.</td></tr>';
+        return;
+      }
+
+      const team = teams.find(item => item.id === player.team_id);
+      const photo = document.getElementById("playerPhoto");
+      photo.innerHTML = player.photo_url
+        ? `<img src="${escapeHtml(player.photo_url)}" alt="${escapeHtml(fullName(player))}">`
+        : escapeHtml(initials(player));
+      document.getElementById("playerName").textContent = fullName(player);
+      document.getElementById("playerMeta").textContent = [
+        team?.name || "No current team",
+        player.position || "Position not set",
+        player.jersey_number != null ? `#${player.jersey_number}` : "Jersey not set",
+        player.height || "Height not set"
+      ].join(" · ");
+
+      const totals = playerStats.reduce((sum, row) => ({
+        points: sum.points + numberValue(row.points),
+        rebounds: sum.rebounds + numberValue(row.rebounds),
+        assists: sum.assists + numberValue(row.assists)
+      }), { points: 0, rebounds: 0, assists: 0 });
+
+      document.getElementById("gameCount").textContent = playerStats.length.toLocaleString();
+      document.getElementById("totalPoints").textContent = totals.points.toLocaleString();
+      document.getElementById("totalRebounds").textContent = totals.rebounds.toLocaleString();
+      document.getElementById("totalAssists").textContent = totals.assists.toLocaleString();
+
+      const gameById = new Map(games.map(game => [String(game.id), game]));
+      document.getElementById("statsTableBody").innerHTML = playerStats.length
+        ? playerStats.map(row => {
+            const game = gameById.get(String(row.game_id));
+            const gameLabel = game ? `#${game.id} — ${game.home_team || "Home"} vs ${game.away_team || "Away"}` : `Game #${row.game_id}`;
+            const seconds = row.minutes_clock_seconds != null ? row.minutes_clock_seconds : numberValue(row.minutes_played) * 60;
+            return `
+              <tr>
+                <td><strong>${escapeHtml(gameLabel)}</strong></td>
+                <td>${numberValue(row.points)}</td><td>${numberValue(row.rebounds)}</td><td>${numberValue(row.assists)}</td>
+                <td>${numberValue(row.steals)}</td><td>${numberValue(row.blocks)}</td><td>${numberValue(row.turnovers)}</td>
+                <td>${numberValue(row.fouls)}</td><td>${escapeHtml(minutesLabel(seconds))}</td>
+              </tr>
+            `;
+          }).join("")
+        : '<tr><td class="empty-state" colspan="9">No official game statistics have been recorded yet.</td></tr>';
+    }
+
+    function closeSidebar() {
+      document.getElementById("sidebar").classList.remove("open");
+      document.getElementById("sidebarOverlay").classList.remove("open");
+    }
+
+    playerSelect.addEventListener("change", renderWorkspace);
+    document.getElementById("menuButton").addEventListener("click", function () {
+      document.getElementById("sidebar").classList.toggle("open");
+      document.getElementById("sidebarOverlay").classList.toggle("open");
+    });
+    document.getElementById("sidebarOverlay").addEventListener("click", closeSidebar);
+    document.querySelectorAll(".sidebar .nav-link").forEach(link => link.addEventListener("click", closeSidebar));
+    document.getElementById("logoutButton").addEventListener("click", async function () {
+      this.disabled = true;
+      this.textContent = "Logging Out...";
+      await returnToLogin(true);
+    });
+
+    authorize();
+  </script>
+</body>
+
+</html>
