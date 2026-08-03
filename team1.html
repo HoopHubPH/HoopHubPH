@@ -1,558 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Quezon City Warriors | Hoop Hub PH</title>
-
-    <style>
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f5f5f5;
-            color: #222;
-        }
-
-        /* NAVIGATION */
-
-        header {
-            background: #111;
-            color: white;
-            padding: 18px 8%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: white;
-    text-decoration: none;
-}
-
-.logo:visited {
-    color: white;
-}
-
-.logo:hover {
-    color: white;
-}
-
-.logo span {
-    color: #ff6b00;
-}
-
-        .logo span {
-            color: #ff6b00;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 25px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        nav a:hover {
-            color: #ff6b00;
-        }
-
-        /* HERO */
-
-        .hero {
-            background: #111;
-            color: white;
-            text-align: center;
-            padding: 70px 20px;
-        }
-
-        .team-logo {
-            width: 120px;
-            height: 120px;
-
-            background: #ff6b00;
-            color: white;
-
-            border-radius: 50%;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            margin: 0 auto 25px;
-
-            font-size: 55px;
-        }
-
-        .hero h1 {
-            font-size: 45px;
-            margin-bottom: 15px;
-        }
-
-        .hero p {
-            color: #ccc;
-            font-size: 18px;
-        }
-
-        /* CONTAINER */
-
-        .container {
-            max-width: 1100px;
-            margin: 50px auto;
-            padding: 0 20px;
-        }
-
-        .back {
-            display: inline-block;
-            margin-bottom: 25px;
-            color: #ff6b00;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        /* CARDS */
-
-        .info-card {
-            background: white;
-            padding: 35px;
-            border-radius: 10px;
-
-            box-shadow:
-                0 5px 20px rgba(0,0,0,0.08);
-
-            margin-bottom: 30px;
-        }
-
-        .info-card h2 {
-            margin-bottom: 25px;
-        }
-
-        .info-row {
-            padding: 15px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .info-row strong {
-            color: #ff6b00;
-        }
-
-        /* STATS */
-
-        .stats {
-            display: grid;
-
-            grid-template-columns:
-                repeat(auto-fit, minmax(180px, 1fr));
-
-            gap: 20px;
-
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-
-            padding: 25px;
-
-            border-radius: 10px;
-
-            text-align: center;
-
-            box-shadow:
-                0 5px 20px rgba(0,0,0,0.08);
-        }
-
-        .stat-card h3 {
-            font-size: 32px;
-            color: #ff6b00;
-            margin-bottom: 8px;
-        }
-
-        .stat-card p {
-            color: #666;
-        }
-
-        /* ROSTER */
-
-        .roster {
-            display: grid;
-
-            grid-template-columns:
-                repeat(auto-fit, minmax(220px, 1fr));
-
-            gap: 20px;
-        }
-
-        .player-card {
-            background: #f8f8f8;
-
-            padding: 20px;
-
-            border-radius: 8px;
-        }
-
-        .player-card h3 {
-            margin-bottom: 8px;
-        }
-
-        .player-card p {
-            color: #666;
-        }
-
-        /* FOOTER */
-
-        footer {
-            background: #111;
-            color: white;
-
-            text-align: center;
-
-            padding: 30px;
-
-            margin-top: 50px;
-        }
-
-        footer p {
-            color: #aaa;
-            margin-top: 10px;
-        }
-
-        /* MOBILE */
-
-        @media (max-width: 768px) {
-
-            header {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            nav a {
-                margin: 0 7px;
-                font-size: 12px;
-            }
-
-            .hero h1 {
-                font-size: 35px;
-            }
-
-        }
-
-    </style>
-
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Team Profile | Hoop Hub PH</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,Helvetica,sans-serif;background:#f5f5f5;color:#222}
+    header{background:#111;color:#fff;padding:18px 8%;display:flex;justify-content:space-between;align-items:center}.logo{font-size:24px;font-weight:bold;color:#fff;text-decoration:none}.logo:visited,.logo:hover{color:#fff}.logo span{color:#ff6b00}
+    nav a{color:#fff;text-decoration:none;margin-left:25px;font-weight:bold;font-size:14px}nav a:hover{color:#ff6b00}
+    .hero{background:#111;color:#fff;text-align:center;padding:70px 20px}.team-logo{width:120px;height:120px;margin:0 auto 25px;border:4px solid #ff6b00;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#ff6b00;object-fit:cover;font-size:55px}.hero h1{font-size:45px;margin-bottom:15px}.hero p{color:#ccc;font-size:18px}
+    .container{max-width:1100px;margin:50px auto;padding:0 20px}.back{display:inline-block;margin-bottom:25px;color:#ff6b00;text-decoration:none;font-weight:bold}
+    .info-card{background:#fff;padding:35px;border-radius:10px;box-shadow:0 5px 20px rgba(0,0,0,.08);margin-bottom:30px}.info-card h2{margin-bottom:25px}.info-row{padding:15px 0;border-bottom:1px solid #eee}.info-row:last-child{border-bottom:0}.info-row strong{color:#ff6b00}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:18px;margin-bottom:30px}.stat-card{background:#fff;padding:23px 14px;border-radius:10px;text-align:center;box-shadow:0 5px 20px rgba(0,0,0,.08)}.stat-card h3{font-size:30px;color:#ff6b00;margin-bottom:8px}.stat-card p{color:#666;font-size:12px}
+    .roster{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:17px}.player-card{display:flex;flex-direction:column;background:#f8f8f8;padding:20px;border:1px solid #eee;border-radius:8px}.player-card h3{margin-bottom:8px}.player-card p{color:#666;margin-bottom:5px}.player-link{margin-top:auto;padding-top:13px;color:#ff6b00;text-decoration:none;font-size:12px;font-weight:bold}
+    .league-list{display:grid;gap:12px}.league-item{padding:15px;display:flex;justify-content:space-between;align-items:center;gap:12px;background:#f8f8f8;border:1px solid #eee;border-radius:8px}.league-item a{color:#ff6b00;text-decoration:none;font-weight:bold;font-size:12px}
+    .games-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.game-card{padding:20px;background:#fafafa;border:1px solid #eee;border-radius:9px}.game-top{display:flex;justify-content:space-between;gap:10px;margin-bottom:15px;color:#68707d;font-size:11px;font-weight:bold}.status{padding:4px 8px;border-radius:999px;background:#fff1e7;color:#c75200;text-transform:uppercase}.status.final{background:#111;color:#fff}.matchup{text-align:center;font-weight:bold;line-height:1.7}.score{color:#ff6b00;font-size:24px}.game-meta{margin-top:13px;padding-top:12px;border-top:1px solid #eee;color:#68707d;font-size:11px}
+    .empty{grid-column:1/-1;padding:25px;text-align:center;color:#68707d}.error-card{max-width:700px;margin:60px auto;padding:35px;background:#fff4f2;color:#b42318;border-radius:10px;text-align:center}
+    footer{background:#111;color:#fff;text-align:center;padding:30px;margin-top:50px}footer p{color:#aaa;margin-top:10px}
+    @media(max-width:768px){header{flex-direction:column;gap:15px}nav{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}nav a{margin:0;font-size:12px}.hero h1{font-size:35px}.container{margin:32px auto}.info-card{padding:24px 18px}.games-grid{grid-template-columns:1fr}}
+  </style>
 </head>
-
-
 <body>
+  <header><a href="index.html" class="logo">HOOP <span>HUB PH</span></a><nav><a href="index.html">Home</a><a href="leagues.html">Leagues</a><a href="teams.html">Teams</a><a href="players.html">Players</a><a href="tournaments.html">Tournaments</a><a href="live-game.html">Live Game</a></nav></header>
+  <section id="teamHero" class="hero"><div id="logoFallback" class="team-logo">🏀</div><img id="teamLogo" class="team-logo" alt="Team logo" hidden><h1 id="teamTitle">LOADING TEAM...</h1><p id="teamSubtitle">Loading team information.</p></section>
 
-
-    <!-- NAVIGATION -->
-
-     <header>
-
-    <a href="index.html" class="logo">
-        HOOP <span>HUB PH</span>
-    </a>
-
-    <nav>
-
-        <a href="index.html">Home</a>
-
-        <a href="leagues.html">Leagues</a>
-
-        <a href="teams.html">Teams</a>
-
-        <a href="players.html">Players</a>
-
-        <a href="tournaments.html">Tournaments</a>
-
-        <a href="live-game.html">Live Game</a>
-
-    </nav>
-
-</header>
-
-
-
-    <!-- TEAM HERO -->
-
-    <section class="hero">
-
-        <div class="team-logo">
-            🏀
-        </div>
-
-        <h1>
-            QUEZON CITY WARRIORS
-        </h1>
-
-        <p>
-            Competitive Community Basketball Team
-        </p>
-
+  <main id="mainContent" class="container">
+    <a href="teams.html" class="back">← Back to Teams</a>
+    <section class="stats">
+      <div class="stat-card"><h3 id="playerCount">0</h3><p>Players</p></div><div class="stat-card"><h3 id="gamesPlayed">0</h3><p>Games Played</p></div>
+      <div class="stat-card"><h3 id="wins">0</h3><p>Wins</p></div><div class="stat-card"><h3 id="losses">0</h3><p>Losses</p></div>
+      <div class="stat-card"><h3 id="winPct">0.0%</h3><p>Win Percentage</p></div><div class="stat-card"><h3 id="pointDiff">0</h3><p>Point Difference</p></div>
     </section>
 
-
-    <!-- MAIN CONTENT -->
-
-    <div class="container">
-
-
-        <a href="teams.html" class="back">
-            ← Back to Teams
-        </a>
-
-
-        <!-- TEAM STATS -->
-
-        <div class="stats">
-
-
-            <div class="stat-card">
-
-                <h3>
-                    12
-                </h3>
-
-                <p>
-                    Players
-                </p>
-
-            </div>
-
-
-            <div class="stat-card">
-
-                <h3>
-                    8
-                </h3>
-
-                <p>
-                    Wins
-                </p>
-
-            </div>
-
-
-            <div class="stat-card">
-
-                <h3>
-                    3
-                </h3>
-
-                <p>
-                    Losses
-                </p>
-
-            </div>
-
-
-            <div class="stat-card">
-
-                <h3>
-                    1
-                </h3>
-
-                <p>
-                    Championships
-                </p>
-
-            </div>
-
-
-        </div>
-
-
-        <!-- TEAM INFORMATION -->
-
-        <div class="info-card">
-
-            <h2>
-                Team Information
-            </h2>
-
-
-            <div class="info-row">
-
-                <strong>
-                    📍 Location:
-                </strong>
-
-                Quezon City
-
-            </div>
-
-
-            <div class="info-row">
-
-                <strong>
-                    🏆 Division:
-                </strong>
-
-                Open Division
-
-            </div>
-
-
-            <div class="info-row">
-
-                <strong>
-                    👨‍🏫 Coach:
-                </strong>
-
-                Coach Juan
-
-            </div>
-
-
-            <div class="info-row">
-
-                <strong>
-                    🏀 Home Court:
-                </strong>
-
-                Quezon City Community Court
-
-            </div>
-
-
-        </div>
-
-
-        <!-- ROSTER -->
-
-        <div class="info-card">
-
-            <h2>
-                Team Roster
-            </h2>
-
-
-            <div class="roster">
-
-
-                <div class="player-card">
-
-                    <h3>
-                        Player 1
-                    </h3>
-
-                    <p>
-                        Point Guard
-                    </p>
-
-                </div>
-
-
-                <div class="player-card">
-
-                    <h3>
-                        Player 2
-                    </h3>
-
-                    <p>
-                        Shooting Guard
-                    </p>
-
-                </div>
-
-
-                <div class="player-card">
-
-                    <h3>
-                        Player 3
-                    </h3>
-
-                    <p>
-                        Small Forward
-                    </p>
-
-                </div>
-
-
-                <div class="player-card">
-
-                    <h3>
-                        Player 4
-                    </h3>
-
-                    <p>
-                        Power Forward
-                    </p>
-
-                </div>
-
-
-                <div class="player-card">
-
-                    <h3>
-                        Player 5
-                    </h3>
-
-                    <p>
-                        Center
-                    </p>
-
-                </div>
-
-
-            </div>
-
-        </div>
-
-
-        <!-- LEAGUES -->
-
-        <div class="info-card">
-
-            <h2>
-                League Participation
-            </h2>
-
-            <p>
-
-                🏆 Barangay Basketball League
-
-            </p>
-
-        </div>
-
-
-    </div>
-
-
-    <!-- FOOTER -->
-
-    <footer>
-
-        <h3>
-            🏀 HOOP HUB PH
-        </h3>
-
-        <p>
-            Connecting Philippine basketball,
-            one community at a time.
-        </p>
-
-        <p>
-            © 2026 Hoop Hub PH.
-            All rights reserved.
-        </p>
-
-    </footer>
-
-
+    <section class="info-card"><h2>Team Information</h2><div class="info-row"><strong>📍 Location:</strong> <span id="location">—</span></div><div class="info-row"><strong>🏆 Division:</strong> <span id="division">—</span></div><div class="info-row"><strong>🏀 Points For:</strong> <span id="pointsFor">0</span></div><div class="info-row"><strong>🛡️ Points Against:</strong> <span id="pointsAgainst">0</span></div></section>
+
+    <section class="info-card"><h2>Team Roster</h2><div id="roster" class="roster"><div class="empty">Loading roster...</div></div></section>
+    <section class="info-card"><h2>League Participation</h2><div id="leagueList" class="league-list"><div class="empty">Loading leagues...</div></div></section>
+    <section class="info-card"><h2>Upcoming Games</h2><div id="upcomingGames" class="games-grid"><div class="empty">Loading games...</div></div></section>
+    <section class="info-card"><h2>Results</h2><div id="results" class="games-grid"><div class="empty">Loading results...</div></div></section>
+  </main>
+
+  <footer><h3>🏀 HOOP HUB PH</h3><p>Connecting Philippine basketball, one community at a time.</p><p>© 2026 Hoop Hub PH. All rights reserved.</p></footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    (()=>{
+      const TEAM_PAGE_SUPABASE_URL="https://tkrsyiwffqkgfyooewsf.supabase.co";
+      const TEAM_PAGE_SUPABASE_KEY="sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
+      const db=window.supabase.createClient(TEAM_PAGE_SUPABASE_URL,TEAM_PAGE_SUPABASE_KEY);
+      const requestedId=new URLSearchParams(location.search).get("id");
+      const escapeHtml=value=>String(value??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[c]);
+      const setText=(id,value)=>document.getElementById(id).textContent=value??"—";
+      const dateTime=value=>{const d=new Date(value);return value&&!Number.isNaN(d.getTime())?new Intl.DateTimeFormat("en-PH",{year:"numeric",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}).format(d):"To be announced"};
+
+      async function loadTeam(){let q=db.from("teams").select("*");q=requestedId?q.eq("id",requestedId):q.order("created_at").limit(1);const {data,error}=requestedId?await q.maybeSingle():await q;if(error)throw error;const team=requestedId?data:data?.[0];if(!team)throw new Error("Team not found.");return team}
+      async function loadData(team){
+        const [playersResult,linksResult,standingsResult,gamesResult]=await Promise.all([
+          db.from("players").select("id,first_name,last_name,position,jersey_number,ppg").eq("team_id",team.id).order("jersey_number"),
+          db.from("league_teams").select("league_id,registration_status").eq("team_id",team.id),
+          db.from("team_standings").select("*").eq("team_id",team.id),
+          db.from("games").select("id,home_team_id,away_team_id,home_team,away_team,home_score,away_score,status,scheduled_at,finalized_at,venue").or(`home_team_id.eq.${team.id},away_team_id.eq.${team.id}`).order("scheduled_at",{ascending:true,nullsFirst:false})
+        ]);
+        for(const result of [playersResult,linksResult,standingsResult,gamesResult])if(result.error)throw result.error;
+        const leagueIds=(linksResult.data||[]).map(item=>item.league_id);
+        let leagues=[];if(leagueIds.length){const r=await db.from("leagues").select("id,name,division,season").in("id",leagueIds).order("name");if(r.error)throw r.error;leagues=r.data||[]}
+        return {players:playersResult.data||[],links:linksResult.data||[],standings:standingsResult.data||[],games:gamesResult.data||[],leagues};
+      }
+
+      function gameCard(game,final){return `<article class="game-card"><div class="game-top"><span>${escapeHtml(dateTime(game.scheduled_at||game.finalized_at))}</span><span class="status ${final?"final":""}">${escapeHtml(final?"Final":game.status||"Scheduled")}</span></div><div class="matchup"><div>${escapeHtml(game.home_team)} ${final?`<span class="score">${Number(game.home_score||0)}</span>`:""}</div><div>${final?"–":"VS"}</div><div>${final?`<span class="score">${Number(game.away_score||0)}</span> `:""}${escapeHtml(game.away_team)}</div></div><div class="game-meta">📍 ${escapeHtml(game.venue||"Venue to be announced")} · Game #${escapeHtml(game.id)}</div></article>`}
+
+      function render(team,data){
+        document.title=`${team.name} | Hoop Hub PH`;setText("teamTitle",String(team.name||"Unnamed Team").toUpperCase());setText("teamSubtitle",team.location?`Basketball team from ${team.location}`:"Hoop Hub PH Basketball Team");setText("location",team.location||"—");
+        if(team.logo_url){const img=document.getElementById("teamLogo");img.src=team.logo_url;img.hidden=false;document.getElementById("logoFallback").hidden=true;img.onerror=()=>{img.hidden=true;document.getElementById("logoFallback").hidden=false}}
+        const totals=data.standings.reduce((a,s)=>({gp:a.gp+Number(s.games_played||0),w:a.w+Number(s.wins||0),l:a.l+Number(s.losses||0),pf:a.pf+Number(s.points_for||0),pa:a.pa+Number(s.points_against||0)}),{gp:0,w:0,l:0,pf:0,pa:0});
+        setText("playerCount",data.players.length);setText("gamesPlayed",totals.gp);setText("wins",totals.w);setText("losses",totals.l);setText("winPct",(totals.gp?totals.w/totals.gp*100:0).toFixed(1)+"%");setText("pointDiff",(totals.pf-totals.pa>0?"+":"")+(totals.pf-totals.pa));setText("pointsFor",totals.pf);setText("pointsAgainst",totals.pa);setText("division",data.leagues.map(l=>l.division).filter(Boolean).join(", ")||"—");
+        document.getElementById("roster").innerHTML=data.players.length?data.players.map(p=>`<article class="player-card"><h3>#${p.jersey_number??"—"} ${escapeHtml(`${p.first_name||""} ${p.last_name||""}`.trim())}</h3><p>${escapeHtml(p.position||"Position not set")}</p><p>${Number(p.ppg||0).toFixed(1)} PPG</p><a class="player-link" href="player1.html?id=${encodeURIComponent(p.id)}">VIEW PLAYER →</a></article>`).join(""):'<div class="empty">No players assigned to this team.</div>';
+        document.getElementById("leagueList").innerHTML=data.leagues.length?data.leagues.map(l=>`<div class="league-item"><div><strong>🏆 ${escapeHtml(l.name)}</strong><br><small>${escapeHtml(l.season||"")} ${escapeHtml(l.division||"")}</small></div><a href="league1.html?id=${encodeURIComponent(l.id)}">VIEW LEAGUE</a></div>`).join(""):'<div class="empty">This team is not registered in a league.</div>';
+        const upcoming=data.games.filter(g=>String(g.status||"").toLowerCase()!=="final"),finals=data.games.filter(g=>String(g.status||"").toLowerCase()==="final").sort((a,b)=>new Date(b.finalized_at||0)-new Date(a.finalized_at||0));
+        document.getElementById("upcomingGames").innerHTML=upcoming.length?upcoming.map(g=>gameCard(g,false)).join(""):'<div class="empty">No upcoming games scheduled.</div>';document.getElementById("results").innerHTML=finals.length?finals.map(g=>gameCard(g,true)).join(""):'<div class="empty">No finalized results yet.</div>';
+      }
+
+      async function initialize(){try{const team=await loadTeam();render(team,await loadData(team))}catch(error){console.error("Team profile error:",error);document.getElementById("teamHero").hidden=true;document.getElementById("mainContent").innerHTML='<div class="error-card"></div>';document.querySelector(".error-card").textContent="Unable to load team profile: "+(error.message||"Unknown error")}}
+      initialize();
+    })();
+  </script>
 </body>
-
 </html>
