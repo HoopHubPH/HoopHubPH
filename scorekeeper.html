@@ -1432,9 +1432,112 @@ nav{
     z-index:80;
 }
 
+.quick-player-picker{
+    grid-column:1 / -1;
+    grid-row:1;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:5px;
+    min-width:0;
+}
+
+.quick-player-lane{
+    display:grid;
+    grid-template-columns:42px minmax(0,1fr);
+    gap:3px;
+    min-width:0;
+}
+
+.quick-player-team-label{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-width:0;
+    min-height:27px;
+    padding:2px;
+    border-radius:4px;
+    background:#ff6b00;
+    color:#fff;
+    font-size:7px;
+    font-weight:900;
+    letter-spacing:.4px;
+}
+
+.quick-player-lane.away .quick-player-team-label{
+    background:#111;
+}
+
+.quick-player-buttons{
+    display:grid;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:3px;
+    min-width:0;
+}
+
+.quick-player-chip{
+    min-width:0;
+    min-height:27px;
+    padding:3px 4px;
+    overflow:hidden;
+    border:1px solid #ddd;
+    border-radius:4px;
+    background:#fafafa;
+    color:#222;
+    font-size:8px;
+    font-weight:900;
+    line-height:1;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    cursor:pointer;
+}
+
+.quick-player-chip.home{
+    border-color:#ffc69e;
+    background:#fff8f2;
+}
+
+.quick-player-chip.away{
+    border-color:#bbb;
+}
+
+.quick-player-chip:hover,
+.quick-player-chip.selected{
+    border-color:#ff6b00;
+    background:#ff6b00;
+    color:#fff;
+}
+
+.quick-player-chip.selected{
+    box-shadow:inset 0 0 0 1px #fff,
+               0 0 0 1px #ff6b00;
+}
+
+.quick-player-chip:focus-visible{
+    outline:2px solid #111;
+    outline-offset:1px;
+}
+
+.quick-player-chip:disabled{
+    opacity:.45;
+    cursor:not-allowed;
+}
+
+.quick-player-empty{
+    grid-column:1 / -1;
+    display:flex;
+    align-items:center;
+    min-height:27px;
+    padding:3px 6px;
+    border:1px dashed #ccc;
+    border-radius:4px;
+    color:#777;
+    font-size:8px;
+    font-weight:bold;
+}
+
 .hybrid-action-panel .easy-selected-player{
     grid-column:1;
-    grid-row:1;
+    grid-row:2;
     min-height:36px;
     padding:5px 7px;
     border-radius:5px;
@@ -1455,7 +1558,7 @@ nav{
 
 .hybrid-action-panel .easy-context-row{
     grid-column:2;
-    grid-row:1;
+    grid-row:2;
     margin-top:0;
     align-content:center;
 }
@@ -1468,7 +1571,7 @@ nav{
 
 .hybrid-actions-layout{
     grid-column:1 / -1;
-    grid-row:2;
+    grid-row:3;
     display:grid;
     grid-template-columns:.95fr .7fr 1.3fr;
     gap:5px;
@@ -1501,7 +1604,7 @@ nav{
 
 .hybrid-action-panel #easyUndoButton{
     grid-column:3;
-    grid-row:1;
+    grid-row:2;
     min-height:36px;
     margin-top:0;
     padding:4px;
@@ -1510,7 +1613,7 @@ nav{
 
 .hybrid-action-panel .easy-action-feedback{
     grid-column:1 / -1;
-    grid-row:3;
+    grid-row:4;
     min-height:10px;
     margin-top:0;
     font-size:8px;
@@ -1741,21 +1844,21 @@ nav{
 
     .hybrid-action-panel .easy-selected-player{
         grid-column:1;
-        grid-row:1;
+        grid-row:2;
     }
 
     .hybrid-action-panel #easyUndoButton{
         grid-column:2;
-        grid-row:1;
+        grid-row:2;
     }
 
     .hybrid-action-panel .easy-context-row{
         grid-column:1 / -1;
-        grid-row:2;
+        grid-row:3;
     }
 
     .hybrid-actions-layout{
-        grid-row:3;
+        grid-row:4;
         grid-template-columns:1fr 1fr;
     }
 
@@ -1764,7 +1867,7 @@ nav{
     }
 
     .hybrid-action-panel .easy-action-feedback{
-        grid-row:4;
+        grid-row:5;
     }
 }
 
@@ -1775,6 +1878,10 @@ nav{
 
     .hybrid-actions-layout .easy-action-grid.other-stats{
         grid-template-columns:repeat(4,minmax(0,1fr));
+    }
+
+    .quick-player-picker{
+        grid-template-columns:1fr;
     }
 }
 
@@ -1800,6 +1907,17 @@ nav{
 }
 
 @media(pointer:coarse){
+    .quick-player-team-label,
+    .quick-player-chip,
+    .quick-player-empty{
+        min-height:34px;
+    }
+
+    .quick-player-chip{
+        font-size:9px;
+        touch-action:manipulation;
+    }
+
     .hybrid-actions-layout .easy-action-button{
         min-height:36px;
         font-size:9px;
@@ -2122,10 +2240,16 @@ LOG OUT
 <div class="hybrid-scorekeeper">
 
 <section class="easy-action-panel hybrid-action-panel">
+<div
+    id="quickPlayerPicker"
+    class="quick-player-picker"
+    aria-label="Select an on-court player"
+></div>
+
 <div class="easy-selected-player">
 <div>
-<div class="easy-selected-label">SELECTED PLAYER</div>
-<div id="easySelectedPlayerName" class="easy-selected-name">Click an on-court player row</div>
+<div class="easy-selected-label">1 · SELECTED PLAYER</div>
+<div id="easySelectedPlayerName" class="easy-selected-name">Tap a player above</div>
 </div>
 <div id="easySelectedPlayerPoints" class="easy-selected-stat">—</div>
 </div>
@@ -2144,7 +2268,7 @@ LOG OUT
 
 <div class="hybrid-actions-layout">
 <div class="easy-action-group">
-<div class="easy-action-title">MADE SHOT</div>
+<div class="easy-action-title">2 · MADE SHOT</div>
 <div class="easy-action-grid">
 <button type="button" class="easy-action-button paint" data-easy-action onclick="easyRecordScore('two_pt_made',true)">PAINT<br>+2</button>
 <button type="button" class="easy-action-button primary" data-easy-action onclick="easyRecordScore('two_pt_made',false)">2PT<br>+2</button>
@@ -2154,7 +2278,7 @@ LOG OUT
 </div>
 
 <div class="easy-action-group">
-<div class="easy-action-title">MISSED SHOT</div>
+<div class="easy-action-title">2 · MISSED SHOT</div>
 <div class="easy-action-grid secondary">
 <button type="button" class="easy-action-button miss" data-easy-action onclick="easyRecordStat('two_pt_attempted')">2PT MISS</button>
 <button type="button" class="easy-action-button miss" data-easy-action onclick="easyRecordStat('three_pt_attempted')">3PT MISS</button>
@@ -2163,7 +2287,7 @@ LOG OUT
 </div>
 
 <div class="easy-action-group">
-<div class="easy-action-title">OTHER STAT</div>
+<div class="easy-action-title">2 · OTHER STAT</div>
 <div class="easy-action-grid other-stats">
 <button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('offensive_rebounds')">OREB</button>
 <button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('defensive_rebounds')">DREB</button>
@@ -2184,7 +2308,7 @@ LOG OUT
 >UNDO LAST STAT</button>
 
 <div id="easyActionFeedback" class="easy-action-feedback" aria-live="polite">
-Click or tap an on-court player row to begin. Hover or tap a player name for the stats bubble.
+Tap an on-court player above, then tap the stat. You can still select players from the full tables.
 </div>
 </section>
 
@@ -5072,6 +5196,14 @@ function setEasyActionAvailability(){
             isCurrentGameFinal();
     });
 
+    document.querySelectorAll(
+        ".quick-player-chip"
+    ).forEach(button=>{
+        button.disabled=
+            easyActionInFlight||
+            isCurrentGameFinal();
+    });
+
     const undoButton=
         document.getElementById(
             "easyUndoButton"
@@ -5204,7 +5336,7 @@ function renderEasySelectedPlayer(){
     ){
         easySelectedPlayerId=null;
         nameElement.textContent=
-            "Click an on-court player row";
+            "Tap a player above";
         pointsElement.textContent="—";
         setEasyActionAvailability();
         return;
@@ -5223,11 +5355,137 @@ function renderEasySelectedPlayer(){
 }
 
 
+function getQuickPlayerLabel(player){
+
+    const shortName=String(
+        player.last_name||
+        player.first_name||
+        "Player"
+    ).trim();
+
+    return "#"+
+        (player.jersey_number??"—")+
+        " "+
+        shortName;
+}
+
+
+function renderQuickPlayerPicker(){
+
+    const picker=
+        document.getElementById(
+            "quickPlayerPicker"
+        );
+
+    if(!picker){
+        return;
+    }
+
+    picker.innerHTML="";
+
+    for(const team of ["home","away"]){
+
+        const lane=
+            document.createElement("div");
+
+        lane.className=
+            "quick-player-lane "+team;
+
+        const teamLabel=
+            document.createElement("div");
+
+        teamLabel.className=
+            "quick-player-team-label";
+
+        teamLabel.textContent=
+            team.toUpperCase();
+
+        const teamName=
+            currentGame
+            ?(
+                team==="home"
+                ?currentGame.home_team
+                :currentGame.away_team
+            )
+            :null;
+
+        teamLabel.title=
+            teamName||teamLabel.textContent;
+
+        const buttons=
+            document.createElement("div");
+
+        buttons.className=
+            "quick-player-buttons";
+
+        const onCourt=
+            (teamPlayersMap[team]||[])
+            .filter(player=>
+                playerOnCourt[player.id]===true
+            );
+
+        if(!onCourt.length){
+
+            const empty=
+                document.createElement("div");
+
+            empty.className=
+                "quick-player-empty";
+
+            empty.textContent=
+                "No player on court";
+
+            buttons.appendChild(empty);
+        }
+        else{
+
+            for(const player of onCourt){
+
+                const button=
+                    document.createElement("button");
+
+                const selected=
+                    easySelectedPlayerId===player.id;
+
+                button.type="button";
+                button.className=
+                    "quick-player-chip "+
+                    team+
+                    (selected?" selected":"");
+
+                button.textContent=
+                    getQuickPlayerLabel(player);
+
+                button.title=
+                    "Select "+
+                    getEasyPlayerName(player);
+
+                button.setAttribute(
+                    "aria-pressed",
+                    String(selected)
+                );
+
+                button.onclick=()=>
+                    selectEasyPlayer(player.id);
+
+                buttons.appendChild(button);
+            }
+        }
+
+        lane.appendChild(teamLabel);
+        lane.appendChild(buttons);
+        picker.appendChild(lane);
+    }
+}
+
+
 function renderEasyScorekeeper(){
 
     renderEasyTeam("home");
     renderEasyTeam("away");
     renderEasySelectedPlayer();
+    renderQuickPlayerPicker();
+    setEasyActionAvailability();
 }
 
 
