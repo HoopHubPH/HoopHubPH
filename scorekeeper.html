@@ -904,6 +904,75 @@ nav{
     overflow:auto;
 }
 
+.scoring-breakdown-panel{
+    background:#fff;
+    border:1px solid #eee;
+    border-radius:8px;
+    box-shadow:0 2px 5px rgba(0,0,0,.06);
+    margin-bottom:8px;
+    padding:10px;
+}
+
+.scoring-breakdown-panel h2{
+    font-size:13px;
+    margin-bottom:7px;
+}
+
+.scoring-tag-help{
+    color:#666;
+    font-size:10px;
+    margin-bottom:7px;
+}
+
+.scoring-tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-bottom:9px;
+}
+
+.scoring-tag{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    padding:6px 8px;
+    border:1px solid #ddd;
+    border-radius:5px;
+    background:#fafafa;
+    font-size:10px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.scoring-tag:has(input:checked){
+    border-color:#ff6b00;
+    background:#fff3e8;
+    color:#c44f00;
+}
+
+.team-breakdown-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:10px;
+}
+
+.team-breakdown-table th,
+.team-breakdown-table td{
+    padding:6px;
+    border:1px solid #eee;
+    text-align:center;
+}
+
+.team-breakdown-table th:first-child,
+.team-breakdown-table td:first-child{
+    text-align:left;
+}
+
+.team-breakdown-value{
+    font-weight:800;
+    color:#ff6b00;
+}
+
 /* Hide scorekeeper control buttons inside the preview */
 .team-stats-preview button{
     display:none!important;
@@ -1194,6 +1263,63 @@ LOG OUT
 
 </div>
 
+<div class="scoring-breakdown-panel">
+<h2>SCORING BREAKDOWN — TAG THE NEXT MADE BASKET</h2>
+<div class="scoring-tag-help">
+Select every category that applies, then press M+ beside the scorer. Tags clear after the made basket is recorded.
+</div>
+
+<div class="scoring-tags">
+<label class="scoring-tag">
+<input type="checkbox" id="tagPaint">
+POINTS IN THE PAINT
+</label>
+
+<label class="scoring-tag">
+<input type="checkbox" id="tagFastBreak">
+FAST BREAK
+</label>
+
+<label class="scoring-tag">
+<input type="checkbox" id="tagOffTurnover">
+OFF TURNOVER
+</label>
+
+<label class="scoring-tag">
+<input type="checkbox" id="tagSecondChance">
+SECOND CHANCE
+</label>
+</div>
+
+<table class="team-breakdown-table">
+<thead>
+<tr>
+<th>TEAM</th>
+<th>PAINT</th>
+<th>FAST BREAK</th>
+<th>OFF TO</th>
+<th>2ND CHANCE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td id="breakdownHomeName">Home Team</td>
+<td class="team-breakdown-value" id="homePaintPoints">0</td>
+<td class="team-breakdown-value" id="homeFastBreakPoints">0</td>
+<td class="team-breakdown-value" id="homeOffTurnoverPoints">0</td>
+<td class="team-breakdown-value" id="homeSecondChancePoints">0</td>
+</tr>
+<tr>
+<td id="breakdownAwayName">Away Team</td>
+<td class="team-breakdown-value" id="awayPaintPoints">0</td>
+<td class="team-breakdown-value" id="awayFastBreakPoints">0</td>
+<td class="team-breakdown-value" id="awayOffTurnoverPoints">0</td>
+<td class="team-breakdown-value" id="awaySecondChancePoints">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+
 <div class="controls">
 
 <h2>PLAYER STATS</h2>
@@ -1206,7 +1332,7 @@ LOG OUT
 
 <h2 id="homePlayersTitle">Home Players</h2>
 
-<button<button
+<button
     type="button"
     class="print-icon"
     onclick="printTeamStats('home')"
@@ -1539,6 +1665,11 @@ let playerCourtOrder={};
 let teamPlayersMap={};
 let teamContainerMap={};
 let teamExpandedMap={};
+let teamIdMap={};
+let scoringBreakdownTotals={
+    home:null,
+    away:null
+};
 
 let clockSeconds=600;
 let clockInterval=null;
@@ -2455,6 +2586,18 @@ async function loadGame(){
         "Away Team";
 
     document.getElementById(
+        "breakdownHomeName"
+    ).textContent=
+        data.home_team||
+        "Home Team";
+
+    document.getElementById(
+        "breakdownAwayName"
+    ).textContent=
+        data.away_team||
+        "Away Team";
+
+    document.getElementById(
         "homeScore"
     ).textContent=
         data.home_score||0;
@@ -2491,6 +2634,7 @@ async function loadGame(){
     teamPlayersMap={};
     teamContainerMap={};
     teamExpandedMap={};
+    teamIdMap={};
 
     playerMinuteBaseSeconds={};
     playerMinuteLastClockSeconds={};
@@ -2510,6 +2654,8 @@ async function loadGame(){
     await loadPersistedClock();
 
     await loadTeamPlayers();
+
+    await loadScoringBreakdown();
 
     setActivePeriod(
         data.period
@@ -2676,6 +2822,8 @@ async function loadTeamPlayers(){
 
     if(homeTeam){
 
+        teamIdMap.home=homeTeam.id;
+
         document.getElementById(
             "homePlayersTitle"
         ).textContent=
@@ -2690,6 +2838,8 @@ async function loadTeamPlayers(){
 
 
     if(awayTeam){
+
+        teamIdMap.away=awayTeam.id;
 
         document.getElementById(
             "awayPlayersTitle"
@@ -3431,6 +3581,244 @@ async function saveStatDirect(
 
 
 /* =========================================================
+   SCORING BREAKDOWN EVENTS
+   ========================================================= */
+
+function getSelectedScoringTags(){
+
+    return {
+        is_paint:
+            document.getElementById("tagPaint").checked,
+
+        is_fast_break:
+            document.getElementById("tagFastBreak").checked,
+
+        is_off_turnover:
+            document.getElementById("tagOffTurnover").checked,
+
+        is_second_chance:
+            document.getElementById("tagSecondChance").checked
+    };
+}
+
+
+function clearSelectedScoringTags(){
+
+    [
+        "tagPaint",
+        "tagFastBreak",
+        "tagOffTurnover",
+        "tagSecondChance"
+    ].forEach(id=>{
+
+        const checkbox=
+            document.getElementById(id);
+
+        if(checkbox){
+            checkbox.checked=false;
+        }
+    });
+}
+
+
+function emptyBreakdownTotals(){
+
+    return {
+        paint:0,
+        fastBreak:0,
+        offTurnover:0,
+        secondChance:0
+    };
+}
+
+
+function displayScoringBreakdown(home,away){
+
+    scoringBreakdownTotals={home,away};
+
+    document.getElementById("homePaintPoints").textContent=home.paint;
+    document.getElementById("homeFastBreakPoints").textContent=home.fastBreak;
+    document.getElementById("homeOffTurnoverPoints").textContent=home.offTurnover;
+    document.getElementById("homeSecondChancePoints").textContent=home.secondChance;
+
+    document.getElementById("awayPaintPoints").textContent=away.paint;
+    document.getElementById("awayFastBreakPoints").textContent=away.fastBreak;
+    document.getElementById("awayOffTurnoverPoints").textContent=away.offTurnover;
+    document.getElementById("awaySecondChancePoints").textContent=away.secondChance;
+}
+
+
+async function loadScoringBreakdown(){
+
+    const home=emptyBreakdownTotals();
+    const away=emptyBreakdownTotals();
+
+    if(!currentGame){
+        displayScoringBreakdown(home,away);
+        return;
+    }
+
+    const {
+        data,
+        error
+    }=
+    await supabaseClient
+    .from("scoring_breakdown_events")
+    .select(
+        "team_id,points,is_paint,is_fast_break,is_off_turnover,is_second_chance"
+    )
+    .eq("game_id",currentGame.id);
+
+    if(error){
+        console.error("Scoring breakdown load error:",error);
+        showStatus("Unable to load the scoring breakdown.");
+        displayScoringBreakdown(home,away);
+        return;
+    }
+
+    (data||[]).forEach(event=>{
+
+        const side=
+            event.team_id===teamIdMap.home
+            ?home
+            :event.team_id===teamIdMap.away
+            ?away
+            :null;
+
+        if(!side){
+            return;
+        }
+
+        const points=Number(event.points||0);
+
+        if(event.is_paint){
+            side.paint+=points;
+        }
+
+        if(event.is_fast_break){
+            side.fastBreak+=points;
+        }
+
+        if(event.is_off_turnover){
+            side.offTurnover+=points;
+        }
+
+        if(event.is_second_chance){
+            side.secondChance+=points;
+        }
+    });
+
+    displayScoringBreakdown(home,away);
+}
+
+
+async function recordScoringBreakdown(
+    playerId,
+    team,
+    points,
+    shotType,
+    selectedTags
+){
+
+    const teamId=teamIdMap[team];
+
+    if(!currentGame || !teamId){
+        showStatus("Unable to identify the scoring team.");
+        return false;
+    }
+
+    const tags=selectedTags||getSelectedScoringTags();
+
+    const {
+        error
+    }=
+    await supabaseClient
+    .from("scoring_breakdown_events")
+    .insert({
+        game_id:currentGame.id,
+        team_id:teamId,
+        player_id:playerId,
+        points:points,
+        shot_type:shotType,
+        period:currentGame.period||null,
+        game_clock_seconds:clockSeconds,
+        is_paint:
+            shotType==="2PT" &&
+            tags.is_paint===true,
+        is_fast_break:
+            tags.is_fast_break===true,
+        is_off_turnover:
+            tags.is_off_turnover===true,
+        is_second_chance:
+            tags.is_second_chance===true
+    });
+
+    if(error){
+        console.error("Scoring breakdown save error:",error);
+        showStatus(
+            "Basket counted, but its scoring category failed to save."
+        );
+        return false;
+    }
+
+    clearSelectedScoringTags();
+    await loadScoringBreakdown();
+    return true;
+}
+
+
+async function removeLatestScoringBreakdown(
+    playerId,
+    shotType
+){
+
+    if(!currentGame){
+        return;
+    }
+
+    const {
+        data:event,
+        error:findError
+    }=
+    await supabaseClient
+    .from("scoring_breakdown_events")
+    .select("id")
+    .eq("game_id",currentGame.id)
+    .eq("player_id",playerId)
+    .eq("shot_type",shotType)
+    .order("created_at",{ascending:false})
+    .limit(1)
+    .maybeSingle();
+
+    if(findError){
+        console.error("Scoring breakdown correction error:",findError);
+        showStatus("Unable to correct the scoring breakdown.");
+        return;
+    }
+
+    if(!event){
+        return;
+    }
+
+    const {
+        error:deleteError
+    }=
+    await supabaseClient
+    .from("scoring_breakdown_events")
+    .delete()
+    .eq("id",event.id);
+
+    if(deleteError){
+        console.error("Scoring breakdown delete error:",deleteError);
+        showStatus("Unable to correct the scoring breakdown.");
+        return;
+    }
+
+    await loadScoringBreakdown();
+}
+
+
+/* =========================================================
    PLAYER STAT UPDATES
    ========================================================= */
 
@@ -3531,6 +3919,20 @@ async function updatePlayerStat(
 
         const madeDelta=
             newMade-oldMade;
+
+
+        const shotType=
+            statKey==="two_pt_made"
+            ?"2PT"
+            :statKey==="three_pt_made"
+            ?"3PT"
+            :"FT";
+
+
+        const selectedScoringTags=
+            madeDelta>0
+            ?getSelectedScoringTags()
+            :null;
 
 
         stats[statKey]=
@@ -3725,6 +4127,29 @@ async function updatePlayerStat(
                         );
                     }
                 }
+            );
+        }
+
+
+        if(
+            team&&
+            madeDelta>0
+        ){
+
+            await recordScoringBreakdown(
+                playerId,
+                team,
+                points,
+                shotType,
+                selectedScoringTags
+            );
+
+        }
+        else if(madeDelta<0){
+
+            await removeLatestScoringBreakdown(
+                playerId,
+                shotType
             );
         }
 
@@ -6579,6 +7004,52 @@ addTeamTotalsRow(
     previewContent,
     allPlayers
 );
+
+    const breakdown=
+        scoringBreakdownTotals[team]||
+        emptyBreakdownTotals();
+
+    const breakdownTitle=
+        document.createElement("h3");
+
+    breakdownTitle.textContent=
+        "Scoring Breakdown";
+
+    breakdownTitle.style.marginTop="14px";
+    breakdownTitle.style.marginBottom="6px";
+
+    const breakdownTable=
+        document.createElement("table");
+
+    breakdownTable.className=
+        "team-breakdown-table";
+
+    breakdownTable.innerHTML=`
+        <thead>
+            <tr>
+                <th>POINTS IN PAINT</th>
+                <th>FAST BREAK</th>
+                <th>OFF TURNOVERS</th>
+                <th>SECOND CHANCE</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>${breakdown.paint}</td>
+                <td>${breakdown.fastBreak}</td>
+                <td>${breakdown.offTurnover}</td>
+                <td>${breakdown.secondChance}</td>
+            </tr>
+        </tbody>
+    `;
+
+    previewContent.appendChild(
+        breakdownTitle
+    );
+
+    previewContent.appendChild(
+        breakdownTable
+    );
 
     /*
     Restore the normal scorekeeper display.
