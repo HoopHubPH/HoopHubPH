@@ -438,6 +438,13 @@
       letter-spacing: .6px;
       text-transform: uppercase;
     }
+    .status-badge.pending{color:var(--warning);background:var(--warning-soft)}
+    .status-badge.rejected{color:#b42318;background:#fff4f2}
+    .review-actions{display:flex;gap:6px;flex-wrap:wrap}
+    .review-button{min-height:29px;padding:0 9px;border-radius:6px;font-size:8px;font-weight:900;cursor:pointer}
+    .review-button.approve{color:#067647;background:#ecfdf3;border:1px solid #abefc6}
+    .review-button.reject{color:#b42318;background:#fff4f2;border:1px solid #fecdca}
+    .review-button:disabled{opacity:.5;cursor:wait}
 
     .form-input {
       width: 100%;
@@ -630,6 +637,7 @@
       </a>
       <a class="nav-link" href="#modules"><span class="nav-icon">SE</span> Seasons <span class="coming">Next</span></a>
       <a class="nav-link" href="#teamsPanel"><span class="nav-icon">TM</span> Teams</a>
+      <a class="nav-link" href="#rosterApprovalPanel"><span class="nav-icon">RA</span> Roster Approval</a>
       <a class="nav-link" href="#schedulePanel"><span class="nav-icon">SC</span> Schedule</a>
       <a class="nav-link" href="#modules"><span class="nav-icon">ST</span> Standings <span class="coming">Next</span></a>
 
@@ -694,13 +702,19 @@
                   <th>Location</th>
                   <th>Registration</th>
                   <th>Updated</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="teamTableBody">
-                <tr><td class="empty-state" colspan="4">Loading teams...</td></tr>
+                <tr><td class="empty-state" colspan="5">Loading teams...</td></tr>
               </tbody>
             </table>
           </div>
+        </section>
+
+        <section id="rosterApprovalPanel" class="panel">
+          <header class="panel-header"><div><h2>Roster Approval</h2><p>Review player eligibility for the selected league.</p></div></header>
+          <div class="table-wrap"><table><thead><tr><th>Team</th><th>Player</th><th>Jersey</th><th>Position</th><th>Status</th><th>Actions</th></tr></thead><tbody id="rosterReviewBody"><tr><td class="empty-state" colspan="6">Loading roster reviews...</td></tr></tbody></table></div>
         </section>
 
         <section id="schedulePanel" class="panel">
@@ -986,7 +1000,8 @@
             Ask the Super Admin to assign an active league to this commissioner account.
           </div>
         `;
-        document.getElementById("teamTableBody").innerHTML = '<tr><td class="empty-state" colspan="4">No assigned league.</td></tr>';
+        document.getElementById("teamTableBody").innerHTML = '<tr><td class="empty-state" colspan="5">No assigned league.</td></tr>';
+        document.getElementById("rosterReviewBody").innerHTML = '<tr><td class="empty-state" colspan="6">No assigned league.</td></tr>';
         document.getElementById("approvedTeamCount").textContent = "0";
         document.getElementById("pendingTeamCount").textContent = "0";
         renderScheduling(null, []);
@@ -1016,14 +1031,62 @@
               <tr>
                 <td><strong>${escapeHtml(team.name || "Unknown team")}</strong></td>
                 <td>${escapeHtml(team.location || "—")}</td>
-                <td><span class="status-badge">${escapeHtml(registration.registration_status)}</span></td>
+                <td><span class="status-badge ${escapeHtml(registration.registration_status)}">${escapeHtml(registration.registration_status)}</span></td>
                 <td>${escapeHtml(formatDate(registration.updated_at || registration.registered_at))}</td>
+                <td><div class="review-actions">
+                  ${registration.registration_status !== "approved" ? `<button class="review-button approve" type="button" onclick="reviewTeamRegistration('${league.id}','${registration.team_id}','approved',this)">APPROVE</button>` : ""}
+                  ${registration.registration_status !== "rejected" ? `<button class="review-button reject" type="button" onclick="reviewTeamRegistration('${league.id}','${registration.team_id}','rejected',this)">REJECT</button>` : ""}
+                </div></td>
               </tr>
             `;
           }).join("")
-        : '<tr><td class="empty-state" colspan="4">No teams are registered in this league yet.</td></tr>';
+        : '<tr><td class="empty-state" colspan="5">No teams are registered in this league yet.</td></tr>';
 
       renderScheduling(league, approved);
+      loadRosterReviews(league.id);
+    }
+
+    async function loadRosterReviews(leagueId) {
+      const body = document.getElementById("rosterReviewBody");
+      body.innerHTML = '<tr><td class="empty-state" colspan="6">Loading roster reviews...</td></tr>';
+      const { data, error } = await supabaseClient.rpc("get_league_roster_reviews", { p_league_id: leagueId });
+      if (leagueSelect.value !== leagueId) return;
+      if (error) {
+        console.error("Unable to load roster reviews:", error);
+        body.innerHTML = `<tr><td class="empty-state" colspan="6">Unable to load roster reviews: ${escapeHtml(error.message)}</td></tr>`;
+        return;
+      }
+      body.innerHTML = data?.length ? data.map(row => {
+        const playerName = `${row.first_name || ""} ${row.last_name || ""}`.trim() || "Unnamed player";
+        return `<tr>
+          <td><strong>${escapeHtml(row.team_name)}</strong></td><td>${escapeHtml(playerName)}</td>
+          <td>${row.jersey_number == null ? "—" : "#" + escapeHtml(row.jersey_number)}</td>
+          <td>${escapeHtml(row.player_position || "—")}</td>
+          <td><span class="status-badge ${escapeHtml(row.approval_status)}">${escapeHtml(row.approval_status)}</span></td>
+          <td><div class="review-actions">
+            ${row.approval_status !== "approved" ? `<button class="review-button approve" type="button" onclick="reviewRosterPlayer('${leagueId}','${row.player_id}','approved',this)">APPROVE</button>` : ""}
+            ${row.approval_status !== "rejected" ? `<button class="review-button reject" type="button" onclick="reviewRosterPlayer('${leagueId}','${row.player_id}','rejected',this)">REJECT</button>` : ""}
+          </div></td>
+        </tr>`;
+      }).join("") : '<tr><td class="empty-state" colspan="6">No players are assigned to registered teams yet.</td></tr>';
+    }
+
+    async function reviewTeamRegistration(leagueId, teamId, decision, button) {
+      if (!window.confirm(`${decision === "approved" ? "Approve" : "Reject"} this team registration?`)) return;
+      button.disabled = true;
+      const { error } = await supabaseClient.rpc("review_league_team", { p_league_id: leagueId, p_team_id: teamId, p_decision: decision });
+      if (error) { button.disabled = false; window.alert("Unable to review team: " + error.message); return; }
+      const registration = leagueTeams.find(item => item.league_id === leagueId && item.team_id === teamId);
+      if (registration) { registration.registration_status = decision; registration.updated_at = new Date().toISOString(); }
+      renderWorkspace();
+    }
+
+    async function reviewRosterPlayer(leagueId, playerId, decision, button) {
+      if (!window.confirm(`${decision === "approved" ? "Approve" : "Reject"} this player for the selected league?`)) return;
+      button.disabled = true;
+      const { error } = await supabaseClient.rpc("review_league_player", { p_league_id: leagueId, p_player_id: playerId, p_decision: decision });
+      if (error) { button.disabled = false; window.alert("Unable to review player: " + error.message); return; }
+      await loadRosterReviews(leagueId);
     }
 
     function renderScheduling(league, approvedRegistrations) {
