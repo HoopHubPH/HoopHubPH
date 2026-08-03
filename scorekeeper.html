@@ -76,15 +76,15 @@ nav{
 
 .container{
     width:100%;
-    padding:8px;
+    padding:5px;
 }
 
 .game-selector{
     background:#fff;
-    padding:8px 12px;
+    padding:5px 8px;
     border-radius:6px;
     box-shadow:0 2px 5px rgba(0,0,0,.06);
-    margin-bottom:8px;
+    margin-bottom:5px;
     display:flex;
     align-items:center;
     gap:8px;
@@ -126,17 +126,17 @@ nav{
     background:#fff;
     border-radius:8px;
     box-shadow:0 2px 5px rgba(0,0,0,.06);
-    margin-bottom:8px;
-    padding:10px;
+    margin-bottom:5px;
+    padding:6px;
     display:grid;
     grid-template-columns:1fr 1.2fr 1fr;
     align-items:center;
-    gap:10px;
+    gap:6px;
 }
 
 .team-control{
     background:#fafafa;
-    padding:10px;
+    padding:6px;
     border-radius:6px;
     text-align:center;
     border:1px solid #eee;
@@ -147,7 +147,7 @@ nav{
 }
 
 .score{
-    font-size:32px;
+    font-size:28px;
     font-weight:bold;
     color:#ff6b00;
     margin:2px 0 5px;
@@ -155,7 +155,7 @@ nav{
 
 .clock-area{
     background:#fafafa;
-    padding:8px;
+    padding:6px;
     border-radius:6px;
     text-align:center;
     border:1px solid #eee;
@@ -1418,52 +1418,224 @@ nav{
 
 .hybrid-scorekeeper{
     display:grid;
-    gap:8px;
-    margin-bottom:8px;
+    gap:5px;
+    margin-bottom:5px;
 }
 
 .hybrid-action-panel{
+    display:grid;
+    grid-template-columns:minmax(175px,.8fr) minmax(260px,1.5fr) 105px;
+    gap:5px 6px;
+    padding:6px;
     position:sticky;
-    top:4px;
+    top:2px;
     z-index:80;
 }
 
+.hybrid-action-panel .easy-selected-player{
+    grid-column:1;
+    grid-row:1;
+    min-height:36px;
+    padding:5px 7px;
+    border-radius:5px;
+}
+
+.hybrid-action-panel .easy-selected-label{
+    font-size:7px;
+}
+
+.hybrid-action-panel .easy-selected-name{
+    margin-top:1px;
+    font-size:12px;
+}
+
+.hybrid-action-panel .easy-selected-stat{
+    font-size:15px;
+}
+
+.hybrid-action-panel .easy-context-row{
+    grid-column:2;
+    grid-row:1;
+    margin-top:0;
+    align-content:center;
+}
+
+.hybrid-action-panel .quick-score-context,
+.hybrid-action-panel .quick-fast-break-button{
+    padding:4px 6px;
+    font-size:8px;
+}
+
 .hybrid-actions-layout{
+    grid-column:1 / -1;
+    grid-row:2;
     display:grid;
-    grid-template-columns:1.05fr .8fr 1.4fr;
-    gap:8px;
+    grid-template-columns:.95fr .7fr 1.3fr;
+    gap:5px;
 }
 
 .hybrid-actions-layout .easy-action-group{
-    margin-top:8px;
+    margin-top:0;
+}
+
+.hybrid-actions-layout .easy-action-title{
+    margin-bottom:2px;
+    font-size:7px;
 }
 
 .hybrid-actions-layout .easy-action-button{
-    min-height:34px;
+    min-height:27px;
+    padding:3px 2px;
+    border-radius:4px;
+    font-size:8px;
+    line-height:1.05;
+}
+
+.hybrid-actions-layout .easy-action-grid{
+    gap:3px;
 }
 
 .hybrid-actions-layout .easy-action-grid.other-stats{
-    grid-template-columns:repeat(4,minmax(0,1fr));
+    grid-template-columns:repeat(7,minmax(0,1fr));
+}
+
+.hybrid-action-panel #easyUndoButton{
+    grid-column:3;
+    grid-row:1;
+    min-height:36px;
+    margin-top:0;
+    padding:4px;
+    font-size:8px;
+}
+
+.hybrid-action-panel .easy-action-feedback{
+    grid-column:1 / -1;
+    grid-row:3;
+    min-height:10px;
+    margin-top:0;
+    font-size:8px;
+    line-height:1.1;
 }
 
 .hybrid-team-stats{
+    position:relative;
     background:#fff;
     border:1px solid #e5e5e5;
     border-radius:8px;
     box-shadow:0 2px 5px rgba(0,0,0,.06);
-    padding:9px;
+    padding:5px;
 }
 
 .hybrid-team-stats + .hybrid-team-stats{
-    margin-top:8px;
+    margin-top:0;
+}
+
+.hybrid-team-stats .easy-team-header{
+    min-height:22px;
+    padding-bottom:3px;
+    margin-bottom:3px;
+    border-bottom-width:1px;
+}
+
+.hybrid-team-stats .easy-team-header h2{
+    font-size:10px;
+}
+
+.hybrid-team-stats .print-icon{
+    top:1px;
+    width:20px;
+    height:20px;
+    font-size:12px;
 }
 
 .hybrid-team-stats .table-scroll{
     max-height:none;
+    scrollbar-width:thin;
 }
 
 .hybrid-team-stats .player-table{
-    min-width:1080px;
+    min-width:900px;
+}
+
+.hybrid-team-stats .player-table th{
+    padding:2px 1px;
+    font-size:7px;
+}
+
+.hybrid-team-stats .player-table td{
+    padding:2px;
+    font-size:8px;
+}
+
+.hybrid-team-stats .col-number{
+    width:22px;
+}
+
+.hybrid-team-stats .col-player{
+    width:105px;
+}
+
+.hybrid-team-stats .col-min{
+    width:35px;
+}
+
+.hybrid-team-stats .col-stat{
+    width:32px;
+}
+
+.hybrid-team-stats .col-shot{
+    width:42px;
+}
+
+.hybrid-team-stats .col-plusminus{
+    width:45px;
+}
+
+.hybrid-team-stats .player-name,
+.hybrid-team-stats .stat-value{
+    font-size:9px;
+}
+
+.hybrid-team-stats .player-position{
+    display:none;
+}
+
+.hybrid-team-stats .sub-button{
+    padding:2px 3px;
+    margin-top:1px;
+    font-size:6.5px;
+}
+
+.hybrid-team-stats .player-table th.col-number{
+    left:0;
+    z-index:5;
+}
+
+.hybrid-team-stats .player-table th.col-player{
+    left:22px;
+    z-index:5;
+    box-shadow:2px 0 0 rgba(0,0,0,.08);
+}
+
+.hybrid-team-stats .player-table tr:not(.view-all-row) td:first-child,
+.hybrid-team-stats .player-table td.col-player{
+    position:sticky;
+    z-index:1;
+    background:#fff;
+}
+
+.hybrid-team-stats .player-table tr:not(.view-all-row) td:first-child{
+    left:0;
+}
+
+.hybrid-team-stats .player-table td.col-player{
+    left:22px;
+    box-shadow:2px 0 0 rgba(0,0,0,.08);
+}
+
+.hybrid-team-stats .player-table tr.on-court td:first-child,
+.hybrid-team-stats .player-table tr.on-court td.col-player{
+    background:#e8f5e9;
 }
 
 .hybrid-team-stats .stat-control-buttons,
@@ -1498,9 +1670,9 @@ nav{
 }
 
 .hybrid-instruction{
-    margin-bottom:6px;
+    margin-bottom:3px;
     color:#666;
-    font-size:9px;
+    font-size:8px;
     font-weight:bold;
 }
 
@@ -1519,16 +1691,20 @@ nav{
         grid-row:1 / span 2;
     }
 
-    .hybrid-actions-layout{
-        grid-template-columns:1fr 1fr;
+    .hybrid-action-panel{
+        grid-template-columns:minmax(160px,.8fr) minmax(230px,1.45fr) 90px;
     }
 
-    .hybrid-actions-layout .easy-action-group:last-child{
-        grid-column:1 / -1;
+    .hybrid-actions-layout{
+        grid-template-columns:.95fr .7fr 1.3fr;
+    }
+
+    .hybrid-team-stats .player-table{
+        min-width:880px;
     }
 }
 
-@media(max-width:620px){
+@media(max-width:760px){
     .easy-scorekeeper{
         grid-template-columns:1fr;
     }
@@ -1560,15 +1736,96 @@ nav{
     }
 
     .hybrid-action-panel{
-        position:static;
+        grid-template-columns:minmax(0,1fr) 95px;
+    }
+
+    .hybrid-action-panel .easy-selected-player{
+        grid-column:1;
+        grid-row:1;
+    }
+
+    .hybrid-action-panel #easyUndoButton{
+        grid-column:2;
+        grid-row:1;
+    }
+
+    .hybrid-action-panel .easy-context-row{
+        grid-column:1 / -1;
+        grid-row:2;
     }
 
     .hybrid-actions-layout{
-        grid-template-columns:1fr;
+        grid-row:3;
+        grid-template-columns:1fr 1fr;
     }
 
     .hybrid-actions-layout .easy-action-group:last-child{
-        grid-column:auto;
+        grid-column:1 / -1;
+    }
+
+    .hybrid-action-panel .easy-action-feedback{
+        grid-row:4;
+    }
+}
+
+@media(max-width:620px){
+    .hybrid-action-panel{
+        position:static;
+    }
+
+    .hybrid-actions-layout .easy-action-grid.other-stats{
+        grid-template-columns:repeat(4,minmax(0,1fr));
+    }
+}
+
+@media(max-height:800px){
+    header{
+        padding-top:6px;
+        padding-bottom:6px;
+    }
+
+    .hybrid-instruction{
+        display:none;
+    }
+
+    .easy-breakdown{
+        margin-bottom:5px;
+        padding:6px;
+    }
+
+    .game-footer-controls{
+        margin-top:5px;
+        padding:5px;
+    }
+}
+
+@media(pointer:coarse){
+    .hybrid-actions-layout .easy-action-button{
+        min-height:36px;
+        font-size:9px;
+        touch-action:manipulation;
+    }
+
+    .hybrid-action-panel #easyUndoButton{
+        min-height:40px;
+    }
+
+    .hybrid-team-stats .player-table td{
+        padding-top:4px;
+        padding-bottom:4px;
+    }
+
+    .hybrid-team-stats .sub-button{
+        min-height:24px;
+        padding-left:5px;
+        padding-right:5px;
+        touch-action:manipulation;
+    }
+
+    .view-all-button,
+    .quick-fast-break-button{
+        min-height:30px;
+        touch-action:manipulation;
     }
 }
 
@@ -1927,7 +2184,7 @@ LOG OUT
 >UNDO LAST STAT</button>
 
 <div id="easyActionFeedback" class="easy-action-feedback" aria-live="polite">
-Click an on-court player row to begin. Hover over a player name to view the stats bubble.
+Click or tap an on-court player row to begin. Hover or tap a player name for the stats bubble.
 </div>
 </section>
 
@@ -1942,7 +2199,7 @@ Click an on-court player row to begin. Hover over a player name to view the stat
     aria-label="Print Home Team Stats"
 >🖨️</button>
 </div>
-<div class="hybrid-instruction">All statistics remain visible. Click an on-court row to record the next action.</div>
+<div class="hybrid-instruction">Tap an on-court row to score • Swipe the table for every stat • VIEW ALL opens the bench.</div>
 <div id="homePlayersList"></div>
 </section>
 
@@ -1957,7 +2214,7 @@ Click an on-court player row to begin. Hover over a player name to view the stat
     aria-label="Print Away Team Stats"
 >🖨️</button>
 </div>
-<div class="hybrid-instruction">All statistics remain visible. Hover over a player name for career and current-game details.</div>
+<div class="hybrid-instruction">Tap a row to score • Hover or tap a player name for game and career stats.</div>
 <div id="awayPlayersList"></div>
 </section>
 
@@ -2685,6 +2942,37 @@ function handlePlayerLeave() {
     const popup = document.getElementById("nba-player-popup");
     popup.classList.remove("visible");
 }
+
+function handlePlayerTap(e, playerId) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const popup = document.getElementById("nba-player-popup");
+    const isAlreadyOpen =
+        hoveredPlayerId === playerId &&
+        popup.classList.contains("visible");
+
+    if (isAlreadyOpen) {
+        handlePlayerLeave();
+        return;
+    }
+
+    hoveredPlayerId = playerId;
+    updatePopupContent(playerId);
+    popup.classList.add("visible");
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    positionPopup({
+        clientX: Math.min(rect.right, window.innerWidth - 10),
+        clientY: rect.bottom
+    });
+}
+
+document.addEventListener("pointerdown", event => {
+    if (!event.target.closest(".player-name")) {
+        handlePlayerLeave();
+    }
+});
 
 function positionPopup(e) {
     const popup = document.getElementById("nba-player-popup");
@@ -3720,7 +4008,7 @@ async function loadPlayersForTeam(
         containerId;
 
     teamExpandedMap[team]=
-        true;
+        false;
 
 
     const {
@@ -6176,7 +6464,9 @@ ${escapeHTML(
 <span class="player-name"
     onmouseenter="handlePlayerHover(event, '${player.id}')"
     onmousemove="handlePlayerMove(event)"
-    onmouseleave="handlePlayerLeave()">
+    onmouseleave="handlePlayerLeave()"
+    onclick="handlePlayerTap(event, '${player.id}')"
+    title="Hover or tap for game and career stats">
 ${escapeHTML(
     (player.first_name||"")+
     " "+
