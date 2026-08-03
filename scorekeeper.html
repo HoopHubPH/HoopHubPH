@@ -1345,7 +1345,7 @@ LOG OUT
 
 <div class="game-selector">
 <h2>Game ID:</h2>
-<input type="number" id="gameId" value="1">
+<input type="number" id="gameId" value="" placeholder="Game ID">
 <button class="load-button" onclick="loadGame()">LOAD</button>
 </div>
 
@@ -1697,6 +1697,113 @@ async function redirectToLogin(signOutFirst=false){
 }
 
 
+function getScorekeeperGameStorageKey(){
+
+    return authenticatedUser
+        ?"hoophub_scorekeeper_game_id:"+
+            authenticatedUser.id
+        :null;
+}
+
+
+function restoreRememberedGameId(){
+
+    const input=
+        document.getElementById("gameId");
+
+    let rememberedId=null;
+
+    try{
+
+        const urlId=
+            Number(
+                new URLSearchParams(
+                    window.location.search
+                ).get("game_id")
+            );
+
+        const storageKey=
+            getScorekeeperGameStorageKey();
+
+        const storedId=
+            storageKey
+            ?Number(
+                localStorage.getItem(
+                    storageKey
+                )
+            )
+            :0;
+
+        rememberedId=
+            Number.isInteger(urlId)&&urlId>0
+            ?urlId
+            :Number.isInteger(storedId)&&storedId>0
+            ?storedId
+            :null;
+
+    }
+    catch(error){
+
+        console.warn(
+            "Unable to restore the previous Game ID:",
+            error
+        );
+    }
+
+    input.value=rememberedId||"";
+
+    return rememberedId;
+}
+
+
+function rememberLoadedGameId(gameId){
+
+    const normalizedId=Number(gameId);
+
+    if(
+        !Number.isInteger(normalizedId)||
+        normalizedId<=0
+    ){
+        return;
+    }
+
+    try{
+
+        const storageKey=
+            getScorekeeperGameStorageKey();
+
+        if(storageKey){
+            localStorage.setItem(
+                storageKey,
+                String(normalizedId)
+            );
+        }
+
+        const url=
+            new URL(window.location.href);
+
+        url.searchParams.set(
+            "game_id",
+            String(normalizedId)
+        );
+
+        window.history.replaceState(
+            {},
+            "",
+            url.toString()
+        );
+
+    }
+    catch(error){
+
+        console.warn(
+            "Unable to remember the current Game ID:",
+            error
+        );
+    }
+}
+
+
 async function initializeSecureScorekeeper(){
 
     try{
@@ -1763,18 +1870,31 @@ async function initializeSecureScorekeeper(){
                 "adminDashboardLink"
             );
 
+        const rememberedGameId=
+            restoreRememberedGameId();
+
         if(profile.role==="super_admin"){
-            await loadGame();
+
+            if(rememberedGameId){
+                await loadGame();
+            }
+            else{
+                showStatus(
+                    "Enter a Game ID to begin scorekeeping."
+                );
+            }
+
         }else{
             dashboardLink.style.display="none";
 
-            document.getElementById(
-                "gameId"
-            ).value="";
-
-            showStatus(
-                "Enter a Game ID assigned to your scorekeeper account."
-            );
+            if(rememberedGameId){
+                await loadGame();
+            }
+            else{
+                showStatus(
+                    "Enter a Game ID assigned to your scorekeeper account."
+                );
+            }
         }
 
     }catch(error){
@@ -2783,6 +2903,10 @@ async function loadGame(){
     }
 
     currentGame=data;
+
+    rememberLoadedGameId(
+        data.id
+    );
 
     document.getElementById(
         "homeTeam"
