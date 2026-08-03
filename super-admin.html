@@ -626,6 +626,10 @@
         <span class="nav-icon">LG</span>
         Leagues
       </a>
+      <a id="leagueManagementLink" class="nav-link" href="commissioner-dashboard.html">
+        <span class="nav-icon">LM</span>
+        League Management
+      </a>
       <a class="nav-link" href="tournaments.html">
         <span class="nav-icon">TR</span>
         Tournaments
@@ -848,6 +852,7 @@
     const menuButton = document.getElementById("menuButton");
     const sidebar = document.getElementById("sidebar");
     const sidebarOverlay = document.getElementById("sidebarOverlay");
+    const leagueManagementLink = document.getElementById("leagueManagementLink");
 
     function displayAccount(profile, user) {
       const emailName = user.email ? user.email.split("@")[0] : "Owner";
@@ -863,6 +868,36 @@
       }
 
       window.location.replace("login.html");
+    }
+
+    async function openLeagueManagement(event) {
+      event.preventDefault();
+
+      const { data: userData, error: userError } =
+        await supabaseClient.auth.getUser();
+
+      if (userError || !userData.user) {
+        await returnToLogin(false);
+        return;
+      }
+
+      const { data: profile, error: profileError } = await supabaseClient
+        .from("profiles")
+        .select("role, status")
+        .eq("id", userData.user.id)
+        .maybeSingle();
+
+      if (
+        profileError ||
+        !profile ||
+        profile.role !== "super_admin" ||
+        profile.status !== "active"
+      ) {
+        await returnToLogin(true);
+        return;
+      }
+
+      window.location.href = "commissioner-dashboard.html";
     }
 
     async function requireSuperAdmin() {
@@ -961,6 +996,7 @@
     document.querySelectorAll(".sidebar .nav-link").forEach(function (link) {
       link.addEventListener("click", closeSidebar);
     });
+    leagueManagementLink.addEventListener("click", openLeagueManagement);
 
     document.getElementById("accountManagementLink").addEventListener("click", function (event) {
       event.preventDefault();
