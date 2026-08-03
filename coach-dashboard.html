@@ -197,6 +197,14 @@
     .primary-button { min-height: 42px; padding: 0 18px; flex: 0 0 auto; color: #fff; background: var(--orange); border: 0; border-radius: 8px; cursor: pointer; }
     .primary-button:hover { background: var(--orange-dark); }
     .primary-button:disabled { opacity: .6; cursor: wait; }
+    .application-form { padding: 18px; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 13px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { color: var(--muted); font-size: 10px; font-weight: 900; text-transform: uppercase; }
+    .form-input { width: 100%; height: 42px; padding: 0 11px; color: var(--ink); background: #fff; border: 1px solid #d0d5dd; border-radius: 8px; }
+    .form-wide,.form-actions,.application-message { grid-column: 1/-1; }
+    .application-message { min-height: 20px; color: var(--muted); font-size: 12px; }
+    .application-message.success { color: var(--success); }
+    .application-message.error { color: #b42318; }
 
     .team-details { padding: 18px; display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
     .detail-box { padding: 13px; background: #fafafa; border: 1px solid var(--line); border-radius: 8px; }
@@ -234,6 +242,7 @@
       .control { width: 100%; min-width: 0; }
       .stats-grid, .team-details, .module-grid { grid-template-columns: 1fr; }
       .submission-body { align-items: stretch; flex-direction: column; }
+      .application-form { grid-template-columns: 1fr; }
     }
     /* Unified Hoop Hub PH typography */
     body, button, input, select, textarea { font-family: Arial, Helvetica, sans-serif; }
@@ -277,6 +286,7 @@
     <aside id="sidebar" class="sidebar">
       <p class="nav-label">Team Workspace</p>
       <a class="nav-link active" href="coach-dashboard.html"><span class="nav-icon">DB</span> Dashboard</a>
+      <a class="nav-link" href="#teamApplicationPanel"><span class="nav-icon">TA</span> Create Team</a>
       <a class="nav-link" href="#rosterPanel"><span class="nav-icon">RO</span> Team Roster</a>
       <a class="nav-link" href="#rosterSubmission"><span class="nav-icon">RS</span> Submit Roster</a>
       <a class="nav-link" href="add-player.html"><span class="nav-icon">AP</span> Add Player</a>
@@ -322,6 +332,22 @@
           <article class="stat-card"><span>Assigned Teams</span><strong id="teamCount">0</strong></article>
           <article class="stat-card"><span>Roster Players</span><strong id="playerCount">0</strong></article>
           <article class="stat-card"><span>Active Assignments</span><strong id="activeAssignmentCount">0</strong></article>
+        </section>
+
+        <section id="teamApplicationPanel" class="panel">
+          <header class="panel-header">
+            <div><h2>Create Team & Apply to a League</h2><p>Create a new team application for an open Hoop Hub PH league.</p></div>
+            <span class="status-badge pending">Coach Application</span>
+          </header>
+          <form id="teamApplicationForm" class="application-form">
+            <div class="form-group"><label for="newTeamName">Team Name</label><input id="newTeamName" class="form-input" type="text" minlength="3" maxlength="100" required placeholder="Example: Manila Kings"></div>
+            <div class="form-group"><label for="newTeamLocation">Team Location</label><input id="newTeamLocation" class="form-input" type="text" minlength="2" maxlength="120" required placeholder="Example: Manila"></div>
+            <div class="form-group form-wide"><label for="applicationLeagueSelect">League</label><select id="applicationLeagueSelect" class="form-input" required><option value="">Loading open leagues...</option></select></div>
+            <div class="form-group form-wide"><label for="newTeamLogoUrl">Logo URL (Optional)</label><input id="newTeamLogoUrl" class="form-input" type="url" maxlength="500" placeholder="https://example.com/team-logo.png"></div>
+            <div class="form-actions"><button id="submitTeamApplicationButton" class="primary-button" type="submit">Create Team & Submit Application</button></div>
+            <div id="teamApplicationMessage" class="application-message"></div>
+          </form>
+          <div class="table-wrap"><table><thead><tr><th>Team</th><th>League</th><th>Status</th><th>Submitted</th></tr></thead><tbody id="teamApplicationBody"><tr><td class="empty-state" colspan="4">Loading your applications...</td></tr></tbody></table></div>
         </section>
 
         <section class="panel">
@@ -373,6 +399,7 @@
     let teams = [];
     let leagues = [];
     let players = [];
+    let openApplicationLeagues = [];
 
     const authScreen = document.getElementById("authScreen");
     const appShell = document.getElementById("appShell");
@@ -419,7 +446,7 @@
         document.getElementById("headerRole").textContent = profile.role === "super_admin" ? "Super Admin Preview" : "Coach / Team Manager";
         document.getElementById("superAdminLink").hidden = profile.role !== "super_admin";
 
-        await loadWorkspace();
+        await Promise.all([loadWorkspace(), loadTeamApplicationData()]);
         authScreen.hidden = true;
         appShell.hidden = false;
       } catch (error) {
@@ -429,6 +456,10 @@
     }
 
     async function loadWorkspace() {
+      assignments = [];
+      teams = [];
+      leagues = [];
+      players = [];
       if (currentProfile.role === "super_admin") {
         const { data, error } = await supabaseClient
           .from("team_coaches")
@@ -471,6 +502,67 @@
 
       renderOptions();
       renderWorkspace();
+    }
+
+    async function loadTeamApplicationData() {
+      const leagueSelect = document.getElementById("applicationLeagueSelect");
+      const body = document.getElementById("teamApplicationBody");
+      const [leagueResult, applicationResult] = await Promise.all([
+        supabaseClient.rpc("get_open_leagues_for_team_application"),
+        supabaseClient.rpc("get_coach_team_applications")
+      ]);
+
+      if (leagueResult.error) {
+        leagueSelect.innerHTML = '<option value="">Unable to load open leagues</option>';
+      } else {
+        openApplicationLeagues = leagueResult.data || [];
+        leagueSelect.innerHTML = '<option value="">Select an open league</option>' + openApplicationLeagues.map(league =>
+          `<option value="${escapeHtml(league.league_id)}">${escapeHtml(league.league_name)} — ${escapeHtml(league.season || league.league_location || "Open")}</option>`
+        ).join("");
+      }
+
+      if (applicationResult.error) {
+        body.innerHTML = `<tr><td class="empty-state" colspan="4">Unable to load applications: ${escapeHtml(applicationResult.error.message)}</td></tr>`;
+        return;
+      }
+
+      const applications = applicationResult.data || [];
+      body.innerHTML = applications.length ? applications.map(application => `<tr>
+        <td><strong>${escapeHtml(application.team_name)}</strong></td>
+        <td>${escapeHtml(application.league_name)}</td>
+        <td><span class="status-badge ${escapeHtml(application.registration_status)}">${escapeHtml(application.registration_status)}</span></td>
+        <td>${escapeHtml(new Date(application.registered_at).toLocaleString("en-PH"))}</td>
+      </tr>`).join("") : '<tr><td class="empty-state" colspan="4">You have not submitted a team application yet.</td></tr>';
+    }
+
+    async function submitTeamApplication(event) {
+      event.preventDefault();
+      const button = document.getElementById("submitTeamApplicationButton");
+      const message = document.getElementById("teamApplicationMessage");
+      button.disabled = true;
+      button.textContent = "Submitting Application...";
+      message.className = "application-message";
+      message.textContent = "Creating the team and sending it to the commissioner...";
+
+      const { error } = await supabaseClient.rpc("create_team_league_application", {
+        p_league_id: document.getElementById("applicationLeagueSelect").value,
+        p_team_name: document.getElementById("newTeamName").value.trim(),
+        p_location: document.getElementById("newTeamLocation").value.trim(),
+        p_logo_url: document.getElementById("newTeamLogoUrl").value.trim() || null
+      });
+
+      if (error) {
+        message.className = "application-message error";
+        message.textContent = "Unable to submit team application: " + error.message;
+      } else {
+        document.getElementById("teamApplicationForm").reset();
+        message.className = "application-message success";
+        message.textContent = "Team application submitted. Wait for the league commissioner to approve it.";
+        await Promise.all([loadWorkspace(), loadTeamApplicationData()]);
+      }
+
+      button.disabled = false;
+      button.textContent = "Create Team & Submit Application";
     }
 
     function renderOptions() {
@@ -580,6 +672,7 @@
     }
 
     teamSelect.addEventListener("change", renderWorkspace);
+    document.getElementById("teamApplicationForm").addEventListener("submit", submitTeamApplication);
     document.getElementById("submitRosterButton").addEventListener("click", async function () {
       const assignment = selectedAssignment();
       if (!assignment) return alert("Select an assigned team first.");
