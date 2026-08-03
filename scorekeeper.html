@@ -209,7 +209,7 @@ nav{
 }
 
 .clock{
-    font-size:25px;
+    font-size:29px;
     font-weight:bold;
     color:#ff6b00;
     margin:0;
@@ -234,8 +234,8 @@ nav{
 
 .shot-clock{
     margin:0;
-    min-width:28px;
-    font-size:25px;
+    min-width:32px;
+    font-size:29px;
     line-height:1;
     font-weight:bold;
     color:#e85b21;
@@ -789,7 +789,7 @@ nav{
     }
 
     .clock{
-        font-size:19px;
+        font-size:22px;
     }
 
     .clock-controls{
@@ -811,7 +811,7 @@ nav{
 
     .shot-clock{
         min-width:22px;
-        font-size:19px;
+        font-size:22px;
     }
 
     .clock-card button{
@@ -1624,23 +1624,38 @@ nav{
 }
 
 .hybrid-actions-layout .easy-action-button{
-    min-height:30px;
-    padding:3px 2px;
+    min-height:28px;
+    padding:2px;
     border-radius:4px;
+    background:#2b2b2b;
     font-size:8px;
     line-height:1.05;
 }
 
+.hybrid-actions-layout .easy-action-button.primary{
+    background:#d96516;
+}
+
+.hybrid-actions-layout .easy-action-button.paint{
+    background:#934b1f;
+}
+
+.hybrid-actions-layout .easy-action-button.miss{
+    border-color:#d8d8d8;
+    background:#f6f6f6;
+    color:#555;
+}
+
 .hybrid-actions-layout .easy-action-button.stat-rebound{
-    background:#1565c0;
+    background:#3f6f99;
 }
 
 .hybrid-actions-layout .easy-action-button.stat-turnover{
-    background:#c62828;
+    background:#a64242;
 }
 
 .hybrid-actions-layout .easy-action-button.stat-foul{
-    background:#6a1b9a;
+    background:#73527f;
 }
 
 .hybrid-actions-layout .easy-action-grid{
@@ -2297,14 +2312,14 @@ LOG OUT
 
 <div class="easy-selected-player">
 <div>
-<div class="easy-selected-label">1 · SELECTED PLAYER</div>
+<div class="easy-selected-label">SELECTED PLAYER</div>
 <div id="easySelectedPlayerName" class="easy-selected-name">Tap a player above</div>
 </div>
 <div id="easySelectedPlayerPoints" class="easy-selected-stat">—</div>
 </div>
 
 <div class="easy-context-row">
-<span id="selectedQuickContextLabel" class="quick-context-heading">2 · NEXT SCORE: PICK PLAYER</span>
+<span id="selectedQuickContextLabel" class="quick-context-heading">NEXT SCORE: PICK PLAYER</span>
 <button
     type="button"
     id="quickOffTurnoverButton"
@@ -2339,7 +2354,7 @@ LOG OUT
 
 <div class="hybrid-actions-layout">
 <div class="easy-action-group">
-<div class="easy-action-title">3 · MADE SHOT</div>
+<div class="easy-action-title">MADE SHOT</div>
 <div class="easy-action-grid">
 <button type="button" class="easy-action-button paint" data-easy-action onclick="easyRecordScore('two_pt_made',true)">PAINT<br>+2</button>
 <button type="button" class="easy-action-button primary" data-easy-action onclick="easyRecordScore('two_pt_made',false)">2PT<br>+2</button>
@@ -2349,7 +2364,7 @@ LOG OUT
 </div>
 
 <div class="easy-action-group">
-<div class="easy-action-title">3 · MISSED SHOT</div>
+<div class="easy-action-title">MISSED SHOT</div>
 <div class="easy-action-grid secondary">
 <button type="button" class="easy-action-button miss" data-easy-action onclick="easyRecordStat('two_pt_attempted')">2PT MISS</button>
 <button type="button" class="easy-action-button miss" data-easy-action onclick="easyRecordStat('three_pt_attempted')">3PT MISS</button>
@@ -2358,7 +2373,7 @@ LOG OUT
 </div>
 
 <div class="easy-action-group">
-<div class="easy-action-title">3 · OTHER STAT</div>
+<div class="easy-action-title">OTHER STAT</div>
 <div class="easy-action-grid other-stats">
 <button type="button" class="easy-action-button stat-rebound" data-easy-action onclick="easyRecordStat('offensive_rebounds')" title="Offensive rebound — prepares second-chance points">OREB</button>
 <button type="button" class="easy-action-button stat-rebound" data-easy-action onclick="easyRecordStat('defensive_rebounds')" title="Defensive rebound — ends the previous possession">DREB</button>
@@ -5048,9 +5063,9 @@ function updateQuickScoringDisplay(){
     if(contextLabel){
         contextLabel.textContent=
             team
-            ?"2 · "+team.toUpperCase()+" NEXT: "+
+            ?team.toUpperCase()+" NEXT: "+
                 (labels.length?labels.join(" + "):"NORMAL")
-            :"2 · NEXT SCORE: PICK PLAYER";
+            :"NEXT SCORE: PICK PLAYER";
     }
 
     const offTurnoverButton=
