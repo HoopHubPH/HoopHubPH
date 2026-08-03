@@ -345,7 +345,7 @@ async function loadTeams() {
                 <strong>🆔 Team ID:</strong>
                 ${team.id}
             </div>
-            <a href="team.html?id=${team.id}" class="view-button">VIEW TEAM</a>
+            <a href="team1.html?id=${encodeURIComponent(team.id)}" class="view-button">VIEW TEAM</a>
         `;
 
         container.appendChild(card);
