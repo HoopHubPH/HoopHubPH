@@ -1,3 +1,6 @@
+SCOREKEEPER
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -728,21 +731,24 @@ nav{
 .nba-popup-stat-val.highlight {
     color: #ff6b00;
 }
-
 .print-icon{
     position:absolute;
     top:4px;
     right:7px;
     z-index:3;
+
     width:24px;
     height:24px;
     padding:0;
+
     display:flex;
     align-items:center;
     justify-content:center;
+
     background:transparent;
     border:0;
     color:#bbb;
+
     font-size:14px;
     line-height:1;
     cursor:pointer;
@@ -752,12 +758,21 @@ nav{
 }
 
 .print-icon:hover{
-    color:#111;
+    color:#ff6b00;
+    background:transparent;
     opacity:1;
-    transform:scale(1.15);
+    transform:scale(1.05);
 }
 
+.print-icon:hover{
+
+    color:#111;
+
+    transform:scale(1.15);
+
+}
 @media(max-width:700px){
+
     .scoreboard{
         grid-template-columns:1fr 1.3fr 1fr;
         gap:5px;
@@ -832,6 +847,7 @@ nav{
         min-width:875px;
     }
 }
+    /* TEAM STATISTICS PRINT PREVIEW */
 
 .team-stats-modal{
     display:none;
@@ -893,6 +909,148 @@ nav{
     max-height:calc(92vh - 115px);
     padding:15px;
     overflow:auto;
+}
+
+.scoring-breakdown-panel{
+    background:#fff;
+    border:1px solid #eee;
+    border-radius:8px;
+    box-shadow:0 2px 5px rgba(0,0,0,.06);
+    margin-bottom:8px;
+    padding:10px;
+}
+
+.scoring-breakdown-panel h2{
+    font-size:13px;
+    margin-bottom:7px;
+}
+
+.scoring-tag-help{
+    color:#666;
+    font-size:10px;
+    margin-bottom:7px;
+}
+
+.quick-score-status{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:6px;
+    margin-bottom:9px;
+}
+
+.quick-score-context{
+    padding:5px 7px;
+    border:1px solid #ddd;
+    border-radius:5px;
+    background:#fafafa;
+    color:#555;
+    font-size:9px;
+    font-weight:800;
+    cursor:pointer;
+}
+
+.quick-score-context.active{
+    border-color:#ff6b00;
+    background:#ff6b00;
+    color:#fff;
+}
+
+.quick-score-context:disabled,
+.quick-fast-break-button:disabled,
+.quick-reset-context-button:disabled{
+    opacity:.45;
+    cursor:not-allowed;
+}
+
+.quick-context-heading{
+    color:#555;
+    font-size:8px;
+    font-weight:900;
+    white-space:nowrap;
+}
+
+.quick-fast-break-button{
+    padding:5px 8px;
+    border:1px solid #bbb;
+    border-radius:5px;
+    background:#fff;
+    color:#333;
+    font-size:9px;
+    font-weight:900;
+    cursor:pointer;
+}
+
+.quick-fast-break-button.active{
+    border-color:#ff6b00;
+    background:#ff6b00;
+    color:#fff;
+}
+
+.quick-reset-context-button{
+    padding:5px 8px;
+    border:1px solid #bbb;
+    border-radius:5px;
+    background:#eee;
+    color:#333;
+    font-size:9px;
+    font-weight:900;
+    cursor:pointer;
+}
+
+.quick-reset-context-button:hover{
+    border-color:#111;
+    background:#111;
+    color:#fff;
+}
+
+.scoring-tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-bottom:9px;
+}
+
+.scoring-tag{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    padding:6px 8px;
+    border:1px solid #ddd;
+    border-radius:5px;
+    background:#fafafa;
+    font-size:10px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.scoring-tag:has(input:checked){
+    border-color:#ff6b00;
+    background:#fff3e8;
+    color:#c44f00;
+}
+
+.team-breakdown-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:10px;
+}
+
+.team-breakdown-table th,
+.team-breakdown-table td{
+    padding:6px;
+    border:1px solid #eee;
+    text-align:center;
+}
+
+.team-breakdown-table th:first-child,
+.team-breakdown-table td:first-child{
+    text-align:left;
+}
+
+.team-breakdown-value{
+    font-weight:800;
+    color:#ff6b00;
 }
 
 .smart-score-modal{
@@ -1048,32 +1206,124 @@ nav{
    EASY SCOREKEEPER DESIGN
    ========================================================= */
 
-.hybrid-scorekeeper{
+.easy-scorekeeper{
     display:grid;
-    gap:5px;
-    margin-bottom:5px;
+    grid-template-columns:minmax(190px,.85fr) minmax(330px,1.35fr) minmax(190px,.85fr);
+    gap:8px;
+    align-items:start;
+    margin-bottom:8px;
 }
 
-.hybrid-action-panel{
-    display:grid;
-    grid-template-columns:minmax(175px,.8fr) minmax(260px,1.5fr) 105px;
-    gap:5px 6px;
-    padding:6px;
-    position:sticky;
-    top:2px;
-    z-index:80;
+.easy-team-panel,
+.easy-action-panel,
+.easy-breakdown{
     background:#fff;
     border:1px solid #e5e5e5;
     border-radius:8px;
+    box-shadow:0 2px 5px rgba(0,0,0,.06);
 }
 
-.quick-player-picker{
-    grid-column:1 / -1;
-    grid-row:1;
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:5px;
+.easy-team-panel{
+    padding:9px;
+}
+
+.easy-team-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:6px;
+    padding-bottom:7px;
+    margin-bottom:7px;
+    border-bottom:2px solid #ff6b00;
+}
+
+.easy-team-header h2{
     min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    font-size:12px;
+}
+
+.easy-section-label{
+    margin:8px 0 5px;
+    color:#777;
+    font-size:8px;
+    font-weight:900;
+    letter-spacing:.7px;
+}
+
+.easy-player-list,
+.easy-bench-list{
+    display:grid;
+    gap:5px;
+}
+
+.easy-player-row,
+.easy-bench-row{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:4px;
+}
+
+.easy-player-button{
+    min-width:0;
+    padding:8px;
+    border:2px solid #ddd;
+    border-radius:6px;
+    background:#fafafa;
+    color:#222;
+    text-align:left;
+    cursor:pointer;
+}
+
+.easy-player-button.selected{
+    border-color:#ff6b00;
+    background:#fff3e8;
+}
+
+.easy-player-name{
+    display:block;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    font-size:10px;
+    font-weight:900;
+}
+
+.easy-player-mini-stats{
+    display:block;
+    margin-top:2px;
+    color:#777;
+    font-size:8px;
+    font-weight:bold;
+}
+
+.easy-sub-button{
+    min-width:38px;
+    padding:4px;
+    border:0;
+    border-radius:5px;
+    background:#c62828;
+    color:#fff;
+    font-size:8px;
+    font-weight:900;
+    cursor:pointer;
+}
+
+.easy-sub-button.in{
+    background:#16803c;
+}
+
+.easy-empty{
+    padding:8px;
+    color:#888;
+    font-size:9px;
+    text-align:center;
+}
+
+.easy-action-panel{
+    padding:11px;
 }
 
 .easy-selected-player{
@@ -1116,31 +1366,247 @@ nav{
     margin-top:8px;
 }
 
-.quick-score-context,
-.quick-fast-break-button,
-.quick-reset-context-button{
-    padding:5px 7px;
-    border:1px solid #ddd;
-    border-radius:5px;
-    background:#fafafa;
-    color:#555;
+.easy-action-group{
+    margin-top:10px;
+}
+
+.easy-action-title{
+    margin-bottom:5px;
+    color:#666;
+    font-size:8px;
+    font-weight:900;
+    letter-spacing:.7px;
+}
+
+.easy-action-grid{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:5px;
+}
+
+.easy-action-grid.secondary{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+}
+
+.easy-action-button{
+    min-height:42px;
+    padding:6px 3px;
+    border:0;
+    border-radius:6px;
+    background:#111;
+    color:#fff;
     font-size:9px;
-    font-weight:800;
+    font-weight:900;
     cursor:pointer;
 }
 
-.quick-score-context.active,
-.quick-fast-break-button.active{
+.easy-action-button.primary{
+    background:#ff6b00;
+}
+
+.easy-action-button.paint{
+    background:#b94700;
+}
+
+.easy-action-button.miss{
+    border:1px solid #ccc;
+    background:#f4f4f4;
+    color:#444;
+}
+
+.easy-action-button.undo{
+    width:100%;
+    min-height:34px;
+    margin-top:9px;
+    background:#777;
+}
+
+.easy-action-button:disabled,
+.easy-sub-button:disabled{
+    opacity:.4;
+    cursor:not-allowed;
+}
+
+.easy-action-feedback{
+    min-height:14px;
+    margin-top:6px;
+    color:#555;
+    font-size:9px;
+    font-weight:bold;
+    text-align:center;
+}
+
+.easy-breakdown{
+    margin-bottom:8px;
+    padding:9px;
+}
+
+.easy-breakdown summary{
+    font-size:10px;
+    font-weight:900;
+    cursor:pointer;
+}
+
+.easy-breakdown .team-breakdown-table{
+    margin-top:8px;
+}
+
+.hybrid-scorekeeper{
+    display:grid;
+    gap:5px;
+    margin-bottom:5px;
+}
+
+.hybrid-action-panel{
+    display:grid;
+    grid-template-columns:minmax(175px,.8fr) minmax(260px,1.5fr) 105px;
+    gap:5px 6px;
+    padding:6px;
+    position:sticky;
+    top:2px;
+    z-index:80;
+}
+
+.quick-player-picker{
+    grid-column:1 / -1;
+    grid-row:1;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:5px;
+    min-width:0;
+}
+
+.quick-player-lane{
+    display:grid;
+    grid-template-columns:42px minmax(0,1fr);
+    gap:3px;
+    min-width:0;
+}
+
+.quick-player-team-label{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-width:0;
+    min-height:27px;
+    padding:2px;
+    border-radius:4px;
+    background:#ff6b00;
+    color:#fff;
+    font-size:7px;
+    font-weight:900;
+    letter-spacing:.4px;
+}
+
+.quick-player-lane.away .quick-player-team-label{
+    background:#111;
+}
+
+.quick-player-buttons{
+    display:grid;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:3px;
+    min-width:0;
+}
+
+.quick-player-chip{
+    min-width:0;
+    min-height:36px;
+    padding:5px 6px;
+    overflow:hidden;
+    border:1px solid #ddd;
+    border-radius:4px;
+    background:#fafafa;
+    color:#222;
+    font-size:9.5px;
+    font-weight:900;
+    line-height:1.1;
+    text-overflow:clip;
+    white-space:normal;
+    cursor:pointer;
+}
+
+.quick-player-chip.home{
+    border-color:#ffc69e;
+    background:#fff8f2;
+}
+
+.quick-player-chip.away{
+    border-color:#bbb;
+}
+
+.quick-player-chip:hover,
+.quick-player-chip.selected{
     border-color:#ff6b00;
     background:#ff6b00;
     color:#fff;
 }
 
-.quick-context-heading{
-    color:#555;
+.quick-player-chip.selected{
+    box-shadow:inset 0 0 0 1px #fff,
+               0 0 0 1px #ff6b00;
+}
+
+.quick-player-chip:focus-visible{
+    outline:2px solid #111;
+    outline-offset:1px;
+}
+
+.quick-player-chip:disabled{
+    opacity:.45;
+    cursor:not-allowed;
+}
+
+.quick-player-empty{
+    grid-column:1 / -1;
+    display:flex;
+    align-items:center;
+    min-height:27px;
+    padding:3px 6px;
+    border:1px dashed #ccc;
+    border-radius:4px;
+    color:#777;
     font-size:8px;
-    font-weight:900;
-    white-space:nowrap;
+    font-weight:bold;
+}
+
+.hybrid-action-panel .easy-selected-player{
+    grid-column:1;
+    grid-row:2;
+    min-height:36px;
+    padding:5px 7px;
+    border-radius:5px;
+}
+
+.hybrid-action-panel .easy-selected-label{
+    font-size:7px;
+}
+
+.hybrid-action-panel .easy-selected-name{
+    margin-top:1px;
+    font-size:12px;
+}
+
+.hybrid-action-panel .easy-selected-stat{
+    font-size:15px;
+}
+
+.hybrid-action-panel .easy-context-row{
+    grid-column:2;
+    grid-row:2;
+    margin-top:0;
+    align-content:center;
+}
+
+.hybrid-action-panel .quick-score-context,
+.hybrid-action-panel .quick-fast-break-button,
+.hybrid-action-panel .quick-reset-context-button{
+    padding:4px 6px;
+    font-size:8px;
+}
+
+.hybrid-action-panel .quick-context-heading{
+    font-size:7px;
 }
 
 .hybrid-actions-layout{
@@ -1151,68 +1617,65 @@ nav{
     gap:5px;
 }
 
-.easy-action-group{
+.hybrid-actions-layout .easy-action-group{
     margin-top:0;
 }
 
-.easy-action-title{
+.hybrid-actions-layout .easy-action-title{
     margin-bottom:2px;
     font-size:7px;
-    color:#666;
-    font-weight:900;
 }
 
-.easy-action-grid{
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:3px;
-}
-
-.easy-action-grid.secondary{
-    grid-template-columns:repeat(3,minmax(0,1fr));
-}
-
-.easy-action-grid.other-stats{
-    grid-template-columns:repeat(7,minmax(0,1fr));
-}
-
-.easy-action-button{
+.hybrid-actions-layout .easy-action-button{
     min-height:26px;
     padding:2px;
-    border:0;
     border-radius:4px;
     background:#2b2b2b;
-    color:#fff;
     font-size:8px;
-    font-weight:900;
     line-height:1.05;
-    cursor:pointer;
+    touch-action:manipulation;
+    transition:transform .08s ease,
+               filter .08s ease;
 }
 
-.easy-action-button.primary{
+.hybrid-actions-layout .easy-action-button:active:not(:disabled),
+.easy-correction-controls .easy-action-button:active:not(:disabled){
+    transform:scale(.97);
+    filter:brightness(.92);
+}
+
+.hybrid-actions-layout .easy-action-button.primary{
     background:#d96516;
 }
 
-.easy-action-button.paint{
+.hybrid-actions-layout .easy-action-button.paint{
     background:#934b1f;
 }
 
-.easy-action-button.miss{
-    border:1px solid #d8d8d8;
+.hybrid-actions-layout .easy-action-button.miss{
+    border-color:#d8d8d8;
     background:#f6f6f6;
     color:#555;
 }
 
-.easy-action-button.stat-rebound{
+.hybrid-actions-layout .easy-action-button.stat-rebound{
     background:#3f6f99;
 }
 
-.easy-action-button.stat-turnover{
+.hybrid-actions-layout .easy-action-button.stat-turnover{
     background:#a64242;
 }
 
-.easy-action-button.stat-foul{
+.hybrid-actions-layout .easy-action-button.stat-foul{
     background:#73527f;
+}
+
+.hybrid-actions-layout .easy-action-grid{
+    gap:3px;
+}
+
+.hybrid-actions-layout .easy-action-grid.other-stats{
+    grid-template-columns:repeat(7,minmax(0,1fr));
 }
 
 .easy-correction-controls{
@@ -1222,6 +1685,16 @@ nav{
     grid-template-columns:repeat(2,minmax(0,1fr));
     gap:3px;
     min-width:0;
+}
+
+.hybrid-action-panel #easyUndoButton,
+.hybrid-action-panel #easyDeductModeButton{
+    grid-column:auto;
+    grid-row:auto;
+    min-height:36px;
+    margin-top:0;
+    padding:3px;
+    font-size:8px;
 }
 
 .easy-action-button.deduct-toggle{
@@ -1235,18 +1708,30 @@ nav{
     color:#fff;
 }
 
-.easy-action-button.undo{
-    background:#777;
+.hybrid-action-panel.deduct-mode{
+    border-color:#a64242;
+    box-shadow:0 0 0 2px rgba(166,66,66,.16),
+               0 3px 8px rgba(0,0,0,.1);
 }
 
-.easy-action-feedback{
+.hybrid-action-panel.deduct-mode .hybrid-actions-layout{
+    padding:4px;
+    border:1px solid #d7a3a3;
+    border-radius:5px;
+    background:#fff7f7;
+}
+
+.hybrid-action-panel.deduct-mode .hybrid-actions-layout .easy-action-button{
+    box-shadow:inset 0 0 0 1px rgba(166,66,66,.75);
+}
+
+.hybrid-action-panel .easy-action-feedback{
     grid-column:1 / -1;
     grid-row:4;
     min-height:10px;
     margin-top:0;
     font-size:8px;
-    color:#555;
-    text-align:center;
+    line-height:1.1;
 }
 
 .hybrid-team-stats{
@@ -1258,18 +1743,147 @@ nav{
     padding:5px;
 }
 
-.easy-team-header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:6px;
-    padding-bottom:3px;
-    margin-bottom:3px;
-    border-bottom:1px solid #ff6b00;
+.hybrid-team-stats + .hybrid-team-stats{
+    margin-top:0;
 }
 
-.easy-team-header h2{
+.hybrid-team-stats .easy-team-header{
+    min-height:22px;
+    padding-bottom:3px;
+    margin-bottom:3px;
+    border-bottom-width:1px;
+}
+
+.hybrid-team-stats .easy-team-header h2{
     font-size:10px;
+}
+
+.hybrid-team-stats .print-icon{
+    top:1px;
+    width:20px;
+    height:20px;
+    font-size:12px;
+}
+
+.hybrid-team-stats .table-scroll{
+    max-height:none;
+    scrollbar-width:thin;
+}
+
+.hybrid-team-stats .player-table{
+    min-width:900px;
+}
+
+.hybrid-team-stats .player-table th{
+    padding:2px 1px;
+    font-size:7px;
+}
+
+.hybrid-team-stats .player-table td{
+    padding:2px;
+    font-size:8px;
+}
+
+.hybrid-team-stats .col-number{
+    width:22px;
+}
+
+.hybrid-team-stats .col-player{
+    width:105px;
+}
+
+.hybrid-team-stats .col-min{
+    width:35px;
+}
+
+.hybrid-team-stats .col-stat{
+    width:32px;
+}
+
+.hybrid-team-stats .col-shot{
+    width:42px;
+}
+
+.hybrid-team-stats .col-plusminus{
+    width:45px;
+}
+
+.hybrid-team-stats .player-name,
+.hybrid-team-stats .stat-value{
+    font-size:9px;
+}
+
+.hybrid-team-stats .player-position{
+    display:none;
+}
+
+.hybrid-team-stats .sub-button{
+    padding:2px 3px;
+    margin-top:1px;
+    font-size:6.5px;
+}
+
+.hybrid-team-stats .player-table th.col-number{
+    left:0;
+    z-index:5;
+}
+
+.hybrid-team-stats .player-table th.col-player{
+    left:22px;
+    z-index:5;
+    box-shadow:2px 0 0 rgba(0,0,0,.08);
+}
+
+.hybrid-team-stats .player-table tr:not(.view-all-row) td:first-child,
+.hybrid-team-stats .player-table td.col-player{
+    position:sticky;
+    z-index:1;
+    background:#fff;
+}
+
+.hybrid-team-stats .player-table tr:not(.view-all-row) td:first-child{
+    left:0;
+}
+
+.hybrid-team-stats .player-table td.col-player{
+    left:22px;
+    box-shadow:2px 0 0 rgba(0,0,0,.08);
+}
+
+.hybrid-team-stats .player-table tr.on-court td:first-child,
+.hybrid-team-stats .player-table tr.on-court td.col-player{
+    background:#e8f5e9;
+}
+
+.hybrid-team-stats .stat-control-buttons,
+.hybrid-team-stats .shot-buttons{
+    display:none!important;
+}
+
+.hybrid-team-stats .player-table tbody tr{
+    cursor:pointer;
+}
+
+.hybrid-team-stats .player-table tbody tr:hover td{
+    background:#fff3e8;
+}
+
+.hybrid-team-stats .player-table tbody tr.selected-for-entry td{
+    background:#ffe1c7!important;
+    box-shadow:inset 0 2px 0 #ff6b00,
+               inset 0 -2px 0 #ff6b00;
+}
+
+.hybrid-team-stats .player-table tbody tr.selected-for-entry td:first-child{
+    box-shadow:inset 2px 0 0 #ff6b00,
+               inset 0 2px 0 #ff6b00,
+               inset 0 -2px 0 #ff6b00;
+}
+
+.hybrid-team-stats .player-table tbody tr.selected-for-entry td:last-child{
+    box-shadow:inset -2px 0 0 #ff6b00,
+               inset 0 2px 0 #ff6b00,
+               inset 0 -2px 0 #ff6b00;
 }
 
 .hybrid-instruction{
@@ -1279,43 +1893,289 @@ nav{
     font-weight:bold;
 }
 
-.easy-breakdown{
-    margin-bottom:8px;
-    padding:9px;
-    background:#fff;
-    border:1px solid #e5e5e5;
-    border-radius:8px;
+@media(max-width:900px){
+    .easy-scorekeeper{
+        grid-template-columns:1fr 1.3fr;
+    }
+
+    .easy-team-panel.away{
+        grid-column:1;
+        grid-row:2;
+    }
+
+    .easy-action-panel{
+        grid-column:2;
+        grid-row:1 / span 2;
+    }
+
+    .hybrid-action-panel{
+        grid-template-columns:minmax(160px,.8fr) minmax(230px,1.45fr) 90px;
+    }
+
+    .hybrid-actions-layout{
+        grid-template-columns:.95fr .7fr 1.3fr;
+    }
+
+    .hybrid-team-stats .player-table{
+        min-width:880px;
+    }
 }
 
-.easy-breakdown summary{
-    font-size:10px;
-    font-weight:900;
+@media(max-width:760px){
+    .easy-scorekeeper{
+        grid-template-columns:1fr;
+    }
+
+    .easy-team-panel.away,
+    .easy-action-panel{
+        grid-column:auto;
+        grid-row:auto;
+    }
+
+    .easy-team-panel.home{
+        order:1;
+    }
+
+    .easy-team-panel.away{
+        order:2;
+    }
+
+    .easy-action-panel{
+        order:3;
+    }
+
+    .easy-action-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .easy-action-grid.secondary{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+    }
+
+    .hybrid-action-panel{
+        grid-template-columns:minmax(0,1fr) 95px;
+    }
+
+    .hybrid-action-panel .easy-selected-player{
+        grid-column:1;
+        grid-row:2;
+    }
+
+    .hybrid-action-panel .easy-correction-controls{
+        grid-column:2;
+        grid-row:2;
+    }
+
+    .hybrid-action-panel .easy-context-row{
+        grid-column:1 / -1;
+        grid-row:3;
+    }
+
+    .hybrid-actions-layout{
+        grid-row:4;
+        grid-template-columns:1fr 1fr;
+    }
+
+    .hybrid-actions-layout .easy-action-group:last-child{
+        grid-column:1 / -1;
+    }
+
+    .hybrid-action-panel .easy-action-feedback{
+        grid-row:5;
+    }
+}
+
+@media(max-width:620px){
+    .hybrid-action-panel{
+        position:static;
+    }
+
+    .hybrid-actions-layout .easy-action-grid.other-stats{
+        grid-template-columns:repeat(4,minmax(0,1fr));
+    }
+
+    .quick-player-picker{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-height:800px){
+    header{
+        padding-top:6px;
+        padding-bottom:6px;
+    }
+
+    .hybrid-instruction{
+        display:none;
+    }
+
+    .easy-breakdown{
+        margin-bottom:5px;
+        padding:6px;
+    }
+
+    .game-footer-controls{
+        margin-top:5px;
+        padding:5px;
+    }
+}
+
+@media(pointer:coarse){
+    .quick-player-team-label,
+    .quick-player-empty{
+        min-height:34px;
+    }
+
+    .quick-player-chip{
+        min-height:42px;
+        font-size:10.5px;
+        touch-action:manipulation;
+    }
+
+    .hybrid-actions-layout .easy-action-button{
+        min-height:32px;
+        font-size:8.5px;
+        touch-action:manipulation;
+    }
+
+    .hybrid-action-panel #easyUndoButton,
+    .hybrid-action-panel #easyDeductModeButton{
+        min-height:40px;
+    }
+
+    .hybrid-team-stats .player-table td{
+        padding-top:4px;
+        padding-bottom:4px;
+    }
+
+    .hybrid-team-stats .sub-button{
+        min-height:24px;
+        padding-left:5px;
+        padding-right:5px;
+        touch-action:manipulation;
+    }
+
+    .view-all-button,
+    .quick-fast-break-button{
+        min-height:30px;
+        touch-action:manipulation;
+    }
+}
+
+/* Hide scorekeeper control buttons inside the preview */
+.team-stats-preview button{
+    display:none!important;
+}
+
+.team-stats-modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    padding:10px 15px;
+    border-top:1px solid #ddd;
+    background:#f7f7f7;
+}
+
+.team-stats-modal-actions button{
+    padding:8px 16px;
+    border:0;
+    border-radius:5px;
+    font-weight:bold;
     cursor:pointer;
 }
 
-.team-breakdown-table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:10px;
-    margin-top:8px;
+.preview-close-button{
+    background:#ddd;
+    color:#222;
 }
 
-.team-breakdown-table th,
-.team-breakdown-table td{
-    padding:6px;
-    border:1px solid #eee;
-    text-align:center;
+.preview-print-button{
+    background:#ff6b00;
+    color:#fff;
 }
 
-.team-breakdown-table th:first-child,
-.team-breakdown-table td:first-child{
-    text-align:left;
+.preview-print-button:hover{
+    background:#e65f00;
 }
 
-.team-breakdown-value{
-    font-weight:800;
+@media(max-width:700px){
+
+    .team-stats-modal{
+        padding:8px;
+    }
+
+    .team-stats-modal-content{
+        width:100%;
+        max-height:96vh;
+    }
+
+    .team-stats-preview{
+        max-height:calc(96vh - 115px);
+    }
+}
+
+/* PRINT ONLY THE POPUP */
+
+@media print{
+
+    body *{
+        visibility:hidden!important;
+    }
+
+    #teamStatsModal,
+    #teamStatsModal *{
+        visibility:visible!important;
+    }
+
+    #teamStatsModal{
+        display:block!important;
+        position:absolute;
+        inset:0;
+        padding:0;
+        background:#fff;
+    }
+
+    .team-stats-modal-content{
+        width:100%;
+        max-width:none;
+        max-height:none;
+        overflow:visible;
+        border-radius:0;
+        box-shadow:none;
+    }
+
+    .team-stats-preview{
+        max-height:none;
+        overflow:visible;
+    }
+
+    .team-stats-close,
+    .team-stats-modal-actions{
+        display:none!important;
+    }
+}
+    .team-total-row td{
+    background:#111!important;
+    color:#fff!important;
+    font-weight:bold;
+    border-top:3px solid #ff6b00;
+    padding-top:8px;
+    padding-bottom:8px;
+}
+
+.team-total-row .team-total-label{
+    color:#ff6b00!important;
+    text-align:left!important;
+    white-space:nowrap;
+}
+
+.team-total-row .shot-percent{
     color:#ff6b00;
 }
+
+/* =========================================================
+   SECURE PAGE ACCESS
+   ========================================================= */
 
 body.auth-pending{
     overflow:hidden;
@@ -1815,7 +2675,9 @@ CONFIRM SCORE
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
+
 const SUPABASE_URL="https://tkrsyiwffqkgfyooewsf.supabase.co";
+
 const SUPABASE_KEY="sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
 
 const supabaseClient=
@@ -1827,77 +2689,187 @@ SUPABASE_KEY
 let authenticatedUser=null;
 let authenticatedProfile=null;
 
+
+/* =========================================================
+   SCOREKEEPER PAGE AUTHORIZATION
+   ========================================================= */
+
 function setScorekeeperAuthMessage(message){
-    const messageElement=document.getElementById("scorekeeperAuthMessage");
+
+    const messageElement=
+        document.getElementById(
+            "scorekeeperAuthMessage"
+        );
+
     if(messageElement){
         messageElement.textContent=message;
     }
 }
 
+
 async function redirectToLogin(signOutFirst=false){
+
     if(signOutFirst){
         await supabaseClient.auth.signOut();
     }
+
     window.location.replace("login.html");
 }
 
+
 function getScorekeeperGameStorageKey(){
+
     return authenticatedUser
-        ?"hoophub_scorekeeper_game_id:"+authenticatedUser.id
+        ?"hoophub_scorekeeper_game_id:"+
+            authenticatedUser.id
         :null;
 }
 
+
 function restoreRememberedGameId(){
-    const input=document.getElementById("gameId");
+
+    const input=
+        document.getElementById("gameId");
+
     let rememberedId=null;
+
     try{
-        const urlId=Number(new URLSearchParams(window.location.search).get("game_id"));
-        const storageKey=getScorekeeperGameStorageKey();
-        const storedId=storageKey?Number(localStorage.getItem(storageKey)):0;
-        rememberedId=Number.isInteger(urlId)&&urlId>0?urlId:Number.isInteger(storedId)&&storedId>0?storedId:null;
-    }catch(error){
-        console.warn("Unable to restore Game ID:", error);
+
+        const urlId=
+            Number(
+                new URLSearchParams(
+                    window.location.search
+                ).get("game_id")
+            );
+
+        const storageKey=
+            getScorekeeperGameStorageKey();
+
+        const storedId=
+            storageKey
+            ?Number(
+                localStorage.getItem(
+                    storageKey
+                )
+            )
+            :0;
+
+        rememberedId=
+            Number.isInteger(urlId)&&urlId>0
+            ?urlId
+            :Number.isInteger(storedId)&&storedId>0
+            ?storedId
+            :null;
+
     }
+    catch(error){
+
+        console.warn(
+            "Unable to restore the previous Game ID:",
+            error
+        );
+    }
+
     input.value=rememberedId||"";
+
     return rememberedId;
 }
 
+
 function rememberLoadedGameId(gameId){
+
     const normalizedId=Number(gameId);
-    if(!Number.isInteger(normalizedId)||normalizedId<=0) return;
+
+    if(
+        !Number.isInteger(normalizedId)||
+        normalizedId<=0
+    ){
+        return;
+    }
+
     try{
-        const storageKey=getScorekeeperGameStorageKey();
+
+        const storageKey=
+            getScorekeeperGameStorageKey();
+
         if(storageKey){
-            localStorage.setItem(storageKey, String(normalizedId));
+            localStorage.setItem(
+                storageKey,
+                String(normalizedId)
+            );
         }
-        const url=new URL(window.location.href);
-        url.searchParams.set("game_id", String(normalizedId));
-        window.history.replaceState({}, "", url.toString());
-    }catch(error){
-        console.warn("Unable to remember Game ID:", error);
+
+        const url=
+            new URL(window.location.href);
+
+        url.searchParams.set(
+            "game_id",
+            String(normalizedId)
+        );
+
+        window.history.replaceState(
+            {},
+            "",
+            url.toString()
+        );
+
+    }
+    catch(error){
+
+        console.warn(
+            "Unable to remember the current Game ID:",
+            error
+        );
     }
 }
 
+
 async function initializeSecureScorekeeper(){
+
     try{
-        const {data:userData, error:userError}=await supabaseClient.auth.getUser();
-        if(userError || !userData.user){
+
+        const {
+            data:userData,
+            error:userError
+        }=
+        await supabaseClient.auth.getUser();
+
+        if(
+            userError ||
+            !userData.user
+        ){
             await redirectToLogin(false);
             return;
         }
 
-        const {data:profile, error:profileError}=await supabaseClient
-            .from("profiles")
-            .select("role,status")
-            .eq("id",userData.user.id)
-            .maybeSingle();
+        const {
+            data:profile,
+            error:profileError
+        }=
+        await supabaseClient
+        .from("profiles")
+        .select("role,status")
+        .eq("id",userData.user.id)
+        .maybeSingle();
 
-        const hasAuthorizedRole=!profileError && profile && profile.status==="active" &&
-            (profile.role==="super_admin" || profile.role==="scorekeeper");
+        const hasAuthorizedRole=
+            !profileError &&
+            profile &&
+            profile.status==="active" &&
+            (
+                profile.role==="super_admin" ||
+                profile.role==="scorekeeper"
+            );
 
         if(!hasAuthorizedRole){
-            setScorekeeperAuthMessage("This account is not authorized to open the scorekeeper.");
-            await new Promise(resolve => setTimeout(resolve, 900));
+            setScorekeeperAuthMessage(
+                "This account is not authorized to open the scorekeeper."
+            );
+
+            await new Promise(resolve =>
+                setTimeout(resolve,900)
+            );
+
             await redirectToLogin(true);
             return;
         }
@@ -1905,58 +2877,222 @@ async function initializeSecureScorekeeper(){
         authenticatedUser=userData.user;
         authenticatedProfile=profile;
 
-        document.body.classList.remove("auth-pending");
-        document.getElementById("scorekeeperAuthScreen").hidden=true;
+        document.body.classList.remove(
+            "auth-pending"
+        );
 
-        const dashboardLink=document.getElementById("adminDashboardLink");
-        const rememberedGameId=restoreRememberedGameId();
+        document.getElementById(
+            "scorekeeperAuthScreen"
+        ).hidden=true;
+
+        const dashboardLink=
+            document.getElementById(
+                "adminDashboardLink"
+            );
+
+        const rememberedGameId=
+            restoreRememberedGameId();
 
         if(profile.role==="super_admin"){
-            if(rememberedGameId) await loadGame();
-            else showStatus("Enter a Game ID to begin scorekeeping.");
+
+            if(rememberedGameId){
+                await loadGame();
+            }
+            else{
+                showStatus(
+                    "Enter a Game ID to begin scorekeeping."
+                );
+            }
+
         }else{
             dashboardLink.style.display="none";
-            if(rememberedGameId) await loadGame();
-            else showStatus("Enter a Game ID assigned to your scorekeeper account.");
+
+            if(rememberedGameId){
+                await loadGame();
+            }
+            else{
+                showStatus(
+                    "Enter a Game ID assigned to your scorekeeper account."
+                );
+            }
         }
+
     }catch(error){
-        console.error("Scorekeeper auth failed:", error);
-        setScorekeeperAuthMessage("Unable to verify access. Returning to login...");
-        await new Promise(resolve => setTimeout(resolve, 900));
+
+        console.error(
+            "Scorekeeper authorization failed:",
+            error
+        );
+
+        setScorekeeperAuthMessage(
+            "Unable to verify access. Returning to login..."
+        );
+
+        await new Promise(resolve =>
+            setTimeout(resolve,900)
+        );
+
         await redirectToLogin(true);
     }
 }
 
+
 async function logoutScorekeeper(){
-    const logoutButton=document.getElementById("scorekeeperLogoutButton");
+
+    const logoutButton=
+        document.getElementById(
+            "scorekeeperLogoutButton"
+        );
+
     if(logoutButton){
         logoutButton.disabled=true;
         logoutButton.textContent="WAIT...";
     }
+
     await redirectToLogin(true);
 }
 
+
+async function canCurrentUserAccessGame(gameId){
+
+    if(
+        !authenticatedUser ||
+        !authenticatedProfile ||
+        authenticatedProfile.status!=="active"
+    ){
+        return false;
+    }
+
+    if(
+        authenticatedProfile.role===
+        "super_admin"
+    ){
+        return true;
+    }
+
+    if(
+        authenticatedProfile.role!==
+        "scorekeeper"
+    ){
+        return false;
+    }
+
+    const {
+        data:assignment,
+        error:assignmentError
+    }=
+    await supabaseClient
+    .from("game_scorekeepers")
+    .select("game_id")
+    .eq("game_id",gameId)
+    .eq(
+        "scorekeeper_id",
+        authenticatedUser.id
+    )
+    .eq("active",true)
+    .maybeSingle();
+
+    if(assignmentError){
+        console.error(
+            "Unable to verify game assignment:",
+            assignmentError
+        );
+
+        return false;
+    }
+
+    return Boolean(assignment);
+}
+
 let currentGame=null;
+
 let playerStatsMap={};
 let playerDataMap={};
 let playerTeamMap={};
+let playerOnCourt={};
+let playerCourtOrder={};
+
+let teamPlayersMap={};
+let teamContainerMap={};
+let teamExpandedMap={};
+let teamIdMap={};
+let scoringBreakdownTotals={
+    home:null,
+    away:null
+};
+
 let clockSeconds=600;
 let clockInterval=null;
 let clockRunning=false;
+let clockEndTime=null;
+
 let shotClockSeconds=24;
+let shotClockEndTime=null;
+
+let playerMinuteBaseSeconds={};
+let playerMinuteLastClockSeconds={};
+let playerMinuteLastPersisted={};
+
+let minuteSyncTimer=null;
+let minutePersistTimer=null;
+
+let statSaveQueue=new Map();
+let statSaveTimers=new Map();
+let statSaveInFlight=new Set();
+let statSaveRetryAfter=new Map();
+let gameScoreSaveQueue=new Map();
+let gameScoreSaveTimers=new Map();
+let gameScoreSaveInFlight=new Set();
+let gameScoreSaveRetryAfter=new Map();
 
 let hoveredPlayerId=null;
-let easySelectedPlayerId=null;
-let easyDeductMode=false;
+let hoverTimer=null;
+let pendingSmartScore=null;
+let quickScoreInFlight=false;
 let quickFastBreak=false;
-
+let easySelectedPlayerId=null;
+let easyActionInFlight=false;
+let easyDeductMode=false;
+let easyUndoStack=[];
 let quickScoringContext={
-    home:{offTurnover:false, secondChance:false},
-    away:{offTurnover:false, secondChance:false}
+    home:{
+        offTurnover:false,
+        secondChance:false
+    },
+    away:{
+        offTurnover:false,
+        secondChance:false
+    }
 };
 
+
+window.addEventListener(
+    "beforeunload",
+    event=>{
+
+        const hasPendingSaves=
+            statSaveQueue.size>0||
+            statSaveInFlight.size>0||
+            gameScoreSaveQueue.size>0||
+            gameScoreSaveInFlight.size>0;
+
+        if(!hasPendingSaves){
+            return;
+        }
+
+        event.preventDefault();
+        event.returnValue="";
+    }
+);
+
+/* =========================================================
+   GENERAL HELPERS
+   ========================================================= */
+
 function escapeHTML(str){
+
     if(!str)return "";
+
     return String(str)
     .replace(/&/g,"&amp;")
     .replace(/</g,"&lt;")
@@ -1965,61 +3101,137 @@ function escapeHTML(str){
     .replace(/'/g,"&#039;");
 }
 
+
 function calculatePercentage(made,attempted){
-    if(!attempted || attempted<=0) return "0%";
-    return Math.round(Number(made)/Number(attempted)*100)+"%";
+
+    if(!attempted || attempted<=0){
+        return "0%";
+    }
+
+    return Math.round(
+        Number(made)/Number(attempted)*100
+    )+"%";
 }
+
 
 function showStatus(message){
+
     const el=document.getElementById("statusMessage");
+
     el.textContent=message;
     el.style.display="block";
+
     clearTimeout(showStatus.timer);
-    showStatus.timer=setTimeout(()=>{ el.style.display="none"; }, 2500);
+
+    showStatus.timer=setTimeout(()=>{
+        el.style.display="none";
+    },2500);
 }
+
+
+/* =========================================================
+   FULLSCREEN
+   ========================================================= */
 
 function updateFullscreenButton(){
-    const button=document.getElementById("fullscreenButton");
-    if(!button) return;
-    const isFullscreen=Boolean(document.fullscreenElement);
-    button.textContent=isFullscreen?"✕":"⛶";
-    button.title=isFullscreen?"Exit fullscreen":"Open scorekeeper in fullscreen";
-    button.setAttribute("aria-label", button.title);
+
+    const button=
+        document.getElementById(
+            "fullscreenButton"
+        );
+
+    if(!button){
+        return;
+    }
+
+    const isFullscreen=
+        Boolean(
+            document.fullscreenElement
+        );
+
+    button.textContent=
+        isFullscreen
+        ?"✕"
+        :"⛶";
+
+    button.title=
+        isFullscreen
+        ?"Exit fullscreen"
+        :"Open scorekeeper in fullscreen";
+
+    button.setAttribute(
+        "aria-label",
+        button.title
+    );
 }
 
+
 async function toggleFullscreen(){
+
     try{
+
         if(!document.fullscreenElement){
+
             if(!document.fullscreenEnabled){
-                showStatus("Fullscreen is not supported by this browser.");
+
+                showStatus(
+                    "Fullscreen is not supported by this browser."
+                );
+
                 return;
             }
-            await document.documentElement.requestFullscreen();
-        } else {
+
+            await document.documentElement
+            .requestFullscreen();
+        }
+        else{
+
             await document.exitFullscreen();
         }
-    }catch(error){
-        showStatus("Unable to open fullscreen mode.");
+    }
+    catch(error){
+
+        console.error(
+            "Fullscreen error:",
+            error
+        );
+
+        showStatus(
+            "Unable to open fullscreen mode."
+        );
     }
 }
 
-document.addEventListener("fullscreenchange", updateFullscreenButton);
+
+document.addEventListener(
+    "fullscreenchange",
+    updateFullscreenButton
+);
+
 updateFullscreenButton();
 
-function defaultPhotoUrl() {
+
+/* =========================================================
+   HOVER POPUP LOGIC
+   ========================================================= */
+
+function defaultPhotoUrl(gender) {
     return "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=150&auto=format&fit=crop&q=80";
 }
 
 function handlePlayerHover(e, playerId) {
     hoveredPlayerId = playerId;
     updatePopupContent(playerId);
+    
     const popup = document.getElementById("nba-player-popup");
     popup.classList.add("visible");
     positionPopup(e);
 }
 
 function handlePlayerMove(e) {
-    if (hoveredPlayerId) positionPopup(e);
+    if (hoveredPlayerId) {
+        positionPopup(e);
+    }
 }
 
 function handlePlayerLeave() {
@@ -2028,16 +3240,53 @@ function handlePlayerLeave() {
     popup.classList.remove("visible");
 }
 
+function handlePlayerTap(e, playerId) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const popup = document.getElementById("nba-player-popup");
+    const isAlreadyOpen =
+        hoveredPlayerId === playerId &&
+        popup.classList.contains("visible");
+
+    if (isAlreadyOpen) {
+        handlePlayerLeave();
+        return;
+    }
+
+    hoveredPlayerId = playerId;
+    updatePopupContent(playerId);
+    popup.classList.add("visible");
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    positionPopup({
+        clientX: Math.min(rect.right, window.innerWidth - 10),
+        clientY: rect.bottom
+    });
+}
+
+document.addEventListener("pointerdown", event => {
+    if (!event.target.closest(".player-name")) {
+        handlePlayerLeave();
+    }
+});
+
 function positionPopup(e) {
     const popup = document.getElementById("nba-player-popup");
     const gap = 15;
     let x = e.clientX + gap;
     let y = e.clientY + gap;
+    
     const popWidth = 290;
     const popHeight = popup.offsetHeight || 320;
     
-    if (x + popWidth > window.innerWidth) x = e.clientX - popWidth - gap;
-    if (y + popHeight > window.innerHeight) y = e.clientY - popHeight - gap;
+    if (x + popWidth > window.innerWidth) {
+        x = e.clientX - popWidth - gap;
+    }
+    if (y + popHeight > window.innerHeight) {
+        y = e.clientY - popHeight - gap;
+    }
+    
     if (x < 10) x = 10;
     if (y < 10) y = 10;
     
@@ -2045,18 +3294,10 @@ function positionPopup(e) {
     popup.style.top = y + "px";
 }
 
-function formatMinutes(seconds) {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-}
-
-function getPlayerTotalSeconds(playerId) {
-    return (playerStatsMap[playerId] && playerStatsMap[playerId].minutes) ? playerStatsMap[playerId].minutes * 60 : 0;
-}
-
 function updatePopupContent(playerId) {
-    const player = playerDataMap[playerId] || {};
+    const player = playerDataMap[playerId];
+    if (!player) return;
+
     const teamKey = playerTeamMap[playerId];
     let teamName = "Unknown Team";
     if (currentGame) {
@@ -2070,17 +3311,31 @@ function updatePopupContent(playerId) {
     document.getElementById("pop-sub").textContent = `#${player.jersey_number || "00"} | ${player.position || "N/A"}`;
     document.getElementById("pop-team").textContent = teamName;
 
-    document.getElementById("pop-gp").textContent = player.gp || 0;
-    document.getElementById("pop-mpg").textContent = (player.mpg || 0).toFixed(1);
-    document.getElementById("pop-ppg").textContent = (player.ppg || 0).toFixed(1);
-    document.getElementById("pop-rpg").textContent = (player.rpg || 0).toFixed(1);
-    document.getElementById("pop-apg").textContent = (player.apg || 0).toFixed(1);
-    document.getElementById("pop-spg").textContent = (player.spg || 0).toFixed(1);
-    document.getElementById("pop-bpg").textContent = (player.bpg || 0).toFixed(1);
-    document.getElementById("pop-fgpct").textContent = calculatePercentage(player.season_fg_made, player.season_fg_att);
-    document.getElementById("pop-3ppct").textContent = calculatePercentage(player.season_3pt_made, player.season_3pt_att);
-    document.getElementById("pop-ftpct").textContent = calculatePercentage(player.season_ft_made, player.season_ft_att);
+    // Season Averages (from database or defaults)
+    const gp = Number(player.games_played || player.gp || 0);
+    const mpg = Number(player.mpg || player.minutes_per_game || 0).toFixed(1);
+    const ppg = Number(player.ppg || player.points_per_game || 0).toFixed(1);
+    const rpg = Number(player.rpg || player.rebounds_per_game || 0).toFixed(1);
+    const apg = Number(player.apg || player.assists_per_game || 0).toFixed(1);
+    const spg = Number(player.spg || player.steals_per_game || 0).toFixed(1);
+    const bpg = Number(player.bpg || player.blocks_per_game || 0).toFixed(1);
+    
+    const fgPct = player.fg_pct != null ? Math.round(player.fg_pct) + "%" : calculatePercentage(player.season_fg_made, player.season_fg_att);
+    const threePct = player.three_pct != null ? Math.round(player.three_pct) + "%" : calculatePercentage(player.season_3pt_made, player.season_3pt_att);
+    const ftPct = player.ft_pct != null ? Math.round(player.ft_pct) + "%" : calculatePercentage(player.season_ft_made, player.season_ft_att);
 
+    document.getElementById("pop-gp").textContent = gp;
+    document.getElementById("pop-mpg").textContent = mpg;
+    document.getElementById("pop-ppg").textContent = ppg;
+    document.getElementById("pop-rpg").textContent = rpg;
+    document.getElementById("pop-apg").textContent = apg;
+    document.getElementById("pop-spg").textContent = spg;
+    document.getElementById("pop-bpg").textContent = bpg;
+    document.getElementById("pop-fgpct").textContent = fgPct;
+    document.getElementById("pop-3ppct").textContent = threePct;
+    document.getElementById("pop-ftpct").textContent = ftPct;
+
+    // Current Game Live Stats
     const cg = playerStatsMap[playerId] || {};
     const totalSecs = getPlayerTotalSeconds(playerId);
     
@@ -2095,158 +3350,7350 @@ function updatePopupContent(playerId) {
     const pm = Number(cg.plus_minus || 0);
     const pmEl = document.getElementById("pop-cg-pm");
     pmEl.textContent = (pm > 0 ? "+" : "") + pm;
+    pmEl.className = "nba-popup-stat-val " + (pm > 0 ? "plus-value" : pm < 0 ? "minus-value" : "");
+}
+
+
+/* =========================================================
+   SUBSTITUTION BUTTON CONTROL
+   ========================================================= */
+
+function updateSubstitutionButtons(){
+
+    document
+    .querySelectorAll(".sub-button")
+    .forEach(button=>{
+
+        button.disabled=clockRunning;
+
+        if(clockRunning){
+
+            button.title=
+                "Pause the game clock before making a substitution.";
+
+        }
+        else{
+
+            button.title=
+                "Click to make a substitution.";
+
+        }
+
+    });
+
+
+    document
+    .querySelectorAll(
+        ".manual-time-adjustment"
+    )
+    .forEach(button=>{
+
+        button.disabled=clockRunning;
+
+        if(clockRunning){
+
+            button.title=
+                "Pause the game clock before adjusting time.";
+        }
+        else{
+
+            button.title=
+                "Manual time adjustment available while paused.";
+        }
+    });
+}
+
+
+/* =========================================================
+   PLAYER MINUTES
+   ========================================================= */
+
+function getPlayerTotalSeconds(playerId){
+
+    const stats=playerStatsMap[playerId]||{};
+
+    const saved=Math.max(
+        0,
+        Number(stats.minutes_played||0)
+    );
+
+    if(playerOnCourt[playerId]!==true){
+        return saved;
+    }
+
+    const base=
+        playerMinuteBaseSeconds[playerId]!==undefined
+        ? playerMinuteBaseSeconds[playerId]
+        : saved;
+
+    const lastClock=
+        playerMinuteLastClockSeconds[playerId]!==undefined
+        ? playerMinuteLastClockSeconds[playerId]
+        : clockSeconds;
+
+    if(clockRunning){
+
+        const elapsed=
+            Math.max(
+                0,
+                lastClock-clockSeconds
+            );
+
+        return base+elapsed;
+    }
+
+    return base;
+}
+
+
+function synchronizePlayerMinutes(){
+
+    for(const playerId of Object.keys(playerOnCourt)){
+
+        if(playerOnCourt[playerId]!==true){
+            continue;
+        }
+
+        const stats=
+            playerStatsMap[playerId]||{};
+
+        const saved=
+            Math.max(
+                0,
+                Number(stats.minutes_played||0)
+            );
+
+        if(
+            playerMinuteBaseSeconds[playerId]===undefined
+        ){
+
+            playerMinuteBaseSeconds[playerId]=saved;
+        }
+
+        if(
+            playerMinuteLastClockSeconds[playerId]===undefined
+        ){
+
+            playerMinuteLastClockSeconds[playerId]=
+                clockSeconds;
+        }
+
+        if(clockRunning){
+
+            const lastClock=
+                playerMinuteLastClockSeconds[playerId];
+
+            const elapsed=
+                Math.max(
+                    0,
+                    lastClock-clockSeconds
+                );
+
+            if(elapsed>0){
+
+                playerMinuteBaseSeconds[playerId]
+                    +=elapsed;
+
+                playerMinuteLastClockSeconds[playerId]
+                    =clockSeconds;
+            }
+        }
+        else{
+
+            playerMinuteLastClockSeconds[playerId]
+                =clockSeconds;
+        }
+    }
+}
+
+
+function updateVisibleMinutes(){
+
+    synchronizePlayerMinutes();
+
+    for(const playerId of Object.keys(playerOnCourt)){
+
+        if(playerOnCourt[playerId]!==true){
+            continue;
+        }
+
+        const row=
+            document.getElementById(
+                "player-row-"+playerId
+            );
+
+        if(!row){
+            continue;
+        }
+
+        const cell=
+            row.querySelector("[data-minutes]");
+
+        if(cell){
+
+            cell.textContent=
+                formatMinutes(
+                    getPlayerTotalSeconds(playerId)
+                );
+        }
+    }
+
+    if (hoveredPlayerId) {
+        updatePopupContent(hoveredPlayerId);
+    }
+}
+
+
+async function persistPlayerMinutes(playerId){
+
+    if(!currentGame){
+        return;
+    }
+
+    if(playerOnCourt[playerId]!==true){
+        return;
+    }
+
+    synchronizePlayerMinutes();
+
+    const stats=
+        await getPlayerGameStats(playerId);
+
+    const total=
+        Math.round(
+            getPlayerTotalSeconds(playerId)*1000
+        )/1000;
+
+    const referenceClock=
+        Math.max(
+            0,
+            Number(clockSeconds||0)
+        );
+
+    const {
+        data,
+        error
+    }=
+    await supabaseClient
+    .from("player_game_stats")
+    .upsert(
+        {
+            player_id:playerId,
+            game_id:currentGame.id,
+            minutes_played:total,
+            minutes_clock_seconds:referenceClock
+        },
+        {
+            onConflict:
+                "player_id,game_id"
+        }
+    )
+    .select()
+    .single();
+
+    if(error){
+
+        console.error(
+            "Player minute save error:",
+            error
+        );
+
+        return;
+    }
+
+    playerStatsMap[playerId]={
+        ...stats,
+        ...(data||{}),
+        minutes_played:total,
+        minutes_clock_seconds:referenceClock
+    };
+
+    playerMinuteBaseSeconds[playerId]
+        =total;
+
+    playerMinuteLastClockSeconds[playerId]
+        =referenceClock;
+
+    playerMinuteLastPersisted[playerId]
+        =total;
+}
+
+
+/* =========================================================
+   ACCEPT MANUAL MINUTE EDITS FROM SUPABASE
+   ========================================================= */
+
+async function reconcileManualMinuteOverrides(playerIds){
+
+    if(
+        !currentGame ||
+        !playerIds.length
+    ){
+        return false;
+    }
+
+    const {
+        data,
+        error
+    }=
+    await supabaseClient
+    .from("player_game_stats")
+    .select(
+        "player_id,minutes_played,minutes_clock_seconds"
+    )
+    .eq(
+        "game_id",
+        currentGame.id
+    )
+    .in(
+        "player_id",
+        playerIds
+    );
+
+    if(error){
+
+        console.error(
+            "Manual minute check error:",
+            error
+        );
+
+        return false;
+    }
+
+    const changedPlayers=[];
+
+    for(const row of data||[]){
+
+        const playerId=
+            String(row.player_id);
+
+        const databaseTotal=
+            Math.max(
+                0,
+                Number(
+                    row.minutes_played || 0
+                )
+            );
+
+        const lastPersisted=
+            playerMinuteLastPersisted[playerId];
+
+        if(lastPersisted === undefined){
+
+            playerMinuteLastPersisted[playerId]=
+                databaseTotal;
+
+            continue;
+        }
+
+        if(
+            Math.abs(
+                databaseTotal -
+                lastPersisted
+            ) < 0.0005
+        ){
+            continue;
+        }
+
+        /*
+        Only accept a manual downward correction while
+        the game clock is paused. This prevents a delayed
+        save or another open scorekeeper tab from making
+        stopped player minutes appear to keep running.
+        */
+
+        if(
+            clockRunning ||
+            databaseTotal >= lastPersisted
+        ){
+            continue;
+        }
+
+        playerMinuteBaseSeconds[playerId]=
+            databaseTotal;
+
+        playerMinuteLastClockSeconds[playerId]=
+            Math.max(
+                0,
+                Number(clockSeconds || 0)
+            );
+
+        playerMinuteLastPersisted[playerId]=
+            databaseTotal;
+
+        playerStatsMap[playerId]={
+            ...(playerStatsMap[playerId] || {}),
+            ...row,
+            minutes_played:databaseTotal,
+            minutes_clock_seconds:
+                playerMinuteLastClockSeconds[playerId]
+        };
+
+        changedPlayers.push(playerId);
+    }
+
+    if(changedPlayers.length){
+
+        await Promise.all(
+            changedPlayers.map(
+                playerId=>
+                    refreshPlayerRow(playerId)
+            )
+        );
+
+        showStatus(
+            "Manual Supabase minutes reset applied."
+        );
+
+        return true;
+    }
+
+    return false;
+}
+
+
+async function persistAllPlayerMinutes(force=false){
+
+    if(!currentGame){
+        return;
+    }
+
+    const loadedPlayers=
+        Object.keys(playerOnCourt);
+
+    if(!loadedPlayers.length){
+        return;
+    }
+
+    await reconcileManualMinuteOverrides(
+        loadedPlayers
+    );
+
+    synchronizePlayerMinutes();
+
+    /*
+    While paused, the recurring timer only watches for
+    manual Supabase edits. Clock events pass force=true
+    when a final save is required.
+    */
+
+    if(
+        !clockRunning &&
+        !force
+    ){
+
+        updateVisibleMinutes();
+
+        return;
+    }
+
+    const active=
+        Object.keys(playerOnCourt)
+        .filter(
+            id=>playerOnCourt[id]===true
+        );
+
+    if(!active.length){
+        return;
+    }
+
+    const referenceClock=
+        Math.max(
+            0,
+            Number(clockSeconds||0)
+        );
+
+    const rows=
+        active.map(playerId=>{
+
+            const total=
+                Math.round(
+                    getPlayerTotalSeconds(playerId)*1000
+                )/1000;
+
+            return {
+                player_id:playerId,
+                game_id:currentGame.id,
+                minutes_played:total,
+                minutes_clock_seconds:referenceClock
+            };
+        });
+
+    const {
+        data,
+        error
+    }=
+    await supabaseClient
+    .from("player_game_stats")
+    .upsert(
+        rows,
+        {
+            onConflict:
+                "player_id,game_id"
+        }
+    )
+    .select();
+
+    if(error){
+
+        console.error(
+            "Player minute batch save error:",
+            error
+        );
+
+        return;
+    }
+
+    const savedRows=
+        new Map(
+            (data||[]).map(
+                row=>[
+                    String(row.player_id),
+                    row
+                ]
+            )
+        );
+
+    rows.forEach(row=>{
+
+        const playerId=
+            String(row.player_id);
+
+        playerStatsMap[playerId]={
+            ...(playerStatsMap[playerId]||{}),
+            ...(savedRows.get(playerId)||{}),
+            minutes_played:
+                row.minutes_played,
+            minutes_clock_seconds:
+                referenceClock
+        };
+
+        playerMinuteBaseSeconds[playerId]=
+            row.minutes_played;
+
+        playerMinuteLastClockSeconds[playerId]=
+            referenceClock;
+
+        playerMinuteLastPersisted[playerId]=
+            row.minutes_played;
+    });
+}
+
+
+function startMinuteDisplay(){
+
+    if(minuteSyncTimer){
+        clearInterval(minuteSyncTimer);
+    }
+
+    minuteSyncTimer=
+        setInterval(
+            updateVisibleMinutes,
+            100
+        );
+}
+
+
+function stopMinuteDisplay(){
+
+    if(minuteSyncTimer){
+
+        clearInterval(
+            minuteSyncTimer
+        );
+
+        minuteSyncTimer=null;
+    }
+}
+
+
+function startMinutePersistence(){
+
+    if(minutePersistTimer){
+        clearInterval(
+            minutePersistTimer
+        );
+    }
+
+    minutePersistTimer=
+        setInterval(
+            ()=>persistAllPlayerMinutes(),
+            1000
+        );
+}
+
+
+function stopMinutePersistence(){
+
+    if(minutePersistTimer){
+
+        clearInterval(
+            minutePersistTimer
+        );
+
+        minutePersistTimer=null;
+    }
+}
+
+
+/* =========================================================
+   LOAD GAME
+   ========================================================= */
+
+async function loadGame(){
+
+    const gameId=
+        Number(
+            document.getElementById(
+                "gameId"
+            ).value
+        );
+
+    if(!gameId){
+
+        showStatus(
+            "Enter a valid Game ID."
+        );
+
+        return;
+    }
+
+    const canAccessGame=
+        await canCurrentUserAccessGame(
+            gameId
+        );
+
+    if(!canAccessGame){
+
+        showStatus(
+            "You are not assigned to this game."
+        );
+
+        return;
+    }
+
+    const {
+        data,
+        error
+    }=
+    await supabaseClient
+    .from("games")
+    .select("*")
+    .eq("id",gameId)
+    .single();
+
+    if(error){
+
+        console.error(error);
+
+        showStatus(
+            "Error loading game: "+
+            error.message
+        );
+
+        return;
+    }
+
+    currentGame=data;
+
+    rememberLoadedGameId(
+        data.id
+    );
+
+    restoreQuickScoringState();
+
+    document.getElementById(
+        "homeTeam"
+    ).textContent=
+        data.home_team||
+        "Home Team";
+
+    document.getElementById(
+        "awayTeam"
+    ).textContent=
+        data.away_team||
+        "Away Team";
+
+    document.getElementById(
+        "breakdownHomeName"
+    ).textContent=
+        data.home_team||
+        "Home Team";
+
+    document.getElementById(
+        "breakdownAwayName"
+    ).textContent=
+        data.away_team||
+        "Away Team";
+
+    document.getElementById(
+        "homeScore"
+    ).textContent=
+        data.home_score||0;
+
+    document.getElementById(
+        "awayScore"
+    ).textContent=
+        data.away_score||0;
+
+
+    if(clockInterval){
+
+        clearInterval(
+            clockInterval
+        );
+
+        clockInterval=null;
+    }
+
+    clockRunning=false;
+    clockEndTime=null;
+
+
+    stopMinuteDisplay();
+    stopMinutePersistence();
+
+
+    playerStatsMap={};
+    playerDataMap={};
+    playerTeamMap={};
+    playerOnCourt={};
+    playerCourtOrder={};
+
+    teamPlayersMap={};
+    teamContainerMap={};
+    teamExpandedMap={};
+    teamIdMap={};
+
+    easySelectedPlayerId=null;
+    easyActionInFlight=false;
+    easyDeductMode=false;
+    easyUndoStack=[];
+
+    playerMinuteBaseSeconds={};
+    playerMinuteLastClockSeconds={};
+    playerMinuteLastPersisted={};
+
+
+    statSaveQueue.clear();
+
+    statSaveTimers
+    .forEach(
+        t=>clearTimeout(t)
+    );
+
+    statSaveTimers.clear();
+    statSaveInFlight.clear();
+    statSaveRetryAfter.clear();
+
+    gameScoreSaveQueue.clear();
+
+    gameScoreSaveTimers
+    .forEach(
+        t=>clearTimeout(t)
+    );
+
+    gameScoreSaveTimers.clear();
+    gameScoreSaveInFlight.clear();
+    gameScoreSaveRetryAfter.clear();
+
+
+    await loadPersistedClock();
+
+    await loadTeamPlayers();
+
+    await loadScoringBreakdown();
+
+    setActivePeriod(
+        data.period
+    );
+
+    setActiveStatus(
+        data.status
+    );
+
+    setFinalizedLock(
+        String(data.status||"").toLowerCase()==="final"
+    );
+
+
+    initializePlayerMinuteSynchronization();
+
+
+    startMinuteDisplay();
+
+    startMinutePersistence();
+
+
+    updateSubstitutionButtons();
+
+
+    showStatus(
+        "Game loaded successfully."
+    );
+}
+
+
+function initializePlayerMinuteSynchronization(){
+
+    for(const playerId of Object.keys(playerOnCourt)){
+
+        const stats=
+            playerStatsMap[playerId]||{};
+
+        let synchronizedTotal=
+            Math.max(
+                0,
+                Number(
+                    stats.minutes_played||0
+                )
+            );
+
+
+        const savedClock=
+            Number(
+                stats.minutes_clock_seconds
+            );
+
+
+        if(
+            clockRunning&&
+            playerOnCourt[playerId]===true&&
+            stats.minutes_clock_seconds!==null&&
+            stats.minutes_clock_seconds!==undefined&&
+            Number.isFinite(savedClock)
+        ){
+
+            synchronizedTotal+=
+                Math.max(
+                    0,
+                    savedClock-clockSeconds
+                );
+        }
+
+
+        playerMinuteBaseSeconds[playerId]=
+            synchronizedTotal;
+
+        playerMinuteLastClockSeconds[playerId]
+            =clockSeconds;
+    }
+}
+
+
+/* =========================================================
+   GAME DATABASE UPDATE
+   ========================================================= */
+
+async function updateGame(changes){
+
+    if(!currentGame){
+
+        showStatus(
+            "Load a game first."
+        );
+
+        return;
+    }
+
+    const {
+        data,
+        error
+    }=
+    await supabaseClient
+    .from("games")
+    .update(changes)
+    .eq("id",currentGame.id)
+    .select()
+    .single();
+
+    if(error){
+
+        console.error(error);
+
+        showStatus(
+            "Unable to update game."
+        );
+
+        return;
+    }
+
+    currentGame=data;
+
+    if(changes.period){
+
+        setActivePeriod(
+            changes.period
+        );
+    }
+}
+
+
+/* =========================================================
+   TEAMS
+   ========================================================= */
+
+async function loadTeamPlayers(){
+
+    const homeName=
+        String(
+            currentGame.home_team||""
+        ).trim();
+
+    const awayName=
+        String(
+            currentGame.away_team||""
+        ).trim();
+
+
+    const [
+        {data:homeTeam},
+        {data:awayTeam}
+    ]=
+    await Promise.all([
+
+        supabaseClient
+        .from("teams")
+        .select("id,name")
+        .ilike("name",homeName)
+        .maybeSingle(),
+
+        supabaseClient
+        .from("teams")
+        .select("id,name")
+        .ilike("name",awayName)
+        .maybeSingle()
+
+    ]);
+
+
+    if(homeTeam){
+
+        teamIdMap.home=homeTeam.id;
+
+        document.getElementById(
+            "homePlayersTitle"
+        ).textContent=
+            homeTeam.name;
+
+        await loadPlayersForTeam(
+            homeTeam.id,
+            "homePlayersList",
+            "home"
+        );
+    }
+
+
+    if(awayTeam){
+
+        teamIdMap.away=awayTeam.id;
+
+        document.getElementById(
+            "awayPlayersTitle"
+        ).textContent=
+            awayTeam.name;
+
+        await loadPlayersForTeam(
+            awayTeam.id,
+            "awayPlayersList",
+            "away"
+        );
+    }
+}
+
+
+async function loadPlayersForTeam(
+    teamId,
+    containerId,
+    team
+){
+
+    const container=
+        document.getElementById(
+            containerId
+        );
+
+    container.innerHTML="";
+
+    teamContainerMap[team]=
+        containerId;
+
+    teamExpandedMap[team]=
+        false;
+
+
+    const {
+        data,
+        error
+    }=
+    await supabaseClient
+    .from("players")
+    .select("*")
+    .eq("team_id",teamId)
+    .order(
+        "jersey_number",
+        {ascending:true}
+    );
+
+
+    if(error){
+
+        console.error(error);
+
+        container.innerHTML=
+            "<div>Unable to load players.</div>";
+
+        return;
+    }
+
+
+    if(!data||!data.length){
+
+        container.innerHTML=
+            "<div>No players assigned.</div>";
+
+        return;
+    }
+
+
+    teamPlayersMap[team]=data;
+
+
+    await Promise.all(
+
+        data.map(
+            async player=>{
+
+                playerDataMap[player.id]=
+                    player;
+
+                playerTeamMap[player.id]=
+                    team;
+
+                const stats=
+                    await getPlayerGameStats(
+                        player.id
+                    );
+
+                playerOnCourt[player.id]=
+                    stats.on_court===true;
+            }
+        )
+    );
+
+
+    await renderTeamPlayers(
+        team
+    );
+}
+
+
+async function renderTeamPlayers(team){
+
+    const container=
+        document.getElementById(
+            teamContainerMap[team]
+        );
+
+    if(!container){
+        return;
+    }
+
+
+    const all=
+        teamPlayersMap[team]||[];
+
+
+    const onCourt=
+        all.filter(
+            p=>playerOnCourt[p.id]===true
+        );
+
+
+    const bench=
+        all.filter(
+            p=>playerOnCourt[p.id]!==true
+        );
+
+
+    const visibleBench=
+        teamExpandedMap[team]
+        ?bench
+        :[];
+
+
+    const display=[
+        ...onCourt,
+        ...visibleBench
+    ];
+
+
+    container.innerHTML="";
+
+
+    const scroll=
+        document.createElement(
+            "div"
+        );
+
+    scroll.className=
+        "table-scroll";
+
+
+    const table=
+        document.createElement(
+            "table"
+        );
+
+    table.className=
+        "player-table";
+
+
+    table.innerHTML=`
+
+<thead>
+
+<tr>
+
+<th class="col-number">#</th>
+<th class="col-player">PLAYER</th>
+<th class="col-min">MIN</th>
+
+<th class="col-stat">PTS</th>
+<th class="col-stat">OREB</th>
+<th class="col-stat">DREB</th>
+<th class="col-stat">REB</th>
+<th class="col-stat">AST</th>
+<th class="col-stat">STL</th>
+<th class="col-stat">BLK</th>
+<th class="col-stat">TO</th>
+<th class="col-stat">PF</th>
+
+<th class="col-shot">2PT</th>
+<th class="col-shot">3PT</th>
+<th class="col-shot">FG</th>
+<th class="col-shot">FT</th>
+
+<th class="col-plusminus">+/-</th>
+
+</tr>
+
+</thead>
+
+<tbody></tbody>
+`;
+
+
+    scroll.appendChild(
+        table
+    );
+
+    container.appendChild(
+        scroll
+    );
+
+
+    const tbody=
+        table.querySelector(
+            "tbody"
+        );
+
+
+    for(
+        const player of display
+    ){
+
+        const row=
+            document.createElement(
+                "tr"
+            );
+
+        row.id=
+            "player-row-"+player.id;
+
+        tbody.appendChild(
+            row
+        );
+
+        await renderPlayerRow(
+            player,
+            row
+        );
+    }
+
+
+    if(bench.length){
+
+        const row=
+            document.createElement(
+                "tr"
+            );
+
+        row.className=
+            "view-all-row";
+
+
+        const cell=
+            document.createElement(
+                "td"
+            );
+
+        cell.colSpan=17;
+
+
+        const btn=
+            document.createElement(
+                "button"
+            );
+
+        btn.className=
+            "view-all-button";
+
+
+        if(teamExpandedMap[team]){
+
+            btn.textContent=
+                "SHOW LESS";
+
+            btn.onclick=
+                ()=>hideExtraBenchPlayers(
+                    team
+                );
+
+        }
+        else{
+
+            btn.textContent=
+                "VIEW ALL ("+
+                bench.length+
+                " MORE)";
+
+            btn.onclick=
+                ()=>viewAllBenchPlayers(
+                    team
+                );
+        }
+
+
+        cell.appendChild(
+            btn
+        );
+
+        row.appendChild(
+            cell
+        );
+
+        tbody.appendChild(
+            row
+        );
+    }
+
+    updateSubstitutionButtons();
+    renderEasyScorekeeper();
+}
+
+
+async function viewAllBenchPlayers(team){
+
+    teamExpandedMap[team]=true;
+
+    await renderTeamPlayers(
+        team
+    );
+}
+
+
+async function hideExtraBenchPlayers(team){
+
+    teamExpandedMap[team]=false;
+
+    await renderTeamPlayers(
+        team
+    );
+}
+
+
+/* =========================================================
+   PLAYER STATS
+   ========================================================= */
+
+async function getPlayerGameStats(playerId){
+
+    const defaults={
+
+        points:0,
+
+        minutes_played:0,
+
+        minutes_clock_seconds:null,
+
+        offensive_rebounds:0,
+
+        defensive_rebounds:0,
+
+        rebounds:0,
+
+        assists:0,
+
+        steals:0,
+
+        blocks:0,
+
+        turnovers:0,
+
+        fouls:0,
+
+        two_pt_made:0,
+
+        two_pt_attempted:0,
+
+        three_pt_made:0,
+
+        three_pt_attempted:0,
+
+        ft_made:0,
+
+        ft_attempted:0,
+
+        plus_minus:0,
+
+        on_court:false
+    };
+
+
+    if(playerStatsMap[playerId]){
+
+        if(
+            playerMinuteLastPersisted[playerId] ===
+            undefined
+        ){
+
+            playerMinuteLastPersisted[playerId]=
+                Math.max(
+                    0,
+                    Number(
+                        playerStatsMap[playerId]
+                        .minutes_played || 0
+                    )
+                );
+        }
+
+        return playerStatsMap[playerId];
+    }
+
+
+    if(!currentGame){
+
+        return defaults;
+    }
+
+
+    const {
+        data,
+        error
+    }=
+    await supabaseClient
+    .from("player_game_stats")
+    .select("*")
+    .eq(
+        "game_id",
+        currentGame.id
+    )
+    .eq(
+        "player_id",
+        playerId
+    )
+    .maybeSingle();
+
+
+    if(error){
+
+        console.error(
+            "Stats error:",
+            error
+        );
+    }
+
+
+    playerStatsMap[playerId]={
+
+        ...defaults,
+
+        ...(data||{})
+    };
+
+    playerMinuteLastPersisted[playerId]=
+        Math.max(
+            0,
+            Number(
+                playerStatsMap[playerId]
+                .minutes_played || 0
+            )
+        );
+
+
+    return playerStatsMap[playerId];
+}
+
+
+/* =========================================================
+   FAST STAT SAVING
+   ========================================================= */
+
+function queueStatSave(
+    playerId,
+    changes
+){
+
+    if(!currentGame){
+        return;
+    }
+
+
+    const key=
+        playerId+
+        "|"+
+        currentGame.id;
+
+
+    const old=
+        statSaveQueue.get(key)||
+        {};
+
+
+    statSaveQueue.set(
+        key,
+        {
+            ...old,
+            ...changes
+        }
+    );
+
+
+    /*
+       A fresh scorekeeper action should retry immediately,
+       even when an earlier background save was waiting for
+       its connection-retry delay.
+    */
+
+    statSaveRetryAfter.delete(key);
+
+
+    clearTimeout(
+        statSaveTimers.get(key)
+    );
+
+
+    statSaveTimers.set(
+
+        key,
+
+        setTimeout(
+            ()=>flushStatSave(playerId),
+            150
+        )
+
+    );
+}
+
+
+async function flushStatSave(playerId){
+
+    if(!currentGame){
+        return false;
+    }
+
+
+    const gameId=currentGame.id;
+
+    const key=
+        playerId+
+        "|"+
+        gameId;
+
+
+    if(
+        statSaveInFlight.has(key)
+    ){
+
+        return false;
+    }
+
+
+    const retryAfter=
+        Number(
+            statSaveRetryAfter.get(key)||0
+        );
+
+
+    if(retryAfter>Date.now()){
+
+        const remaining=
+            Math.max(
+                10,
+                retryAfter-Date.now()+10
+            );
+
+        clearTimeout(
+            statSaveTimers.get(key)
+        );
+
+        statSaveTimers.set(
+            key,
+            setTimeout(
+                ()=>flushStatSave(playerId),
+                remaining
+            )
+        );
+
+        return false;
+    }
+
+
+    const changes=
+        statSaveQueue.get(key);
+
+
+    if(!changes){
+        return true;
+    }
+
+
+    statSaveQueue.delete(key);
+
+    statSaveTimers.delete(key);
+
+    statSaveInFlight.add(key);
+
+
+    let saveFailed=false;
+    let saved=false;
+
+
+    try{
+
+        const stats=
+            await getPlayerGameStats(
+                playerId
+            );
+
+
+        const {
+            data,
+            error
+        }=
+        await supabaseClient
+        .from("player_game_stats")
+        .upsert(
+
+            {
+                player_id:playerId,
+
+                game_id:gameId,
+
+                ...changes
+            },
+
+            {
+                onConflict:
+                    "player_id,game_id"
+            }
+
+        )
+        .select()
+        .single();
+
+
+        if(error){
+            throw error;
+        }
+
+
+        if(
+            currentGame&&
+            String(currentGame.id)===String(gameId)
+        ){
+
+            const newerChanges=
+                statSaveQueue.get(key)||{};
+
+            playerStatsMap[playerId]={
+
+                ...stats,
+
+                ...data,
+
+                ...newerChanges
+            };
+        }
+
+
+        statSaveRetryAfter.delete(key);
+        saved=true;
+
+    }
+    catch(error){
+
+        saveFailed=true;
+
+        console.error(
+            "Background stat save error:",
+            error
+        );
+
+
+        if(
+            currentGame&&
+            String(currentGame.id)===String(gameId)
+        ){
+
+            const newerChanges=
+                statSaveQueue.get(key)||{};
+
+
+            /*
+               Keep the absolute stat values that failed to save.
+               Any newer values win, so no scorekeeper tap is lost.
+            */
+
+            statSaveQueue.set(
+                key,
+                {
+                    ...changes,
+                    ...newerChanges
+                }
+            );
+
+
+            const retryDelay=1000;
+
+            statSaveRetryAfter.set(
+                key,
+                Date.now()+retryDelay
+            );
+
+            clearTimeout(
+                statSaveTimers.get(key)
+            );
+
+            statSaveTimers.set(
+                key,
+                setTimeout(
+                    ()=>flushStatSave(playerId),
+                    retryDelay
+                )
+            );
+        }
+
+        showStatus(
+            "Connection interrupted. The stat is queued and will retry automatically."
+        );
+
+    }
+    finally{
+
+        statSaveInFlight.delete(
+            key
+        );
+
+
+        if(
+            statSaveQueue.has(key)&&
+            !saveFailed
+        ){
+
+            flushStatSave(
+                playerId
+            );
+        }
+    }
+
+
+    return saved;
+}
+
+
+function queueGameScoreSave(
+    gameId,
+    changes
+){
+
+    if(
+        !currentGame||
+        String(currentGame.id)!==String(gameId)
+    ){
+        return;
+    }
+
+
+    const key=String(gameId);
+    const old=
+        gameScoreSaveQueue.get(key)||{};
+
+
+    gameScoreSaveQueue.set(
+        key,
+        {
+            ...old,
+            ...changes
+        }
+    );
+
+    gameScoreSaveRetryAfter.delete(key);
+
+    clearTimeout(
+        gameScoreSaveTimers.get(key)
+    );
+
+    gameScoreSaveTimers.set(
+        key,
+        setTimeout(
+            ()=>flushGameScoreSave(gameId),
+            150
+        )
+    );
+}
+
+
+async function flushGameScoreSave(gameId){
+
+    if(gameId===null||gameId===undefined){
+        return false;
+    }
+
+
+    const key=String(gameId);
+
+    if(gameScoreSaveInFlight.has(key)){
+        return false;
+    }
+
+
+    const retryAfter=
+        Number(
+            gameScoreSaveRetryAfter.get(key)||0
+        );
+
+    if(retryAfter>Date.now()){
+
+        const remaining=
+            Math.max(
+                10,
+                retryAfter-Date.now()+10
+            );
+
+        clearTimeout(
+            gameScoreSaveTimers.get(key)
+        );
+
+        gameScoreSaveTimers.set(
+            key,
+            setTimeout(
+                ()=>flushGameScoreSave(gameId),
+                remaining
+            )
+        );
+
+        return false;
+    }
+
+
+    const changes=
+        gameScoreSaveQueue.get(key);
+
+    if(!changes){
+        return true;
+    }
+
+
+    gameScoreSaveQueue.delete(key);
+    gameScoreSaveTimers.delete(key);
+    gameScoreSaveInFlight.add(key);
+
+    let saveFailed=false;
+    let saved=false;
+
+
+    try{
+
+        const {
+            data,
+            error
+        }=
+        await supabaseClient
+        .from("games")
+        .update(changes)
+        .eq("id",gameId)
+        .select("id,home_score,away_score")
+        .single();
+
+        if(error){
+            throw error;
+        }
+
+        if(
+            currentGame&&
+            String(currentGame.id)===key
+        ){
+
+            const newerChanges=
+                gameScoreSaveQueue.get(key)||{};
+
+            currentGame={
+                ...currentGame,
+                ...data,
+                ...newerChanges
+            };
+        }
+
+        gameScoreSaveRetryAfter.delete(key);
+        saved=true;
+    }
+    catch(error){
+
+        saveFailed=true;
+
+        console.error(
+            "Game score save error:",
+            error
+        );
+
+        if(
+            currentGame&&
+            String(currentGame.id)===key
+        ){
+
+            const newerChanges=
+                gameScoreSaveQueue.get(key)||{};
+
+            gameScoreSaveQueue.set(
+                key,
+                {
+                    ...changes,
+                    ...newerChanges
+                }
+            );
+
+            const retryDelay=1000;
+
+            gameScoreSaveRetryAfter.set(
+                key,
+                Date.now()+retryDelay
+            );
+
+            clearTimeout(
+                gameScoreSaveTimers.get(key)
+            );
+
+            gameScoreSaveTimers.set(
+                key,
+                setTimeout(
+                    ()=>flushGameScoreSave(gameId),
+                    retryDelay
+                )
+            );
+        }
+
+        showStatus(
+            "Connection interrupted. The score is queued and will retry automatically."
+        );
+    }
+    finally{
+
+        gameScoreSaveInFlight.delete(key);
+
+        if(
+            gameScoreSaveQueue.has(key)&&
+            !saveFailed
+        ){
+            flushGameScoreSave(gameId);
+        }
+    }
+
+
+    return saved;
+}
+
+
+async function saveStatDirect(
+    playerId,
+    statKey,
+    value
+){
+
+    if(!currentGame){
+        return;
+    }
+
+
+    const stats=
+        await getPlayerGameStats(
+            playerId
+        );
+
+
+    let normalized;
+
+
+    if(statKey==="on_court"){
+
+        normalized=Boolean(value);
+
+    }
+    else if(statKey==="minutes_played"){
+
+        normalized=
+            Math.max(
+                0,
+                Math.round(
+                    Number(value||0)*1000
+                )/1000
+            );
+
+    }
+    else{
+
+        normalized=
+            Math.max(
+                0,
+                Math.floor(
+                    Number(value||0)
+                )
+            );
+    }
+
+
+    const updateObj={
+
+        player_id:playerId,
+
+        game_id:currentGame.id,
+
+        [statKey]:normalized
+    };
+
+
+    if(
+        statKey==="offensive_rebounds"||
+        statKey==="defensive_rebounds"
+    ){
+
+        const o=
+            statKey==="offensive_rebounds"
+            ?Number(value)
+            :Number(
+                stats.offensive_rebounds||0
+            );
+
+
+        const d=
+            statKey==="defensive_rebounds"
+            ?Number(value)
+            :Number(
+                stats.defensive_rebounds||0
+            );
+
+
+        updateObj.rebounds=
+            Math.max(
+                0,
+                Math.floor(
+                    o+d
+                )
+            );
+    }
+
+
+    const {
+        data,
+        error
+    }=
+    await supabaseClient
+    .from("player_game_stats")
+    .upsert(
+        updateObj,
+        {
+            onConflict:
+                "player_id,game_id"
+        }
+    )
+    .select()
+    .single();
+
+
+    if(error){
+
+        console.error(
+            error
+        );
+
+        return;
+    }
+
+
+    playerStatsMap[playerId]={
+
+        ...stats,
+
+        ...data
+    };
+}
+
+
+/* =========================================================
+   SCORING BREAKDOWN EVENTS
+   ========================================================= */
+
+function getDefaultQuickScoringContext(){
+
+    return {
+        home:{
+            offTurnover:false,
+            secondChance:false
+        },
+        away:{
+            offTurnover:false,
+            secondChance:false
+        }
+    };
+}
+
+
+function getQuickScoringStorageKey(){
+
+    if(!authenticatedUser || !currentGame){
+        return null;
+    }
+
+    return "hoophub_quick_scoring:"+
+        authenticatedUser.id+":"+
+        currentGame.id;
+}
+
+
+function saveQuickScoringState(){
+
+    const key=getQuickScoringStorageKey();
+
+    if(!key){
+        return;
+    }
+
+    try{
+        /*
+           Possession tags are intentionally temporary.
+           Removing the old saved value prevents SECOND CHANCE
+           or OFF TURNOVER from returning after a page refresh.
+        */
+        localStorage.removeItem(key);
+    }
+    catch(error){
+        console.warn(
+            "Unable to save quick scoring context:",
+            error
+        );
+    }
+}
+
+
+function restoreQuickScoringState(){
+
+    quickScoringContext=
+        getDefaultQuickScoringContext();
+
+    quickFastBreak=false;
+
+    const key=getQuickScoringStorageKey();
+
+    if(key){
+        try{
+            localStorage.removeItem(key);
+        }
+        catch(error){
+            console.warn(
+                "Unable to clear old quick scoring context:",
+                error
+            );
+        }
+    }
+
+    updateQuickScoringDisplay();
+}
+
+
+function getQuickContextLabel(team){
+
+    const state=
+        quickScoringContext[team]||{};
+
+    const labels=[];
+
+    if(state.offTurnover){
+        labels.push("OFF TURNOVER");
+    }
+
+    if(state.secondChance){
+        labels.push("SECOND CHANCE");
+    }
+
+    return labels.length
+        ?labels.join(" + ")
+        :"NORMAL";
+}
+
+
+function updateQuickScoringDisplay(){
+
+    const team=
+        easySelectedPlayerId
+        ?playerTeamMap[easySelectedPlayerId]
+        :null;
+
+    const state=
+        team
+        ?quickScoringContext[team]||{}
+        :{};
+
+    const contextLabel=
+        document.getElementById(
+            "selectedQuickContextLabel"
+        );
+
+    const labels=[];
+
+    if(state.offTurnover){
+        labels.push("OFF TURNOVER");
+    }
+
+    if(state.secondChance){
+        labels.push("2ND CHANCE");
+    }
+
+    if(quickFastBreak){
+        labels.push("FAST BREAK");
+    }
+
+    if(contextLabel){
+        contextLabel.textContent=
+            team
+            ?team.toUpperCase()+" NEXT: "+
+                (labels.length?labels.join(" + "):"NORMAL")
+            :"NEXT SCORE: PICK PLAYER";
+    }
+
+    const offTurnoverButton=
+        document.getElementById(
+            "quickOffTurnoverButton"
+        );
+
+    if(offTurnoverButton){
+        const active=state.offTurnover===true;
+        offTurnoverButton.textContent=
+            active?"✓ OFF TO":"OFF TO";
+        offTurnoverButton.classList.toggle(
+            "active",
+            active
+        );
+        offTurnoverButton.setAttribute(
+            "aria-pressed",
+            String(active)
+        );
+    }
+
+    const secondChanceButton=
+        document.getElementById(
+            "quickSecondChanceButton"
+        );
+
+    if(secondChanceButton){
+        const active=state.secondChance===true;
+        secondChanceButton.textContent=
+            active?"✓ 2ND CHANCE":"2ND CHANCE";
+        secondChanceButton.classList.toggle(
+            "active",
+            active
+        );
+        secondChanceButton.setAttribute(
+            "aria-pressed",
+            String(active)
+        );
+    }
+
+    const fastBreakButton=
+        document.getElementById(
+            "quickFastBreakButton"
+        );
+
+    if(fastBreakButton){
+        fastBreakButton.textContent=
+            quickFastBreak
+            ?"✓ FAST BREAK"
+            :"FAST BREAK";
+
+        fastBreakButton.classList.toggle(
+            "active",
+            quickFastBreak
+        );
+
+        fastBreakButton.setAttribute(
+            "aria-pressed",
+            String(quickFastBreak)
+        );
+    }
+}
+
+
+function toggleQuickFastBreak(){
+
+    if(
+        !easySelectedPlayerId||
+        !playerTeamMap[easySelectedPlayerId]
+    ){
+        showStatus("Select an on-court player first.");
+        return;
+    }
+
+    quickFastBreak=!quickFastBreak;
+    updateQuickScoringDisplay();
+    saveQuickScoringState();
+}
+
+
+function toggleSelectedQuickTag(tag){
+
+    const team=
+        easySelectedPlayerId
+        ?playerTeamMap[easySelectedPlayerId]
+        :null;
+
+    if(!team||!quickScoringContext[team]){
+        showStatus("Select an on-court player first.");
+        return;
+    }
+
+    if(
+        tag!=="offTurnover"&&
+        tag!=="secondChance"
+    ){
+        return;
+    }
+
+    quickScoringContext[team][tag]=
+        quickScoringContext[team][tag]!==true;
+
+    updateQuickScoringDisplay();
+    saveQuickScoringState();
+
+    const feedback=
+        document.getElementById(
+            "easyActionFeedback"
+        );
+
+    if(feedback){
+        const name=
+            tag==="secondChance"
+            ?"SECOND CHANCE"
+            :"OFF TURNOVER";
+
+        feedback.textContent=
+            name+" tag "+
+            (quickScoringContext[team][tag]
+                ?"is ready for the next score."
+                :"was cleared.");
+    }
+}
+
+
+function resetAllQuickScoringContext(){
+
+    quickScoringContext=
+        getDefaultQuickScoringContext();
+
+    quickFastBreak=false;
+
+    updateQuickScoringDisplay();
+    saveQuickScoringState();
+
+    const feedback=
+        document.getElementById(
+            "easyActionFeedback"
+        );
+
+    if(feedback){
+        feedback.textContent=
+            "Next-score tags cleared. Recording is back to NORMAL.";
+    }
+}
+
+
+function resetQuickScoringContext(team){
+
+    if(!quickScoringContext[team]){
+        return;
+    }
+
+    quickScoringContext[team]={
+        offTurnover:false,
+        secondChance:false
+    };
+
+    updateQuickScoringDisplay();
+    saveQuickScoringState();
+}
+
+
+function registerQuickPossessionEvent(
+    playerId,
+    statKey,
+    amount
+){
+
+    if(Number(amount)<=0){
+        return;
+    }
+
+    const team=playerTeamMap[playerId];
+
+    if(!team){
+        return;
+    }
+
+    const opponent=
+        team==="home"
+        ?"away"
+        :"home";
+
+    if(statKey==="turnovers"){
+
+        quickScoringContext[team]={
+            offTurnover:false,
+            secondChance:false
+        };
+
+        quickScoringContext[opponent]={
+            offTurnover:true,
+            secondChance:false
+        };
+
+    }
+    else if(statKey==="offensive_rebounds"){
+
+        quickScoringContext[team]
+        .secondChance=true;
+
+    }
+    else if(statKey==="defensive_rebounds"){
+
+        quickScoringContext=
+            getDefaultQuickScoringContext();
+    }
+    else{
+        return;
+    }
+
+    updateQuickScoringDisplay();
+    saveQuickScoringState();
+}
+
+
+function getQuickScoringTags(
+    team,
+    isPaint
+){
+
+    const state=
+        quickScoringContext[team]||{};
+
+    return {
+        is_paint:isPaint===true,
+        is_fast_break:quickFastBreak===true,
+        is_off_turnover:
+            state.offTurnover===true,
+        is_second_chance:
+            state.secondChance===true
+    };
+}
+
+
+async function quickScorePlayer(
+    playerId,
+    statKey,
+    isPaint=false
+){
+
+    if(quickScoreInFlight){
+        return;
+    }
+
+    const team=playerTeamMap[playerId];
+
+    if(!team){
+        showStatus("Unable to identify the scoring team.");
+        return;
+    }
+
+    quickScoreInFlight=true;
+
+    try{
+        await updatePlayerStat(
+            playerId,
+            statKey,
+            1,
+            getQuickScoringTags(
+                team,
+                isPaint
+            )
+        );
+    }
+    finally{
+        quickScoreInFlight=false;
+    }
+}
+
+
+function getEasyPlayerName(player){
+
+    if(!player){
+        return "Player";
+    }
+
+    const name=(
+        (player.first_name||"")+" "+
+        (player.last_name||"")
+    ).trim();
+
+    return "#"+
+        (player.jersey_number??"—")+
+        " "+
+        (name||"Player");
+}
+
+
+function isCurrentGameFinal(){
+
+    return Boolean(
+        currentGame&&
+        (
+            String(
+                currentGame.status||""
+            ).toLowerCase()==="final"||
+            currentGame.finalized_at
+        )
+    );
+}
+
+
+function setEasyActionAvailability(){
+
+    const disabled=
+        !easySelectedPlayerId||
+        easyActionInFlight||
+        isCurrentGameFinal();
+
+    document.querySelectorAll(
+        "[data-easy-action]"
+    ).forEach(button=>{
+        button.disabled=disabled;
+    });
+
+    document.querySelectorAll(
+        ".easy-sub-button"
+    ).forEach(button=>{
+        button.disabled=
+            easyActionInFlight||
+            isCurrentGameFinal();
+    });
+
+    document.querySelectorAll(
+        ".quick-player-chip"
+    ).forEach(button=>{
+        button.disabled=
+            easyActionInFlight||
+            isCurrentGameFinal();
+    });
+
+    const undoButton=
+        document.getElementById(
+            "easyUndoButton"
+        );
+
+    if(undoButton){
+        undoButton.disabled=
+            easyActionInFlight||
+            easyUndoStack.length===0||
+            isCurrentGameFinal();
+    }
+
+    const deductButton=
+        document.getElementById(
+            "easyDeductModeButton"
+        );
+
+    if(deductButton){
+        deductButton.disabled=disabled;
+    }
+
+    const fastBreakButton=
+        document.getElementById(
+            "quickFastBreakButton"
+        );
+
+    if(fastBreakButton){
+        fastBreakButton.disabled=disabled;
+    }
+
+    [
+        "quickOffTurnoverButton",
+        "quickSecondChanceButton"
+    ].forEach(id=>{
+        const button=document.getElementById(id);
+        if(button){
+            button.disabled=disabled;
+        }
+    });
+
+    const resetContextButton=
+        document.getElementById(
+            "quickResetContextButton"
+        );
+
+    if(resetContextButton){
+        resetContextButton.disabled=
+            easyActionInFlight||
+            isCurrentGameFinal();
+    }
+}
+
+
+function renderEasyTeam(team){
+
+    const playersContainer=
+        document.getElementById(
+            team+"EasyPlayers"
+        );
+
+    const benchContainer=
+        document.getElementById(
+            team+"EasyBench"
+        );
+
+    if(!playersContainer||!benchContainer){
+        return;
+    }
+
+    const all=teamPlayersMap[team]||[];
+
+    const onCourt=all.filter(
+        player=>
+            playerOnCourt[player.id]===true
+    );
+
+    const bench=all.filter(
+        player=>
+            playerOnCourt[player.id]!==true
+    );
+
+    if(!onCourt.length){
+        playersContainer.innerHTML=
+            '<div class="easy-empty">No players are on court.</div>';
+    }
+    else{
+        playersContainer.innerHTML=
+            onCourt.map(player=>{
+
+                const stats=
+                    playerStatsMap[player.id]||{};
+
+                const selected=
+                    easySelectedPlayerId===player.id;
+
+                return `
+                    <div class="easy-player-row">
+                        <button
+                            type="button"
+                            class="easy-player-button ${selected?"selected":""}"
+                            aria-pressed="${selected}"
+                            onclick="selectEasyPlayer('${player.id}')"
+                        >
+                            <span class="easy-player-name">${escapeHTML(getEasyPlayerName(player))}</span>
+                            <span class="easy-player-mini-stats">PTS ${Number(stats.points||0)} · PF ${Number(stats.fouls||0)}</span>
+                        </button>
+                        <button
+                            type="button"
+                            class="easy-sub-button"
+                            onclick="toggleSubstitution('${player.id}')"
+                        >OUT</button>
+                    </div>
+                `;
+            }).join("");
+    }
+
+    if(!bench.length){
+        benchContainer.innerHTML=
+            '<div class="easy-empty">No bench players.</div>';
+    }
+    else{
+        benchContainer.innerHTML=
+            bench.map(player=>`
+                <div class="easy-bench-row">
+                    <div class="easy-player-button">
+                        <span class="easy-player-name">${escapeHTML(getEasyPlayerName(player))}</span>
+                        <span class="easy-player-mini-stats">BENCH</span>
+                    </div>
+                    <button
+                        type="button"
+                        class="easy-sub-button in"
+                        onclick="toggleSubstitution('${player.id}')"
+                    >IN</button>
+                </div>
+            `).join("");
+    }
+}
+
+
+function renderEasySelectedPlayer(){
+
+    const nameElement=
+        document.getElementById(
+            "easySelectedPlayerName"
+        );
+
+    const pointsElement=
+        document.getElementById(
+            "easySelectedPlayerPoints"
+        );
+
+    const player=
+        easySelectedPlayerId
+        ?playerDataMap[easySelectedPlayerId]
+        :null;
+
+    if(
+        !player||
+        playerOnCourt[easySelectedPlayerId]!==true
+    ){
+        easySelectedPlayerId=null;
+        easyDeductMode=false;
+        nameElement.textContent=
+            "Tap a player above";
+        pointsElement.textContent="—";
+        setEasyActionAvailability();
+        return;
+    }
+
+    const stats=
+        playerStatsMap[easySelectedPlayerId]||{};
+
+    nameElement.textContent=
+        getEasyPlayerName(player);
+
+    pointsElement.textContent=
+        Number(stats.points||0)+" PTS";
+
+    setEasyActionAvailability();
+}
+
+
+function updateEasyDeductModeDisplay(){
+
+    const panel=
+        document.querySelector(
+            ".hybrid-action-panel"
+        );
+
+    if(panel){
+        panel.classList.toggle(
+            "deduct-mode",
+            easyDeductMode
+        );
+    }
+
+    const deductButton=
+        document.getElementById(
+            "easyDeductModeButton"
+        );
+
+    if(deductButton){
+        deductButton.textContent=
+            easyDeductMode
+            ?"CANCEL"
+            :"− STAT";
+
+        deductButton.classList.toggle(
+            "active",
+            easyDeductMode
+        );
+
+        deductButton.setAttribute(
+            "aria-pressed",
+            String(easyDeductMode)
+        );
+    }
+
+    document.querySelectorAll(
+        "[data-easy-action]"
+    ).forEach(button=>{
+
+        if(!button.dataset.addLabel){
+            button.dataset.addLabel=
+                button.innerHTML;
+        }
+
+        button.innerHTML=
+            easyDeductMode
+            ?button.dataset.deductLabel
+            :button.dataset.addLabel;
+    });
+}
+
+
+function toggleEasyDeductMode(){
+
+    if(
+        !easySelectedPlayerId||
+        easyActionInFlight||
+        isCurrentGameFinal()
+    ){
+        showStatus(
+            "Select an on-court player first."
+        );
+        return;
+    }
+
+    easyDeductMode=!easyDeductMode;
+
+    updateEasyDeductModeDisplay();
+    setEasyActionAvailability();
+
+    const feedback=
+        document.getElementById(
+            "easyActionFeedback"
+        );
+
+    if(feedback){
+        feedback.textContent=
+            easyDeductMode
+            ?"DEDUCT MODE: Tap one specific stat to subtract. It turns off after a successful correction."
+            :"Deduct mode cancelled.";
+    }
+}
+
+
+function getQuickPlayerLabel(player){
+
+    const shortName=String(
+        player.last_name||
+        player.first_name||
+        "Player"
+    ).trim();
+
+    return "#"+
+        (player.jersey_number??"—")+
+        " "+
+        shortName;
+}
+
+
+function renderQuickPlayerPicker(){
+
+    const picker=
+        document.getElementById(
+            "quickPlayerPicker"
+        );
+
+    if(!picker){
+        return;
+    }
+
+    picker.innerHTML="";
+
+    for(const team of ["home","away"]){
+
+        const lane=
+            document.createElement("div");
+
+        lane.className=
+            "quick-player-lane "+team;
+
+        const teamLabel=
+            document.createElement("div");
+
+        teamLabel.className=
+            "quick-player-team-label";
+
+        teamLabel.textContent=
+            team.toUpperCase();
+
+        const teamName=
+            currentGame
+            ?(
+                team==="home"
+                ?currentGame.home_team
+                :currentGame.away_team
+            )
+            :null;
+
+        teamLabel.title=
+            teamName||teamLabel.textContent;
+
+        const buttons=
+            document.createElement("div");
+
+        buttons.className=
+            "quick-player-buttons";
+
+        const onCourt=
+            (teamPlayersMap[team]||[])
+            .filter(player=>
+                playerOnCourt[player.id]===true
+            );
+
+        if(!onCourt.length){
+
+            const empty=
+                document.createElement("div");
+
+            empty.className=
+                "quick-player-empty";
+
+            empty.textContent=
+                "No player on court";
+
+            buttons.appendChild(empty);
+        }
+        else{
+
+            for(const player of onCourt){
+
+                const button=
+                    document.createElement("button");
+
+                const selected=
+                    easySelectedPlayerId===player.id;
+
+                button.type="button";
+                button.className=
+                    "quick-player-chip "+
+                    team+
+                    (selected?" selected":"");
+
+                button.textContent=
+                    getQuickPlayerLabel(player);
+
+                button.title=
+                    "Select "+
+                    getEasyPlayerName(player);
+
+                button.setAttribute(
+                    "aria-pressed",
+                    String(selected)
+                );
+
+                button.onclick=()=>
+                    selectEasyPlayer(player.id);
+
+                buttons.appendChild(button);
+            }
+        }
+
+        lane.appendChild(teamLabel);
+        lane.appendChild(buttons);
+        picker.appendChild(lane);
+    }
+}
+
+
+function renderEasyScorekeeper(){
+
+    renderEasyTeam("home");
+    renderEasyTeam("away");
+    renderEasySelectedPlayer();
+    renderQuickPlayerPicker();
+    setEasyActionAvailability();
+    updateQuickScoringDisplay();
+    updateEasyDeductModeDisplay();
+}
+
+
+function selectEasyPlayer(playerId){
+
+    if(playerOnCourt[playerId]!==true){
+        showStatus(
+            "Sub in the player before recording a stat."
+        );
+        return;
+    }
+
+    if(
+        easySelectedPlayerId!==playerId&&
+        easyDeductMode
+    ){
+        easyDeductMode=false;
+    }
+
+    easySelectedPlayerId=playerId;
+
+    document.querySelectorAll(
+        ".player-table tbody tr"
+    ).forEach(row=>{
+        row.classList.remove(
+            "selected-for-entry"
+        );
+    });
+
+    const selectedRow=
+        document.getElementById(
+            "player-row-"+playerId
+        );
+
+    if(selectedRow){
+        selectedRow.classList.add(
+            "selected-for-entry"
+        );
+    }
+
+    const feedback=
+        document.getElementById(
+            "easyActionFeedback"
+        );
+
+    if(feedback){
+        feedback.textContent=
+            getEasyPlayerName(
+                playerDataMap[playerId]
+            )+" selected.";
+    }
+
+    renderEasyScorekeeper();
+}
+
+
+function getEasyActionSnapshot(){
+
+    return {
+        context:JSON.parse(
+            JSON.stringify(
+                quickScoringContext
+            )
+        ),
+        fastBreak:quickFastBreak
+    };
+}
+
+
+function getEasyStatLabel(statKey){
+
+    const labels={
+        two_pt_attempted:"2PT MISS",
+        three_pt_attempted:"3PT MISS",
+        ft_attempted:"FT MISS",
+        offensive_rebounds:"OREB",
+        defensive_rebounds:"DREB",
+        assists:"AST",
+        steals:"STL",
+        blocks:"BLK",
+        turnovers:"TO",
+        fouls:"PF"
+    };
+
+    return labels[statKey]||statKey;
+}
+
+
+function getEasyDeductableCount(stats,statKey){
+
+    const madeKey={
+        two_pt_attempted:"two_pt_made",
+        three_pt_attempted:"three_pt_made",
+        ft_attempted:"ft_made"
+    }[statKey];
+
+    if(madeKey){
+        return Math.max(
+            0,
+            Number(stats[statKey]||0)-
+            Number(stats[madeKey]||0)
+        );
+    }
+
+    return Math.max(
+        0,
+        Number(stats[statKey]||0)
+    );
+}
+
+
+function getScoringTagsFromEvent(
+    event,
+    fallback={}
+){
+
+    if(!event){
+        return {
+            is_paint:fallback.is_paint===true,
+            is_fast_break:fallback.is_fast_break===true,
+            is_off_turnover:fallback.is_off_turnover===true,
+            is_second_chance:fallback.is_second_chance===true
+        };
+    }
+
+    return {
+        is_paint:event.is_paint===true,
+        is_fast_break:event.is_fast_break===true,
+        is_off_turnover:event.is_off_turnover===true,
+        is_second_chance:event.is_second_chance===true
+    };
+}
+
+
+function clearCorrectedPossessionTag(
+    playerId,
+    statKey
+){
+
+    const team=playerTeamMap[playerId];
+
+    if(!team){
+        return;
+    }
+
+    const opponent=
+        team==="home"
+        ?"away"
+        :"home";
+
+    if(statKey==="offensive_rebounds"){
+        quickScoringContext[team]
+        .secondChance=false;
+    }
+    else if(statKey==="turnovers"){
+        quickScoringContext[opponent]
+        .offTurnover=false;
+    }
+    else{
+        return;
+    }
+
+    updateQuickScoringDisplay();
+    saveQuickScoringState();
+}
+
+
+async function easyRecordScore(
+    statKey,
+    isPaint
+){
+
+    if(!easySelectedPlayerId||easyActionInFlight){
+        return;
+    }
+
+    const playerId=easySelectedPlayerId;
+    const snapshot=getEasyActionSnapshot();
+    const amount=easyDeductMode?-1:1;
+    const team=playerTeamMap[playerId];
+
+    easyActionInFlight=true;
+    setEasyActionAvailability();
+
+    try{
+
+        const stats=
+            await getPlayerGameStats(
+                playerId
+            );
+
+        if(
+            amount<0&&
+            Number(stats[statKey]||0)<=0
+        ){
+            const feedback=
+                document.getElementById(
+                    "easyActionFeedback"
+                );
+
+            if(feedback){
+                feedback.textContent=
+                    "Nothing to deduct — this made-shot stat is already 0.";
+            }
+
+            return;
+        }
+
+        const scoringTags=
+            amount>0
+            ?getQuickScoringTags(
+                team,
+                isPaint===true
+            )
+            :{
+                is_paint:isPaint===true,
+                is_fast_break:false,
+                is_off_turnover:false,
+                is_second_chance:false
+            };
+
+        if(
+            amount<0&&
+            statKey==="two_pt_made"
+        ){
+            const matchingEvent=
+                await findLatestScoringBreakdownEvent(
+                    playerId,
+                    "2PT",
+                    scoringTags
+                );
+
+            if(!matchingEvent){
+                const feedback=
+                    document.getElementById(
+                        "easyActionFeedback"
+                    );
+
+                if(feedback){
+                    feedback.textContent=
+                        isPaint
+                        ?"No recorded PAINT +2 is available to deduct for this player."
+                        :"No recorded non-paint 2PT is available to deduct for this player.";
+                }
+
+                return;
+            }
+        }
+
+        const result=
+            await updatePlayerStat(
+            playerId,
+            statKey,
+            amount,
+            scoringTags
+        );
+
+        if(!result||result.changed!==true){
+            return;
+        }
+
+        const undoScoringTags=
+            amount<0
+            ?getScoringTagsFromEvent(
+                result.removedScoringEvent,
+                scoringTags
+            )
+            :scoringTags;
+
+        easyUndoStack.push({
+            playerId,
+            statKey,
+            amount,
+            scoringTags:undoScoringTags,
+            snapshot
+        });
+
+        if(amount<0){
+            easyDeductMode=false;
+            renderEasyScorekeeper();
+
+            const savingFeedback=
+                document.getElementById(
+                    "easyActionFeedback"
+                );
+
+            if(savingFeedback){
+                savingFeedback.textContent=
+                    "Correction applied. Saving…";
+            }
+
+            await flushAllPendingStats();
+        }
+
+        const feedback=
+            document.getElementById(
+                "easyActionFeedback"
+            );
+
+        if(feedback){
+            const points=
+                statKey==="three_pt_made"
+                ?3
+                :statKey==="two_pt_made"
+                ?2
+                :1;
+
+            const playerName=
+                getEasyPlayerName(
+                    playerDataMap[playerId]
+                );
+
+            feedback.textContent=
+                amount<0
+                ?points+" point"+
+                    (points===1?" was":"s were")+
+                    " deducted from "+playerName+"."
+                :playerName+
+                    " scored "+points+" point"+
+                    (points===1?"":"s")+".";
+        }
+    }
+    catch(error){
+        console.error(
+            "Easy scoring correction error:",
+            error
+        );
+
+        const feedback=
+            document.getElementById(
+                "easyActionFeedback"
+            );
+
+        if(feedback){
+            feedback.textContent=
+                "Correction is queued and will retry automatically. Keep this game open and check the connection.";
+        }
+    }
+    finally{
+        easyActionInFlight=false;
+        renderEasyScorekeeper();
+    }
+}
+
+
+async function easyRecordStat(statKey){
+
+    if(!easySelectedPlayerId||easyActionInFlight){
+        return;
+    }
+
+    const playerId=easySelectedPlayerId;
+    const snapshot=getEasyActionSnapshot();
+    const amount=easyDeductMode?-1:1;
+
+    easyActionInFlight=true;
+    setEasyActionAvailability();
+
+    try{
+
+        const stats=
+            await getPlayerGameStats(
+                playerId
+            );
+
+        if(
+            amount<0&&
+            getEasyDeductableCount(
+                stats,
+                statKey
+            )<=0
+        ){
+            const feedback=
+                document.getElementById(
+                    "easyActionFeedback"
+                );
+
+            if(feedback){
+                feedback.textContent=
+                    "Nothing to deduct — "+
+                    getEasyStatLabel(statKey)+
+                    " is already 0.";
+            }
+
+            return;
+        }
+
+        const result=
+            await updatePlayerStat(
+            playerId,
+            statKey,
+            amount
+        );
+
+        if(!result||result.changed!==true){
+            return;
+        }
+
+        easyUndoStack.push({
+            playerId,
+            statKey,
+            amount,
+            scoringTags:null,
+            snapshot
+        });
+
+        if(amount<0){
+            clearCorrectedPossessionTag(
+                playerId,
+                statKey
+            );
+
+            easyDeductMode=false;
+            renderEasyScorekeeper();
+
+            const savingFeedback=
+                document.getElementById(
+                    "easyActionFeedback"
+                );
+
+            if(savingFeedback){
+                savingFeedback.textContent=
+                    "Correction applied. Saving…";
+            }
+
+            await flushAllPendingStats();
+        }
+
+        const feedback=
+            document.getElementById(
+                "easyActionFeedback"
+            );
+
+        if(feedback){
+            const playerName=
+                getEasyPlayerName(
+                    playerDataMap[playerId]
+                );
+
+            if(amount<0){
+                feedback.textContent=
+                    playerName+
+                    " — 1 "+
+                    getEasyStatLabel(statKey)+
+                    " deducted.";
+            }
+            else if(statKey==="offensive_rebounds"){
+                feedback.textContent=
+                    playerName+
+                    " — OREB recorded. SECOND CHANCE is ready for the next score.";
+            }
+            else if(statKey==="defensive_rebounds"){
+                feedback.textContent=
+                    playerName+
+                    " — DREB recorded. Previous possession tags were cleared.";
+            }
+            else if(statKey==="turnovers"){
+                feedback.textContent=
+                    playerName+
+                    " — TO recorded. OFF TURNOVER is ready for the opponent.";
+            }
+            else{
+                feedback.textContent=
+                    playerName+
+                    " — "+
+                    getEasyStatLabel(statKey)+" recorded.";
+            }
+        }
+    }
+    catch(error){
+        console.error(
+            "Easy statistic correction error:",
+            error
+        );
+
+        const feedback=
+            document.getElementById(
+                "easyActionFeedback"
+            );
+
+        if(feedback){
+            feedback.textContent=
+                "Correction is queued and will retry automatically. Keep this game open and check the connection.";
+        }
+    }
+    finally{
+        easyActionInFlight=false;
+        renderEasyScorekeeper();
+    }
+}
+
+
+async function undoEasyLastStat(){
+
+    if(
+        easyActionInFlight||
+        !easyUndoStack.length||
+        isCurrentGameFinal()
+    ){
+        return;
+    }
+
+    const action=easyUndoStack.pop();
+    const originalAmount=
+        Number(action.amount??1);
+    let undoApplied=false;
+
+    easyActionInFlight=true;
+    setEasyActionAvailability();
+
+    try{
+        const result=
+            await updatePlayerStat(
+            action.playerId,
+            action.statKey,
+            -originalAmount,
+            action.scoringTags||null
+        );
+
+        if(!result||result.changed!==true){
+            easyUndoStack.push(action);
+            return;
+        }
+
+        undoApplied=true;
+
+        easyDeductMode=false;
+
+        quickScoringContext=
+            action.snapshot.context;
+
+        quickFastBreak=
+            action.snapshot.fastBreak;
+
+        updateQuickScoringDisplay();
+        saveQuickScoringState();
+
+        if(
+            playerOnCourt[action.playerId]===true
+        ){
+            easySelectedPlayerId=
+                action.playerId;
+        }
+
+        renderEasyScorekeeper();
+
+        const savingFeedback=
+            document.getElementById(
+                "easyActionFeedback"
+            );
+
+        if(savingFeedback){
+            savingFeedback.textContent=
+                "Undo applied. Saving…";
+        }
+
+        await flushAllPendingStats();
+
+        const feedback=
+            document.getElementById(
+                "easyActionFeedback"
+            );
+
+        if(feedback){
+            feedback.textContent=
+                originalAmount<0
+                ?"Last deduction was undone."
+                :"Last statistic was undone.";
+        }
+    }
+    catch(error){
+        console.error(
+            "Easy undo error:",
+            error
+        );
+
+        if(!undoApplied){
+            easyUndoStack.push(action);
+        }
+
+        const feedback=
+            document.getElementById(
+                "easyActionFeedback"
+            );
+
+        if(feedback){
+            feedback.textContent=
+                undoApplied
+                ?"Undo is queued and will retry automatically. Keep this game open and check the connection."
+                :"Undo could not be applied. Please try again.";
+        }
+    }
+    finally{
+        easyActionInFlight=false;
+        renderEasyScorekeeper();
+    }
+}
+
+function openSmartScoring(
+    playerId,
+    statKey
+){
+
+    if(playerOnCourt[playerId]!==true){
+        showStatus(
+            "Player is on the bench. SUB IN the player first."
+        );
+        return;
+    }
+
+    if(!currentGame){
+        showStatus("Load a game first.");
+        return;
+    }
+
+    const points=
+        statKey==="two_pt_made"
+        ?2
+        :statKey==="three_pt_made"
+        ?3
+        :statKey==="ft_made"
+        ?1
+        :0;
+
+    if(!points){
+        return;
+    }
+
+    const player=playerDataMap[playerId]||{};
+
+    const playerName=
+        (
+            (player.first_name||"")+" "+
+            (player.last_name||"")
+        ).trim()||"Selected Player";
+
+    pendingSmartScore={
+        playerId,
+        statKey,
+        points
+    };
+
+    clearSelectedScoringTags();
+
+    document.getElementById(
+        "smartScorePlayer"
+    ).textContent=playerName;
+
+    document.getElementById(
+        "smartScorePoints"
+    ).textContent="+"+points;
+
+    document.getElementById(
+        "smartScoreShot"
+    ).textContent=
+        points===3
+        ?"Made 3-point field goal"
+        :points===2
+        ?"Made 2-point field goal"
+        :"Made free throw";
+
+    const twoPointLocation=
+        document.getElementById(
+            "smartTwoPointLocation"
+        );
+
+    const automaticLocation=
+        document.getElementById(
+            "smartAutomaticLocation"
+        );
+
+    const isTwoPoint=points===2;
+
+    twoPointLocation.hidden=!isTwoPoint;
+    automaticLocation.hidden=isTwoPoint;
+
+    if(!isTwoPoint){
+        automaticLocation.textContent=
+            points===3
+            ?"3-POINT AREA — detected from the +3 button"
+            :"FREE-THROW LINE — detected from the +1 button";
+    }
+
+    document.getElementById(
+        "smartScoreModal"
+    ).classList.add("visible");
+}
+
+
+function cancelSmartScoring(){
+
+    pendingSmartScore=null;
+    clearSelectedScoringTags();
+
+    document.getElementById(
+        "smartScoreModal"
+    ).classList.remove("visible");
+}
+
+
+async function confirmSmartScoring(){
+
+    if(!pendingSmartScore){
+        return;
+    }
+
+    if(pendingSmartScore.points===2){
+
+        const selectedLocation=
+            document.querySelector(
+                'input[name="smartShotLocation"]:checked'
+            );
+
+        if(!selectedLocation){
+            showStatus(
+                "Choose whether the 2-point shot was inside or outside the paint."
+            );
+            return;
+        }
+    }
+
+    const confirmButton=
+        document.getElementById(
+            "smartScoreConfirm"
+        );
+
+    const score={...pendingSmartScore};
+
+    confirmButton.disabled=true;
+    confirmButton.textContent="SAVING...";
+
+    try{
+
+        await updatePlayerStat(
+            score.playerId,
+            score.statKey,
+            1
+        );
+
+        pendingSmartScore=null;
+
+        document.getElementById(
+            "smartScoreModal"
+        ).classList.remove("visible");
+
+    }
+    finally{
+
+        confirmButton.disabled=false;
+        confirmButton.textContent="CONFIRM SCORE";
+    }
+}
+
+
+function initializeSmartScoreControls(){
+
+    const normal=
+        document.getElementById("tagNormalPlay");
+
+    const situations=[
+        document.getElementById("tagFastBreak"),
+        document.getElementById("tagOffTurnover"),
+        document.getElementById("tagSecondChance")
+    ];
+
+    normal.addEventListener("change",()=>{
+
+        if(normal.checked){
+            situations.forEach(input=>{
+                input.checked=false;
+            });
+        }
+    });
+
+    situations.forEach(input=>{
+
+        input.addEventListener("change",()=>{
+
+            if(input.checked){
+                normal.checked=false;
+            }
+        });
+    });
+
+    document.getElementById(
+        "smartScoreModal"
+    ).addEventListener("click",event=>{
+
+        if(event.target.id==="smartScoreModal"){
+            cancelSmartScoring();
+        }
+    });
+
+    document.addEventListener("keydown",event=>{
+
+        if(
+            event.key==="Escape"&&
+            document.getElementById(
+                "smartScoreModal"
+            ).classList.contains("visible")
+        ){
+            cancelSmartScoring();
+        }
+    });
+}
+
+function getSelectedScoringTags(){
+
+    const selectedLocation=
+        document.querySelector(
+            'input[name="smartShotLocation"]:checked'
+        );
+
+    return {
+        is_paint:
+            selectedLocation&&
+            selectedLocation.value==="paint",
+
+        is_fast_break:
+            document.getElementById("tagFastBreak").checked,
+
+        is_off_turnover:
+            document.getElementById("tagOffTurnover").checked,
+
+        is_second_chance:
+            document.getElementById("tagSecondChance").checked
+    };
+}
+
+
+function clearSelectedScoringTags(){
+
+    [
+        "tagFastBreak",
+        "tagOffTurnover",
+        "tagSecondChance",
+        "tagNormalPlay"
+    ].forEach(id=>{
+
+        const checkbox=
+            document.getElementById(id);
+
+        if(checkbox){
+            checkbox.checked=false;
+        }
+    });
+
+    document
+    .querySelectorAll(
+        'input[name="smartShotLocation"]'
+    )
+    .forEach(input=>{
+        input.checked=false;
+    });
+}
+
+
+function emptyBreakdownTotals(){
+
+    return {
+        paint:0,
+        fastBreak:0,
+        offTurnover:0,
+        secondChance:0
+    };
+}
+
+
+function displayScoringBreakdown(home,away){
+
+    scoringBreakdownTotals={home,away};
+
+    document.getElementById("homePaintPoints").textContent=home.paint;
+    document.getElementById("homeFastBreakPoints").textContent=home.fastBreak;
+    document.getElementById("homeOffTurnoverPoints").textContent=home.offTurnover;
+    document.getElementById("homeSecondChancePoints").textContent=home.secondChance;
+
+    document.getElementById("awayPaintPoints").textContent=away.paint;
+    document.getElementById("awayFastBreakPoints").textContent=away.fastBreak;
+    document.getElementById("awayOffTurnoverPoints").textContent=away.offTurnover;
+    document.getElementById("awaySecondChancePoints").textContent=away.secondChance;
+}
+
+
+async function loadScoringBreakdown(){
+
+    const home=emptyBreakdownTotals();
+    const away=emptyBreakdownTotals();
+
+    if(!currentGame){
+        displayScoringBreakdown(home,away);
+        return;
+    }
+
+    const {
+        data,
+        error
+    }=
+    await supabaseClient
+    .from("scoring_breakdown_events")
+    .select(
+        "team_id,points,is_paint,is_fast_break,is_off_turnover,is_second_chance"
+    )
+    .eq("game_id",currentGame.id);
+
+    if(error){
+        console.error("Scoring breakdown load error:",error);
+        showStatus("Unable to load the scoring breakdown.");
+        displayScoringBreakdown(home,away);
+        return;
+    }
+
+    (data||[]).forEach(event=>{
+
+        const side=
+            event.team_id===teamIdMap.home
+            ?home
+            :event.team_id===teamIdMap.away
+            ?away
+            :null;
+
+        if(!side){
+            return;
+        }
+
+        const points=Number(event.points||0);
+
+        if(event.is_paint){
+            side.paint+=points;
+        }
+
+        if(event.is_fast_break){
+            side.fastBreak+=points;
+        }
+
+        if(event.is_off_turnover){
+            side.offTurnover+=points;
+        }
+
+        if(event.is_second_chance){
+            side.secondChance+=points;
+        }
+    });
+
+    displayScoringBreakdown(home,away);
+}
+
+
+async function recordScoringBreakdown(
+    playerId,
+    team,
+    points,
+    shotType,
+    selectedTags
+){
+
+    const teamId=teamIdMap[team];
+
+    if(!currentGame || !teamId){
+        showStatus("Unable to identify the scoring team.");
+        return false;
+    }
+
+    const tags=selectedTags||getSelectedScoringTags();
+
+    const {
+        error
+    }=
+    await supabaseClient
+    .from("scoring_breakdown_events")
+    .insert({
+        game_id:currentGame.id,
+        team_id:teamId,
+        player_id:playerId,
+        points:points,
+        shot_type:shotType,
+        period:currentGame.period||null,
+        game_clock_seconds:clockSeconds,
+        is_paint:
+            shotType==="2PT" &&
+            tags.is_paint===true,
+        is_fast_break:
+            tags.is_fast_break===true,
+        is_off_turnover:
+            tags.is_off_turnover===true,
+        is_second_chance:
+            tags.is_second_chance===true
+    });
+
+    if(error){
+        console.error("Scoring breakdown save error:",error);
+        showStatus(
+            "Basket counted, but its scoring category failed to save."
+        );
+        return false;
+    }
+
+    clearSelectedScoringTags();
+    await loadScoringBreakdown();
+    return true;
+}
+
+
+async function findLatestScoringBreakdownEvent(
+    playerId,
+    shotType,
+    scoringTagsFilter=null
+){
+
+    if(!currentGame){
+        return null;
+    }
+
+    let query=
+        supabaseClient
+        .from("scoring_breakdown_events")
+        .select(
+            "id,is_paint,is_fast_break,is_off_turnover,is_second_chance"
+        )
+        .eq("game_id",currentGame.id)
+        .eq("player_id",playerId)
+        .eq("shot_type",shotType);
+
+    if(
+        shotType==="2PT"&&
+        typeof scoringTagsFilter?.is_paint==="boolean"
+    ){
+        query=query.eq(
+            "is_paint",
+            scoringTagsFilter.is_paint
+        );
+    }
+
+    const {
+        data:event,
+        error:findError
+    }=
+    await query
+    .order("created_at",{ascending:false})
+    .limit(1)
+    .maybeSingle();
+
+    if(findError){
+        console.error("Scoring breakdown correction error:",findError);
+        showStatus("Unable to correct the scoring breakdown.");
+        return null;
+    }
+
+    return event||null;
+}
+
+
+async function removeLatestScoringBreakdown(
+    playerId,
+    shotType,
+    scoringTagsFilter=null
+){
+
+    const event=
+        await findLatestScoringBreakdownEvent(
+            playerId,
+            shotType,
+            scoringTagsFilter
+        );
+
+    if(!event){
+        return null;
+    }
+
+    const {
+        error:deleteError
+    }=
+    await supabaseClient
+    .from("scoring_breakdown_events")
+    .delete()
+    .eq("id",event.id);
+
+    if(deleteError){
+        console.error("Scoring breakdown delete error:",deleteError);
+        showStatus("Unable to correct the scoring breakdown.");
+        return null;
+    }
+
+    await loadScoringBreakdown();
+    return event;
+}
+
+
+/* =========================================================
+   PLAYER STAT UPDATES
+   ========================================================= */
+
+async function updatePlayerStat(
+    playerId,
+    statKey,
+    amount,
+    scoringTagsOverride=null
+){
+
+    if(
+        playerOnCourt[playerId]!==true
+    ){
+
+        showStatus(
+            "Player is on the bench. SUB IN the player first."
+        );
+
+        return {changed:false};
+    }
+
+
+    const stats=
+        await getPlayerGameStats(
+            playerId
+        );
+
+
+    const current=
+        Number(
+            stats[statKey]||0
+        );
+
+
+    if(
+
+        statKey==="two_pt_made"||
+
+        statKey==="three_pt_made"||
+
+        statKey==="ft_made"
+
+    ){
+
+        const attemptKey=
+
+            statKey==="two_pt_made"
+
+            ?"two_pt_attempted"
+
+            :statKey==="three_pt_made"
+
+            ?"three_pt_attempted"
+
+            :"ft_attempted";
+
+
+        const points=
+
+            statKey==="two_pt_made"
+
+            ?2
+
+            :statKey==="three_pt_made"
+
+            ?3
+
+            :1;
+
+
+        const oldMade=
+            Number(
+                stats[statKey]||0
+            );
+
+
+        const oldAttempts=
+            Number(
+                stats[attemptKey]||0
+            );
+
+
+        const newAttempts=
+            Math.max(
+                0,
+                oldAttempts+amount
+            );
+
+
+        const newMade=
+            Math.max(
+                0,
+                Math.min(
+                    oldMade+amount,
+                    newAttempts
+                )
+            );
+
+
+        const madeDelta=
+            newMade-oldMade;
+
+
+        const shotType=
+            statKey==="two_pt_made"
+            ?"2PT"
+            :statKey==="three_pt_made"
+            ?"3PT"
+            :"FT";
+
+
+        const selectedScoringTags=
+            madeDelta>0
+            ?(
+                scoringTagsOverride||
+                getSelectedScoringTags()
+            )
+            :null;
+
+
+        stats[statKey]=
+            newMade;
+
+
+        stats[attemptKey]=
+            newAttempts;
+
+
+        stats.points=
+            Math.max(
+                0,
+                Number(
+                    stats.points||0
+                )+
+                madeDelta*points
+            );
+
+
+        playerStatsMap[playerId]={
+            ...stats
+        };
+
+
+        const team=
+            playerTeamMap[playerId];
+
+
+        if(
+            team&&
+            currentGame&&
+            madeDelta!==0
+        ){
+
+            const column=
+                team==="home"
+                ?"home_score"
+                :"away_score";
+
+
+            const oldScore=
+                Number(
+                    currentGame[column]||0
+                );
+
+
+            const delta=
+                madeDelta*points;
+
+
+            const newScore=
+                Math.max(
+                    0,
+                    oldScore+delta
+                );
+
+
+            currentGame={
+
+                ...currentGame,
+
+                [column]:
+                    newScore
+            };
+
+
+            document.getElementById(
+                team+"Score"
+            ).textContent=
+                newScore;
+
+
+            /*
+               PLUS/MINUS SYNCHRONIZATION
+
+               Every player currently SUB IN on the
+               scoring team gets +points.
+
+               Every player currently SUB IN on the
+               opposing team gets -points.
+
+               Players on the bench are NOT affected.
+            */
+
+            const activePlayers=
+                Object.keys(
+                    playerOnCourt
+                )
+                .filter(
+                    id=>
+                        playerOnCourt[id]===true
+                );
+
+
+            for(
+                const id of activePlayers
+            ){
+
+                const playerTeam=
+                    playerTeamMap[id];
+
+
+                if(
+                    !playerTeam
+                ){
+                    continue;
+                }
+
+
+                const ps=
+                    await getPlayerGameStats(
+                        id
+                    );
+
+
+                const sign=
+                    playerTeam===team
+                    ?1
+                    :-1;
+
+
+                const oldPlusMinus=
+                    Number(
+                        ps.plus_minus||0
+                    );
+
+
+                const newPlusMinus=
+                    oldPlusMinus+
+                    (
+                        sign*
+                        delta
+                    );
+
+
+                ps.plus_minus=
+                    newPlusMinus;
+
+
+                playerStatsMap[id]={
+                    ...ps
+                };
+
+
+                /*
+                   Save each active player's
+                   updated +/- value.
+                */
+
+                queueStatSave(
+                    id,
+                    {
+                        plus_minus:
+                            newPlusMinus
+                    }
+                );
+
+
+                /*
+                   Refresh the visible row immediately.
+                */
+
+                await refreshPlayerRow(
+                    id
+                );
+            }
+
+
+            /*
+               Save the updated team score.
+            */
+
+            queueGameScoreSave(
+                currentGame.id,
+                {
+                    [column]:
+                        newScore
+                }
+            );
+
+            await flushGameScoreSave(
+                currentGame.id
+            );
+        }
+
+
+        let removedScoringEvent=null;
+
+        if(
+            team&&
+            madeDelta>0
+        ){
+
+            await recordScoringBreakdown(
+                playerId,
+                team,
+                points,
+                shotType,
+                selectedScoringTags
+            );
+
+            quickFastBreak=false;
+            resetQuickScoringContext(team);
+
+        }
+        else if(madeDelta<0){
+
+            removedScoringEvent=
+            await removeLatestScoringBreakdown(
+                playerId,
+                shotType,
+                scoringTagsOverride
+            );
+        }
+
+
+        await refreshPlayerRow(
+            playerId
+        );
+
+
+        queueStatSave(
+
+            playerId,
+
+            {
+
+                [statKey]:
+                    newMade,
+
+                [attemptKey]:
+                    newAttempts,
+
+                points:
+                    stats.points
+            }
+
+        );
+
+        if (hoveredPlayerId === playerId) {
+            updatePopupContent(playerId);
+        }
+
+        return {
+            changed:madeDelta!==0,
+            removedScoringEvent,
+            scoringTags:selectedScoringTags
+        };
+    }
+
+
+    const newValue=
+        Math.max(
+            0,
+            current+amount
+        );
+
+
+    stats[statKey]=
+        newValue;
+
+
+    const changes={
+        [statKey]:
+            newValue
+    };
+
+
+    if(
+
+        statKey==="offensive_rebounds"||
+
+        statKey==="defensive_rebounds"
+
+    ){
+
+        stats.rebounds=
+            Math.max(
+
+                0,
+
+                Number(
+                    stats.offensive_rebounds||0
+                )+
+
+                Number(
+                    stats.defensive_rebounds||0
+                )
+            );
+
+
+        changes.rebounds=
+            stats.rebounds;
+    }
+
+
+    playerStatsMap[playerId]={
+        ...stats
+    };
+
+
+    await refreshPlayerRow(
+        playerId
+    );
+
+
+    queueStatSave(
+        playerId,
+        changes
+    );
+
+    registerQuickPossessionEvent(
+        playerId,
+        statKey,
+        amount
+    );
+
+    if (hoveredPlayerId === playerId) {
+        updatePopupContent(playerId);
+    }
+
+    return {
+        changed:newValue!==current
+    };
+}
+
+
+/* =========================================================
+   RENDER PLAYER
+   ========================================================= */
+
+async function refreshPlayerRow(
+    playerId
+){
+
+    const player=
+        playerDataMap[playerId];
+
+    const row=
+        document.getElementById(
+            "player-row-"+playerId
+        );
+
+
+    if(
+        !player||
+        !row
+    ){
+
+        return;
+    }
+
+
+    await renderPlayerRow(
+        player,
+        row
+    );
+
+    updateSubstitutionButtons();
+    renderEasyScorekeeper();
+}
+
+
+async function renderPlayerRow(
+    player,
+    row
+){
+
+    const s=
+        await getPlayerGameStats(
+            player.id
+        );
+
+
+    const fgMade=
+
+        Number(
+            s.two_pt_made||0
+        )+
+
+        Number(
+            s.three_pt_made||0
+        );
+
+
+    const fgAtt=
+
+        Number(
+            s.two_pt_attempted||0
+        )+
+
+        Number(
+            s.three_pt_attempted||0
+        );
+
+
+    const onCourt=
+        playerOnCourt[player.id]===true;
+
+
+    row.className=
+        (
+            onCourt
+            ?"on-court"
+            :"bench"
+        )+
+        (
+            easySelectedPlayerId===player.id
+            ?" selected-for-entry"
+            :""
+        );
+
+    row.onclick=()=>{
+        selectEasyPlayer(player.id);
+    };
+
+
+    row.innerHTML=`
+
+<td>
+${escapeHTML(
+    String(
+        player.jersey_number||""
+    )
+)}
+</td>
+
+<td class="col-player">
+
+<span class="player-name"
+    onmouseenter="handlePlayerHover(event, '${player.id}')"
+    onmousemove="handlePlayerMove(event)"
+    onmouseleave="handlePlayerLeave()"
+    onclick="handlePlayerTap(event, '${player.id}')"
+    title="Hover or tap for game and career stats">
+${escapeHTML(
+    (player.first_name||"")+
+    " "+
+    (player.last_name||"")
+)}
+</span>
+
+<span class="player-position">
+${escapeHTML(
+    player.position||"N/A"
+)}
+</span>
+
+<button
+
+class="sub-button ${
+    onCourt
+    ?"sub-out"
+    :"sub-in"
+}"
+
+onclick="
+event.stopPropagation();
+toggleSubstitution(
+'${player.id}'
+)
+"
+
+>
+${
+    onCourt
+    ?"SUB OUT"
+    :"SUB IN"
+}
+
+</button>
+
+</td>
+
+
+<td>
+
+<span
+class="stat-value"
+data-minutes
+>
+
+${formatMinutes(
+    getPlayerTotalSeconds(
+        player.id
+    )
+)}
+
+</span>
+
+</td>
+
+
+<td>
+
+<span class="stat-value">
+${s.points||0}
+</span>
+
+</td>
+
+
+<td>
+
+<span class="stat-value">
+${s.offensive_rebounds||0}
+</span>
+
+<div class="stat-control-buttons">
+
+${statButtons(
+    player.id,
+    "offensive_rebounds"
+)}
+
+</div>
+
+</td>
+
+
+<td>
+
+<span class="stat-value">
+${s.defensive_rebounds||0}
+</span>
+
+<div class="stat-control-buttons">
+
+${statButtons(
+    player.id,
+    "defensive_rebounds"
+)}
+
+</div>
+
+</td>
+
+
+<td>
+
+<span class="stat-value">
+
+${
+    Number(
+        s.offensive_rebounds||0
+    )+
+
+    Number(
+        s.defensive_rebounds||0
+    )
+}
+
+</span>
+
+</td>
+
+
+<td>
+
+<span class="stat-value">
+${s.assists||0}
+</span>
+
+<div class="stat-control-buttons">
+
+${statButtons(
+    player.id,
+    "assists"
+)}
+
+</div>
+
+</td>
+
+
+<td>
+
+<span class="stat-value">
+${s.steals||0}
+</span>
+
+<div class="stat-control-buttons">
+
+${statButtons(
+    player.id,
+    "steals"
+)}
+
+</div>
+
+</td>
+
+
+<td>
+
+<span class="stat-value">
+${s.blocks||0}
+</span>
+
+<div class="stat-control-buttons">
+
+${statButtons(
+    player.id,
+    "blocks"
+)}
+
+</div>
+
+</td>
+
+
+<td>
+
+<span class="stat-value">
+${s.turnovers||0}
+</span>
+
+<div class="stat-control-buttons">
+
+${statButtons(
+    player.id,
+    "turnovers"
+)}
+
+</div>
+
+</td>
+
+
+<td>
+
+<span class="stat-value">
+${s.fouls||0}
+</span>
+
+<div class="stat-control-buttons">
+
+${statButtons(
+    player.id,
+    "fouls"
+)}
+
+</div>
+
+</td>
+
+
+<td>
+
+<div class="shot-value">
+
+${s.two_pt_made||0}/
+${s.two_pt_attempted||0}
+
+</div>
+
+<div class="shot-percent">
+
+${calculatePercentage(
+    s.two_pt_made,
+    s.two_pt_attempted
+)}
+
+</div>
+
+<div class="shot-buttons">
+
+<button
+class="shot-btn"
+${onCourt?"":"disabled"}
+onclick="
+quickScorePlayer(
+'${player.id}',
+'two_pt_made',
+false
+)
+"
+>
++2
+</button>
+
+<button
+class="shot-btn paint"
+${onCourt?"":"disabled"}
+title="Made 2-point basket inside the paint"
+onclick="
+quickScorePlayer(
+'${player.id}',
+'two_pt_made',
+true
+)
+"
+>
+P+2
+</button>
+
+<button
+class="shot-btn"
+${onCourt?"":"disabled"}
+onclick="
+updatePlayerStat(
+'${player.id}',
+'two_pt_made',
+-1
+)
+"
+>
+−2
+</button>
+
+<button
+class="shot-btn attempt"
+${onCourt?"":"disabled"}
+onclick="
+updatePlayerStat(
+'${player.id}',
+'two_pt_attempted',
+1
+)
+"
+>
+A+
+</button>
+
+<button
+class="shot-btn"
+${onCourt?"":"disabled"}
+onclick="
+updatePlayerStat(
+'${player.id}',
+'two_pt_attempted',
+-1
+)
+"
+>
+A−
+</button>
+
+</div>
+
+</td>
+
+
+<td>
+
+<div class="shot-value">
+
+${s.three_pt_made||0}/
+${s.three_pt_attempted||0}
+
+</div>
+
+<div class="shot-percent">
+
+${calculatePercentage(
+    s.three_pt_made,
+    s.three_pt_attempted
+)}
+
+</div>
+
+<div class="shot-buttons">
+
+<button
+class="shot-btn"
+${onCourt?"":"disabled"}
+onclick="
+quickScorePlayer(
+'${player.id}',
+'three_pt_made',
+false
+)
+"
+>
++3
+</button>
+
+<button
+class="shot-btn"
+${onCourt?"":"disabled"}
+onclick="
+updatePlayerStat(
+'${player.id}',
+'three_pt_made',
+-1
+)
+"
+>
+−3
+</button>
+
+<button
+class="shot-btn attempt"
+${onCourt?"":"disabled"}
+onclick="
+updatePlayerStat(
+'${player.id}',
+'three_pt_attempted',
+1
+)
+"
+>
+A+
+</button>
+
+<button
+class="shot-btn"
+${onCourt?"":"disabled"}
+onclick="
+updatePlayerStat(
+'${player.id}',
+'three_pt_attempted',
+-1
+)
+"
+>
+A−
+</button>
+
+</div>
+
+</td>
+
+
+<td>
+
+<div class="shot-value">
+
+${fgMade}/
+${fgAtt}
+
+</div>
+
+<div class="shot-percent">
+
+${calculatePercentage(
+    fgMade,
+    fgAtt
+)}
+
+</div>
+
+</td>
+
+
+<td>
+
+<div class="shot-value">
+
+${s.ft_made||0}/
+${s.ft_attempted||0}
+
+</div>
+
+<div class="shot-percent">
+
+${calculatePercentage(
+    s.ft_made,
+    s.ft_attempted
+)}
+
+</div>
+
+<div class="shot-buttons">
+
+<button
+class="shot-btn"
+${onCourt?"":"disabled"}
+onclick="
+quickScorePlayer(
+'${player.id}',
+'ft_made',
+false
+)
+"
+>
++1
+</button>
+
+<button
+class="shot-btn"
+${onCourt?"":"disabled"}
+onclick="
+updatePlayerStat(
+'${player.id}',
+'ft_made',
+-1
+)
+"
+>
+−1
+</button>
+
+<button
+class="shot-btn attempt"
+${onCourt?"":"disabled"}
+onclick="
+updatePlayerStat(
+'${player.id}',
+'ft_attempted',
+1
+)
+"
+>
+A+
+</button>
+
+<button
+class="shot-btn"
+${onCourt?"":"disabled"}
+onclick="
+updatePlayerStat(
+'${player.id}',
+'ft_attempted',
+-1
+)
+"
+>
+A−
+</button>
+
+</div>
+
+</td>
+
+
+<td>
+
+<div class="shot-value">
+
+<span class="${
+    Number(
+        s.plus_minus||0
+    )>=0
+    ?"plus-value"
+    :"minus-value"
+}">
+
+${
+    Number(
+        s.plus_minus||0
+    )>0
+    ?"+"
+    :""
+}
+
+${s.plus_minus||0}
+
+</span>
+
+</div>
+
+</td>
+
+`;
+}
+
+
+function statButtons(
+    playerId,
+    statKey
+){
+
+    const active=
+        playerOnCourt[playerId]===true;
+
+
+    return `
+
+<button
+
+class="stat-btn"
+
+${active?"":"disabled"}
+
+onclick="
+updatePlayerStat(
+'${playerId}',
+'${statKey}',
+1
+)
+"
+
+>
++
+</button>
+
+
+<button
+
+class="stat-btn minus"
+
+${active?"":"disabled"}
+
+onclick="
+updatePlayerStat(
+'${playerId}',
+'${statKey}',
+-1
+)
+"
+
+>
+−
+</button>
+
+`;
+}
+
+
+function formatMinutes(seconds){
+
+    const total=
+        Math.max(
+            0,
+            Math.round(
+                Number(
+                    seconds||0
+                )
+            )
+        );
+
+
+    return (
+
+        Math.floor(
+            total/60
+        )
+
+        +
+
+        ":"
+
+        +
+
+        String(
+            total%60
+        ).padStart(
+            2,
+            "0"
+        )
+
+    );
+}
+
+
+/* =========================================================
+   SUBSTITUTIONS
+   ========================================================= */
+
+async function toggleSubstitution(
+    playerId
+){
+
+    if(!currentGame){
+        return;
+    }
+
+
+    if(clockRunning){
+
+        showStatus(
+            "Pause the game clock before making a substitution."
+        );
+
+        return;
+    }
+
+
+    const team=
+        playerTeamMap[playerId];
+
+
+    const on=
+        playerOnCourt[playerId]===true;
+
+
+    if(on){
+
+        synchronizePlayerMinutes();
+
+
+        await persistPlayerMinutes(
+            playerId
+        );
+
+
+        playerOnCourt[playerId]=
+            false;
+
+
+        delete playerMinuteBaseSeconds[
+            playerId
+        ];
+
+        delete playerMinuteLastClockSeconds[
+            playerId
+        ];
+
+
+        await saveStatDirect(
+            playerId,
+            "on_court",
+            false
+        );
+
+
+        await renderTeamPlayers(
+            team
+        );
+
+
+        updateSubstitutionButtons();
+
+
+        showStatus(
+            "Player SUB OUT."
+        );
+
+
+        return;
+    }
+
+
+    const active=
+
+        Object.keys(
+            playerOnCourt
+        )
+
+        .filter(
+
+            id=>
+
+            playerOnCourt[id]===true&&
+
+            playerTeamMap[id]===team
+
+        )
+
+        .length;
+
+
+    if(active>=5){
+
+        showStatus(
+            "Maximum 5 players are on court. Sub out a player first."
+        );
+
+        return;
+    }
+
+
+    const stats=
+        await getPlayerGameStats(
+            playerId
+        );
+
+
+    playerOnCourt[playerId]=
+        true;
+
+
+    playerMinuteBaseSeconds[playerId]=
+
+        Math.max(
+
+            0,
+
+            Number(
+                stats.minutes_played||0
+            )
+
+        );
+
+
+    playerMinuteLastClockSeconds[playerId]
+        =clockSeconds;
+
+
+    await saveStatDirect(
+        playerId,
+        "on_court",
+        true
+    );
+
+
+    if(!playerCourtOrder[team]){
+
+        playerCourtOrder[team]=[];
+
+    }
+
+
+    playerCourtOrder[team].push(
+        playerId
+    );
+
+
+    await renderTeamPlayers(
+        team
+    );
+
+
+    updateSubstitutionButtons();
+
+
+    showStatus(
+        "Player SUB IN."
+    );
+}
+
+
+/* =========================================================
+   SHOT CLOCK
+   ========================================================= */
+
+function updateShotClockDisplay(){
+
+    const safeSeconds=
+        Math.max(
+            0,
+            Number(shotClockSeconds || 0)
+        );
+
+    const displayValue=
+        safeSeconds > 5
+        ?String(Math.ceil(safeSeconds))
+        :(
+            Math.ceil(safeSeconds * 10) / 10
+        ).toFixed(1);
+
+    document.getElementById(
+        "shotClock"
+    ).textContent=displayValue;
+}
+
+
+async function resetShotClock(seconds){
+
+    if(!currentGame){
+
+        showStatus(
+            "Load a game first."
+        );
+
+        return;
+    }
+
+    const resetValue=Number(seconds);
+
+    if(
+        resetValue !== 24 &&
+        resetValue !== 14
+    ){
+        return;
+    }
+
+    if(
+        clockRunning &&
+        clockEndTime
+    ){
+
+        clockSeconds=
+            Math.max(
+                0,
+                (
+                    clockEndTime -
+                    Date.now()
+                ) / 1000
+            );
+    }
+
+    if(
+        clockRunning &&
+        shotClockEndTime
+    ){
+
+        shotClockSeconds=
+            Math.max(
+                0,
+                (
+                    shotClockEndTime -
+                    Date.now()
+                ) / 1000
+            );
+
+        if(shotClockSeconds <= 0){
+
+            shotClockSeconds=0;
+            shotClockEndTime=null;
+        }
+    }
+
+    shotClockSeconds=
+        Math.min(
+            resetValue,
+            Math.max(
+                0,
+                Number(clockSeconds || 0)
+            )
+        );
+
+    if(
+        clockRunning &&
+        shotClockSeconds > 0
+    ){
+
+        shotClockEndTime=
+            Date.now() +
+            Math.round(
+                shotClockSeconds * 1000
+            );
+    }
+    else{
+
+        shotClockEndTime=null;
+    }
+
+    updateShotClockDisplay();
+
+    await saveClockState();
+
+    showStatus(
+        "Shot clock reset to " +
+        resetValue +
+        " seconds."
+    );
+}
+
+
+async function adjustShotClock(amount){
+
+    if(!currentGame){
+
+        showStatus(
+            "Load a game first."
+        );
+
+        return;
+    }
+
+    if(clockRunning){
+
+        showStatus(
+            "Pause the game clock before adjusting time."
+        );
+
+        return;
+    }
+
+    const adjustment=Number(amount);
+
+    if(!Number.isFinite(adjustment)){
+        return;
+    }
+
+    if(
+        clockRunning &&
+        clockEndTime
+    ){
+
+        clockSeconds=
+            Math.max(
+                0,
+                (
+                    clockEndTime -
+                    Date.now()
+                ) / 1000
+            );
+    }
+
+    if(
+        clockRunning &&
+        shotClockEndTime
+    ){
+
+        shotClockSeconds=
+            Math.max(
+                0,
+                (
+                    shotClockEndTime -
+                    Date.now()
+                ) / 1000
+            );
+    }
+
+    shotClockSeconds=
+        Math.min(
+            Math.max(
+                0,
+                Number(shotClockSeconds || 0) +
+                adjustment
+            ),
+            Math.max(
+                0,
+                Number(clockSeconds || 0)
+            )
+        );
+
+    if(
+        clockRunning &&
+        shotClockSeconds > 0
+    ){
+
+        shotClockEndTime=
+            Date.now() +
+            Math.round(
+                shotClockSeconds * 1000
+            );
+    }
+    else{
+
+        shotClockEndTime=null;
+    }
+
+    updateShotClockDisplay();
+
+    await saveClockState();
+
+    showStatus(
+        adjustment > 0
+        ?"Added 1 second to the shot clock."
+        :"Removed 1 second from the shot clock."
+    );
+}
+
+
+/* =========================================================
+   CLOCK
+   ========================================================= */
+
+async function saveClockState(){
+
+    if(!currentGame){
+        return false;
+    }
+
+    if(
+        clockRunning &&
+        clockEndTime
+    ){
+
+        clockSeconds=
+            Math.max(
+                0,
+                (
+                    clockEndTime -
+                    Date.now()
+                ) / 1000
+            );
+    }
+
+    if(
+        clockRunning &&
+        shotClockEndTime
+    ){
+
+        shotClockSeconds=
+            Math.max(
+                0,
+                (
+                    shotClockEndTime -
+                    Date.now()
+                ) / 1000
+            );
+
+        if(shotClockSeconds <= 0){
+
+            shotClockSeconds=0;
+            shotClockEndTime=null;
+        }
+    }
+
+    const remainingMilliseconds=
+        Math.max(
+            0,
+            Math.round(
+                clockSeconds * 1000
+            )
+        );
+
+    const shotClockRemainingMilliseconds=
+        Math.max(
+            0,
+            Math.round(
+                shotClockSeconds * 1000
+            )
+        );
+
+    const {
+        data,
+        error
+    }=
+    await supabaseClient
+    .from("games")
+    .update({
+
+        /*
+        Keep this old column for compatibility.
+        */
+
+        clock_seconds:
+            Math.ceil(
+                clockSeconds
+            ),
+
+        /*
+        This new column preserves tenths.
+        */
+
+        clock_milliseconds:
+            remainingMilliseconds,
+
+        clock_running:
+            clockRunning,
+
+        clock_end_time:
+
+            clockRunning && clockEndTime
+
+            ?new Date(
+                clockEndTime
+            ).toISOString()
+
+            :null,
+
+        shot_clock_milliseconds:
+            shotClockRemainingMilliseconds,
+
+        shot_clock_end_time:
+
+            clockRunning && shotClockEndTime
+
+            ?new Date(
+                shotClockEndTime
+            ).toISOString()
+
+            :null
+    })
+    .eq(
+        "id",
+        currentGame.id
+    )
+    .select("*")
+    .single();
+
+    if(error){
+
+        console.error(
+            "Clock save error:",
+            error
+        );
+
+        return false;
+    }
+
+    if(data){
+
+        currentGame={
+
+            ...currentGame,
+
+            ...data
+        };
+    }
+
+    return true;
+}
+
+
+/* =========================================================
+   LOAD PERSISTED CLOCK
+   ========================================================= */
+
+async function loadPersistedClock(){
+
+    const {
+        data,
+        error
+    }=
+    await supabaseClient
+    .from("games")
+    .select(
+        "clock_seconds,clock_milliseconds,clock_running,clock_end_time,shot_clock_milliseconds,shot_clock_end_time"
+    )
+    .eq(
+        "id",
+        currentGame.id
+    )
+    .single();
+
+    if(
+        error ||
+        !data
+    ){
+
+        clockSeconds=600;
+        clockRunning=false;
+        clockEndTime=null;
+
+        shotClockSeconds=24;
+        shotClockEndTime=null;
+
+        updateClockDisplay();
+        updateShotClockDisplay();
+
+        return;
+    }
+
+    /*
+    Use milliseconds when available.
+    Otherwise, use the old seconds value.
+    */
+
+    if(
+        data.clock_milliseconds !== null &&
+        data.clock_milliseconds !== undefined
+    ){
+
+        clockSeconds=
+            Math.max(
+                0,
+                Number(
+                    data.clock_milliseconds
+                ) / 1000
+            );
+    }
+    else{
+
+        clockSeconds=
+            Math.max(
+                0,
+                Number(
+                    data.clock_seconds ?? 600
+                )
+            );
+    }
+
+    clockRunning=
+        data.clock_running === true;
+
+    clockEndTime=
+        data.clock_end_time
+
+        ?new Date(
+            data.clock_end_time
+        ).getTime()
+
+        :null;
+
+    shotClockSeconds=
+        Math.max(
+            0,
+            Number(
+                data.shot_clock_milliseconds ?? 24000
+            ) / 1000
+        );
+
+    shotClockEndTime=
+        data.shot_clock_end_time
+
+        ?new Date(
+            data.shot_clock_end_time
+        ).getTime()
+
+        :null;
+
+    if(
+        clockRunning &&
+        clockEndTime
+    ){
+
+        clockSeconds=
+            Math.max(
+                0,
+                (
+                    clockEndTime -
+                    Date.now()
+                ) / 1000
+            );
+    }
+
+    if(clockRunning){
+
+        if(shotClockEndTime){
+
+            shotClockSeconds=
+                Math.max(
+                    0,
+                    (
+                        shotClockEndTime -
+                        Date.now()
+                    ) / 1000
+                );
+        }
+        else if(shotClockSeconds > 0){
+
+            shotClockSeconds=
+                Math.min(
+                    shotClockSeconds,
+                    clockSeconds
+                );
+
+            shotClockEndTime=
+                Date.now() +
+                Math.round(
+                    shotClockSeconds * 1000
+                );
+        }
+    }
+
+    shotClockSeconds=
+        Math.min(
+            Math.max(0,shotClockSeconds),
+            Math.max(0,clockSeconds)
+        );
+
+    if(shotClockSeconds <= 0){
+
+        shotClockSeconds=0;
+        shotClockEndTime=null;
+    }
+
+    if(clockSeconds <= 0){
+
+        clockSeconds=0;
+        clockRunning=false;
+        clockEndTime=null;
+
+        shotClockSeconds=0;
+        shotClockEndTime=null;
+
+        updateClockDisplay();
+        updateShotClockDisplay();
+
+        await saveClockState();
+
+        return;
+    }
+
+    updateClockDisplay();
+    updateShotClockDisplay();
+
+    if(
+        clockRunning &&
+        clockEndTime
+    ){
+
+        for(
+            const id of
+            Object.keys(
+                playerOnCourt
+            )
+        ){
+
+            if(
+                playerOnCourt[id] === true
+            ){
+
+                const stats=
+                    playerStatsMap[id] || {};
+
+                playerMinuteBaseSeconds[id]=
+                    Math.max(
+                        0,
+                        Number(
+                            stats.minutes_played || 0
+                        )
+                    );
+
+                playerMinuteLastClockSeconds[id]=
+                    clockSeconds;
+            }
+        }
+
+        await saveClockState();
+
+        startClockInternal();
+    }
 }
 
 /* =========================================================
-   CLOCK CONTROLS
+   CLOCK DISPLAY
    ========================================================= */
 
-function updateClockDisplay() {
-    const el = document.getElementById("gameClock");
-    if (el) el.textContent = formatMinutes(clockSeconds);
-}
+/* =========================================================
+   CLOCK DISPLAY
+   ========================================================= */
 
-function updateShotClockDisplay() {
-    const el = document.getElementById("shotClock");
-    if (el) el.textContent = shotClockSeconds;
-}
+function updateClockDisplay(){
 
-function startClock() {
-    if (clockRunning) return;
-    clockRunning = true;
-    clockInterval = setInterval(() => {
-        if (clockSeconds > 0) {
-            clockSeconds--;
-            updateClockDisplay();
-        }
-        if (shotClockSeconds > 0) {
-            shotClockSeconds--;
-            updateShotClockDisplay();
-        }
-    }, 1000);
-}
+    const safeMilliseconds=
+        Math.max(
+            0,
+            Math.ceil(
+                Number(
+                    clockSeconds || 0
+                ) * 1000
+            )
+        );
 
-function pauseClock() {
-    clockRunning = false;
-    clearInterval(clockInterval);
-}
+    const totalTenths=
+        Math.ceil(
+            safeMilliseconds / 100
+        );
 
-function resetClock() {
-    pauseClock();
-    clockSeconds = 600;
-    updateClockDisplay();
-}
+    const minutes=
+        Math.floor(
+            totalTenths / 600
+        );
 
-function adjustGameClock(delta) {
-    clockSeconds = Math.max(0, clockSeconds + delta);
-    updateClockDisplay();
-}
+    const seconds=
+        Math.floor(
+            (
+                totalTenths % 600
+            ) / 10
+        );
 
-function resetShotClock(seconds = 24) {
-    shotClockSeconds = seconds;
-    updateShotClockDisplay();
-}
+    const tenths=
+        totalTenths % 10;
 
-function adjustShotClock(delta) {
-    shotClockSeconds = Math.max(0, shotClockSeconds + delta);
-    updateShotClockDisplay();
-}
+    document.getElementById(
+        "gameClock"
+    ).textContent=
 
-function setPeriod(period) {
-    document.querySelectorAll(".period-buttons button").forEach(btn => btn.classList.remove("active"));
-    const idMap = { '1st Quarter': 'period-1st', '2nd Quarter': 'period-2nd', '3rd Quarter': 'period-3rd', '4th Quarter': 'period-4th' };
-    const target = document.getElementById(idMap[period]);
-    if (target) target.classList.add("active");
-    showStatus(`Period set to ${period}`);
+        String(
+            minutes
+        ).padStart(
+            2,
+            "0"
+        )
+
+        +
+
+        ":"
+
+        +
+
+        String(
+            seconds
+        ).padStart(
+            2,
+            "0"
+        )
+
+        +
+
+        "."
+
+        +
+
+        tenths;
 }
 
 /* =========================================================
-   SCORE & STAT RECORDING HANDLERS
+   START CLOCK
    ========================================================= */
 
-function loadGame() {
-    const gameId = document.getElementById("gameId").value;
-    if (!gameId) {
-        showStatus("Please enter a valid Game ID.");
+async function startClock(){
+
+    if(clockRunning){
         return;
     }
-    rememberLoadedGameId(gameId);
-    showStatus(`Loaded Game ID: ${gameId}`);
-}
 
-function setGameStatus(status) {
-    document.querySelectorAll(".control-button").forEach(btn => btn.classList.remove("active"));
-    const id = status === 'Live' ? 'status-live' : status === 'Halftime' ? 'status-half' : 'status-final';
-    const el = document.getElementById(id);
-    if (el) el.classList.add("active");
-    showStatus(`Game status updated to: ${status}`);
-}
 
-function easyRecordScore(action, isPaint) {
-    if (!easySelectedPlayerId) {
-        showStatus("Please select a player first!");
+    if(!currentGame){
+
+        showStatus(
+            "Load a game first."
+        );
+
         return;
     }
-    showStatus(`Recorded ${action} (${isPaint ? 'Paint' : 'Standard'}) for player ID ${easySelectedPlayerId}`);
-}
 
-function easyRecordStat(statType) {
-    if (!easySelectedPlayerId) {
-        showStatus("Please select a player first!");
+
+    if(clockSeconds<=0){
+
+        showStatus(
+            "Clock is at 00:00. Reset the clock first."
+        );
+
         return;
     }
-    showStatus(`Recorded ${statType} for player ID ${easySelectedPlayerId}`);
+
+
+    synchronizePlayerMinutes();
+
+
+    for(
+        const playerId of
+        Object.keys(
+            playerOnCourt
+        )
+    ){
+
+        if(
+            playerOnCourt[playerId]===true
+        ){
+
+            playerMinuteLastClockSeconds[
+                playerId
+            ]=clockSeconds;
+        }
+    }
+
+
+    const clockStartTime=Date.now();
+
+    clockEndTime=
+
+        clockStartTime
+
+        +
+
+        Math.round(
+            clockSeconds * 1000
+        );
+
+    shotClockSeconds=
+        Math.min(
+            Math.max(
+                0,
+                Number(shotClockSeconds || 0)
+            ),
+            clockSeconds
+        );
+
+    if(shotClockSeconds > 0){
+
+        shotClockEndTime=
+            clockStartTime +
+            Math.round(
+                shotClockSeconds * 1000
+            );
+    }
+    else{
+
+        shotClockEndTime=null;
+    }
+
+
+    clockRunning=true;
+
+    updateShotClockDisplay();
+
+
+    updateSubstitutionButtons();
+
+
+    await saveClockState();
+
+
+    await persistAllPlayerMinutes(true);
+
+
+    startClockInternal();
 }
 
-function toggleEasyDeductMode() {
-    easyDeductMode = !easyDeductMode;
-    const btn = document.getElementById("easyDeductModeButton");
-    btn.classList.toggle("active", easyDeductMode);
-    document.querySelector(".hybrid-action-panel").classList.toggle("deduct-mode", easyDeductMode);
-    showStatus(easyDeductMode ? "Deduct Mode Activated" : "Standard Entry Mode Active");
+
+/* =========================================================
+   INTERNAL CLOCK LOOP
+   ========================================================= */
+
+function startClockInternal(){
+
+    if(clockInterval){
+
+        clearInterval(
+            clockInterval
+        );
+    }
+
+    if(
+        !clockRunning ||
+        !clockEndTime
+    ){
+
+        return;
+    }
+
+    clockInterval=
+        setInterval(
+            ()=>{
+
+                if(
+                    !clockRunning ||
+                    !clockEndTime
+                ){
+
+                    clearInterval(
+                        clockInterval
+                    );
+
+                    clockInterval=null;
+
+                    return;
+                }
+
+                const now=Date.now();
+
+                clockSeconds=
+                    Math.max(
+                        0,
+                        (
+                            clockEndTime -
+                            now
+                        ) / 1000
+                    );
+
+                if(shotClockEndTime){
+
+                    shotClockSeconds=
+                        Math.max(
+                            0,
+                            (
+                                shotClockEndTime -
+                                now
+                            ) / 1000
+                        );
+
+                    if(shotClockSeconds <= 0){
+
+                        shotClockSeconds=0;
+                        shotClockEndTime=null;
+
+                        void saveClockState();
+
+                        showStatus(
+                            "Shot clock ended."
+                        );
+                    }
+                }
+
+                if(shotClockSeconds > clockSeconds){
+
+                    shotClockSeconds=clockSeconds;
+
+                    if(shotClockEndTime){
+
+                        shotClockEndTime=
+                            now +
+                            Math.round(
+                                shotClockSeconds * 1000
+                            );
+                    }
+                }
+
+                synchronizePlayerMinutes();
+
+                updateClockDisplay();
+                updateShotClockDisplay();
+                updateVisibleMinutes();
+
+                if(clockSeconds <= 0){
+
+                    void handleClockEnd();
+                }
+            },
+            100
+        );
 }
 
-function undoEasyLastStat() {
-    showStatus("Last stat undone.");
+
+/* =========================================================
+   QUARTER END
+   ========================================================= */
+
+async function handleClockEnd(){
+
+    if(!clockRunning){
+        return;
+    }
+
+
+    clockSeconds=0;
+    shotClockSeconds=0;
+
+
+    synchronizePlayerMinutes();
+
+
+    clockRunning=false;
+
+    clockEndTime=null;
+    shotClockEndTime=null;
+
+
+    if(clockInterval){
+
+        clearInterval(
+            clockInterval
+        );
+
+        clockInterval=null;
+    }
+
+
+    updateClockDisplay();
+    updateShotClockDisplay();
+
+
+    await persistAllPlayerMinutes(true);
+
+
+    await saveClockState();
+
+
+    updateSubstitutionButtons();
+
+
+    for(
+        const playerId of
+        Object.keys(
+            playerOnCourt
+        )
+    ){
+
+        if(
+            playerOnCourt[playerId]===true
+        ){
+
+            playerMinuteLastClockSeconds[
+                playerId
+            ]=clockSeconds;
+        }
+    }
+
+
+    showStatus(
+        "Quarter clock ended. Player minutes synchronized."
+    );
 }
 
-function toggleSelectedQuickTag(tagKey) {
-    const team = "home";
-    quickScoringContext[team][tagKey] = !quickScoringContext[team][tagKey];
-    const btnId = tagKey === 'offTurnover' ? 'quickOffTurnoverButton' : 'quickSecondChanceButton';
-    const btn = document.getElementById(btnId);
-    if (btn) btn.classList.toggle("active", quickScoringContext[team][tagKey]);
+
+/* =========================================================
+   PAUSE CLOCK
+   ========================================================= */
+
+async function pauseClock(){
+
+    if(!currentGame){
+        return;
+    }
+
+    if(!clockRunning){
+
+        updateClockDisplay();
+        updateShotClockDisplay();
+        updateSubstitutionButtons();
+
+        return;
+    }
+
+    const now=Date.now();
+
+    clockSeconds=
+        Math.max(
+            0,
+            (
+                clockEndTime -
+                now
+            ) / 1000
+        );
+
+    if(shotClockEndTime){
+
+        shotClockSeconds=
+            Math.max(
+                0,
+                (
+                    shotClockEndTime -
+                    now
+                ) / 1000
+            );
+    }
+
+    synchronizePlayerMinutes();
+
+    clockRunning=false;
+    clockEndTime=null;
+    shotClockEndTime=null;
+
+    if(clockInterval){
+
+        clearInterval(
+            clockInterval
+        );
+
+        clockInterval=null;
+    }
+
+    updateClockDisplay();
+    updateShotClockDisplay();
+
+    await persistAllPlayerMinutes(true);
+    await saveClockState();
+
+    updateSubstitutionButtons();
 }
 
-function toggleQuickFastBreak() {
-    quickFastBreak = !quickFastBreak;
-    const btn = document.getElementById("quickFastBreakButton");
-    if (btn) btn.classList.toggle("active", quickFastBreak);
+
+/* =========================================================
+   MANUAL CLOCK ADJUSTMENT
+   ========================================================= */
+
+async function adjustGameClock(amount){
+
+    if(!currentGame){
+
+        showStatus(
+            "Load a game first."
+        );
+
+        return;
+    }
+
+    if(clockRunning){
+
+        showStatus(
+            "Pause the game clock before adjusting time."
+        );
+
+        return;
+    }
+
+
+    const adjustment=
+        Number(amount);
+
+
+    if(!Number.isFinite(adjustment)){
+        return;
+    }
+
+
+    /*
+    Record actual elapsed playing time before changing
+    the clock. A manual correction must not add to or
+    remove any player's minutes played.
+    */
+
+    if(
+        clockRunning &&
+        clockEndTime
+    ){
+
+        clockSeconds=
+            Math.max(
+                0,
+                (
+                    clockEndTime -
+                    Date.now()
+                ) / 1000
+            );
+
+        synchronizePlayerMinutes();
+
+        clockEndTime +=
+            Math.round(
+                adjustment * 1000
+            );
+
+        clockSeconds=
+            Math.max(
+                0,
+                (
+                    clockEndTime -
+                    Date.now()
+                ) / 1000
+            );
+    }
+    else{
+
+        clockSeconds=
+            Math.max(
+                0,
+                Number(clockSeconds || 0) +
+                adjustment
+            );
+    }
+
+    if(
+        clockRunning &&
+        shotClockEndTime
+    ){
+
+        shotClockSeconds=
+            Math.max(
+                0,
+                (
+                    shotClockEndTime -
+                    Date.now()
+                ) / 1000
+            );
+
+        if(shotClockSeconds <= 0){
+
+            shotClockSeconds=0;
+            shotClockEndTime=null;
+        }
+    }
+
+    shotClockSeconds=
+        Math.min(
+            Math.max(
+                0,
+                Number(shotClockSeconds || 0)
+            ),
+            Math.max(
+                0,
+                Number(clockSeconds || 0)
+            )
+        );
+
+    if(
+        clockRunning &&
+        shotClockSeconds > 0
+    ){
+
+        shotClockEndTime=
+            Date.now() +
+            Math.round(
+                shotClockSeconds * 1000
+            );
+    }
+    else{
+
+        shotClockEndTime=null;
+    }
+
+
+    /*
+    Rebase active players to the corrected clock value.
+    */
+
+    for(
+        const playerId of
+        Object.keys(
+            playerOnCourt
+        )
+    ){
+
+        if(
+            playerOnCourt[playerId] === true
+        ){
+
+            playerMinuteLastClockSeconds[
+                playerId
+            ]=clockSeconds;
+        }
+    }
+
+
+    updateClockDisplay();
+    updateShotClockDisplay();
+
+
+    if(
+        clockRunning &&
+        clockSeconds <= 0
+    ){
+
+        await handleClockEnd();
+
+        return;
+    }
+
+
+    await saveClockState();
+
+
+    showStatus(
+        adjustment > 0
+        ?"Added 1 second to the game clock."
+        :"Removed 1 second from the game clock."
+    );
 }
 
-function resetAllQuickScoringContext() {
-    quickFastBreak = false;
-    quickScoringContext = { home: { offTurnover: false, secondChance: false }, away: { offTurnover: false, secondChance: false } };
-    document.querySelectorAll(".quick-score-context, .quick-fast-break-button").forEach(btn => btn.classList.remove("active"));
-    showStatus("Scoring tags reset.");
+
+/* =========================================================
+   RESET CLOCK
+   ========================================================= */
+
+async function resetClock(){
+
+    if(!currentGame){
+        return;
+    }
+
+
+    if(clockRunning){
+
+        clockSeconds=
+
+    Math.max(
+
+        0,
+
+        (
+            clockEndTime -
+            Date.now()
+        ) / 1000
+
+    );
+
+        synchronizePlayerMinutes();
+    }
+
+
+    await persistAllPlayerMinutes(true);
+
+
+    clockRunning=false;
+
+    clockEndTime=null;
+
+    shotClockEndTime=null;
+
+
+    if(clockInterval){
+
+        clearInterval(
+            clockInterval
+        );
+
+        clockInterval=null;
+    }
+
+
+    clockSeconds=600;
+
+    shotClockSeconds=24;
+
+
+    for(
+        const playerId of
+        Object.keys(
+            playerOnCourt
+        )
+    ){
+
+        if(
+            playerOnCourt[playerId]===true
+        ){
+
+            const stats=
+                playerStatsMap[playerId]||{};
+
+
+            playerMinuteBaseSeconds[playerId]=
+
+                Math.max(
+
+                    0,
+
+                    Number(
+                        stats.minutes_played||0
+                    )
+
+                );
+
+
+            playerMinuteLastClockSeconds[
+                playerId
+            ]=clockSeconds;
+        }
+    }
+
+
+    updateClockDisplay();
+
+    updateShotClockDisplay();
+
+
+    await supabaseClient
+    .from("games")
+    .update({
+
+    clock_seconds:600,
+
+    clock_milliseconds:600000,
+
+    clock_running:false,
+
+    clock_end_time:null,
+
+    shot_clock_milliseconds:24000,
+
+    shot_clock_end_time:null
+
+})
+    .eq(
+        "id",
+        currentGame.id
+    );
+
+
+    updateSubstitutionButtons();
 }
 
-function printTeamStats(team) {
-    window.print();
+
+/* =========================================================
+   PERIOD / STATUS
+   ========================================================= */
+
+function setActivePeriod(period){
+
+    document
+    .querySelectorAll(
+        ".period-buttons button"
+    )
+    .forEach(
+        b=>b.classList.remove(
+            "active"
+        )
+    );
+
+
+    const map={
+
+        "1st Quarter":
+            "period-1st",
+
+        "2nd Quarter":
+            "period-2nd",
+
+        "3rd Quarter":
+            "period-3rd",
+
+        "4th Quarter":
+            "period-4th"
+    };
+
+
+    if(map[period]){
+
+        document.getElementById(
+            map[period]
+        ).classList.add(
+            "active"
+        );
+    }
 }
 
-function cancelSmartScoring() {
-    document.getElementById("smartScoreModal").classList.remove("visible");
+
+function setActiveStatus(status){
+
+    document
+    .querySelectorAll(
+        ".game-footer-controls .control-button"
+    )
+    .forEach(
+        b=>b.classList.remove(
+            "active"
+        )
+    );
+
+
+    const map={
+
+        Live:
+            "status-live",
+
+        Halftime:
+            "status-half",
+
+        Final:
+            "status-final"
+    };
+
+
+    if(map[status]){
+
+        document.getElementById(
+            map[status]
+        ).classList.add(
+            "active"
+        );
+    }
 }
 
-function confirmSmartScoring() {
-    document.getElementById("smartScoreModal").classList.remove("visible");
-    showStatus("Score confirmed!");
+
+async function setGameStatus(status){
+
+    if(!currentGame){
+
+        showStatus(
+            "Load a game first."
+        );
+
+        return;
+    }
+
+
+    if(String(currentGame.status||"").toLowerCase()==="final"){
+        showStatus("This game is finalized and locked.");
+        return;
+    }
+
+    if(status==="Final"){
+        await finalizeCurrentGame();
+        return;
+    }
+
+    setActiveStatus(status);
+    await updateGame({status});
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    initializeSecureScorekeeper();
-});
+
+function setFinalizedLock(locked){
+
+    document.querySelectorAll(
+        ".clock-controls button, .shot-clock-controls button, "+
+        ".period-buttons button, .stat-btn, .shot-btn, .sub-button, "+
+        ".easy-action-button, .easy-sub-button, "+
+        "#quickFastBreakButton, #quickOffTurnoverButton, "+
+        "#quickSecondChanceButton, #quickResetContextButton, "+
+        "#status-live, #status-half, #status-final"
+    ).forEach(button=>{
+        button.disabled=Boolean(locked);
+    });
+
+    const finalButton=document.getElementById("status-final");
+    if(finalButton){
+        finalButton.textContent=locked ? "GAME FINALIZED" : "FINALIZE GAME";
+    }
+}
+
+
+async function flushAllPendingStats(){
+
+    const gameId=
+        currentGame
+        ?currentGame.id
+        :null;
+
+    for(const playerId of Object.keys(playerStatsMap)){
+        await flushStatSave(playerId);
+    }
+
+    if(gameId!==null){
+        await flushGameScoreSave(gameId);
+    }
+
+    const deadline=Date.now()+5000;
+
+    while(
+        (
+            statSaveQueue.size>0||
+            statSaveInFlight.size>0||
+            gameScoreSaveQueue.size>0||
+            gameScoreSaveInFlight.size>0
+        )&&
+        Date.now()<deadline
+    ){
+        await new Promise(resolve=>setTimeout(resolve,50));
+
+        for(const playerId of Object.keys(playerStatsMap)){
+            await flushStatSave(playerId);
+        }
+
+        if(gameId!==null){
+            await flushGameScoreSave(gameId);
+        }
+    }
+
+    if(
+        statSaveQueue.size>0||
+        statSaveInFlight.size>0||
+        gameScoreSaveQueue.size>0||
+        gameScoreSaveInFlight.size>0
+    ){
+        throw new Error("Some game statistics are still saving. Please check the connection.");
+    }
+}
+
+
+async function finalizeCurrentGame(){
+
+    if(clockRunning){
+        showStatus("Pause the game clock before finalizing the game.");
+        return;
+    }
+
+    const homeScore=Number(document.getElementById("homeScore").textContent||0);
+    const awayScore=Number(document.getElementById("awayScore").textContent||0);
+
+    if(homeScore===awayScore){
+        showStatus("A basketball game cannot be finalized while the score is tied.");
+        return;
+    }
+
+    const confirmed=window.confirm(
+        "Finalize this game? The final score, player totals and league standings will be saved and the game will be locked."
+    );
+
+    if(!confirmed){
+        return;
+    }
+
+    const finalButton=document.getElementById("status-final");
+    finalButton.disabled=true;
+    finalButton.textContent="FINALIZING...";
+
+    try{
+        showStatus("Saving final player statistics...");
+        await persistAllPlayerMinutes(true);
+        await flushAllPendingStats();
+
+        const {data,error}=await supabaseClient.rpc(
+            "finalize_basketball_game",
+            {p_game_id:currentGame.id}
+        );
+
+        if(error){
+            throw error;
+        }
+
+        const result=Array.isArray(data) ? data[0] : data;
+
+        currentGame={
+            ...currentGame,
+            status:"Final",
+            finalized_at:result?.finalized_at||new Date().toISOString()
+        };
+
+        setActiveStatus("Final");
+        setFinalizedLock(true);
+        stopMinuteDisplay();
+        stopMinutePersistence();
+
+        showStatus(
+            result?.already_finalized
+                ? "This game was already finalized."
+                : "Game finalized. Player totals and league standings are updated."
+        );
+    }
+    catch(error){
+        console.error("Finalize game error:",error);
+        finalButton.disabled=false;
+        finalButton.textContent="FINALIZE GAME";
+        showStatus("Unable to finalize game: "+(error.message||"Unknown error"));
+    }
+}
+
+
+async function setPeriod(period){
+
+    if(!currentGame){
+        return;
+    }
+
+
+    if(clockRunning){
+
+        showStatus(
+            "Pause the game clock before changing the quarter."
+        );
+
+        return;
+    }
+
+
+    await persistAllPlayerMinutes(true);
+
+
+    setActivePeriod(
+        period
+    );
+
+
+    await updateGame({
+        period
+    });
+
+
+    await resetClock();
+}
+
+
+/* =========================================================
+   AUTO LOAD
+   ========================================================= */
+/* ============================================
+   PRINT TEAM STATS
+============================================ */
+function addTeamTotalsRow(
+    previewContent,
+    players
+){
+
+    const totals={
+
+        minutes:0,
+        points:0,
+
+        offensive_rebounds:0,
+        defensive_rebounds:0,
+
+        assists:0,
+        steals:0,
+        blocks:0,
+        turnovers:0,
+        fouls:0,
+
+        two_pt_made:0,
+        two_pt_attempted:0,
+
+        three_pt_made:0,
+        three_pt_attempted:0,
+
+        ft_made:0,
+        ft_attempted:0,
+
+        plus_minus:0
+    };
+
+
+    players.forEach(player=>{
+
+        const stats=
+            playerStatsMap[player.id] || {};
+
+        totals.minutes +=
+            Number(
+                getPlayerTotalSeconds(
+                    player.id
+                ) || 0
+            );
+
+        totals.points +=
+            Number(stats.points || 0);
+
+        totals.offensive_rebounds +=
+            Number(
+                stats.offensive_rebounds || 0
+            );
+
+        totals.defensive_rebounds +=
+            Number(
+                stats.defensive_rebounds || 0
+            );
+
+        totals.assists +=
+            Number(stats.assists || 0);
+
+        totals.steals +=
+            Number(stats.steals || 0);
+
+        totals.blocks +=
+            Number(stats.blocks || 0);
+
+        totals.turnovers +=
+            Number(stats.turnovers || 0);
+
+        totals.fouls +=
+            Number(stats.fouls || 0);
+
+        totals.two_pt_made +=
+            Number(stats.two_pt_made || 0);
+
+        totals.two_pt_attempted +=
+            Number(
+                stats.two_pt_attempted || 0
+            );
+
+        totals.three_pt_made +=
+            Number(stats.three_pt_made || 0);
+
+        totals.three_pt_attempted +=
+            Number(
+                stats.three_pt_attempted || 0
+            );
+
+        totals.ft_made +=
+            Number(stats.ft_made || 0);
+
+        totals.ft_attempted +=
+            Number(stats.ft_attempted || 0);
+
+        totals.plus_minus +=
+            Number(stats.plus_minus || 0);
+    });
+
+
+    const totalRebounds=
+
+        totals.offensive_rebounds +
+
+        totals.defensive_rebounds;
+
+
+    const fieldGoalsMade=
+
+        totals.two_pt_made +
+
+        totals.three_pt_made;
+
+
+    const fieldGoalsAttempted=
+
+        totals.two_pt_attempted +
+
+        totals.three_pt_attempted;
+
+
+    const tbody=
+        previewContent.querySelector(
+            "tbody"
+        );
+
+
+    if(!tbody){
+        return;
+    }
+
+
+    const row=
+        document.createElement(
+            "tr"
+        );
+
+
+    row.className=
+        "team-total-row";
+
+
+    row.innerHTML=`
+
+<td></td>
+
+<td class="team-total-label">
+TEAM TOTAL
+</td>
+
+<td>
+${formatMinutes(totals.minutes)}
+</td>
+
+<td>
+${totals.points}
+</td>
+
+<td>
+${totals.offensive_rebounds}
+</td>
+
+<td>
+${totals.defensive_rebounds}
+</td>
+
+<td>
+${totalRebounds}
+</td>
+
+<td>
+${totals.assists}
+</td>
+
+<td>
+${totals.steals}
+</td>
+
+<td>
+${totals.blocks}
+</td>
+
+<td>
+${totals.turnovers}
+</td>
+
+<td>
+${totals.fouls}
+</td>
+
+<td>
+<div class="shot-value">
+${totals.two_pt_made}/${totals.two_pt_attempted}
+</div>
+
+<div class="shot-percent">
+${calculatePercentage(
+    totals.two_pt_made,
+    totals.two_pt_attempted
+)}
+</div>
+</td>
+
+<td>
+<div class="shot-value">
+${totals.three_pt_made}/${totals.three_pt_attempted}
+</div>
+
+<div class="shot-percent">
+${calculatePercentage(
+    totals.three_pt_made,
+    totals.three_pt_attempted
+)}
+</div>
+</td>
+
+<td>
+<div class="shot-value">
+${fieldGoalsMade}/${fieldGoalsAttempted}
+</div>
+
+<div class="shot-percent">
+${calculatePercentage(
+    fieldGoalsMade,
+    fieldGoalsAttempted
+)}
+</div>
+</td>
+
+<td>
+<div class="shot-value">
+${totals.ft_made}/${totals.ft_attempted}
+</div>
+
+<div class="shot-percent">
+${calculatePercentage(
+    totals.ft_made,
+    totals.ft_attempted
+)}
+</div>
+</td>
+
+<td>
+${totals.plus_minus > 0 ? "+" : ""}
+${totals.plus_minus}
+</td>
+
+`;
+
+
+    tbody.appendChild(
+        row
+    );
+}
+async function printTeamStats(team){
+
+    if(!currentGame){
+        showStatus("Load a game first.");
+        return;
+    }
+
+    const isHome =
+        team === "home";
+
+    const playersList =
+        document.getElementById(
+            isHome
+            ? "homePlayersList"
+            : "awayPlayersList"
+        );
+
+    const teamTitle =
+        document.getElementById(
+            isHome
+            ? "homePlayersTitle"
+            : "awayPlayersTitle"
+        );
+
+    const allPlayers =
+        teamPlayersMap[team] || [];
+
+    if(!playersList || !allPlayers.length){
+        showStatus("Unable to find the complete team roster.");
+        return;
+    }
+
+    const previewTitle =
+        document.getElementById(
+            "teamStatsModalTitle"
+        );
+
+    const previewContent =
+        document.getElementById(
+            "teamStatsPreviewContent"
+        );
+
+    const modal =
+        document.getElementById(
+            "teamStatsModal"
+        );
+
+    /*
+    Remember whether the bench was already expanded.
+    */
+
+    const wasExpanded =
+        teamExpandedMap[team] === true;
+
+    /*
+    Temporarily render every roster player,
+    including all bench players.
+    */
+
+    teamExpandedMap[team] = true;
+
+    await renderTeamPlayers(team);
+
+    /*
+    Copy the complete table into the preview.
+    */
+
+    previewContent.innerHTML =
+        playersList.innerHTML;
+
+    /*
+    Remove the SHOW LESS row from the printable copy.
+    */
+
+    previewContent
+    .querySelectorAll(".view-all-row")
+    .forEach(row => row.remove());
+
+    /*
+    Remove duplicate IDs from the copied player rows.
+    */
+
+    previewContent
+    .querySelectorAll("[id]")
+    .forEach(element => {
+        element.removeAttribute("id");
+    });
+    /*
+Add the computed team totals
+to the bottom of the preview.
+*/
+
+addTeamTotalsRow(
+    previewContent,
+    allPlayers
+);
+
+    const breakdown=
+        scoringBreakdownTotals[team]||
+        emptyBreakdownTotals();
+
+    const breakdownTitle=
+        document.createElement("h3");
+
+    breakdownTitle.textContent=
+        "Scoring Breakdown";
+
+    breakdownTitle.style.marginTop="14px";
+    breakdownTitle.style.marginBottom="6px";
+
+    const breakdownTable=
+        document.createElement("table");
+
+    breakdownTable.className=
+        "team-breakdown-table";
+
+    breakdownTable.innerHTML=`
+        <thead>
+            <tr>
+                <th>POINTS IN PAINT</th>
+                <th>FAST BREAK</th>
+                <th>OFF TURNOVERS</th>
+                <th>SECOND CHANCE</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>${breakdown.paint}</td>
+                <td>${breakdown.fastBreak}</td>
+                <td>${breakdown.offTurnover}</td>
+                <td>${breakdown.secondChance}</td>
+            </tr>
+        </tbody>
+    `;
+
+    previewContent.appendChild(
+        breakdownTitle
+    );
+
+    previewContent.appendChild(
+        breakdownTable
+    );
+
+    /*
+    Restore the normal scorekeeper display.
+    */
+
+    teamExpandedMap[team] =
+        wasExpanded;
+
+    await renderTeamPlayers(team);
+
+    /*
+    Set the popup title and display it.
+    */
+
+    previewTitle.textContent =
+        teamTitle
+        ? teamTitle.textContent + " — Team Statistics"
+        : "Team Statistics";
+
+    modal.classList.add("visible");
+}
+
+
+function closeTeamStatsPreview(){
+
+    const modal =
+        document.getElementById(
+            "teamStatsModal"
+        );
+
+    modal.classList.remove("visible");
+}
+initializeSmartScoreControls();
+renderEasyScorekeeper();
+initializeSecureScorekeeper();
+
 </script>
+<div
+    id="teamStatsModal"
+    class="team-stats-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="teamStatsModalTitle"
+>
+
+    <div class="team-stats-modal-content">
+
+        <div class="team-stats-modal-header">
+
+            <h2 id="teamStatsModalTitle">
+                Team Statistics
+            </h2>
+
+            <button
+                type="button"
+                class="team-stats-close"
+                onclick="closeTeamStatsPreview()"
+                title="Close"
+                aria-label="Close statistics preview"
+            >
+                &times;
+            </button>
+
+        </div>
+
+        <div
+            id="teamStatsPreviewContent"
+            class="team-stats-preview"
+        ></div>
+
+        <div class="team-stats-modal-actions">
+
+            <button
+                type="button"
+                class="preview-close-button"
+                onclick="closeTeamStatsPreview()"
+            >
+                CLOSE
+            </button>
+
+            <button
+                type="button"
+                class="preview-print-button"
+                onclick="window.print()"
+            >
+                PRINT
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 </body>
 </html>
