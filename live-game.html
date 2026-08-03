@@ -25,9 +25,10 @@
     .scoreboard{display:grid;grid-template-columns:1fr 180px 1fr;align-items:center;gap:30px;margin-bottom:35px}.team h2{font-size:28px;margin-bottom:15px}.team-score{font-size:75px;font-weight:bold;color:#ff6b00}.game-center{text-align:center}.vs{margin-bottom:15px;color:#777;font-size:20px;font-weight:bold}.period{margin-bottom:10px;font-size:18px;font-weight:bold}.game-clock{padding:10px 20px;background:#f5f5f5;border-radius:8px;color:#111;font-size:35px;font-weight:bold;font-variant-numeric:tabular-nums}
     .game-details{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;border-top:1px solid #eee;padding-top:30px}.detail-card{background:#f8f8f8;padding:18px;border-radius:10px}.detail-card h3{margin-bottom:8px;color:#666;font-size:12px}.detail-card p{color:#ff6b00;font-size:20px;font-weight:bold}
     .browser{margin-top:25px;background:#fff;padding:28px;border-radius:15px;box-shadow:0 5px 25px rgba(0,0,0,.08)}.browser h2{margin-bottom:18px}.game-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.game-link{padding:16px;border:1px solid #e5e7eb;border-radius:9px;background:#fafafa;text-decoration:none;color:#222}.game-link:hover{border-color:#ff6b00}.game-link strong,.game-link span{display:block}.game-link span{margin-top:7px;color:#68707d;font-size:11px}.tag{float:right;color:#ff6b00!important;font-weight:bold;text-transform:uppercase}
+    .play-panel{margin-top:25px;overflow:hidden;background:#111;border:1px solid rgba(255,107,0,.35);border-radius:15px;box-shadow:0 8px 28px rgba(17,17,17,.16)}.play-header{padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:15px;color:#fff;border-bottom:1px solid rgba(255,255,255,.1)}.play-header h2{font-size:18px}.play-header span{color:#ff6b00;font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase}.play-feed{max-height:460px;overflow-y:auto}.play-row{position:relative;padding:16px 22px 16px 88px;min-height:69px;color:#fff;border-bottom:1px solid rgba(255,255,255,.07)}.play-row:last-child{border-bottom:0}.play-row::before{content:"";position:absolute;left:68px;top:0;bottom:0;width:1px;background:rgba(255,107,0,.25)}.play-time{position:absolute;left:16px;top:18px;width:42px;color:#ff6b00;font-size:12px;font-weight:bold;font-variant-numeric:tabular-nums}.play-dot{position:absolute;left:63px;top:20px;width:11px;height:11px;background:#ff6b00;border:2px solid #111;border-radius:50%;box-shadow:0 0 0 3px rgba(255,107,0,.16)}.play-description{font-size:14px;font-weight:bold;line-height:1.45}.play-meta{margin-top:5px;color:#9299a3;font-size:10px}.play-points{float:right;margin-left:10px;color:#ff6b00;font-size:15px;font-weight:bold}.play-empty{padding:38px 20px;color:#9299a3;text-align:center}.play-row.score-event{background:linear-gradient(90deg,rgba(255,107,0,.08),transparent)}
     .state{padding:30px;text-align:center;color:#68707d}.error{display:none;margin-bottom:20px;padding:20px;background:#ffebee;color:#c62828;border-radius:8px}.empty{grid-column:1/-1;padding:22px;text-align:center;color:#68707d}
     footer{margin-top:50px;padding:30px;background:#111;color:#fff;text-align:center}footer p{margin-top:10px;color:#aaa}
-    @media(max-width:768px){header{flex-direction:column;gap:15px}nav{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}nav a{margin:0;font-size:12px}.hero h1{font-size:34px}.selector-card{grid-template-columns:1fr;padding:20px;gap:16px}.selector-heading{min-width:0}.game-card{padding:28px 18px}.scoreboard{grid-template-columns:1fr 90px 1fr;gap:9px}.team h2{font-size:17px}.team-score{font-size:48px}.game-clock{padding:9px 5px;font-size:24px}.period{font-size:13px}.game-details,.game-list{grid-template-columns:1fr}}
+    @media(max-width:768px){header{flex-direction:column;gap:15px}nav{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}nav a{margin:0;font-size:12px}.hero h1{font-size:34px}.selector-card{grid-template-columns:1fr;padding:20px;gap:16px}.selector-heading{min-width:0}.game-card{padding:28px 18px}.scoreboard{grid-template-columns:1fr 90px 1fr;gap:9px}.team h2{font-size:17px}.team-score{font-size:48px}.game-clock{padding:9px 5px;font-size:24px}.period{font-size:13px}.game-details,.game-list{grid-template-columns:1fr}.play-header{padding:18px}.play-row{padding:15px 14px 15px 78px}.play-time{left:12px}.play-row::before{left:59px}.play-dot{left:54px}}
   </style>
 </head>
 <body>
@@ -68,6 +69,11 @@
       </div>
     </section>
 
+    <section class="play-panel">
+      <div class="play-header"><h2>Play-by-Play</h2><span><span class="live-pulse"></span>Live Feed</span></div>
+      <div id="playByPlayFeed" class="play-feed"><div class="play-empty">Waiting for game events...</div></div>
+    </section>
+
     <section class="browser"><h2>Games</h2><div id="gameList" class="game-list"><div class="empty">Loading games...</div></div></section>
   </main>
   <footer><h3>🏀 HOOP HUB PH</h3><p>Connecting Philippine basketball, one community at a time.</p><p>© 2026 Hoop Hub PH. All rights reserved.</p></footer>
@@ -85,6 +91,7 @@
       const escapeHtml=value=>String(value??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[c]);
       const statusRank=status=>({live:0,halftime:1,scheduled:2,final:3}[String(status||"").toLowerCase()]??4);
       const formatDate=value=>{const d=new Date(value);return value&&!Number.isNaN(d.getTime())?new Intl.DateTimeFormat("en-PH",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}).format(d):"TBA"};
+      const eventLabels={two_point_made:"made a 2-point field goal",two_point_missed:"missed a 2-point field goal",three_point_made:"made a 3-point field goal",three_point_missed:"missed a 3-point field goal",free_throw_made:"made a free throw",free_throw_missed:"missed a free throw",offensive_rebound:"grabbed an offensive rebound",defensive_rebound:"grabbed a defensive rebound",assist:"recorded an assist",steal:"recorded a steal",block:"blocked a shot",turnover:"committed a turnover",personal_foul:"committed a personal foul"};
 
       function remainingMilliseconds(game){
         if(game.clock_running&&game.clock_end_time){return Math.max(0,new Date(game.clock_end_time).getTime()-Date.now())}
@@ -108,6 +115,20 @@
         document.getElementById("gameList").innerHTML=sorted.length?sorted.map(game=>`<a class="game-link" href="live-game.html?id=${encodeURIComponent(game.id)}"><span class="tag">${escapeHtml(game.status||"Scheduled")}</span><strong>#${escapeHtml(game.id)} · ${escapeHtml(game.home_team)} vs ${escapeHtml(game.away_team)}</strong><span>${escapeHtml(formatDate(game.scheduled_at))} · ${escapeHtml(game.venue||"Venue TBA")}${String(game.status).toLowerCase()==="final"?` · ${Number(game.home_score||0)}–${Number(game.away_score||0)}`:""}</span></a>`).join(""):'<div class="empty">No games are available yet.</div>';
       }
 
+      async function refreshPlayByPlay(){
+        const feed=document.getElementById("playByPlayFeed");
+        if(!selectedId){feed.innerHTML='<div class="play-empty">Select a game to view play-by-play.</div>';return}
+        const {data,error}=await db.from("play_by_play_events").select("*,players(first_name,last_name),teams(name)").eq("game_id",selectedId).order("created_at",{ascending:false}).order("id",{ascending:false}).limit(60);
+        if(error){console.error("Play-by-play error:",error);feed.innerHTML='<div class="play-empty">Unable to load play-by-play.</div>';return}
+        if(!data?.length){feed.innerHTML='<div class="play-empty">Waiting for the first recorded play...</div>';return}
+        feed.innerHTML=data.map(event=>{
+          const player=`${event.players?.first_name||""} ${event.players?.last_name||""}`.trim()||"Player";
+          const label=eventLabels[event.event_type]||String(event.event_type||"recorded a play").replaceAll("_"," ");
+          const scored=Number(event.points||0)>0;
+          return `<article class="play-row ${scored?"score-event":""}"><span class="play-time">${escapeHtml(event.game_clock||"—")}</span><span class="play-dot"></span>${scored?`<span class="play-points">+${Number(event.points)}</span>`:""}<div class="play-description">${escapeHtml(player)} ${escapeHtml(label)}</div><div class="play-meta">${escapeHtml(event.teams?.name||"Team")} · ${escapeHtml(event.period||"Game")}</div></article>`;
+        }).join("");
+      }
+
       function renderSelector(){
         const select=document.getElementById("gameSelect");const groups={Live:[],Upcoming:[],Final:[]};
         games.forEach(game=>{const s=String(game.status||"").toLowerCase();groups[s==="final"?"Final":["live","halftime"].includes(s)?"Live":"Upcoming"].push(game)});
@@ -118,15 +139,15 @@
       async function fetchGames(){
         const {data,error}=await db.from("games").select("*").order("created_at",{ascending:false}).limit(50);if(error)throw error;games=data||[];
         if(!selectedId){const preferred=games.find(g=>["live","halftime"].includes(String(g.status).toLowerCase()))||games.find(g=>String(g.status).toLowerCase()==="scheduled")||games[0];selectedId=preferred?.id||null}
-        renderSelector();renderBrowser();const game=games.find(g=>Number(g.id)===Number(selectedId));if(game){renderGame(game);subscribeToGame(game.id)}else{document.getElementById("loading").textContent="No game is available."}
+        renderSelector();renderBrowser();const game=games.find(g=>Number(g.id)===Number(selectedId));if(game){renderGame(game);subscribeToGame(game.id);await refreshPlayByPlay()}else{document.getElementById("loading").textContent="No game is available."}
       }
 
       function subscribeToGame(id){
         if(channel)db.removeChannel(channel);channel=db.channel(`public-game-${id}`).on("postgres_changes",{event:"UPDATE",schema:"public",table:"games",filter:`id=eq.${id}`},payload=>{const index=games.findIndex(g=>Number(g.id)===Number(id));if(index>=0)games[index]=payload.new;renderGame(payload.new);renderSelector();renderBrowser()}).subscribe();
       }
-      async function refreshSelected(){if(!selectedId)return;const {data,error}=await db.from("games").select("*").eq("id",selectedId).maybeSingle();if(!error&&data){const i=games.findIndex(g=>Number(g.id)===Number(selectedId));if(i>=0)games[i]=data;else games.unshift(data);renderGame(data);renderSelector();renderBrowser()}}
+      async function refreshSelected(){if(!selectedId)return;const {data,error}=await db.from("games").select("*").eq("id",selectedId).maybeSingle();if(!error&&data){const i=games.findIndex(g=>Number(g.id)===Number(selectedId));if(i>=0)games[i]=data;else games.unshift(data);renderGame(data);renderSelector();renderBrowser()}await refreshPlayByPlay()}
 
-      document.getElementById("gameSelect").addEventListener("change",event=>{selectedId=Number(event.target.value);history.replaceState(null,"",`live-game.html?id=${selectedId}`);const game=games.find(g=>Number(g.id)===selectedId);if(game){renderGame(game);subscribeToGame(selectedId)}});
+      document.getElementById("gameSelect").addEventListener("change",event=>{selectedId=Number(event.target.value);history.replaceState(null,"",`live-game.html?id=${selectedId}`);const game=games.find(g=>Number(g.id)===selectedId);if(game){renderGame(game);subscribeToGame(selectedId);refreshPlayByPlay()}});
       async function initialize(){try{await fetchGames();pollTimer=setInterval(refreshSelected,3000)}catch(error){console.error("Game center error:",error);document.getElementById("loading").style.display="none";const box=document.getElementById("errorMessage");box.style.display="block";box.textContent="Unable to load games: "+(error.message||"Unknown error")}}
       initialize();
     })();
