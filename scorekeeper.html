@@ -1167,6 +1167,307 @@ nav{
     cursor:wait;
 }
 
+/* =========================================================
+   EASY SCOREKEEPER DESIGN
+   ========================================================= */
+
+.easy-scorekeeper{
+    display:grid;
+    grid-template-columns:minmax(190px,.85fr) minmax(330px,1.35fr) minmax(190px,.85fr);
+    gap:8px;
+    align-items:start;
+    margin-bottom:8px;
+}
+
+.easy-team-panel,
+.easy-action-panel,
+.easy-breakdown{
+    background:#fff;
+    border:1px solid #e5e5e5;
+    border-radius:8px;
+    box-shadow:0 2px 5px rgba(0,0,0,.06);
+}
+
+.easy-team-panel{
+    padding:9px;
+}
+
+.easy-team-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:6px;
+    padding-bottom:7px;
+    margin-bottom:7px;
+    border-bottom:2px solid #ff6b00;
+}
+
+.easy-team-header h2{
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    font-size:12px;
+}
+
+.easy-section-label{
+    margin:8px 0 5px;
+    color:#777;
+    font-size:8px;
+    font-weight:900;
+    letter-spacing:.7px;
+}
+
+.easy-player-list,
+.easy-bench-list{
+    display:grid;
+    gap:5px;
+}
+
+.easy-player-row,
+.easy-bench-row{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:4px;
+}
+
+.easy-player-button{
+    min-width:0;
+    padding:8px;
+    border:2px solid #ddd;
+    border-radius:6px;
+    background:#fafafa;
+    color:#222;
+    text-align:left;
+    cursor:pointer;
+}
+
+.easy-player-button.selected{
+    border-color:#ff6b00;
+    background:#fff3e8;
+}
+
+.easy-player-name{
+    display:block;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    font-size:10px;
+    font-weight:900;
+}
+
+.easy-player-mini-stats{
+    display:block;
+    margin-top:2px;
+    color:#777;
+    font-size:8px;
+    font-weight:bold;
+}
+
+.easy-sub-button{
+    min-width:38px;
+    padding:4px;
+    border:0;
+    border-radius:5px;
+    background:#c62828;
+    color:#fff;
+    font-size:8px;
+    font-weight:900;
+    cursor:pointer;
+}
+
+.easy-sub-button.in{
+    background:#16803c;
+}
+
+.easy-empty{
+    padding:8px;
+    color:#888;
+    font-size:9px;
+    text-align:center;
+}
+
+.easy-action-panel{
+    padding:11px;
+}
+
+.easy-selected-player{
+    min-height:54px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:9px;
+    border-radius:7px;
+    background:#111;
+    color:#fff;
+}
+
+.easy-selected-label{
+    color:#aaa;
+    font-size:8px;
+    font-weight:900;
+    letter-spacing:.7px;
+}
+
+.easy-selected-name{
+    margin-top:2px;
+    font-size:15px;
+    font-weight:900;
+}
+
+.easy-selected-stat{
+    color:#ff6b00;
+    font-size:20px;
+    font-weight:900;
+    white-space:nowrap;
+}
+
+.easy-context-row{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:5px;
+    margin-top:8px;
+}
+
+.easy-action-group{
+    margin-top:10px;
+}
+
+.easy-action-title{
+    margin-bottom:5px;
+    color:#666;
+    font-size:8px;
+    font-weight:900;
+    letter-spacing:.7px;
+}
+
+.easy-action-grid{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:5px;
+}
+
+.easy-action-grid.secondary{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+}
+
+.easy-action-button{
+    min-height:42px;
+    padding:6px 3px;
+    border:0;
+    border-radius:6px;
+    background:#111;
+    color:#fff;
+    font-size:9px;
+    font-weight:900;
+    cursor:pointer;
+}
+
+.easy-action-button.primary{
+    background:#ff6b00;
+}
+
+.easy-action-button.paint{
+    background:#b94700;
+}
+
+.easy-action-button.miss{
+    border:1px solid #ccc;
+    background:#f4f4f4;
+    color:#444;
+}
+
+.easy-action-button.undo{
+    width:100%;
+    min-height:34px;
+    margin-top:9px;
+    background:#777;
+}
+
+.easy-action-button:disabled,
+.easy-sub-button:disabled{
+    opacity:.4;
+    cursor:not-allowed;
+}
+
+.easy-action-feedback{
+    min-height:14px;
+    margin-top:6px;
+    color:#555;
+    font-size:9px;
+    font-weight:bold;
+    text-align:center;
+}
+
+.easy-breakdown{
+    margin-bottom:8px;
+    padding:9px;
+}
+
+.easy-breakdown summary{
+    font-size:10px;
+    font-weight:900;
+    cursor:pointer;
+}
+
+.easy-breakdown .team-breakdown-table{
+    margin-top:8px;
+}
+
+.legacy-stat-store{
+    display:none!important;
+}
+
+@media(max-width:900px){
+    .easy-scorekeeper{
+        grid-template-columns:1fr 1.3fr;
+    }
+
+    .easy-team-panel.away{
+        grid-column:1;
+        grid-row:2;
+    }
+
+    .easy-action-panel{
+        grid-column:2;
+        grid-row:1 / span 2;
+    }
+}
+
+@media(max-width:620px){
+    .easy-scorekeeper{
+        grid-template-columns:1fr;
+    }
+
+    .easy-team-panel.away,
+    .easy-action-panel{
+        grid-column:auto;
+        grid-row:auto;
+    }
+
+    .easy-team-panel.home{
+        order:1;
+    }
+
+    .easy-team-panel.away{
+        order:2;
+    }
+
+    .easy-action-panel{
+        order:3;
+    }
+
+    .easy-action-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .easy-action-grid.secondary{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+    }
+}
+
 /* Hide scorekeeper control buttons inside the preview */
 .team-stats-preview button{
     display:none!important;
@@ -1457,13 +1758,39 @@ LOG OUT
 
 </div>
 
-<div class="scoring-breakdown-panel">
-<h2>LIVE SCORING BREAKDOWN</h2>
-<div class="scoring-tag-help">
-Use the normal score buttons in the player table. P+2 records a paint basket; turnover and offensive-rebound context are detected automatically.
+<div class="easy-scorekeeper">
+
+<section class="easy-team-panel home">
+<div class="easy-team-header">
+<h2 id="homePlayersTitle">Home Players</h2>
+<button
+    type="button"
+    class="print-icon"
+    onclick="printTeamStats('home')"
+    title="Print Home Team Stats"
+    aria-label="Print Home Team Stats"
+>🖨️</button>
 </div>
 
-<div class="quick-score-status">
+<div class="easy-section-label">ON COURT — TAP A PLAYER</div>
+<div id="homeEasyPlayers" class="easy-player-list">
+<div class="easy-empty">Load a game to see players.</div>
+</div>
+
+<div class="easy-section-label">BENCH / SUBSTITUTIONS</div>
+<div id="homeEasyBench" class="easy-bench-list"></div>
+</section>
+
+<section class="easy-action-panel">
+<div class="easy-selected-player">
+<div>
+<div class="easy-selected-label">SELECTED PLAYER</div>
+<div id="easySelectedPlayerName" class="easy-selected-name">Tap an on-court player</div>
+</div>
+<div id="easySelectedPlayerPoints" class="easy-selected-stat">—</div>
+</div>
+
+<div class="easy-context-row">
 <span id="homeQuickContext" class="quick-score-context">HOME: NORMAL</span>
 <span id="awayQuickContext" class="quick-score-context">AWAY: NORMAL</span>
 <button
@@ -1472,11 +1799,78 @@ Use the normal score buttons in the player table. P+2 records a paint basket; tu
     class="quick-fast-break-button"
     aria-pressed="false"
     onclick="toggleQuickFastBreak()"
->
-FAST BREAK: OFF
-</button>
+>FAST BREAK: OFF</button>
 </div>
 
+<div class="easy-action-group">
+<div class="easy-action-title">MADE SHOT</div>
+<div class="easy-action-grid">
+<button type="button" class="easy-action-button paint" data-easy-action onclick="easyRecordScore('two_pt_made',true)">PAINT<br>+2</button>
+<button type="button" class="easy-action-button primary" data-easy-action onclick="easyRecordScore('two_pt_made',false)">2PT<br>+2</button>
+<button type="button" class="easy-action-button primary" data-easy-action onclick="easyRecordScore('three_pt_made',false)">3PT<br>+3</button>
+<button type="button" class="easy-action-button primary" data-easy-action onclick="easyRecordScore('ft_made',false)">FREE THROW<br>+1</button>
+</div>
+</div>
+
+<div class="easy-action-group">
+<div class="easy-action-title">MISSED SHOT</div>
+<div class="easy-action-grid secondary">
+<button type="button" class="easy-action-button miss" data-easy-action onclick="easyRecordStat('two_pt_attempted')">2PT MISS</button>
+<button type="button" class="easy-action-button miss" data-easy-action onclick="easyRecordStat('three_pt_attempted')">3PT MISS</button>
+<button type="button" class="easy-action-button miss" data-easy-action onclick="easyRecordStat('ft_attempted')">FT MISS</button>
+</div>
+</div>
+
+<div class="easy-action-group">
+<div class="easy-action-title">OTHER STAT</div>
+<div class="easy-action-grid">
+<button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('offensive_rebounds')">OREB</button>
+<button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('defensive_rebounds')">DREB</button>
+<button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('assists')">AST</button>
+<button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('steals')">STL</button>
+<button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('blocks')">BLK</button>
+<button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('turnovers')">TO</button>
+<button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('fouls')">PF</button>
+</div>
+</div>
+
+<button
+    type="button"
+    id="easyUndoButton"
+    class="easy-action-button undo"
+    onclick="undoEasyLastStat()"
+>UNDO LAST STAT</button>
+
+<div id="easyActionFeedback" class="easy-action-feedback" aria-live="polite">
+Select an on-court player to begin.
+</div>
+</section>
+
+<section class="easy-team-panel away">
+<div class="easy-team-header">
+<h2 id="awayPlayersTitle">Away Players</h2>
+<button
+    type="button"
+    class="print-icon"
+    onclick="printTeamStats('away')"
+    title="Print Away Team Stats"
+    aria-label="Print Away Team Stats"
+>🖨️</button>
+</div>
+
+<div class="easy-section-label">ON COURT — TAP A PLAYER</div>
+<div id="awayEasyPlayers" class="easy-player-list">
+<div class="easy-empty">Load a game to see players.</div>
+</div>
+
+<div class="easy-section-label">BENCH / SUBSTITUTIONS</div>
+<div id="awayEasyBench" class="easy-bench-list"></div>
+</section>
+
+</div>
+
+<details class="easy-breakdown">
+<summary>VIEW LIVE TEAM SCORING BREAKDOWN</summary>
 <table class="team-breakdown-table">
 <thead>
 <tr>
@@ -1504,61 +1898,11 @@ FAST BREAK: OFF
 </tr>
 </tbody>
 </table>
-</div>
+</details>
 
-<div class="controls">
-
-<h2>PLAYER STATS</h2>
-
-<div class="stats-controls">
-
-<div class="stat-control">
-
-<div class="team-header">
-
-<h2 id="homePlayersTitle">Home Players</h2>
-
-<button
-    type="button"
-    class="print-icon"
-    onclick="printTeamStats('home')"
-    title="Print Home Team Stats"
-    aria-label="Print Home Team Stats"
->
-    🖨️
-</button>
-
-</div>
-
+<div class="legacy-stat-store" aria-hidden="true">
 <div id="homePlayersList"></div>
-
-</div>
-</div>
-
-<div class="stat-control">
-
-<div class="team-header">
-
-<h2 id="awayPlayersTitle">Away Players</h2>
-
-<button
-    type="button"
-    class="print-icon"
-    onclick="printTeamStats('away')"
-    title="Print Away Team Stats"
-    aria-label="Print Away Team Stats"
->
-    🖨️
-</button>
-
-</div>
-
 <div id="awayPlayersList"></div>
-
-</div>
-
-</div>
-
 </div>
 
 <div class="game-footer-controls">
@@ -2084,6 +2428,9 @@ let hoverTimer=null;
 let pendingSmartScore=null;
 let quickScoreInFlight=false;
 let quickFastBreak=false;
+let easySelectedPlayerId=null;
+let easyActionInFlight=false;
+let easyUndoStack=[];
 let quickScoringContext={
     home:{
         offTurnover:false,
@@ -3044,6 +3391,10 @@ async function loadGame(){
     teamExpandedMap={};
     teamIdMap={};
 
+    easySelectedPlayerId=null;
+    easyActionInFlight=false;
+    easyUndoStack=[];
+
     playerMinuteBaseSeconds={};
     playerMinuteLastClockSeconds={};
     playerMinuteLastPersisted={};
@@ -3550,6 +3901,7 @@ async function renderTeamPlayers(team){
     }
 
     updateSubstitutionButtons();
+    renderEasyScorekeeper();
 }
 
 
@@ -4286,6 +4638,426 @@ async function quickScorePlayer(
     }
     finally{
         quickScoreInFlight=false;
+    }
+}
+
+
+function getEasyPlayerName(player){
+
+    if(!player){
+        return "Player";
+    }
+
+    const name=(
+        (player.first_name||"")+" "+
+        (player.last_name||"")
+    ).trim();
+
+    return "#"+
+        (player.jersey_number??"—")+
+        " "+
+        (name||"Player");
+}
+
+
+function isCurrentGameFinal(){
+
+    return Boolean(
+        currentGame&&
+        (
+            String(
+                currentGame.status||""
+            ).toLowerCase()==="final"||
+            currentGame.finalized_at
+        )
+    );
+}
+
+
+function setEasyActionAvailability(){
+
+    const disabled=
+        !easySelectedPlayerId||
+        easyActionInFlight||
+        isCurrentGameFinal();
+
+    document.querySelectorAll(
+        "[data-easy-action]"
+    ).forEach(button=>{
+        button.disabled=disabled;
+    });
+
+    document.querySelectorAll(
+        ".easy-sub-button"
+    ).forEach(button=>{
+        button.disabled=
+            easyActionInFlight||
+            isCurrentGameFinal();
+    });
+
+    const undoButton=
+        document.getElementById(
+            "easyUndoButton"
+        );
+
+    if(undoButton){
+        undoButton.disabled=
+            easyActionInFlight||
+            easyUndoStack.length===0||
+            isCurrentGameFinal();
+    }
+
+    const fastBreakButton=
+        document.getElementById(
+            "quickFastBreakButton"
+        );
+
+    if(fastBreakButton){
+        fastBreakButton.disabled=disabled;
+    }
+}
+
+
+function renderEasyTeam(team){
+
+    const playersContainer=
+        document.getElementById(
+            team+"EasyPlayers"
+        );
+
+    const benchContainer=
+        document.getElementById(
+            team+"EasyBench"
+        );
+
+    if(!playersContainer||!benchContainer){
+        return;
+    }
+
+    const all=teamPlayersMap[team]||[];
+
+    const onCourt=all.filter(
+        player=>
+            playerOnCourt[player.id]===true
+    );
+
+    const bench=all.filter(
+        player=>
+            playerOnCourt[player.id]!==true
+    );
+
+    if(!onCourt.length){
+        playersContainer.innerHTML=
+            '<div class="easy-empty">No players are on court.</div>';
+    }
+    else{
+        playersContainer.innerHTML=
+            onCourt.map(player=>{
+
+                const stats=
+                    playerStatsMap[player.id]||{};
+
+                const selected=
+                    easySelectedPlayerId===player.id;
+
+                return `
+                    <div class="easy-player-row">
+                        <button
+                            type="button"
+                            class="easy-player-button ${selected?"selected":""}"
+                            aria-pressed="${selected}"
+                            onclick="selectEasyPlayer('${player.id}')"
+                        >
+                            <span class="easy-player-name">${escapeHTML(getEasyPlayerName(player))}</span>
+                            <span class="easy-player-mini-stats">PTS ${Number(stats.points||0)} · PF ${Number(stats.fouls||0)}</span>
+                        </button>
+                        <button
+                            type="button"
+                            class="easy-sub-button"
+                            onclick="toggleSubstitution('${player.id}')"
+                        >OUT</button>
+                    </div>
+                `;
+            }).join("");
+    }
+
+    if(!bench.length){
+        benchContainer.innerHTML=
+            '<div class="easy-empty">No bench players.</div>';
+    }
+    else{
+        benchContainer.innerHTML=
+            bench.map(player=>`
+                <div class="easy-bench-row">
+                    <div class="easy-player-button">
+                        <span class="easy-player-name">${escapeHTML(getEasyPlayerName(player))}</span>
+                        <span class="easy-player-mini-stats">BENCH</span>
+                    </div>
+                    <button
+                        type="button"
+                        class="easy-sub-button in"
+                        onclick="toggleSubstitution('${player.id}')"
+                    >IN</button>
+                </div>
+            `).join("");
+    }
+}
+
+
+function renderEasySelectedPlayer(){
+
+    const nameElement=
+        document.getElementById(
+            "easySelectedPlayerName"
+        );
+
+    const pointsElement=
+        document.getElementById(
+            "easySelectedPlayerPoints"
+        );
+
+    const player=
+        easySelectedPlayerId
+        ?playerDataMap[easySelectedPlayerId]
+        :null;
+
+    if(
+        !player||
+        playerOnCourt[easySelectedPlayerId]!==true
+    ){
+        easySelectedPlayerId=null;
+        nameElement.textContent=
+            "Tap an on-court player";
+        pointsElement.textContent="—";
+        setEasyActionAvailability();
+        return;
+    }
+
+    const stats=
+        playerStatsMap[easySelectedPlayerId]||{};
+
+    nameElement.textContent=
+        getEasyPlayerName(player);
+
+    pointsElement.textContent=
+        Number(stats.points||0)+" PTS";
+
+    setEasyActionAvailability();
+}
+
+
+function renderEasyScorekeeper(){
+
+    renderEasyTeam("home");
+    renderEasyTeam("away");
+    renderEasySelectedPlayer();
+}
+
+
+function selectEasyPlayer(playerId){
+
+    if(playerOnCourt[playerId]!==true){
+        showStatus(
+            "Sub in the player before recording a stat."
+        );
+        return;
+    }
+
+    easySelectedPlayerId=playerId;
+
+    const feedback=
+        document.getElementById(
+            "easyActionFeedback"
+        );
+
+    if(feedback){
+        feedback.textContent=
+            getEasyPlayerName(
+                playerDataMap[playerId]
+            )+" selected.";
+    }
+
+    renderEasyScorekeeper();
+}
+
+
+function getEasyActionSnapshot(){
+
+    return {
+        context:JSON.parse(
+            JSON.stringify(
+                quickScoringContext
+            )
+        ),
+        fastBreak:quickFastBreak
+    };
+}
+
+
+async function easyRecordScore(
+    statKey,
+    isPaint
+){
+
+    if(!easySelectedPlayerId||easyActionInFlight){
+        return;
+    }
+
+    const playerId=easySelectedPlayerId;
+    const snapshot=getEasyActionSnapshot();
+
+    easyActionInFlight=true;
+    setEasyActionAvailability();
+
+    try{
+        await quickScorePlayer(
+            playerId,
+            statKey,
+            isPaint===true
+        );
+
+        easyUndoStack.push({
+            playerId,
+            statKey,
+            snapshot
+        });
+
+        const feedback=
+            document.getElementById(
+                "easyActionFeedback"
+            );
+
+        if(feedback){
+            const points=
+                statKey==="three_pt_made"
+                ?3
+                :statKey==="two_pt_made"
+                ?2
+                :1;
+
+            feedback.textContent=
+                getEasyPlayerName(
+                    playerDataMap[playerId]
+                )+" scored "+points+" point"+
+                (points===1?"":"s")+".";
+        }
+    }
+    finally{
+        easyActionInFlight=false;
+        renderEasyScorekeeper();
+    }
+}
+
+
+async function easyRecordStat(statKey){
+
+    if(!easySelectedPlayerId||easyActionInFlight){
+        return;
+    }
+
+    const playerId=easySelectedPlayerId;
+    const snapshot=getEasyActionSnapshot();
+
+    easyActionInFlight=true;
+    setEasyActionAvailability();
+
+    try{
+        await updatePlayerStat(
+            playerId,
+            statKey,
+            1
+        );
+
+        easyUndoStack.push({
+            playerId,
+            statKey,
+            snapshot
+        });
+
+        const labels={
+            two_pt_attempted:"2PT MISS",
+            three_pt_attempted:"3PT MISS",
+            ft_attempted:"FT MISS",
+            offensive_rebounds:"OREB",
+            defensive_rebounds:"DREB",
+            assists:"AST",
+            steals:"STL",
+            blocks:"BLK",
+            turnovers:"TO",
+            fouls:"PF"
+        };
+
+        const feedback=
+            document.getElementById(
+                "easyActionFeedback"
+            );
+
+        if(feedback){
+            feedback.textContent=
+                getEasyPlayerName(
+                    playerDataMap[playerId]
+                )+" — "+
+                (labels[statKey]||statKey)+" recorded.";
+        }
+    }
+    finally{
+        easyActionInFlight=false;
+        renderEasyScorekeeper();
+    }
+}
+
+
+async function undoEasyLastStat(){
+
+    if(
+        easyActionInFlight||
+        !easyUndoStack.length||
+        isCurrentGameFinal()
+    ){
+        return;
+    }
+
+    const action=easyUndoStack.pop();
+
+    easyActionInFlight=true;
+    setEasyActionAvailability();
+
+    try{
+        await updatePlayerStat(
+            action.playerId,
+            action.statKey,
+            -1
+        );
+
+        quickScoringContext=
+            action.snapshot.context;
+
+        quickFastBreak=
+            action.snapshot.fastBreak;
+
+        updateQuickScoringDisplay();
+        saveQuickScoringState();
+
+        if(
+            playerOnCourt[action.playerId]===true
+        ){
+            easySelectedPlayerId=
+                action.playerId;
+        }
+
+        const feedback=
+            document.getElementById(
+                "easyActionFeedback"
+            );
+
+        if(feedback){
+            feedback.textContent=
+                "Last statistic was undone.";
+        }
+    }
+    finally{
+        easyActionInFlight=false;
+        renderEasyScorekeeper();
     }
 }
 
@@ -5223,6 +5995,7 @@ async function refreshPlayerRow(
     );
 
     updateSubstitutionButtons();
+    renderEasyScorekeeper();
 }
 
 
@@ -7464,6 +8237,7 @@ function setFinalizedLock(locked){
     document.querySelectorAll(
         ".clock-controls button, .shot-clock-controls button, "+
         ".period-buttons button, .stat-btn, .shot-btn, .sub-button, "+
+        ".easy-action-button, .easy-sub-button, "+
         "#quickFastBreakButton, "+
         "#status-live, #status-half, #status-final"
     ).forEach(button=>{
@@ -8039,6 +8813,7 @@ function closeTeamStatsPreview(){
     modal.classList.remove("visible");
 }
 initializeSmartScoreControls();
+renderEasyScorekeeper();
 initializeSecureScorekeeper();
 
 </script>
