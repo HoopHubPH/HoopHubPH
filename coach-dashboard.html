@@ -188,6 +188,15 @@
     .panel-header p { margin-top: 4px; color: var(--muted); font-size: 10px; }
 
     .status-badge { padding: 6px 9px; display: inline-flex; color: var(--success); background: var(--success-soft); border-radius: 999px; font-size: 9px; font-weight: 900; text-transform: uppercase; }
+    .status-badge.pending { color: #b54708; background: #fff4e5; }
+    .status-badge.rejected { color: #b42318; background: #fef3f2; }
+
+    .submission-body { padding: 18px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .submission-copy { color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .submission-copy strong { display: block; margin-bottom: 5px; color: var(--ink); font-size: 14px; }
+    .primary-button { min-height: 42px; padding: 0 18px; flex: 0 0 auto; color: #fff; background: var(--orange); border: 0; border-radius: 8px; cursor: pointer; }
+    .primary-button:hover { background: var(--orange-dark); }
+    .primary-button:disabled { opacity: .6; cursor: wait; }
 
     .team-details { padding: 18px; display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
     .detail-box { padding: 13px; background: #fafafa; border: 1px solid var(--line); border-radius: 8px; }
@@ -224,7 +233,24 @@
       .page-heading { align-items: stretch; flex-direction: column; }
       .control { width: 100%; min-width: 0; }
       .stats-grid, .team-details, .module-grid { grid-template-columns: 1fr; }
+      .submission-body { align-items: stretch; flex-direction: column; }
     }
+    /* Unified Hoop Hub PH typography */
+    body, button, input, select, textarea { font-family: Arial, Helvetica, sans-serif; }
+    .brand { font-size: 24px; font-weight: bold; letter-spacing: 0; }
+    .nav-label { font-size: 11px; font-weight: bold; letter-spacing: .08em; }
+    .nav-link { font-size: 14px; font-weight: bold; letter-spacing: 0; }
+    .page-heading h1 { font-size: clamp(30px, 3vw, 38px); font-weight: bold; letter-spacing: 0; }
+    .page-heading p { font-size: 14px; line-height: 1.55; }
+    .panel-header h2 { font-size: 20px; font-weight: bold; letter-spacing: 0; }
+    .panel-header p, .helper-text, .empty-state { font-size: 13px; line-height: 1.45; }
+    .stat-card span { font-size: 12px; font-weight: bold; letter-spacing: .03em; }
+    .stat-card strong { font-size: 30px; font-weight: bold; }
+    label, button, .button, .primary-button, .secondary-button { font-size: 13px; font-weight: bold; letter-spacing: 0; }
+    input, select, textarea { font-size: 14px; }
+    th { font-size: 11px; font-weight: bold; }
+    td { font-size: 13px; }
+    .status-badge, .coming { font-size: 11px; font-weight: bold; }
   </style>
 </head>
 
@@ -252,6 +278,8 @@
       <p class="nav-label">Team Workspace</p>
       <a class="nav-link active" href="coach-dashboard.html"><span class="nav-icon">DB</span> Dashboard</a>
       <a class="nav-link" href="#rosterPanel"><span class="nav-icon">RO</span> Team Roster</a>
+      <a class="nav-link" href="#rosterSubmission"><span class="nav-icon">RS</span> Submit Roster</a>
+      <a class="nav-link" href="add-player.html"><span class="nav-icon">AP</span> Add Player</a>
       <a class="nav-link" href="#modules"><span class="nav-icon">IV</span> Player Invites <span class="coming">Next</span></a>
       <a class="nav-link" href="#modules"><span class="nav-icon">LU</span> Starting Lineup <span class="coming">Next</span></a>
       <a class="nav-link" href="#modules"><span class="nav-icon">AT</span> Attendance <span class="coming">Next</span></a>
@@ -274,6 +302,20 @@
             <p>Manage only the team and roster assigned to your account.</p>
           </div>
           <select id="teamSelect" class="control" aria-label="Select assigned team"></select>
+        </section>
+
+        <section id="rosterSubmission" class="panel">
+          <header class="panel-header">
+            <div><h2>League Roster Submission</h2><p>Send the current team roster to the commissioner for review.</p></div>
+            <span id="submissionStatus" class="status-badge pending">Not Submitted</span>
+          </header>
+          <div class="submission-body">
+            <div id="submissionMessage" class="submission-copy">
+              <strong>Review the roster before submitting.</strong>
+              Every current player will be marked pending for this league's commissioner.
+            </div>
+            <button id="submitRosterButton" class="primary-button" type="button">Submit Current Roster</button>
+          </div>
         </section>
 
         <section class="stats-grid">
@@ -435,19 +477,66 @@
       const uniqueTeamIds = [...new Set(assignments.map(item => item.team_id))];
       document.getElementById("teamCount").textContent = uniqueTeamIds.length.toLocaleString();
       document.getElementById("activeAssignmentCount").textContent = assignments.length.toLocaleString();
-      teamSelect.innerHTML = uniqueTeamIds.length
-        ? uniqueTeamIds.map(teamId => {
-            const team = teams.find(item => item.id === teamId);
-            const assignment = assignments.find(item => item.team_id === teamId);
-            return `<option value="${escapeHtml(teamId)}" data-league-id="${escapeHtml(assignment?.league_id || "")}">${escapeHtml(team?.name || "Unknown team")}</option>`;
+      teamSelect.innerHTML = assignments.length
+        ? assignments.map(assignment => {
+            const team = teams.find(item => item.id === assignment.team_id);
+            const league = leagues.find(item => item.id === assignment.league_id);
+            return `<option value="${escapeHtml(`${assignment.league_id}|${assignment.team_id}`)}">${escapeHtml(team?.name || "Unknown team")} — ${escapeHtml(league?.name || "Unknown league")}</option>`;
           }).join("")
         : '<option value="">No assigned teams</option>';
     }
 
+    function selectedAssignment() {
+      const [leagueId, teamId] = String(teamSelect.value || "").split("|");
+      return assignments.find(item => item.league_id === leagueId && item.team_id === teamId) || null;
+    }
+
+    async function loadSubmissionStatus(assignment) {
+      const badge = document.getElementById("submissionStatus");
+      const message = document.getElementById("submissionMessage");
+      const button = document.getElementById("submitRosterButton");
+
+      if (!assignment) {
+        badge.textContent = "Unavailable";
+        badge.className = "status-badge rejected";
+        message.innerHTML = "<strong>No team assignment selected.</strong>Select an assigned team and league first.";
+        button.disabled = true;
+        return;
+      }
+
+      button.disabled = false;
+      const { data, error } = await supabaseClient.rpc("get_team_roster_submission", {
+        p_league_id: assignment.league_id,
+        p_team_id: assignment.team_id
+      });
+
+      if (error) {
+        badge.textContent = "Unable to Load";
+        badge.className = "status-badge rejected";
+        message.innerHTML = `<strong>Submission status unavailable.</strong>${escapeHtml(error.message)}`;
+        return;
+      }
+
+      const submission = data?.[0];
+      if (!submission) {
+        badge.textContent = "Not Submitted";
+        badge.className = "status-badge pending";
+        message.innerHTML = "<strong>Review the roster before submitting.</strong>Every current player will be marked pending for this league's commissioner.";
+        button.textContent = "Submit Current Roster";
+        return;
+      }
+
+      badge.textContent = submission.submission_status;
+      badge.className = `status-badge ${submission.submission_status}`;
+      const submittedAt = new Date(submission.submitted_at).toLocaleString("en-PH");
+      message.innerHTML = `<strong>${escapeHtml(submission.player_count)} player(s) submitted.</strong>Last submitted ${escapeHtml(submittedAt)}.`;
+      button.textContent = "Resubmit Current Roster";
+    }
+
     function renderWorkspace() {
-      const teamId = teamSelect.value;
+      const assignment = selectedAssignment();
+      const teamId = assignment?.team_id || "";
       const team = teams.find(item => item.id === teamId);
-      const assignment = assignments.find(item => item.team_id === teamId);
       const league = leagues.find(item => item.id === assignment?.league_id);
       const roster = players.filter(item => item.team_id === teamId);
 
@@ -458,6 +547,7 @@
         document.getElementById("staffRoleBadge").textContent = "Waiting";
         document.getElementById("teamDetails").innerHTML = '<div class="empty-state" style="grid-column:1/-1">Ask the Super Admin to assign a team to this account.</div>';
         document.getElementById("playerTableBody").innerHTML = '<tr><td class="empty-state" colspan="4">No assigned team.</td></tr>';
+        loadSubmissionStatus(null);
         return;
       }
 
@@ -480,6 +570,8 @@
             </tr>
           `).join("")
         : '<tr><td class="empty-state" colspan="4">No player records are connected to this team.</td></tr>';
+
+      loadSubmissionStatus(assignment);
     }
 
     function closeSidebar() {
@@ -488,6 +580,32 @@
     }
 
     teamSelect.addEventListener("change", renderWorkspace);
+    document.getElementById("submitRosterButton").addEventListener("click", async function () {
+      const assignment = selectedAssignment();
+      if (!assignment) return alert("Select an assigned team first.");
+
+      const roster = players.filter(item => item.team_id === assignment.team_id);
+      if (!roster.length) return alert("Add at least one player before submitting the roster.");
+
+      if (!confirm(`Submit ${roster.length} player(s) to the commissioner for approval?`)) return;
+
+      this.disabled = true;
+      this.textContent = "Submitting...";
+
+      const { error } = await supabaseClient.rpc("submit_team_roster", {
+        p_league_id: assignment.league_id,
+        p_team_id: assignment.team_id
+      });
+
+      if (error) {
+        alert(`Unable to submit roster: ${error.message}`);
+      } else {
+        alert("Roster submitted successfully. The commissioner can now review the players.");
+      }
+
+      await loadSubmissionStatus(assignment);
+      this.disabled = false;
+    });
     document.getElementById("menuButton").addEventListener("click", function () {
       document.getElementById("sidebar").classList.toggle("open");
       document.getElementById("sidebarOverlay").classList.toggle("open");
