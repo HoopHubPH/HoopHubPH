@@ -554,6 +554,10 @@ nav{
     background:#ff6b00;
 }
 
+.shot-btn.paint{
+    background:#b94700;
+}
+
 .view-all-row{
     background:#fff!important;
 }
@@ -922,6 +926,47 @@ nav{
     color:#666;
     font-size:10px;
     margin-bottom:7px;
+}
+
+.quick-score-status{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:6px;
+    margin-bottom:9px;
+}
+
+.quick-score-context{
+    padding:5px 7px;
+    border:1px solid #ddd;
+    border-radius:5px;
+    background:#fafafa;
+    color:#555;
+    font-size:9px;
+    font-weight:800;
+}
+
+.quick-score-context.active{
+    border-color:#ff6b00;
+    background:#fff3e8;
+    color:#b94700;
+}
+
+.quick-fast-break-button{
+    padding:5px 8px;
+    border:1px solid #bbb;
+    border-radius:5px;
+    background:#fff;
+    color:#333;
+    font-size:9px;
+    font-weight:900;
+    cursor:pointer;
+}
+
+.quick-fast-break-button.active{
+    border-color:#ff6b00;
+    background:#ff6b00;
+    color:#fff;
 }
 
 .scoring-tags{
@@ -1415,7 +1460,21 @@ LOG OUT
 <div class="scoring-breakdown-panel">
 <h2>LIVE SCORING BREAKDOWN</h2>
 <div class="scoring-tag-help">
-Press a player's +1, +2 or +3 button to open Smart Score and identify where the points came from.
+Use the normal score buttons in the player table. P+2 records a paint basket; turnover and offensive-rebound context are detected automatically.
+</div>
+
+<div class="quick-score-status">
+<span id="homeQuickContext" class="quick-score-context">HOME: NORMAL</span>
+<span id="awayQuickContext" class="quick-score-context">AWAY: NORMAL</span>
+<button
+    type="button"
+    id="quickFastBreakButton"
+    class="quick-fast-break-button"
+    aria-pressed="false"
+    onclick="toggleQuickFastBreak()"
+>
+FAST BREAK: OFF
+</button>
 </div>
 
 <table class="team-breakdown-table">
@@ -2023,6 +2082,18 @@ let statSaveInFlight=new Set();
 let hoveredPlayerId=null;
 let hoverTimer=null;
 let pendingSmartScore=null;
+let quickScoreInFlight=false;
+let quickFastBreak=false;
+let quickScoringContext={
+    home:{
+        offTurnover:false,
+        secondChance:false
+    },
+    away:{
+        offTurnover:false,
+        secondChance:false
+    }
+};
 
 /* =========================================================
    GENERAL HELPERS
@@ -2907,6 +2978,8 @@ async function loadGame(){
     rememberLoadedGameId(
         data.id
     );
+
+    restoreQuickScoringState();
 
     document.getElementById(
         "homeTeam"
@@ -3919,6 +3992,303 @@ async function saveStatDirect(
    SCORING BREAKDOWN EVENTS
    ========================================================= */
 
+function getDefaultQuickScoringContext(){
+
+    return {
+        home:{
+            offTurnover:false,
+            secondChance:false
+        },
+        away:{
+            offTurnover:false,
+            secondChance:false
+        }
+    };
+}
+
+
+function getQuickScoringStorageKey(){
+
+    if(!authenticatedUser || !currentGame){
+        return null;
+    }
+
+    return "hoophub_quick_scoring:"+
+        authenticatedUser.id+":"+
+        currentGame.id;
+}
+
+
+function saveQuickScoringState(){
+
+    const key=getQuickScoringStorageKey();
+
+    if(!key){
+        return;
+    }
+
+    try{
+        localStorage.setItem(
+            key,
+            JSON.stringify({
+                context:quickScoringContext,
+                fastBreak:quickFastBreak
+            })
+        );
+    }
+    catch(error){
+        console.warn(
+            "Unable to save quick scoring context:",
+            error
+        );
+    }
+}
+
+
+function restoreQuickScoringState(){
+
+    quickScoringContext=
+        getDefaultQuickScoringContext();
+
+    quickFastBreak=false;
+
+    const key=getQuickScoringStorageKey();
+
+    if(key){
+        try{
+            const saved=JSON.parse(
+                localStorage.getItem(key)||"null"
+            );
+
+            if(saved&&saved.context){
+                ["home","away"].forEach(team=>{
+                    quickScoringContext[team]={
+                        offTurnover:
+                            saved.context[team]
+                            ?.offTurnover===true,
+                        secondChance:
+                            saved.context[team]
+                            ?.secondChance===true
+                    };
+                });
+            }
+
+            quickFastBreak=
+                saved?.fastBreak===true;
+
+        }
+        catch(error){
+            console.warn(
+                "Unable to restore quick scoring context:",
+                error
+            );
+        }
+    }
+
+    updateQuickScoringDisplay();
+}
+
+
+function getQuickContextLabel(team){
+
+    const state=
+        quickScoringContext[team]||{};
+
+    const labels=[];
+
+    if(state.offTurnover){
+        labels.push("OFF TURNOVER");
+    }
+
+    if(state.secondChance){
+        labels.push("SECOND CHANCE");
+    }
+
+    return labels.length
+        ?labels.join(" + ")
+        :"NORMAL";
+}
+
+
+function updateQuickScoringDisplay(){
+
+    ["home","away"].forEach(team=>{
+
+        const element=
+            document.getElementById(
+                team+"QuickContext"
+            );
+
+        if(!element){
+            return;
+        }
+
+        const label=getQuickContextLabel(team);
+
+        element.textContent=
+            team.toUpperCase()+": "+label;
+
+        element.classList.toggle(
+            "active",
+            label!=="NORMAL"
+        );
+    });
+
+    const fastBreakButton=
+        document.getElementById(
+            "quickFastBreakButton"
+        );
+
+    if(fastBreakButton){
+        fastBreakButton.textContent=
+            "FAST BREAK: "+
+            (quickFastBreak?"ON":"OFF");
+
+        fastBreakButton.classList.toggle(
+            "active",
+            quickFastBreak
+        );
+
+        fastBreakButton.setAttribute(
+            "aria-pressed",
+            String(quickFastBreak)
+        );
+    }
+}
+
+
+function toggleQuickFastBreak(){
+
+    quickFastBreak=!quickFastBreak;
+    updateQuickScoringDisplay();
+    saveQuickScoringState();
+}
+
+
+function resetQuickScoringContext(team){
+
+    if(!quickScoringContext[team]){
+        return;
+    }
+
+    quickScoringContext[team]={
+        offTurnover:false,
+        secondChance:false
+    };
+
+    updateQuickScoringDisplay();
+    saveQuickScoringState();
+}
+
+
+function registerQuickPossessionEvent(
+    playerId,
+    statKey,
+    amount
+){
+
+    if(Number(amount)<=0){
+        return;
+    }
+
+    const team=playerTeamMap[playerId];
+
+    if(!team){
+        return;
+    }
+
+    const opponent=
+        team==="home"
+        ?"away"
+        :"home";
+
+    if(statKey==="turnovers"){
+
+        quickScoringContext[team]={
+            offTurnover:false,
+            secondChance:false
+        };
+
+        quickScoringContext[opponent]={
+            offTurnover:true,
+            secondChance:false
+        };
+
+    }
+    else if(statKey==="offensive_rebounds"){
+
+        quickScoringContext[team]
+        .secondChance=true;
+
+    }
+    else if(statKey==="defensive_rebounds"){
+
+        quickScoringContext=
+            getDefaultQuickScoringContext();
+    }
+    else{
+        return;
+    }
+
+    updateQuickScoringDisplay();
+    saveQuickScoringState();
+}
+
+
+function getQuickScoringTags(
+    team,
+    isPaint
+){
+
+    const state=
+        quickScoringContext[team]||{};
+
+    return {
+        is_paint:isPaint===true,
+        is_fast_break:quickFastBreak===true,
+        is_off_turnover:
+            state.offTurnover===true,
+        is_second_chance:
+            state.secondChance===true
+    };
+}
+
+
+async function quickScorePlayer(
+    playerId,
+    statKey,
+    isPaint=false
+){
+
+    if(quickScoreInFlight){
+        return;
+    }
+
+    const team=playerTeamMap[playerId];
+
+    if(!team){
+        showStatus("Unable to identify the scoring team.");
+        return;
+    }
+
+    quickScoreInFlight=true;
+
+    try{
+        await updatePlayerStat(
+            playerId,
+            statKey,
+            1,
+            getQuickScoringTags(
+                team,
+                isPaint
+            )
+        );
+    }
+    finally{
+        quickScoreInFlight=false;
+    }
+}
+
 function openSmartScoring(
     playerId,
     statKey
@@ -4382,7 +4752,8 @@ async function removeLatestScoringBreakdown(
 async function updatePlayerStat(
     playerId,
     statKey,
-    amount
+    amount,
+    scoringTagsOverride=null
 ){
 
     if(
@@ -4488,7 +4859,10 @@ async function updatePlayerStat(
 
         const selectedScoringTags=
             madeDelta>0
-            ?getSelectedScoringTags()
+            ?(
+                scoringTagsOverride||
+                getSelectedScoringTags()
+            )
             :null;
 
 
@@ -4701,6 +5075,9 @@ async function updatePlayerStat(
                 selectedScoringTags
             );
 
+            quickFastBreak=false;
+            resetQuickScoringContext(team);
+
         }
         else if(madeDelta<0){
 
@@ -4800,6 +5177,12 @@ async function updatePlayerStat(
     queueStatSave(
         playerId,
         changes
+    );
+
+    registerQuickPossessionEvent(
+        playerId,
+        statKey,
+        amount
     );
 
     if (hoveredPlayerId === playerId) {
@@ -5137,13 +5520,29 @@ ${calculatePercentage(
 class="shot-btn"
 ${onCourt?"":"disabled"}
 onclick="
-openSmartScoring(
+quickScorePlayer(
 '${player.id}',
-'two_pt_made'
+'two_pt_made',
+false
 )
 "
 >
 +2
+</button>
+
+<button
+class="shot-btn paint"
+${onCourt?"":"disabled"}
+title="Made 2-point basket inside the paint"
+onclick="
+quickScorePlayer(
+'${player.id}',
+'two_pt_made',
+true
+)
+"
+>
+P+2
 </button>
 
 <button
@@ -5217,9 +5616,10 @@ ${calculatePercentage(
 class="shot-btn"
 ${onCourt?"":"disabled"}
 onclick="
-openSmartScoring(
+quickScorePlayer(
 '${player.id}',
-'three_pt_made'
+'three_pt_made',
+false
 )
 "
 >
@@ -5318,9 +5718,10 @@ ${calculatePercentage(
 class="shot-btn"
 ${onCourt?"":"disabled"}
 onclick="
-openSmartScoring(
+quickScorePlayer(
 '${player.id}',
-'ft_made'
+'ft_made',
+false
 )
 "
 >
@@ -7063,6 +7464,7 @@ function setFinalizedLock(locked){
     document.querySelectorAll(
         ".clock-controls button, .shot-clock-controls button, "+
         ".period-buttons button, .stat-btn, .shot-btn, .sub-button, "+
+        "#quickFastBreakButton, "+
         "#status-live, #status-half, #status-final"
     ).forEach(button=>{
         button.disabled=Boolean(locked);
