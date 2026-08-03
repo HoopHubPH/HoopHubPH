@@ -973,6 +973,155 @@ nav{
     color:#ff6b00;
 }
 
+.smart-score-modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:10000;
+    padding:16px;
+    background:rgba(0,0,0,.72);
+    align-items:center;
+    justify-content:center;
+}
+
+.smart-score-modal.visible{
+    display:flex;
+}
+
+.smart-score-card{
+    width:min(520px,100%);
+    max-height:calc(100vh - 32px);
+    overflow:auto;
+    padding:18px;
+    border-radius:12px;
+    background:#fff;
+    box-shadow:0 18px 55px rgba(0,0,0,.35);
+}
+
+.smart-score-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+    margin-bottom:14px;
+}
+
+.smart-score-player{
+    font-size:18px;
+    font-weight:900;
+}
+
+.smart-score-shot{
+    margin-top:3px;
+    color:#666;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.smart-score-points{
+    min-width:58px;
+    padding:10px 8px;
+    border-radius:9px;
+    background:#111;
+    color:#ff6b00;
+    font-size:22px;
+    font-weight:900;
+    text-align:center;
+}
+
+.smart-score-section{
+    margin-top:13px;
+}
+
+.smart-score-section-title{
+    margin-bottom:7px;
+    color:#444;
+    font-size:10px;
+    font-weight:900;
+    letter-spacing:.8px;
+}
+
+.smart-score-options{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:7px;
+}
+
+.smart-score-option{
+    position:relative;
+    display:flex;
+    min-height:48px;
+    align-items:center;
+    justify-content:center;
+    padding:9px;
+    border:2px solid #ddd;
+    border-radius:8px;
+    background:#fafafa;
+    font-size:11px;
+    font-weight:900;
+    text-align:center;
+    cursor:pointer;
+}
+
+.smart-score-option input{
+    position:absolute;
+    opacity:0;
+    pointer-events:none;
+}
+
+.smart-score-option:has(input:checked){
+    border-color:#ff6b00;
+    background:#fff0e4;
+    color:#c44f00;
+}
+
+.smart-score-auto-location{
+    padding:10px;
+    border:1px solid #ffd2b3;
+    border-radius:7px;
+    background:#fff7f1;
+    color:#9c4100;
+    font-size:11px;
+    font-weight:800;
+}
+
+.smart-score-note{
+    margin-top:7px;
+    color:#777;
+    font-size:9px;
+}
+
+.smart-score-actions{
+    display:grid;
+    grid-template-columns:1fr 1.5fr;
+    gap:8px;
+    margin-top:16px;
+}
+
+.smart-score-actions button{
+    padding:11px;
+    border:0;
+    border-radius:7px;
+    font-size:11px;
+    font-weight:900;
+    cursor:pointer;
+}
+
+.smart-score-cancel{
+    background:#eee;
+    color:#333;
+}
+
+.smart-score-confirm{
+    background:#ff6b00;
+    color:#fff;
+}
+
+.smart-score-confirm:disabled{
+    opacity:.55;
+    cursor:wait;
+}
+
 /* Hide scorekeeper control buttons inside the preview */
 .team-stats-preview button{
     display:none!important;
@@ -1264,31 +1413,9 @@ LOG OUT
 </div>
 
 <div class="scoring-breakdown-panel">
-<h2>SCORING BREAKDOWN — TAG THE NEXT MADE BASKET</h2>
+<h2>LIVE SCORING BREAKDOWN</h2>
 <div class="scoring-tag-help">
-Select every category that applies, then press M+ beside the scorer. Tags clear after the made basket is recorded.
-</div>
-
-<div class="scoring-tags">
-<label class="scoring-tag">
-<input type="checkbox" id="tagPaint">
-POINTS IN THE PAINT
-</label>
-
-<label class="scoring-tag">
-<input type="checkbox" id="tagFastBreak">
-FAST BREAK
-</label>
-
-<label class="scoring-tag">
-<input type="checkbox" id="tagOffTurnover">
-OFF TURNOVER
-</label>
-
-<label class="scoring-tag">
-<input type="checkbox" id="tagSecondChance">
-SECOND CHANCE
-</label>
+Press a player's +1, +2 or +3 button to open Smart Score and identify where the points came from.
 </div>
 
 <table class="team-breakdown-table">
@@ -1402,6 +1529,89 @@ FINALIZE GAME
 
 </div>
 
+</div>
+
+<div
+    id="smartScoreModal"
+    class="smart-score-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="smartScorePlayer"
+>
+<div class="smart-score-card">
+
+<div class="smart-score-header">
+<div>
+<div id="smartScorePlayer" class="smart-score-player">Player</div>
+<div id="smartScoreShot" class="smart-score-shot">Made basket</div>
+</div>
+<div id="smartScorePoints" class="smart-score-points">+2</div>
+</div>
+
+<div class="smart-score-section">
+<div class="smart-score-section-title">WHERE WAS THE SHOT?</div>
+
+<div id="smartTwoPointLocation" class="smart-score-options">
+<label class="smart-score-option">
+<input type="radio" name="smartShotLocation" value="paint">
+INSIDE THE PAINT
+</label>
+
+<label class="smart-score-option">
+<input type="radio" name="smartShotLocation" value="outside">
+OUTSIDE THE PAINT
+</label>
+</div>
+
+<div id="smartAutomaticLocation" class="smart-score-auto-location" hidden></div>
+</div>
+
+<div class="smart-score-section">
+<div class="smart-score-section-title">HOW WERE THE POINTS CREATED?</div>
+
+<div class="smart-score-options">
+<label class="smart-score-option">
+<input type="checkbox" id="tagFastBreak">
+FAST BREAK
+</label>
+
+<label class="smart-score-option">
+<input type="checkbox" id="tagOffTurnover">
+OFF TURNOVER
+</label>
+
+<label class="smart-score-option">
+<input type="checkbox" id="tagSecondChance">
+SECOND CHANCE
+</label>
+
+<label class="smart-score-option">
+<input type="checkbox" id="tagNormalPlay">
+NORMAL PLAY
+</label>
+</div>
+
+<div class="smart-score-note">
+You may select more than one category. Selecting Normal Play clears the other situations.
+</div>
+</div>
+
+<div class="smart-score-actions">
+<button type="button" class="smart-score-cancel" onclick="cancelSmartScoring()">
+CANCEL
+</button>
+
+<button
+    type="button"
+    id="smartScoreConfirm"
+    class="smart-score-confirm"
+    onclick="confirmSmartScoring()"
+>
+CONFIRM SCORE
+</button>
+</div>
+
+</div>
 </div>
 
 <!-- NBA Style Hover Popup Container -->
@@ -1692,6 +1902,7 @@ let statSaveInFlight=new Set();
 
 let hoveredPlayerId=null;
 let hoverTimer=null;
+let pendingSmartScore=null;
 
 /* =========================================================
    GENERAL HELPERS
@@ -3584,11 +3795,225 @@ async function saveStatDirect(
    SCORING BREAKDOWN EVENTS
    ========================================================= */
 
+function openSmartScoring(
+    playerId,
+    statKey
+){
+
+    if(playerOnCourt[playerId]!==true){
+        showStatus(
+            "Player is on the bench. SUB IN the player first."
+        );
+        return;
+    }
+
+    if(!currentGame){
+        showStatus("Load a game first.");
+        return;
+    }
+
+    const points=
+        statKey==="two_pt_made"
+        ?2
+        :statKey==="three_pt_made"
+        ?3
+        :statKey==="ft_made"
+        ?1
+        :0;
+
+    if(!points){
+        return;
+    }
+
+    const player=playerDataMap[playerId]||{};
+
+    const playerName=
+        (
+            (player.first_name||"")+" "+
+            (player.last_name||"")
+        ).trim()||"Selected Player";
+
+    pendingSmartScore={
+        playerId,
+        statKey,
+        points
+    };
+
+    clearSelectedScoringTags();
+
+    document.getElementById(
+        "smartScorePlayer"
+    ).textContent=playerName;
+
+    document.getElementById(
+        "smartScorePoints"
+    ).textContent="+"+points;
+
+    document.getElementById(
+        "smartScoreShot"
+    ).textContent=
+        points===3
+        ?"Made 3-point field goal"
+        :points===2
+        ?"Made 2-point field goal"
+        :"Made free throw";
+
+    const twoPointLocation=
+        document.getElementById(
+            "smartTwoPointLocation"
+        );
+
+    const automaticLocation=
+        document.getElementById(
+            "smartAutomaticLocation"
+        );
+
+    const isTwoPoint=points===2;
+
+    twoPointLocation.hidden=!isTwoPoint;
+    automaticLocation.hidden=isTwoPoint;
+
+    if(!isTwoPoint){
+        automaticLocation.textContent=
+            points===3
+            ?"3-POINT AREA — detected from the +3 button"
+            :"FREE-THROW LINE — detected from the +1 button";
+    }
+
+    document.getElementById(
+        "smartScoreModal"
+    ).classList.add("visible");
+}
+
+
+function cancelSmartScoring(){
+
+    pendingSmartScore=null;
+    clearSelectedScoringTags();
+
+    document.getElementById(
+        "smartScoreModal"
+    ).classList.remove("visible");
+}
+
+
+async function confirmSmartScoring(){
+
+    if(!pendingSmartScore){
+        return;
+    }
+
+    if(pendingSmartScore.points===2){
+
+        const selectedLocation=
+            document.querySelector(
+                'input[name="smartShotLocation"]:checked'
+            );
+
+        if(!selectedLocation){
+            showStatus(
+                "Choose whether the 2-point shot was inside or outside the paint."
+            );
+            return;
+        }
+    }
+
+    const confirmButton=
+        document.getElementById(
+            "smartScoreConfirm"
+        );
+
+    const score={...pendingSmartScore};
+
+    confirmButton.disabled=true;
+    confirmButton.textContent="SAVING...";
+
+    try{
+
+        await updatePlayerStat(
+            score.playerId,
+            score.statKey,
+            1
+        );
+
+        pendingSmartScore=null;
+
+        document.getElementById(
+            "smartScoreModal"
+        ).classList.remove("visible");
+
+    }
+    finally{
+
+        confirmButton.disabled=false;
+        confirmButton.textContent="CONFIRM SCORE";
+    }
+}
+
+
+function initializeSmartScoreControls(){
+
+    const normal=
+        document.getElementById("tagNormalPlay");
+
+    const situations=[
+        document.getElementById("tagFastBreak"),
+        document.getElementById("tagOffTurnover"),
+        document.getElementById("tagSecondChance")
+    ];
+
+    normal.addEventListener("change",()=>{
+
+        if(normal.checked){
+            situations.forEach(input=>{
+                input.checked=false;
+            });
+        }
+    });
+
+    situations.forEach(input=>{
+
+        input.addEventListener("change",()=>{
+
+            if(input.checked){
+                normal.checked=false;
+            }
+        });
+    });
+
+    document.getElementById(
+        "smartScoreModal"
+    ).addEventListener("click",event=>{
+
+        if(event.target.id==="smartScoreModal"){
+            cancelSmartScoring();
+        }
+    });
+
+    document.addEventListener("keydown",event=>{
+
+        if(
+            event.key==="Escape"&&
+            document.getElementById(
+                "smartScoreModal"
+            ).classList.contains("visible")
+        ){
+            cancelSmartScoring();
+        }
+    });
+}
+
 function getSelectedScoringTags(){
+
+    const selectedLocation=
+        document.querySelector(
+            'input[name="smartShotLocation"]:checked'
+        );
 
     return {
         is_paint:
-            document.getElementById("tagPaint").checked,
+            selectedLocation&&
+            selectedLocation.value==="paint",
 
         is_fast_break:
             document.getElementById("tagFastBreak").checked,
@@ -3605,10 +4030,10 @@ function getSelectedScoringTags(){
 function clearSelectedScoringTags(){
 
     [
-        "tagPaint",
         "tagFastBreak",
         "tagOffTurnover",
-        "tagSecondChance"
+        "tagSecondChance",
+        "tagNormalPlay"
     ].forEach(id=>{
 
         const checkbox=
@@ -3617,6 +4042,14 @@ function clearSelectedScoringTags(){
         if(checkbox){
             checkbox.checked=false;
         }
+    });
+
+    document
+    .querySelectorAll(
+        'input[name="smartShotLocation"]'
+    )
+    .forEach(input=>{
+        input.checked=false;
     });
 }
 
@@ -4580,14 +5013,13 @@ ${calculatePercentage(
 class="shot-btn"
 ${onCourt?"":"disabled"}
 onclick="
-updatePlayerStat(
+openSmartScoring(
 '${player.id}',
-'two_pt_made',
-1
+'two_pt_made'
 )
 "
 >
-M+
++2
 </button>
 
 <button
@@ -4601,7 +5033,7 @@ updatePlayerStat(
 )
 "
 >
-M−
+−2
 </button>
 
 <button
@@ -4661,14 +5093,13 @@ ${calculatePercentage(
 class="shot-btn"
 ${onCourt?"":"disabled"}
 onclick="
-updatePlayerStat(
+openSmartScoring(
 '${player.id}',
-'three_pt_made',
-1
+'three_pt_made'
 )
 "
 >
-M+
++3
 </button>
 
 <button
@@ -4682,7 +5113,7 @@ updatePlayerStat(
 )
 "
 >
-M−
+−3
 </button>
 
 <button
@@ -4763,14 +5194,13 @@ ${calculatePercentage(
 class="shot-btn"
 ${onCourt?"":"disabled"}
 onclick="
-updatePlayerStat(
+openSmartScoring(
 '${player.id}',
-'ft_made',
-1
+'ft_made'
 )
 "
 >
-M+
++1
 </button>
 
 <button
@@ -4784,7 +5214,7 @@ updatePlayerStat(
 )
 "
 >
-M−
+−1
 </button>
 
 <button
@@ -7082,6 +7512,7 @@ function closeTeamStatsPreview(){
 
     modal.classList.remove("visible");
 }
+initializeSmartScoreControls();
 initializeSecureScorekeeper();
 
 </script>
