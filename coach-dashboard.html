@@ -298,7 +298,6 @@
       <a class="nav-link" href="#modules"><span class="nav-icon">GM</span> Games <span class="coming">Next</span></a>
       <a class="nav-link" href="#modules"><span class="nav-icon">ST</span> Statistics <span class="coming">Next</span></a>
       <a class="nav-link" href="#modules"><span class="nav-icon">CR</span> Corrections <span class="coming">Next</span></a>
-      <a id="superAdminLink" class="nav-link" href="super-admin.html" hidden><span class="nav-icon">SA</span> Super Admin</a>
     </aside>
 
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
@@ -444,7 +443,6 @@
         currentProfile = profile;
         document.getElementById("headerAccountName").textContent = displayName(profile);
         document.getElementById("headerRole").textContent = profile.role === "super_admin" ? "Super Admin Preview" : "Coach / Team Manager";
-        document.getElementById("superAdminLink").hidden = profile.role !== "super_admin";
 
         await Promise.all([loadWorkspace(), loadTeamApplicationData()]);
         authScreen.hidden = true;
