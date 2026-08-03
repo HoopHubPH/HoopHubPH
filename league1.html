@@ -1,360 +1,323 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Barangay Basketball League | Hoop Hub PH</title>
-
-    <style>
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f5f5f5;
-            color: #222;
-        }
-
-        header {
-            background: #111;
-            color: white;
-            padding: 18px 8%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-       .logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: white;
-    text-decoration: none;
-}
-
-.logo:visited {
-    color: white;
-}
-
-.logo:hover {
-    color: white;
-}
-
-.logo span {
-    color: #ff6b00;
-}
-
-        .logo span {
-            color: #ff6b00;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 25px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        nav a:hover {
-            color: #ff6b00;
-        }
-
-        .hero {
-            background: #111;
-            color: white;
-            text-align: center;
-            padding: 70px 20px;
-        }
-
-        .hero h1 {
-            font-size: 42px;
-            margin-bottom: 15px;
-        }
-
-        .hero h1 span {
-            color: #ff6b00;
-        }
-
-        .hero p {
-            color: #ccc;
-            font-size: 18px;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 50px auto;
-            padding: 0 20px;
-        }
-
-        .info-card {
-            background: white;
-            padding: 35px;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            margin-bottom: 25px;
-        }
-
-        .info-card h2 {
-            margin-bottom: 20px;
-        }
-
-        .info-row {
-            padding: 15px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .info-row strong {
-            color: #ff6b00;
-        }
-
-        .button {
-            display: inline-block;
-            background: #ff6b00;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-
-        .back {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: #ff6b00;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        footer {
-            background: #111;
-            color: white;
-            text-align: center;
-            padding: 30px;
-            margin-top: 50px;
-        }
-
-        footer p {
-            color: #aaa;
-            margin-top: 10px;
-        }
-
-        @media (max-width: 768px) {
-
-            header {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            nav a {
-                margin: 0 7px;
-                font-size: 12px;
-            }
-
-            .hero h1 {
-                font-size: 32px;
-            }
-
-        }
-
-    </style>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>League | Hoop Hub PH</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Arial,Helvetica,sans-serif;background:#f5f5f5;color:#222}
+    header{background:#111;color:#fff;padding:18px 8%;display:flex;justify-content:space-between;align-items:center}
+    .logo{font-size:24px;font-weight:bold;color:#fff;text-decoration:none}
+    .logo:visited,.logo:hover{color:#fff}
+    .logo span,.hero h1 span,.info-row strong{color:#ff6b00}
+    nav a{color:#fff;text-decoration:none;margin-left:25px;font-weight:bold;font-size:14px}
+    nav a:hover{color:#ff6b00}
+    .hero{background:#111;color:#fff;text-align:center;padding:70px 20px}
+    .hero h1{font-size:42px;margin-bottom:15px;text-transform:uppercase}
+    .hero p{color:#ccc;font-size:18px}
+    .container{max-width:1000px;margin:50px auto;padding:0 20px}
+    .info-card{background:#fff;padding:35px;border-radius:10px;box-shadow:0 5px 20px rgba(0,0,0,.08);margin-bottom:25px}
+    .info-card h2{margin-bottom:20px}
+    .info-row{padding:15px 0;border-bottom:1px solid #eee}
+    .button{display:inline-block;background:#ff6b00;color:#fff;padding:15px 25px;border-radius:5px;text-decoration:none;font-weight:bold;margin-top:20px}
+    .back{display:inline-block;margin-bottom:20px;color:#ff6b00;text-decoration:none;font-weight:bold}
+    .table-wrap{width:100%;overflow-x:auto;border:1px solid #eee;border-radius:8px}
+    .standings-table{width:100%;min-width:720px;border-collapse:collapse}
+    .standings-table th{padding:13px 12px;background:#111;color:#fff;font-size:12px;text-align:center;white-space:nowrap}
+    .standings-table th:nth-child(2){text-align:left}
+    .standings-table td{padding:14px 12px;border-bottom:1px solid #eee;text-align:center;font-size:14px}
+    .standings-table td:nth-child(2){text-align:left;font-weight:bold}
+    .standings-table tbody tr:last-child td{border-bottom:none}
+    .standings-table tbody tr:hover{background:#fff8f2}
+    .rank{font-weight:bold;color:#ff6b00}
+    .team-cell{display:flex;align-items:center;gap:10px}
+    .team-logo{width:34px;height:34px;border-radius:50%;object-fit:cover;background:#eee;border:1px solid #ddd}
+    .record{font-weight:bold}
+    .positive{color:#067647}.negative{color:#b42318}
+    .standings-note{margin-top:14px;color:#777;font-size:12px}
+    .state-message{padding:28px;text-align:center;color:#68707d}
+    .state-message.error{color:#b42318;background:#fff4f2}
+    .games-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    .game-card{padding:20px;border:1px solid #e5e7eb;border-radius:9px;background:#fafafa}
+    .game-card-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px}
+    .game-date{color:#68707d;font-size:12px;font-weight:bold}
+    .game-status{padding:5px 9px;border-radius:999px;background:#fff1e7;color:#c75200;font-size:10px;font-weight:bold;text-transform:uppercase}
+    .game-status.live{background:#ecfdf3;color:#067647}
+    .game-status.final{background:#111;color:#fff}
+    .matchup{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:12px;text-align:center}
+    .matchup-team{font-size:15px;font-weight:bold;line-height:1.35}
+    .matchup-team:first-child{text-align:right}.matchup-team:last-child{text-align:left}
+    .versus{color:#ff6b00;font-size:12px;font-weight:bold}
+    .final-score{font-size:26px;font-weight:bold;white-space:nowrap}
+    .winner{color:#067647}
+    .game-meta{margin-top:17px;padding-top:13px;border-top:1px solid #e5e7eb;color:#68707d;font-size:11px;line-height:1.6}
+    .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:20px}
+    .section-head h2{margin:0}.section-head span{color:#68707d;font-size:11px}
+    footer{background:#111;color:#fff;text-align:center;padding:30px;margin-top:50px}
+    footer p{color:#aaa;margin-top:10px}
+    @media(max-width:768px){
+      header{flex-direction:column;gap:15px}
+      nav{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+      nav a{margin:0;font-size:12px}
+      .hero{padding:52px 20px}.hero h1{font-size:32px}
+      .container{margin:32px auto}.info-card{padding:24px 18px}
+      .games-grid{grid-template-columns:1fr}
+      .matchup{gap:8px}.matchup-team{font-size:13px}.final-score{font-size:22px}
+    }
+  </style>
 </head>
-
-
 <body>
+  <header>
+    <a href="index.html" class="logo">HOOP <span>HUB PH</span></a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="leagues.html">Leagues</a>
+      <a href="teams.html">Teams</a>
+      <a href="players.html">Players</a>
+      <a href="tournaments.html">Tournaments</a>
+    </nav>
+  </header>
 
+  <section class="hero">
+    <h1 id="leagueTitle">LOADING <span>LEAGUE...</span></h1>
+    <p id="leagueSubtitle">Loading league information and standings.</p>
+  </section>
 
-    <!-- NAVIGATION -->
+  <main class="container">
+    <a href="leagues.html" class="back">← Back to Leagues</a>
 
-    <header>
-
-       <a href="index.html" class="logo">
-
-    HOOP <span>HUB PH</span>
-
-</a>
-
-        <nav>
-
-            <a href="index.html">
-                Home
-            </a>
-
-            <a href="leagues.html">
-                Leagues
-            </a>
-
-            <a href="#">
-                Teams
-            </a>
-
-            <a href="players.html">
-    Players
-</a>
-
-            <a href="#">
-                Tournaments
-            </a>
-
-        </nav>
-
-    </header>
-
-
-    <!-- HERO -->
-
-    <section class="hero">
-
-        <h1>
-            BARANGAY <span>BASKETBALL LEAGUE</span>
-        </h1>
-
-        <p>
-            Community basketball competition for local players and teams.
-        </p>
-
+    <section class="info-card">
+      <h2>League Information</h2>
+      <div class="info-row"><strong>📍 Location:</strong> <span id="leagueLocation">—</span></div>
+      <div class="info-row"><strong>🏀 Division:</strong> <span id="leagueDivision">—</span></div>
+      <div class="info-row"><strong>📅 Season:</strong> <span id="leagueSeason">—</span></div>
+      <div class="info-row"><strong>📌 Status:</strong> <span id="leagueStatus">—</span></div>
+      <a href="#" class="button" id="registerButton">REGISTER YOUR TEAM</a>
     </section>
 
+    <section class="info-card">
+      <h2>League Standings</h2>
+      <div class="table-wrap">
+        <div id="standingsState" class="state-message">Loading standings...</div>
+        <table id="standingsTable" class="standings-table" hidden>
+          <thead>
+            <tr>
+              <th>RANK</th><th>TEAM</th><th>GP</th><th>W</th><th>L</th>
+              <th>WIN%</th><th>PF</th><th>PA</th><th>DIFF</th>
+            </tr>
+          </thead>
+          <tbody id="standingsBody"></tbody>
+        </table>
+      </div>
+      <p class="standings-note">Standings update automatically when a game is finalized.</p>
+    </section>
 
-    <!-- CONTENT -->
+    <section class="info-card">
+      <div class="section-head">
+        <h2>Upcoming Games</h2>
+        <span>Schedule and live-game status</span>
+      </div>
+      <div id="upcomingGames" class="games-grid">
+        <div class="state-message">Loading upcoming games...</div>
+      </div>
+    </section>
 
-    <div class="container">
+    <section class="info-card">
+      <div class="section-head">
+        <h2>Results</h2>
+        <span>Official finalized games</span>
+      </div>
+      <div id="gameResults" class="games-grid">
+        <div class="state-message">Loading results...</div>
+      </div>
+    </section>
 
-        <a href="leagues.html" class="back">
-            ← Back to Leagues
-        </a>
+    <section class="info-card">
+      <h2>About This League</h2>
+      <p id="leagueDescription">Loading league description...</p>
+    </section>
 
+    <section class="info-card">
+      <h2>League Organizer</h2>
+      <p>Organizer information will be displayed here.</p>
+    </section>
+  </main>
 
-        <!-- LEAGUE INFORMATION -->
+  <footer>
+    <h3>🏀 HOOP HUB PH</h3>
+    <p>Connecting Philippine basketball, one community at a time.</p>
+    <p>© 2026 Hoop Hub PH. All rights reserved.</p>
+  </footer>
 
-        <div class="info-card">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    (()=>{
+      const HOOPHUB_SUPABASE_URL="https://tkrsyiwffqkgfyooewsf.supabase.co";
+      const HOOPHUB_SUPABASE_KEY="sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
+      const db=window.supabase.createClient(HOOPHUB_SUPABASE_URL,HOOPHUB_SUPABASE_KEY);
 
-            <h2>
-                League Information
-            </h2>
+      // The URL can use league1.html?id=LEAGUE_UUID. The test league is the fallback.
+      const DEFAULT_LEAGUE_ID="01daf1b2-84ef-4358-9171-e1d8569f9a39";
+      const leagueId=new URLSearchParams(window.location.search).get("id")||DEFAULT_LEAGUE_ID;
 
-            <div class="info-row">
+      const text=(id,value)=>{document.getElementById(id).textContent=value||"—"};
+      const escapeHtml=value=>String(value??"").replace(/[&<>'"]/g,char=>({
+        "&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"
+      })[char]);
+      const defaultLogo=()=>"data:image/svg+xml;charset=UTF-8,"+encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="100%" height="100%" fill="#111"/><circle cx="40" cy="40" r="24" fill="#ff6b00"/><text x="40" y="46" text-anchor="middle" font-family="Arial" font-size="18" font-weight="700" fill="white">HH</text></svg>'
+      );
 
-                <strong>
-                    📍 Location:
-                </strong>
+      const formatDateTime=value=>{
+        if(!value) return "Schedule to be announced";
+        const date=new Date(value);
+        if(Number.isNaN(date.getTime())) return "Schedule to be announced";
+        return new Intl.DateTimeFormat("en-PH",{
+          year:"numeric",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"
+        }).format(date);
+      };
 
-                Quezon City
+      async function loadLeague(){
+        const {data,error}=await db.from("leagues").select("*").eq("id",leagueId).maybeSingle();
+        if(error) throw error;
+        if(!data) throw new Error("League not found.");
 
-            </div>
+        document.title=`${data.name} | Hoop Hub PH`;
+        document.getElementById("leagueTitle").innerHTML=`${escapeHtml(data.name)} <span>LEAGUE</span>`;
+        text("leagueSubtitle",data.description||"Community basketball competition for local players and teams.");
+        text("leagueLocation",data.location);
+        text("leagueDivision",data.division);
+        text("leagueSeason",data.season);
+        text("leagueStatus",data.status);
+        text("leagueDescription",data.description||"League information and updates will be displayed here.");
+      }
 
+      async function loadStandings(){
+        const state=document.getElementById("standingsState");
+        const table=document.getElementById("standingsTable");
+        const body=document.getElementById("standingsBody");
 
-            <div class="info-row">
+        const {data:rows,error}=await db
+          .from("team_standings")
+          .select("*")
+          .eq("league_id",leagueId)
+          .order("win_percentage",{ascending:false})
+          .order("point_difference",{ascending:false})
+          .order("points_for",{ascending:false});
 
-                <strong>
-                    🏀 Category:
-                </strong>
+        if(error) throw error;
+        if(!rows||!rows.length){
+          state.textContent="No finalized games yet. Standings will appear after the first game is finalized.";
+          return;
+        }
 
-                Open Division
+        const teamIds=[...new Set(rows.map(row=>row.team_id))];
+        const {data:teams,error:teamsError}=await db
+          .from("teams")
+          .select("id,name,logo_url")
+          .in("id",teamIds);
+        if(teamsError) throw teamsError;
 
-            </div>
+        const teamsById=new Map((teams||[]).map(team=>[team.id,team]));
+        body.innerHTML=rows.map((row,index)=>{
+          const team=teamsById.get(row.team_id)||{};
+          const difference=Number(row.point_difference||0);
+          const differenceText=difference>0?`+${difference}`:String(difference);
+          const differenceClass=difference>0?"positive":difference<0?"negative":"";
+          const winPct=(Number(row.win_percentage||0)*100).toFixed(1)+"%";
+          return `<tr>
+            <td class="rank">${index+1}</td>
+            <td><div class="team-cell"><img class="team-logo" src="${escapeHtml(team.logo_url||defaultLogo())}" alt=""><span>${escapeHtml(team.name||"Unknown Team")}</span></div></td>
+            <td>${Number(row.games_played||0)}</td>
+            <td class="record">${Number(row.wins||0)}</td>
+            <td>${Number(row.losses||0)}</td>
+            <td>${winPct}</td>
+            <td>${Number(row.points_for||0)}</td>
+            <td>${Number(row.points_against||0)}</td>
+            <td class="${differenceClass}">${differenceText}</td>
+          </tr>`;
+        }).join("");
 
+        state.hidden=true;
+        table.hidden=false;
+      }
 
-            <div class="info-row">
+      function renderUpcomingGame(game){
+        const status=String(game.status||"Scheduled");
+        const isLive=["live","halftime"].includes(status.toLowerCase());
+        return `<article class="game-card">
+          <div class="game-card-top">
+            <span class="game-date">${escapeHtml(formatDateTime(game.scheduled_at))}</span>
+            <span class="game-status ${isLive?"live":""}">${escapeHtml(status)}</span>
+          </div>
+          <div class="matchup">
+            <div class="matchup-team">${escapeHtml(game.home_team||"Home Team")}</div>
+            <div class="versus">VS</div>
+            <div class="matchup-team">${escapeHtml(game.away_team||"Away Team")}</div>
+          </div>
+          <div class="game-meta">📍 ${escapeHtml(game.venue||"Venue to be announced")}<br>Game ID: #${escapeHtml(game.id)}</div>
+        </article>`;
+      }
 
-                <strong>
-                    👥 Team Limit:
-                </strong>
+      function renderResult(game){
+        const homeScore=Number(game.home_score||0);
+        const awayScore=Number(game.away_score||0);
+        const homeWon=homeScore>awayScore;
+        const awayWon=awayScore>homeScore;
+        return `<article class="game-card">
+          <div class="game-card-top">
+            <span class="game-date">${escapeHtml(formatDateTime(game.scheduled_at||game.finalized_at))}</span>
+            <span class="game-status final">FINAL</span>
+          </div>
+          <div class="matchup">
+            <div class="matchup-team ${homeWon?"winner":""}">${escapeHtml(game.home_team||"Home Team")}</div>
+            <div class="final-score">${homeScore}–${awayScore}</div>
+            <div class="matchup-team ${awayWon?"winner":""}">${escapeHtml(game.away_team||"Away Team")}</div>
+          </div>
+          <div class="game-meta">📍 ${escapeHtml(game.venue||"Venue not listed")}<br>Game ID: #${escapeHtml(game.id)}</div>
+        </article>`;
+      }
 
-                16 Teams
+      async function loadScheduleAndResults(){
+        const upcomingContainer=document.getElementById("upcomingGames");
+        const resultsContainer=document.getElementById("gameResults");
+        const {data:games,error}=await db
+          .from("games")
+          .select("id,league_id,home_team,away_team,home_score,away_score,status,scheduled_at,finalized_at,venue,created_at")
+          .eq("league_id",leagueId)
+          .order("scheduled_at",{ascending:true,nullsFirst:false});
+        if(error) throw error;
 
-            </div>
+        const upcoming=(games||[]).filter(game=>String(game.status||"").toLowerCase()!=="final");
+        const results=(games||[])
+          .filter(game=>String(game.status||"").toLowerCase()==="final")
+          .sort((a,b)=>new Date(b.finalized_at||b.scheduled_at||b.created_at)-new Date(a.finalized_at||a.scheduled_at||a.created_at));
 
+        upcomingContainer.innerHTML=upcoming.length
+          ?upcoming.map(renderUpcomingGame).join("")
+          :'<div class="state-message">No upcoming games are scheduled.</div>';
+        resultsContainer.innerHTML=results.length
+          ?results.map(renderResult).join("")
+          :'<div class="state-message">No finalized game results yet.</div>';
+      }
 
-            <div class="info-row">
+      async function initialize(){
+        try{
+          await Promise.all([loadLeague(),loadStandings(),loadScheduleAndResults()]);
+        }catch(error){
+          console.error("League page error:",error);
+          const state=document.getElementById("standingsState");
+          state.hidden=false;
+          state.classList.add("error");
+          state.textContent="Unable to load league information: "+(error.message||"Unknown error");
+          document.getElementById("upcomingGames").innerHTML='<div class="state-message error">Unable to load upcoming games.</div>';
+          document.getElementById("gameResults").innerHTML='<div class="state-message error">Unable to load game results.</div>';
+        }
+      }
 
-                <strong>
-                    📅 Status:
-                </strong>
-
-                Registration Open
-
-            </div>
-
-
-            <a href="#" class="button">
-                REGISTER YOUR TEAM
-            </a>
-
-        </div>
-
-
-        <!-- ABOUT -->
-
-        <div class="info-card">
-
-            <h2>
-                About This League
-            </h2>
-
-            <p>
-
-                This is a sample community basketball league
-                listed on Hoop Hub PH.
-
-                The league is designed for local basketball
-                teams looking for competitive games and
-                community-based competition.
-
-            </p>
-
-        </div>
-
-
-        <!-- ORGANIZER -->
-
-        <div class="info-card">
-
-            <h2>
-                League Organizer
-            </h2>
-
-            <p>
-
-                Organizer information will be displayed here.
-
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <!-- FOOTER -->
-
-    <footer>
-
-        <h3>
-            🏀 HOOP HUB PH
-        </h3>
-
-        <p>
-            Connecting Philippine basketball,
-            one community at a time.
-        </p>
-
-        <p>
-            © 2026 Hoop Hub PH.
-            All rights reserved.
-        </p>
-
-    </footer>
-
-
+      initialize();
+    })();
+  </script>
 </body>
-
 </html>
