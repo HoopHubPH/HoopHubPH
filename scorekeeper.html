@@ -944,12 +944,27 @@ nav{
     color:#555;
     font-size:9px;
     font-weight:800;
+    cursor:pointer;
 }
 
 .quick-score-context.active{
     border-color:#ff6b00;
-    background:#fff3e8;
-    color:#b94700;
+    background:#ff6b00;
+    color:#fff;
+}
+
+.quick-score-context:disabled,
+.quick-fast-break-button:disabled,
+.quick-reset-context-button:disabled{
+    opacity:.45;
+    cursor:not-allowed;
+}
+
+.quick-context-heading{
+    color:#555;
+    font-size:8px;
+    font-weight:900;
+    white-space:nowrap;
 }
 
 .quick-fast-break-button{
@@ -966,6 +981,23 @@ nav{
 .quick-fast-break-button.active{
     border-color:#ff6b00;
     background:#ff6b00;
+    color:#fff;
+}
+
+.quick-reset-context-button{
+    padding:5px 8px;
+    border:1px solid #bbb;
+    border-radius:5px;
+    background:#eee;
+    color:#333;
+    font-size:9px;
+    font-weight:900;
+    cursor:pointer;
+}
+
+.quick-reset-context-button:hover{
+    border-color:#111;
+    background:#111;
     color:#fff;
 }
 
@@ -1564,9 +1596,14 @@ nav{
 }
 
 .hybrid-action-panel .quick-score-context,
-.hybrid-action-panel .quick-fast-break-button{
+.hybrid-action-panel .quick-fast-break-button,
+.hybrid-action-panel .quick-reset-context-button{
     padding:4px 6px;
     font-size:8px;
+}
+
+.hybrid-action-panel .quick-context-heading{
+    font-size:7px;
 }
 
 .hybrid-actions-layout{
@@ -1587,11 +1624,23 @@ nav{
 }
 
 .hybrid-actions-layout .easy-action-button{
-    min-height:27px;
+    min-height:30px;
     padding:3px 2px;
     border-radius:4px;
     font-size:8px;
     line-height:1.05;
+}
+
+.hybrid-actions-layout .easy-action-button.stat-rebound{
+    background:#1565c0;
+}
+
+.hybrid-actions-layout .easy-action-button.stat-turnover{
+    background:#c62828;
+}
+
+.hybrid-actions-layout .easy-action-button.stat-foul{
+    background:#6a1b9a;
 }
 
 .hybrid-actions-layout .easy-action-grid{
@@ -2255,20 +2304,42 @@ LOG OUT
 </div>
 
 <div class="easy-context-row">
-<span id="homeQuickContext" class="quick-score-context">HOME: NORMAL</span>
-<span id="awayQuickContext" class="quick-score-context">AWAY: NORMAL</span>
+<span id="selectedQuickContextLabel" class="quick-context-heading">2 · NEXT SCORE: PICK PLAYER</span>
+<button
+    type="button"
+    id="quickOffTurnoverButton"
+    class="quick-score-context"
+    aria-pressed="false"
+    onclick="toggleSelectedQuickTag('offTurnover')"
+    title="Tag the selected team's next score as points off a turnover"
+>OFF TO</button>
+<button
+    type="button"
+    id="quickSecondChanceButton"
+    class="quick-score-context"
+    aria-pressed="false"
+    onclick="toggleSelectedQuickTag('secondChance')"
+    title="Tag the selected team's next score as second-chance points"
+>2ND CHANCE</button>
 <button
     type="button"
     id="quickFastBreakButton"
     class="quick-fast-break-button"
     aria-pressed="false"
     onclick="toggleQuickFastBreak()"
->FAST BREAK: OFF</button>
+>FAST BREAK</button>
+<button
+    type="button"
+    id="quickResetContextButton"
+    class="quick-reset-context-button"
+    onclick="resetAllQuickScoringContext()"
+    title="Clear every next-score tag"
+>RESET</button>
 </div>
 
 <div class="hybrid-actions-layout">
 <div class="easy-action-group">
-<div class="easy-action-title">2 · MADE SHOT</div>
+<div class="easy-action-title">3 · MADE SHOT</div>
 <div class="easy-action-grid">
 <button type="button" class="easy-action-button paint" data-easy-action onclick="easyRecordScore('two_pt_made',true)">PAINT<br>+2</button>
 <button type="button" class="easy-action-button primary" data-easy-action onclick="easyRecordScore('two_pt_made',false)">2PT<br>+2</button>
@@ -2278,7 +2349,7 @@ LOG OUT
 </div>
 
 <div class="easy-action-group">
-<div class="easy-action-title">2 · MISSED SHOT</div>
+<div class="easy-action-title">3 · MISSED SHOT</div>
 <div class="easy-action-grid secondary">
 <button type="button" class="easy-action-button miss" data-easy-action onclick="easyRecordStat('two_pt_attempted')">2PT MISS</button>
 <button type="button" class="easy-action-button miss" data-easy-action onclick="easyRecordStat('three_pt_attempted')">3PT MISS</button>
@@ -2287,15 +2358,15 @@ LOG OUT
 </div>
 
 <div class="easy-action-group">
-<div class="easy-action-title">2 · OTHER STAT</div>
+<div class="easy-action-title">3 · OTHER STAT</div>
 <div class="easy-action-grid other-stats">
-<button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('offensive_rebounds')">OREB</button>
-<button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('defensive_rebounds')">DREB</button>
+<button type="button" class="easy-action-button stat-rebound" data-easy-action onclick="easyRecordStat('offensive_rebounds')" title="Offensive rebound — prepares second-chance points">OREB</button>
+<button type="button" class="easy-action-button stat-rebound" data-easy-action onclick="easyRecordStat('defensive_rebounds')" title="Defensive rebound — ends the previous possession">DREB</button>
 <button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('assists')">AST</button>
 <button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('steals')">STL</button>
 <button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('blocks')">BLK</button>
-<button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('turnovers')">TO</button>
-<button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('fouls')">PF</button>
+<button type="button" class="easy-action-button stat-turnover" data-easy-action onclick="easyRecordStat('turnovers')" title="Turnover — prepares points off turnover for the opponent">TO</button>
+<button type="button" class="easy-action-button stat-foul" data-easy-action onclick="easyRecordStat('fouls')">PF</button>
 </div>
 </div>
 </div>
@@ -4881,13 +4952,12 @@ function saveQuickScoringState(){
     }
 
     try{
-        localStorage.setItem(
-            key,
-            JSON.stringify({
-                context:quickScoringContext,
-                fastBreak:quickFastBreak
-            })
-        );
+        /*
+           Possession tags are intentionally temporary.
+           Removing the old saved value prevents SECOND CHANCE
+           or OFF TURNOVER from returning after a page refresh.
+        */
+        localStorage.removeItem(key);
     }
     catch(error){
         console.warn(
@@ -4909,30 +4979,11 @@ function restoreQuickScoringState(){
 
     if(key){
         try{
-            const saved=JSON.parse(
-                localStorage.getItem(key)||"null"
-            );
-
-            if(saved&&saved.context){
-                ["home","away"].forEach(team=>{
-                    quickScoringContext[team]={
-                        offTurnover:
-                            saved.context[team]
-                            ?.offTurnover===true,
-                        secondChance:
-                            saved.context[team]
-                            ?.secondChance===true
-                    };
-                });
-            }
-
-            quickFastBreak=
-                saved?.fastBreak===true;
-
+            localStorage.removeItem(key);
         }
         catch(error){
             console.warn(
-                "Unable to restore quick scoring context:",
+                "Unable to clear old quick scoring context:",
                 error
             );
         }
@@ -4965,27 +5016,80 @@ function getQuickContextLabel(team){
 
 function updateQuickScoringDisplay(){
 
-    ["home","away"].forEach(team=>{
+    const team=
+        easySelectedPlayerId
+        ?playerTeamMap[easySelectedPlayerId]
+        :null;
 
-        const element=
-            document.getElementById(
-                team+"QuickContext"
-            );
+    const state=
+        team
+        ?quickScoringContext[team]||{}
+        :{};
 
-        if(!element){
-            return;
-        }
-
-        const label=getQuickContextLabel(team);
-
-        element.textContent=
-            team.toUpperCase()+": "+label;
-
-        element.classList.toggle(
-            "active",
-            label!=="NORMAL"
+    const contextLabel=
+        document.getElementById(
+            "selectedQuickContextLabel"
         );
-    });
+
+    const labels=[];
+
+    if(state.offTurnover){
+        labels.push("OFF TURNOVER");
+    }
+
+    if(state.secondChance){
+        labels.push("2ND CHANCE");
+    }
+
+    if(quickFastBreak){
+        labels.push("FAST BREAK");
+    }
+
+    if(contextLabel){
+        contextLabel.textContent=
+            team
+            ?"2 · "+team.toUpperCase()+" NEXT: "+
+                (labels.length?labels.join(" + "):"NORMAL")
+            :"2 · NEXT SCORE: PICK PLAYER";
+    }
+
+    const offTurnoverButton=
+        document.getElementById(
+            "quickOffTurnoverButton"
+        );
+
+    if(offTurnoverButton){
+        const active=state.offTurnover===true;
+        offTurnoverButton.textContent=
+            active?"✓ OFF TO":"OFF TO";
+        offTurnoverButton.classList.toggle(
+            "active",
+            active
+        );
+        offTurnoverButton.setAttribute(
+            "aria-pressed",
+            String(active)
+        );
+    }
+
+    const secondChanceButton=
+        document.getElementById(
+            "quickSecondChanceButton"
+        );
+
+    if(secondChanceButton){
+        const active=state.secondChance===true;
+        secondChanceButton.textContent=
+            active?"✓ 2ND CHANCE":"2ND CHANCE";
+        secondChanceButton.classList.toggle(
+            "active",
+            active
+        );
+        secondChanceButton.setAttribute(
+            "aria-pressed",
+            String(active)
+        );
+    }
 
     const fastBreakButton=
         document.getElementById(
@@ -4994,8 +5098,9 @@ function updateQuickScoringDisplay(){
 
     if(fastBreakButton){
         fastBreakButton.textContent=
-            "FAST BREAK: "+
-            (quickFastBreak?"ON":"OFF");
+            quickFastBreak
+            ?"✓ FAST BREAK"
+            :"FAST BREAK";
 
         fastBreakButton.classList.toggle(
             "active",
@@ -5012,9 +5117,84 @@ function updateQuickScoringDisplay(){
 
 function toggleQuickFastBreak(){
 
+    if(
+        !easySelectedPlayerId||
+        !playerTeamMap[easySelectedPlayerId]
+    ){
+        showStatus("Select an on-court player first.");
+        return;
+    }
+
     quickFastBreak=!quickFastBreak;
     updateQuickScoringDisplay();
     saveQuickScoringState();
+}
+
+
+function toggleSelectedQuickTag(tag){
+
+    const team=
+        easySelectedPlayerId
+        ?playerTeamMap[easySelectedPlayerId]
+        :null;
+
+    if(!team||!quickScoringContext[team]){
+        showStatus("Select an on-court player first.");
+        return;
+    }
+
+    if(
+        tag!=="offTurnover"&&
+        tag!=="secondChance"
+    ){
+        return;
+    }
+
+    quickScoringContext[team][tag]=
+        quickScoringContext[team][tag]!==true;
+
+    updateQuickScoringDisplay();
+    saveQuickScoringState();
+
+    const feedback=
+        document.getElementById(
+            "easyActionFeedback"
+        );
+
+    if(feedback){
+        const name=
+            tag==="secondChance"
+            ?"SECOND CHANCE"
+            :"OFF TURNOVER";
+
+        feedback.textContent=
+            name+" tag "+
+            (quickScoringContext[team][tag]
+                ?"is ready for the next score."
+                :"was cleared.");
+    }
+}
+
+
+function resetAllQuickScoringContext(){
+
+    quickScoringContext=
+        getDefaultQuickScoringContext();
+
+    quickFastBreak=false;
+
+    updateQuickScoringDisplay();
+    saveQuickScoringState();
+
+    const feedback=
+        document.getElementById(
+            "easyActionFeedback"
+        );
+
+    if(feedback){
+        feedback.textContent=
+            "Next-score tags cleared. Recording is back to NORMAL.";
+    }
 }
 
 
@@ -5223,6 +5403,27 @@ function setEasyActionAvailability(){
 
     if(fastBreakButton){
         fastBreakButton.disabled=disabled;
+    }
+
+    [
+        "quickOffTurnoverButton",
+        "quickSecondChanceButton"
+    ].forEach(id=>{
+        const button=document.getElementById(id);
+        if(button){
+            button.disabled=disabled;
+        }
+    });
+
+    const resetContextButton=
+        document.getElementById(
+            "quickResetContextButton"
+        );
+
+    if(resetContextButton){
+        resetContextButton.disabled=
+            easyActionInFlight||
+            isCurrentGameFinal();
     }
 }
 
@@ -5486,6 +5687,7 @@ function renderEasyScorekeeper(){
     renderEasySelectedPlayer();
     renderQuickPlayerPicker();
     setEasyActionAvailability();
+    updateQuickScoringDisplay();
 }
 
 
@@ -5647,11 +5849,32 @@ async function easyRecordStat(statKey){
             );
 
         if(feedback){
-            feedback.textContent=
+            const playerName=
                 getEasyPlayerName(
                     playerDataMap[playerId]
-                )+" — "+
-                (labels[statKey]||statKey)+" recorded.";
+                );
+
+            if(statKey==="offensive_rebounds"){
+                feedback.textContent=
+                    playerName+
+                    " — OREB recorded. SECOND CHANCE is ready for the next score.";
+            }
+            else if(statKey==="defensive_rebounds"){
+                feedback.textContent=
+                    playerName+
+                    " — DREB recorded. Previous possession tags were cleared.";
+            }
+            else if(statKey==="turnovers"){
+                feedback.textContent=
+                    playerName+
+                    " — TO recorded. OFF TURNOVER is ready for the opponent.";
+            }
+            else{
+                feedback.textContent=
+                    playerName+
+                    " — "+
+                    (labels[statKey]||statKey)+" recorded.";
+            }
         }
     }
     finally{
@@ -8906,7 +9129,8 @@ function setFinalizedLock(locked){
         ".clock-controls button, .shot-clock-controls button, "+
         ".period-buttons button, .stat-btn, .shot-btn, .sub-button, "+
         ".easy-action-button, .easy-sub-button, "+
-        "#quickFastBreakButton, "+
+        "#quickFastBreakButton, #quickOffTurnoverButton, "+
+        "#quickSecondChanceButton, #quickResetContextButton, "+
         "#status-live, #status-half, #status-final"
     ).forEach(button=>{
         button.disabled=Boolean(locked);
