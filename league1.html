@@ -289,7 +289,7 @@
           .order("scheduled_at",{ascending:true,nullsFirst:false});
         if(error) throw error;
 
-        const upcoming=(games||[]).filter(game=>String(game.status||"").toLowerCase()!=="final");
+        const upcoming=(games||[]).filter(game=>!["final","cancelled"].includes(String(game.status||"").toLowerCase()));
         const results=(games||[])
           .filter(game=>String(game.status||"").toLowerCase()==="final")
           .sort((a,b)=>new Date(b.finalized_at||b.scheduled_at||b.created_at)-new Date(a.finalized_at||a.scheduled_at||a.created_at));
