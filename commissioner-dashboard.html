@@ -470,6 +470,24 @@
     .primary-button:hover { background: var(--orange-dark); }
     .primary-button:disabled { opacity: .55; cursor: wait; }
 
+    .secondary-button,
+    .danger-button,
+    .table-action {
+      min-height: 34px;
+      padding: 0 11px;
+      border-radius: 7px;
+      font-size: 9px;
+      font-weight: 900;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .secondary-button { color: var(--ink); background: #ffffff; border: 1px solid #d0d5dd; }
+    .danger-button { color: #ffffff; background: #b42318; border: 1px solid #b42318; }
+    .table-actions { display: flex; align-items: center; gap: 6px; }
+    .table-action { min-height: 30px; display: inline-flex; align-items: center; color: var(--orange-dark); background: var(--orange-soft); border: 1px solid #ffd1b0; }
+    .table-action.view { color: var(--ink); background: #ffffff; border-color: #d0d5dd; }
+
     .form-message {
       min-height: 18px;
       color: var(--muted);
@@ -723,6 +741,8 @@
 
             <div class="form-actions">
               <button id="createGameButton" class="primary-button" type="submit">CREATE SCHEDULED GAME</button>
+              <button id="cancelEditButton" class="secondary-button" type="button" hidden>CANCEL EDIT</button>
+              <button id="cancelGameButton" class="danger-button" type="button" hidden>CANCEL GAME</button>
             </div>
 
             <div id="scheduleMessage" class="form-message" aria-live="polite"></div>
@@ -737,10 +757,11 @@
                   <th>Date & Time</th>
                   <th>Venue</th>
                   <th>Status</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="scheduleTableBody">
-                <tr><td class="empty-state" colspan="5">Loading scheduled games...</td></tr>
+                <tr><td class="empty-state" colspan="6">Loading scheduled games...</td></tr>
               </tbody>
             </table>
           </div>
@@ -779,6 +800,8 @@
     let teams = [];
     let scheduledGames = [];
     let availableScorekeepers = [];
+    let gameScorekeeperAssignments = [];
+    let editingGameId = null;
 
     const authScreen = document.getElementById("authScreen");
     const appShell = document.getElementById("appShell");
@@ -816,6 +839,13 @@
         hour: "numeric",
         minute: "2-digit"
       }).format(date);
+    }
+
+    function toDateTimeLocal(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "";
+      const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+      return local.toISOString().slice(0, 16);
     }
 
     async function returnToLogin(signOutFirst = false) {
@@ -914,7 +944,7 @@
 
         const { data: gameRows, error: gameError } = await supabaseClient
           .from("games")
-          .select("id, league_id, home_team, away_team, scheduled_at, venue, status, created_at")
+          .select("id, league_id, home_team_id, away_team_id, home_team, away_team, scheduled_at, venue, status, created_at")
           .in("league_id", leagueIds)
           .order("scheduled_at", { ascending: true, nullsFirst: false });
         if (gameError) throw gameError;
@@ -925,6 +955,11 @@
         .rpc("list_scorekeepers_for_scheduling");
       if (scorekeeperError) throw scorekeeperError;
       availableScorekeepers = scorekeeperRows || [];
+
+      const { data: assignmentRows, error: assignmentError } = await supabaseClient
+        .rpc("list_manageable_game_scorekeepers");
+      if (assignmentError) throw assignmentError;
+      gameScorekeeperAssignments = assignmentRows || [];
 
       renderLeagueOptions();
       renderWorkspace();
@@ -1029,9 +1064,13 @@
               <td>${escapeHtml(formatDateTime(game.scheduled_at || game.created_at))}</td>
               <td>${escapeHtml(game.venue || "—")}</td>
               <td><span class="status-badge">${escapeHtml(game.status || "Scheduled")}</span></td>
+              <td><div class="table-actions">
+                ${String(game.status || "").toLowerCase() === "scheduled" ? `<button class="table-action" type="button" onclick="startEditingGame(${Number(game.id)})">MANAGE</button>` : ""}
+                <a class="table-action view" href="live-game.html?id=${encodeURIComponent(game.id)}" target="_blank" rel="noopener">VIEW</a>
+              </div></td>
             </tr>
           `).join("")
-        : '<tr><td class="empty-state" colspan="5">No games scheduled for this league yet.</td></tr>';
+        : '<tr><td class="empty-state" colspan="6">No games scheduled for this league yet.</td></tr>';
 
       const message = document.getElementById("scheduleMessage");
       message.className = "form-message";
@@ -1065,29 +1104,42 @@
       }
 
       button.disabled = true;
-      button.textContent = "CREATING GAME...";
+      button.textContent = editingGameId ? "SAVING CHANGES..." : "CREATING GAME...";
       message.className = "form-message";
       message.textContent = "Saving the scheduled game...";
 
       try {
-        const { data, error } = await supabaseClient.rpc("create_scheduled_game", {
+        const rpcName = editingGameId ? "manage_scheduled_game" : "create_scheduled_game";
+        const rpcParameters = editingGameId ? {
+          p_game_id: editingGameId,
+          p_home_team_id: homeTeamId,
+          p_away_team_id: awayTeamId,
+          p_scheduled_at: new Date(scheduledValue).toISOString(),
+          p_venue: venue || null,
+          p_scorekeeper_id: scorekeeperId,
+          p_cancel: false
+        } : {
           p_league_id: leagueId,
           p_home_team_id: homeTeamId,
           p_away_team_id: awayTeamId,
           p_scheduled_at: new Date(scheduledValue).toISOString(),
           p_venue: venue || null,
           p_scorekeeper_id: scorekeeperId
-        });
+        };
+        const { data, error } = await supabaseClient.rpc(rpcName, rpcParameters);
         if (error) throw error;
 
         const gameId = Array.isArray(data) ? data[0]?.game_id : data?.game_id;
-        document.getElementById("scheduleForm").reset();
+        const wasEditing = Boolean(editingGameId);
+        gameScorekeeperAssignments = gameScorekeeperAssignments.filter(item => Number(item.game_id) !== Number(gameId));
+        if (scorekeeperId) gameScorekeeperAssignments.push({ game_id: gameId, scorekeeper_id: scorekeeperId });
+        resetScheduleForm(false);
         message.className = "form-message success";
-        message.innerHTML = `Game <span class="game-id">#${escapeHtml(gameId)}</span> was scheduled successfully.`;
+        message.innerHTML = `Game <span class="game-id">#${escapeHtml(gameId)}</span> was ${wasEditing ? "updated" : "scheduled"} successfully.`;
 
         const { data: newGames, error: reloadError } = await supabaseClient
           .from("games")
-          .select("id, league_id, home_team, away_team, scheduled_at, venue, status, created_at")
+          .select("id, league_id, home_team_id, away_team_id, home_team, away_team, scheduled_at, venue, status, created_at")
           .eq("league_id", leagueId)
           .order("scheduled_at", { ascending: true, nullsFirst: false });
         if (reloadError) throw reloadError;
@@ -1099,14 +1151,80 @@
         );
         renderScheduling(league, approved);
         message.className = "form-message success";
-        message.innerHTML = `Game <span class="game-id">#${escapeHtml(gameId)}</span> was scheduled successfully.`;
+        message.innerHTML = `Game <span class="game-id">#${escapeHtml(gameId)}</span> was ${wasEditing ? "updated" : "scheduled"} successfully.`;
       } catch (error) {
         console.error("Unable to schedule game:", error);
         message.className = "form-message error";
         message.textContent = "Unable to schedule game: " + (error.message || "Unknown error");
       } finally {
         button.disabled = false;
-        button.textContent = "CREATE SCHEDULED GAME";
+        if (!editingGameId) button.textContent = "CREATE SCHEDULED GAME";
+      }
+    }
+
+    function resetScheduleForm(render = true) {
+      editingGameId = null;
+      document.getElementById("scheduleForm").reset();
+      document.getElementById("createGameButton").textContent = "CREATE SCHEDULED GAME";
+      document.getElementById("cancelEditButton").hidden = true;
+      document.getElementById("cancelGameButton").hidden = true;
+      leagueSelect.disabled = false;
+      if (render) renderWorkspace();
+    }
+
+    function startEditingGame(gameId) {
+      const game = scheduledGames.find(item => Number(item.id) === Number(gameId));
+      if (!game || String(game.status || "").toLowerCase() !== "scheduled") return;
+      if (leagueSelect.value !== game.league_id) leagueSelect.value = game.league_id;
+      renderWorkspace();
+      editingGameId = Number(game.id);
+      document.getElementById("homeTeamSelect").value = game.home_team_id || "";
+      document.getElementById("awayTeamSelect").value = game.away_team_id || "";
+      document.getElementById("scheduledAt").value = toDateTimeLocal(game.scheduled_at);
+      document.getElementById("venueInput").value = game.venue || "";
+      const assignment = gameScorekeeperAssignments.find(item => Number(item.game_id) === Number(game.id));
+      document.getElementById("scorekeeperSelect").value = assignment?.scorekeeper_id || "";
+      document.getElementById("createGameButton").textContent = `SAVE GAME #${game.id}`;
+      document.getElementById("cancelEditButton").hidden = false;
+      document.getElementById("cancelGameButton").hidden = false;
+      leagueSelect.disabled = true;
+      const message = document.getElementById("scheduleMessage");
+      message.className = "form-message";
+      message.textContent = `Editing scheduled Game #${game.id}.`;
+      document.getElementById("schedulePanel").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    async function cancelCurrentGame() {
+      if (!editingGameId) return;
+      const game = scheduledGames.find(item => Number(item.id) === Number(editingGameId));
+      if (!game || !window.confirm(`Cancel Game #${editingGameId}? It will be removed from public upcoming games.`)) return;
+      const button = document.getElementById("cancelGameButton");
+      const message = document.getElementById("scheduleMessage");
+      button.disabled = true;
+      button.textContent = "CANCELLING...";
+      try {
+        const { error } = await supabaseClient.rpc("manage_scheduled_game", {
+          p_game_id: editingGameId,
+          p_home_team_id: game.home_team_id,
+          p_away_team_id: game.away_team_id,
+          p_scheduled_at: game.scheduled_at,
+          p_venue: game.venue || null,
+          p_scorekeeper_id: null,
+          p_cancel: true
+        });
+        if (error) throw error;
+        game.status = "Cancelled";
+        const cancelledId = editingGameId;
+        resetScheduleForm();
+        message.className = "form-message success";
+        message.textContent = `Game #${cancelledId} was cancelled.`;
+      } catch (error) {
+        console.error("Unable to cancel game:", error);
+        message.className = "form-message error";
+        message.textContent = "Unable to cancel game: " + (error.message || "Unknown error");
+      } finally {
+        button.disabled = false;
+        button.textContent = "CANCEL GAME";
       }
     }
 
@@ -1117,6 +1235,8 @@
 
     leagueSelect.addEventListener("change", renderWorkspace);
     document.getElementById("scheduleForm").addEventListener("submit", createScheduledGame);
+    document.getElementById("cancelEditButton").addEventListener("click", () => resetScheduleForm());
+    document.getElementById("cancelGameButton").addEventListener("click", cancelCurrentGame);
     document.getElementById("menuButton").addEventListener("click", function () {
       document.getElementById("sidebar").classList.toggle("open");
       document.getElementById("sidebarOverlay").classList.toggle("open");
