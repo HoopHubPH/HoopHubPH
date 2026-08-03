@@ -168,7 +168,7 @@
       }
 
       async function fetchGames(){
-        const {data,error}=await db.from("games").select("*").order("created_at",{ascending:false}).limit(50);if(error)throw error;games=data||[];
+        const {data,error}=await db.from("games").select("*").order("created_at",{ascending:false}).limit(50);if(error)throw error;games=(data||[]).filter(game=>String(game.status||"").toLowerCase()!=="cancelled");
         if(!selectedId){const preferred=games.find(g=>["live","halftime"].includes(String(g.status).toLowerCase()))||games.find(g=>String(g.status).toLowerCase()==="scheduled")||games[0];selectedId=preferred?.id||null}
         renderSelector();renderBrowser();const game=games.find(g=>Number(g.id)===Number(selectedId));if(game){renderGame(game);subscribeToGame(game.id);await Promise.all([refreshPlayByPlay(),refreshBoxScore()])}else{document.getElementById("loading").textContent="No game is available."}
       }
