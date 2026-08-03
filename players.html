@@ -1,413 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Players | Hoop Hub PH</title>
-
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f5f5f5;
-    color: #222;
-}
-
-/* NAVIGATION */
-
-header {
-    background: #111;
-    color: white;
-    padding: 18px 8%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: white;
-    text-decoration: none;
-}
-
-.logo:visited,
-.logo:hover {
-    color: white;
-}
-
-.logo span {
-    color: #ff6b00;
-}
-
-nav a {
-    color: white;
-    text-decoration: none;
-    margin-left: 25px;
-    font-weight: bold;
-    font-size: 14px;
-}
-
-nav a:hover {
-    color: #ff6b00;
-}
-
-/* HERO */
-
-.hero {
-    background: #111;
-    color: white;
-    text-align: center;
-    padding: 70px 20px;
-}
-
-.hero h1 {
-    font-size: 45px;
-    margin-bottom: 15px;
-}
-
-.hero h1 span {
-    color: #ff6b00;
-}
-
-.hero p {
-    color: #ccc;
-    font-size: 18px;
-}
-
-/* MAIN SECTION */
-
-.section {
-    padding: 60px 8%;
-}
-
-.section-title {
-    text-align: center;
-    margin-bottom: 40px;
-}
-
-.section-title h2 {
-    font-size: 32px;
-    margin-bottom: 10px;
-}
-
-.section-title p {
-    color: #666;
-}
-
-.admin-player-actions {
-    margin: -18px 0 30px;
-    display: flex;
-    justify-content: flex-end;
-}
-
-.admin-player-actions[hidden] {
-    display: none;
-}
-
-.add-player-button {
-    display: inline-block;
-    background: #ff6b00;
-    color: white;
-    padding: 12px 20px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.add-player-button:hover {
-    background: #111;
-}
-
-/* PLAYER CARDS */
-
-.players {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 25px;
-}
-
-.player-card {
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-    text-align: center;
-}
-
-.player-photo {
-    width: 90px;
-    height: 90px;
-    background: #111;
-    color: #ff6b00;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 20px;
-    font-size: 28px;
-    font-weight: bold;
-    overflow: hidden;
-}
-
-.player-photo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.player-card h3 {
-    margin-bottom: 10px;
-}
-
-.player-card p {
-    color: #666;
-    line-height: 1.5;
-    margin-bottom: 8px;
-}
-
-.player-info {
-    font-size: 14px;
-    line-height: 1.8;
-}
-
-.player-info strong {
-    color: #ff6b00;
-}
-
-.empty-state {
-    grid-column: 1 / -1;
-    text-align: center;
-}
-
-/* PLAYER CTA */
-
-.register {
-    background: #ff6b00;
-    color: white;
-    text-align: center;
-    padding: 70px 20px;
-}
-
-.register h2 {
-    font-size: 35px;
-    margin-bottom: 15px;
-}
-
-.register p {
-    margin-bottom: 25px;
-}
-
-.register a {
-    display: inline-block;
-    background: white;
-    color: #ff6b00;
-    padding: 15px 30px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-/* FOOTER */
-
-footer {
-    background: #111;
-    color: white;
-    text-align: center;
-    padding: 30px;
-}
-
-footer p {
-    color: #aaa;
-    margin-top: 10px;
-}
-
-/* MOBILE */
-
-@media (max-width: 768px) {
-    header {
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    nav a {
-        margin: 0 7px;
-        font-size: 12px;
-    }
-
-    .hero h1 {
-        font-size: 35px;
-    }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Players | Hoop Hub PH</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Arial,Helvetica,sans-serif;background:#f5f5f5;color:#222}
+    header{background:#111;color:#fff;padding:18px 8%;display:flex;justify-content:space-between;align-items:center}
+    .logo{font-size:24px;font-weight:bold;color:#fff;text-decoration:none}.logo:visited,.logo:hover{color:#fff}.logo span{color:#ff6b00}
+    nav a{color:#fff;text-decoration:none;margin-left:25px;font-weight:bold;font-size:14px}nav a:hover{color:#ff6b00}
+    .hero{background:#111;color:#fff;text-align:center;padding:70px 20px}.hero h1{font-size:45px;margin-bottom:15px}.hero h1 span{color:#ff6b00}.hero p{color:#ccc;font-size:18px}
+    .section{padding:60px 8%}.section-title{text-align:center;margin-bottom:40px}.section-title h2{font-size:32px;margin-bottom:10px}.section-title p{color:#666}
+    .admin-player-actions{margin:-18px 0 30px;display:flex;justify-content:flex-end}.admin-player-actions[hidden]{display:none}
+    .add-player-button,.view-profile{display:inline-block;background:#ff6b00;color:#fff;padding:12px 20px;border-radius:5px;text-decoration:none;font-weight:bold}.add-player-button:hover,.view-profile:hover{background:#111}
+    .players{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:25px}
+    .player-card{display:flex;flex-direction:column;background:#fff;padding:30px;border-radius:10px;box-shadow:0 5px 20px rgba(0,0,0,.08);text-align:center;transition:transform .18s ease,box-shadow .18s ease}
+    .player-card:hover{transform:translateY(-3px);box-shadow:0 9px 26px rgba(0,0,0,.12)}
+    .player-photo{width:90px;height:90px;background:#111;color:#ff6b00;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px;font-weight:bold;overflow:hidden}.player-photo img{width:100%;height:100%;object-fit:cover}
+    .player-card h3{margin-bottom:10px}.player-info{font-size:14px;line-height:1.8}.player-info p{color:#666;margin-bottom:8px}.player-info strong{color:#ff6b00}
+    .quick-stats{margin:15px 0 20px;padding:13px 0;display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid #eee;border-bottom:1px solid #eee}
+    .quick-stat strong,.quick-stat span{display:block}.quick-stat strong{color:#111;font-size:20px}.quick-stat span{margin-top:4px;color:#777;font-size:10px;font-weight:bold;text-transform:uppercase}.quick-stat+ .quick-stat{border-left:1px solid #eee}
+    .view-profile{margin-top:auto}.empty-state{grid-column:1/-1;padding:35px;text-align:center;color:#68707d;background:#fff;border-radius:10px}.empty-state.error{color:#b42318;background:#fff4f2}
+    .register{background:#ff6b00;color:#fff;text-align:center;padding:70px 20px}.register h2{font-size:35px;margin-bottom:15px}.register p{margin-bottom:25px}.register a{display:inline-block;background:#fff;color:#ff6b00;padding:15px 30px;border-radius:5px;text-decoration:none;font-weight:bold}
+    footer{background:#111;color:#fff;text-align:center;padding:30px}footer p{color:#aaa;margin-top:10px}
+    @media(max-width:768px){header{flex-direction:column;gap:15px}nav{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}nav a{margin:0;font-size:12px}.hero h1{font-size:35px}.section{padding:45px 20px}}
+  </style>
 </head>
-
 <body>
-
-<!-- NAVIGATION -->
-
-<header>
+  <header>
     <a href="index.html" class="logo">HOOP <span>HUB PH</span></a>
+    <nav><a href="index.html">Home</a><a href="leagues.html">Leagues</a><a href="teams.html">Teams</a><a href="players.html">Players</a><a href="tournaments.html">Tournaments</a><a href="live-game.html">Live Game</a></nav>
+  </header>
 
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="leagues.html">Leagues</a>
-        <a href="teams.html">Teams</a>
-        <a href="players.html">Players</a>
-        <a href="tournaments.html">Tournaments</a>
-        <a href="live-game.html">Live Game</a>
-    </nav>
-</header>
+  <section class="hero"><h1>DISCOVER <span>PLAYERS</span></h1><p>Explore basketball players and rising talent across the Philippines.</p></section>
 
-<!-- HERO -->
+  <main>
+    <section class="section">
+      <div class="section-title"><h2>PLAYERS DIRECTORY</h2><p>Discover player profiles registered on Hoop Hub PH.</p></div>
+      <div id="adminPlayerActions" class="admin-player-actions" hidden><a href="add-player.html" class="add-player-button">+ Add Player</a></div>
+      <div id="playersList" class="players"><p class="empty-state">Loading players...</p></div>
+    </section>
+    <section class="register"><h2>ARE YOU A HOOP HUB PH PLAYER?</h2><p>Sign in to view your verified player profile and official game statistics.</p><a href="login.html">PLAYER LOGIN</a></section>
+  </main>
 
-<section class="hero">
-    <h1>DISCOVER <span>PLAYERS</span></h1>
-    <p>Explore basketball players and rising talent across the Philippines.</p>
-</section>
+  <footer><h3>🏀 HOOP HUB PH</h3><p>Connecting Philippine basketball, one community at a time.</p><p>© 2026 Hoop Hub PH. All rights reserved.</p></footer>
 
-<!-- PLAYERS DIRECTORY -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    (()=>{
+      const PLAYERS_PAGE_SUPABASE_URL="https://tkrsyiwffqkgfyooewsf.supabase.co";
+      const PLAYERS_PAGE_SUPABASE_KEY="sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
+      const db=window.supabase.createClient(PLAYERS_PAGE_SUPABASE_URL,PLAYERS_PAGE_SUPABASE_KEY);
+      const list=document.getElementById("playersList");
+      const escapeHtml=value=>String(value??"").replace(/[&<>'"]/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[char]);
+      const initials=player=>`${player.first_name||""} ${player.last_name||""}`.trim().split(/\s+/).filter(Boolean).slice(0,2).map(part=>part.charAt(0)).join("").toUpperCase()||"HH";
+      const decimal=value=>(Number(value)||0).toFixed(1);
 
-<section class="section">
-    <div class="section-title">
-        <h2>PLAYERS DIRECTORY</h2>
-        <p>Discover player profiles registered on Hoop Hub PH.</p>
-    </div>
+      async function showSuperAdminActions(){
+        try{
+          const {data:{session}}=await db.auth.getSession();
+          if(!session?.user) return;
+          const {data:profile,error}=await db.from("profiles").select("role,status").eq("id",session.user.id).maybeSingle();
+          if(!error&&profile?.role==="super_admin"&&profile?.status==="active") document.getElementById("adminPlayerActions").hidden=false;
+        }catch(error){console.error("Unable to verify player controls:",error)}
+      }
 
-    <div id="adminPlayerActions" class="admin-player-actions" hidden>
-        <a href="add-player.html" class="add-player-button">+ Add Player</a>
-    </div>
-
-    <div id="playersList" class="players">
-        <p class="empty-state">Loading players...</p>
-    </div>
-</section>
-
-<!-- PLAYER ACCESS -->
-
-<section class="register">
-    <h2>ARE YOU A HOOP HUB PH PLAYER?</h2>
-    <p>Sign in to view your verified player profile and official game statistics.</p>
-    <a href="login.html">PLAYER LOGIN</a>
-</section>
-
-<!-- FOOTER -->
-
-<footer>
-    <h3>🏀 HOOP HUB PH</h3>
-    <p>Connecting Philippine basketball, one community at a time.</p>
-    <p>© 2026 Hoop Hub PH. All rights reserved.</p>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-const SUPABASE_URL = "https://tkrsyiwffqkgfyooewsf.supabase.co";
-const SUPABASE_KEY = "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
-
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-
-function playerInitials(player) {
-    return `${player.first_name || ""} ${player.last_name || ""}`
-        .trim()
-        .split(/\s+/)
-        .filter(Boolean)
-        .slice(0, 2)
-        .map(part => part.charAt(0))
-        .join("")
-        .toUpperCase() || "HH";
-}
-
-async function showSuperAdminActions() {
-    try {
-        const { data: userData, error: userError } =
-            await supabaseClient.auth.getUser();
-
-        if (userError || !userData.user) {
-            return;
-        }
-
-        const { data: profile, error: profileError } = await supabaseClient
-            .from("profiles")
-            .select("role, status")
-            .eq("id", userData.user.id)
-            .maybeSingle();
-
-        if (
-            !profileError &&
-            profile &&
-            profile.role === "super_admin" &&
-            profile.status === "active"
-        ) {
-            document.getElementById("adminPlayerActions").hidden = false;
-        }
-    } catch (error) {
-        console.error("Unable to check Super Admin player access:", error);
-    }
-}
-
-async function loadPlayers() {
-    const playersList = document.getElementById("playersList");
-    playersList.innerHTML = '<p class="empty-state">Loading players...</p>';
-
-    const { data, error } = await supabaseClient
-        .from("players")
-        .select(`
-            *,
-            teams (
-                id,
-                name
-            )
-        `)
-        .order("created_at", { ascending: false });
-
-    if (error) {
-        playersList.innerHTML = `<p class="empty-state">Unable to load players: ${error.message}</p>`;
-        console.error("PLAYER LOAD ERROR:", error);
-        return;
-    }
-
-    if (!data || data.length === 0) {
-        playersList.innerHTML = '<p class="empty-state">No players have been added yet.</p>';
-        return;
-    }
-
-    playersList.innerHTML = "";
-
-    data.forEach(player => {
-        const card = document.createElement("article");
-        card.className = "player-card";
-
-        const photo = player.photo_url
-            ? `<img src="${player.photo_url}" alt="${player.first_name || "Player"}">`
-            : playerInitials(player);
-
-        card.innerHTML = `
+      function renderPlayers(players){
+        if(!players.length){list.innerHTML='<p class="empty-state">No players have been added yet.</p>';return}
+        list.innerHTML=players.map(player=>{
+          const name=`${player.first_name||""} ${player.last_name||""}`.trim()||"Unnamed Player";
+          const photo=player.photo_url?`<img src="${escapeHtml(player.photo_url)}" alt="${escapeHtml(name)}">`:escapeHtml(initials(player));
+          const team=player.teams?.name||"No team assigned";
+          return `<article class="player-card">
             <div class="player-photo">${photo}</div>
-            <h3>${player.first_name || ""} ${player.last_name || ""}</h3>
+            <h3>${escapeHtml(name)}</h3>
             <div class="player-info">
-                <p><strong>Position:</strong> ${player.position || "Not provided"}</p>
-                <p><strong>Jersey:</strong> ${player.jersey_number == null ? "Not provided" : `#${player.jersey_number}`}</p>
-                <p><strong>Height:</strong> ${player.height || "Not provided"}</p>
-                <p><strong>Team:</strong> ${player.teams ? player.teams.name : "No team assigned"}</p>
+              <p><strong>Position:</strong> ${escapeHtml(player.position||"Not provided")}</p>
+              <p><strong>Jersey:</strong> ${player.jersey_number==null?"Not provided":"#"+escapeHtml(player.jersey_number)}</p>
+              <p><strong>Height:</strong> ${escapeHtml(player.height||"Not provided")}</p>
+              <p><strong>Team:</strong> ${escapeHtml(team)}</p>
             </div>
-        `;
+            <div class="quick-stats">
+              <div class="quick-stat"><strong>${Number(player.games_played)||0}</strong><span>Games</span></div>
+              <div class="quick-stat"><strong>${decimal(player.ppg)}</strong><span>PPG</span></div>
+            </div>
+            <a class="view-profile" href="player1.html?id=${encodeURIComponent(player.id)}">VIEW PROFILE</a>
+          </article>`;
+        }).join("");
+      }
 
-        playersList.appendChild(card);
-    });
-}
+      async function loadPlayers(){
+        list.innerHTML='<p class="empty-state">Loading players...</p>';
+        const {data,error}=await db.from("players").select("*,teams(id,name)").order("created_at",{ascending:false});
+        if(error){console.error("Player load error:",error);list.innerHTML=`<p class="empty-state error">Unable to load players: ${escapeHtml(error.message)}</p>`;return}
+        renderPlayers(data||[]);
+      }
 
-showSuperAdminActions();
-loadPlayers();
-</script>
+      showSuperAdminActions();loadPlayers();
+    })();
+  </script>
 </body>
 </html>
