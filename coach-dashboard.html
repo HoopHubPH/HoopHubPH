@@ -205,6 +205,11 @@
     .application-message { min-height: 20px; color: var(--muted); font-size: 12px; }
     .application-message.success { color: var(--success); }
     .application-message.error { color: #b42318; }
+    .invite-actions { display:flex; gap:6px; flex-wrap:wrap; }
+    .mini-button { min-height:30px; padding:0 9px; border:1px solid #d0d5dd; border-radius:6px; background:#fff; color:var(--ink); font-size:10px; font-weight:900; cursor:pointer; }
+    .mini-button.primary { color:#fff; background:var(--orange); border-color:var(--orange); }
+    .mini-button.danger { color:#b42318; background:#fff4f2; border-color:#fecdca; }
+    .mini-button:disabled { opacity:.55; cursor:wait; }
 
     .team-details { padding: 18px; display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
     .detail-box { padding: 13px; background: #fafafa; border: 1px solid var(--line); border-radius: 8px; }
@@ -290,7 +295,7 @@
       <a class="nav-link" href="#rosterPanel"><span class="nav-icon">RO</span> Team Roster</a>
       <a class="nav-link" href="#rosterSubmission"><span class="nav-icon">RS</span> Submit Roster</a>
       <a class="nav-link" href="add-player.html"><span class="nav-icon">AP</span> Add Player</a>
-      <a class="nav-link" href="#modules"><span class="nav-icon">IV</span> Player Invites <span class="coming">Next</span></a>
+      <a class="nav-link" href="#playerInvitationsPanel"><span class="nav-icon">IV</span> Player Invites</a>
       <a class="nav-link" href="#modules"><span class="nav-icon">LU</span> Starting Lineup <span class="coming">Next</span></a>
       <a class="nav-link" href="#modules"><span class="nav-icon">AT</span> Attendance <span class="coming">Next</span></a>
 
@@ -325,6 +330,13 @@
             </div>
             <button id="submitRosterButton" class="primary-button" type="button">Submit Current Roster</button>
           </div>
+        </section>
+
+        <section id="playerInvitationsPanel" class="panel">
+          <header class="panel-header">
+            <div><h2>Player Invitations <span style="color:#ff6b00;font-size:12px">(Optional)</span></h2><p>Players can participate without an account. Invite them only if they want to claim their profile and use the Player Dashboard.</p></div>
+          </header>
+          <div class="table-wrap"><table><thead><tr><th>Player</th><th>Email</th><th>Status</th><th>Expires</th><th>Actions</th></tr></thead><tbody id="playerInvitationBody"><tr><td class="empty-state" colspan="5">Loading player invitations...</td></tr></tbody></table></div>
         </section>
 
         <section class="stats-grid">
@@ -623,6 +635,97 @@
       button.textContent = "Resubmit Current Roster";
     }
 
+    function invitationUrl(token) {
+      const url = new URL("player-invitation.html", window.location.href);
+      url.searchParams.set("token", token);
+      return url.href;
+    }
+
+    async function copyInvitationLink(token) {
+      try {
+        await navigator.clipboard.writeText(invitationUrl(token));
+        alert("Invitation link copied. Send it only to the invited player.");
+      } catch (error) {
+        window.prompt("Copy this invitation link:", invitationUrl(token));
+      }
+    }
+
+    async function loadPlayerInvitations(assignment) {
+      const body = document.getElementById("playerInvitationBody");
+      if (!assignment) {
+        body.innerHTML = '<tr><td class="empty-state" colspan="5">Select an assigned team first.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = '<tr><td class="empty-state" colspan="5">Loading player invitations...</td></tr>';
+      const { data, error } = await supabaseClient.rpc("get_team_player_invitations", {
+        p_league_id: assignment.league_id,
+        p_team_id: assignment.team_id
+      });
+      if (selectedAssignment()?.league_id !== assignment.league_id || selectedAssignment()?.team_id !== assignment.team_id) return;
+      if (error) {
+        body.innerHTML = `<tr><td class="empty-state" colspan="5">Unable to load invitations: ${escapeHtml(error.message)}</td></tr>`;
+        return;
+      }
+
+      const rows = data || [];
+      body.innerHTML = rows.length ? rows.map(row => {
+        const name = `${row.first_name || ""} ${row.last_name || ""}`.trim() || "Unnamed player";
+        const status = row.invitation_status || "not invited";
+        let actions = `<button class="mini-button primary" type="button" onclick="invitePlayer('${row.player_id}',this)">INVITE</button>`;
+        if (status === "pending") actions = `
+          <button class="mini-button primary" type="button" onclick="copyInvitationLink('${row.token}')">COPY LINK</button>
+          <button class="mini-button" type="button" onclick="renewInvitation('${row.invitation_id}',this)">RESEND</button>
+          <button class="mini-button danger" type="button" onclick="cancelInvitation('${row.invitation_id}',this)">CANCEL</button>`;
+        if (status === "expired" || status === "cancelled") actions = `<button class="mini-button" type="button" onclick="renewInvitation('${row.invitation_id}',this)">RESEND</button>`;
+        if (status === "accepted") actions = "Profile claimed";
+        return `<tr><td><strong>${escapeHtml(name)}</strong></td><td>${escapeHtml(row.invited_email || "—")}</td>
+          <td><span class="status-badge ${escapeHtml(status)}">${escapeHtml(status)}</span></td>
+          <td>${row.expires_at ? escapeHtml(new Date(row.expires_at).toLocaleString("en-PH")) : "—"}</td>
+          <td><div class="invite-actions">${actions}</div></td></tr>`;
+      }).join("") : '<tr><td class="empty-state" colspan="5">Add players to this team before sending invitations.</td></tr>';
+    }
+
+    async function invitePlayer(playerId, button) {
+      const assignment = selectedAssignment();
+      if (!assignment) return;
+      const email = window.prompt("Enter the Player account email address:");
+      if (!email) return;
+      button.disabled = true;
+      const { data, error } = await supabaseClient.rpc("create_player_invitation", {
+        p_league_id: assignment.league_id, p_team_id: assignment.team_id,
+        p_player_id: playerId, p_email: email.trim()
+      });
+      if (error) alert("Unable to create invitation: " + error.message);
+      else {
+        await copyInvitationLink(data.token);
+        await loadPlayerInvitations(assignment);
+      }
+      button.disabled = false;
+    }
+
+    async function renewInvitation(invitationId, button) {
+      const assignment = selectedAssignment();
+      button.disabled = true;
+      const { data, error } = await supabaseClient.rpc("renew_player_invitation", { p_invitation_id: invitationId });
+      if (error) alert("Unable to resend invitation: " + error.message);
+      else {
+        await copyInvitationLink(data.token);
+        await loadPlayerInvitations(assignment);
+      }
+      button.disabled = false;
+    }
+
+    async function cancelInvitation(invitationId, button) {
+      if (!confirm("Cancel this player invitation?")) return;
+      const assignment = selectedAssignment();
+      button.disabled = true;
+      const { error } = await supabaseClient.rpc("cancel_player_invitation", { p_invitation_id: invitationId });
+      if (error) alert("Unable to cancel invitation: " + error.message);
+      await loadPlayerInvitations(assignment);
+      button.disabled = false;
+    }
+
     function renderWorkspace() {
       const assignment = selectedAssignment();
       const teamId = assignment?.team_id || "";
@@ -638,6 +741,7 @@
         document.getElementById("teamDetails").innerHTML = '<div class="empty-state" style="grid-column:1/-1">Ask the Super Admin to assign a team to this account.</div>';
         document.getElementById("playerTableBody").innerHTML = '<tr><td class="empty-state" colspan="4">No assigned team.</td></tr>';
         loadSubmissionStatus(null);
+        loadPlayerInvitations(null);
         return;
       }
 
@@ -662,6 +766,7 @@
         : '<tr><td class="empty-state" colspan="4">No player records are connected to this team.</td></tr>';
 
       loadSubmissionStatus(assignment);
+      loadPlayerInvitations(assignment);
     }
 
     function closeSidebar() {
