@@ -68,6 +68,25 @@
             color: #ff6b00;
         }
 
+        .dashboard-access {
+            padding: 8px 12px;
+            color: #ddd;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .dashboard-access:hover {
+            color: white;
+            border-color: #ff6b00;
+            background: rgba(255,107,0,0.12);
+        }
+
+        .dashboard-access[hidden] {
+            display: none !important;
+        }
+
         /* HERO */
 
         .hero {
@@ -317,6 +336,8 @@
         <a href="tournaments.html">Tournaments</a>
 
         <a href="live-game.html">Live Game</a>
+
+        <a id="dashboardAccess" class="dashboard-access" href="#" hidden>My Dashboard</a>
 
     </nav>
 
@@ -568,6 +589,49 @@
         SUPABASE_URL,
         SUPABASE_KEY
     );
+
+    const dashboardRoutes = {
+        super_admin: "super-admin.html",
+        commissioner: "commissioner-dashboard.html",
+        coach: "coach-dashboard.html",
+        scorekeeper: "scorekeeper.html",
+        player: "player-dashboard.html"
+    };
+
+    async function showDashboardAccess() {
+        const dashboardAccess = document.getElementById("dashboardAccess");
+
+        try {
+            const { data: userData, error: userError } =
+                await supabaseClient.auth.getUser();
+
+            if (userError || !userData.user) {
+                dashboardAccess.hidden = true;
+                return;
+            }
+
+            const { data: profile, error: profileError } = await supabaseClient
+                .from("profiles")
+                .select("role, status")
+                .eq("id", userData.user.id)
+                .maybeSingle();
+
+            const dashboardUrl = dashboardRoutes[profile?.role];
+
+            if (profileError || !profile || profile.status !== "active" || !dashboardUrl) {
+                dashboardAccess.hidden = true;
+                return;
+            }
+
+            dashboardAccess.href = dashboardUrl;
+            dashboardAccess.hidden = false;
+        } catch (error) {
+            console.error("Unable to show dashboard access:", error);
+            dashboardAccess.hidden = true;
+        }
+    }
+
+    showDashboardAccess();
 
 </script>
     
