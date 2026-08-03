@@ -1416,8 +1416,92 @@ nav{
     margin-top:8px;
 }
 
-.legacy-stat-store{
+.hybrid-scorekeeper{
+    display:grid;
+    gap:8px;
+    margin-bottom:8px;
+}
+
+.hybrid-action-panel{
+    position:sticky;
+    top:4px;
+    z-index:80;
+}
+
+.hybrid-actions-layout{
+    display:grid;
+    grid-template-columns:1.05fr .8fr 1.4fr;
+    gap:8px;
+}
+
+.hybrid-actions-layout .easy-action-group{
+    margin-top:8px;
+}
+
+.hybrid-actions-layout .easy-action-button{
+    min-height:34px;
+}
+
+.hybrid-actions-layout .easy-action-grid.other-stats{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+}
+
+.hybrid-team-stats{
+    background:#fff;
+    border:1px solid #e5e5e5;
+    border-radius:8px;
+    box-shadow:0 2px 5px rgba(0,0,0,.06);
+    padding:9px;
+}
+
+.hybrid-team-stats + .hybrid-team-stats{
+    margin-top:8px;
+}
+
+.hybrid-team-stats .table-scroll{
+    max-height:none;
+}
+
+.hybrid-team-stats .player-table{
+    min-width:1080px;
+}
+
+.hybrid-team-stats .stat-control-buttons,
+.hybrid-team-stats .shot-buttons{
     display:none!important;
+}
+
+.hybrid-team-stats .player-table tbody tr{
+    cursor:pointer;
+}
+
+.hybrid-team-stats .player-table tbody tr:hover td{
+    background:#fff3e8;
+}
+
+.hybrid-team-stats .player-table tbody tr.selected-for-entry td{
+    background:#ffe1c7!important;
+    box-shadow:inset 0 2px 0 #ff6b00,
+               inset 0 -2px 0 #ff6b00;
+}
+
+.hybrid-team-stats .player-table tbody tr.selected-for-entry td:first-child{
+    box-shadow:inset 2px 0 0 #ff6b00,
+               inset 0 2px 0 #ff6b00,
+               inset 0 -2px 0 #ff6b00;
+}
+
+.hybrid-team-stats .player-table tbody tr.selected-for-entry td:last-child{
+    box-shadow:inset -2px 0 0 #ff6b00,
+               inset 0 2px 0 #ff6b00,
+               inset 0 -2px 0 #ff6b00;
+}
+
+.hybrid-instruction{
+    margin-bottom:6px;
+    color:#666;
+    font-size:9px;
+    font-weight:bold;
 }
 
 @media(max-width:900px){
@@ -1433,6 +1517,14 @@ nav{
     .easy-action-panel{
         grid-column:2;
         grid-row:1 / span 2;
+    }
+
+    .hybrid-actions-layout{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .hybrid-actions-layout .easy-action-group:last-child{
+        grid-column:1 / -1;
     }
 }
 
@@ -1465,6 +1557,18 @@ nav{
 
     .easy-action-grid.secondary{
         grid-template-columns:repeat(3,minmax(0,1fr));
+    }
+
+    .hybrid-action-panel{
+        position:static;
+    }
+
+    .hybrid-actions-layout{
+        grid-template-columns:1fr;
+    }
+
+    .hybrid-actions-layout .easy-action-group:last-child{
+        grid-column:auto;
     }
 }
 
@@ -1758,34 +1862,13 @@ LOG OUT
 
 </div>
 
-<div class="easy-scorekeeper">
+<div class="hybrid-scorekeeper">
 
-<section class="easy-team-panel home">
-<div class="easy-team-header">
-<h2 id="homePlayersTitle">Home Players</h2>
-<button
-    type="button"
-    class="print-icon"
-    onclick="printTeamStats('home')"
-    title="Print Home Team Stats"
-    aria-label="Print Home Team Stats"
->🖨️</button>
-</div>
-
-<div class="easy-section-label">ON COURT — TAP A PLAYER</div>
-<div id="homeEasyPlayers" class="easy-player-list">
-<div class="easy-empty">Load a game to see players.</div>
-</div>
-
-<div class="easy-section-label">BENCH / SUBSTITUTIONS</div>
-<div id="homeEasyBench" class="easy-bench-list"></div>
-</section>
-
-<section class="easy-action-panel">
+<section class="easy-action-panel hybrid-action-panel">
 <div class="easy-selected-player">
 <div>
 <div class="easy-selected-label">SELECTED PLAYER</div>
-<div id="easySelectedPlayerName" class="easy-selected-name">Tap an on-court player</div>
+<div id="easySelectedPlayerName" class="easy-selected-name">Click an on-court player row</div>
 </div>
 <div id="easySelectedPlayerPoints" class="easy-selected-stat">—</div>
 </div>
@@ -1802,6 +1885,7 @@ LOG OUT
 >FAST BREAK: OFF</button>
 </div>
 
+<div class="hybrid-actions-layout">
 <div class="easy-action-group">
 <div class="easy-action-title">MADE SHOT</div>
 <div class="easy-action-grid">
@@ -1823,7 +1907,7 @@ LOG OUT
 
 <div class="easy-action-group">
 <div class="easy-action-title">OTHER STAT</div>
-<div class="easy-action-grid">
+<div class="easy-action-grid other-stats">
 <button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('offensive_rebounds')">OREB</button>
 <button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('defensive_rebounds')">DREB</button>
 <button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('assists')">AST</button>
@@ -1831,6 +1915,7 @@ LOG OUT
 <button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('blocks')">BLK</button>
 <button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('turnovers')">TO</button>
 <button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('fouls')">PF</button>
+</div>
 </div>
 </div>
 
@@ -1842,11 +1927,26 @@ LOG OUT
 >UNDO LAST STAT</button>
 
 <div id="easyActionFeedback" class="easy-action-feedback" aria-live="polite">
-Select an on-court player to begin.
+Click an on-court player row to begin. Hover over a player name to view the stats bubble.
 </div>
 </section>
 
-<section class="easy-team-panel away">
+<section class="hybrid-team-stats">
+<div class="easy-team-header">
+<h2 id="homePlayersTitle">Home Players</h2>
+<button
+    type="button"
+    class="print-icon"
+    onclick="printTeamStats('home')"
+    title="Print Home Team Stats"
+    aria-label="Print Home Team Stats"
+>🖨️</button>
+</div>
+<div class="hybrid-instruction">All statistics remain visible. Click an on-court row to record the next action.</div>
+<div id="homePlayersList"></div>
+</section>
+
+<section class="hybrid-team-stats">
 <div class="easy-team-header">
 <h2 id="awayPlayersTitle">Away Players</h2>
 <button
@@ -1857,17 +1957,9 @@ Select an on-court player to begin.
     aria-label="Print Away Team Stats"
 >🖨️</button>
 </div>
-
-<div class="easy-section-label">ON COURT — TAP A PLAYER</div>
-<div id="awayEasyPlayers" class="easy-player-list">
-<div class="easy-empty">Load a game to see players.</div>
-</div>
-
-<div class="easy-section-label">BENCH / SUBSTITUTIONS</div>
-<div id="awayEasyBench" class="easy-bench-list"></div>
+<div class="hybrid-instruction">All statistics remain visible. Hover over a player name for career and current-game details.</div>
+<div id="awayPlayersList"></div>
 </section>
-
-</div>
 
 <details class="easy-breakdown">
 <summary>VIEW LIVE TEAM SCORING BREAKDOWN</summary>
@@ -1900,9 +1992,6 @@ Select an on-court player to begin.
 </table>
 </details>
 
-<div class="legacy-stat-store" aria-hidden="true">
-<div id="homePlayersList"></div>
-<div id="awayPlayersList"></div>
 </div>
 
 <div class="game-footer-controls">
@@ -3631,7 +3720,7 @@ async function loadPlayersForTeam(
         containerId;
 
     teamExpandedMap[team]=
-        false;
+        true;
 
 
     const {
@@ -4827,7 +4916,7 @@ function renderEasySelectedPlayer(){
     ){
         easySelectedPlayerId=null;
         nameElement.textContent=
-            "Tap an on-court player";
+            "Click an on-court player row";
         pointsElement.textContent="—";
         setEasyActionAvailability();
         return;
@@ -4864,6 +4953,25 @@ function selectEasyPlayer(playerId){
     }
 
     easySelectedPlayerId=playerId;
+
+    document.querySelectorAll(
+        ".player-table tbody tr"
+    ).forEach(row=>{
+        row.classList.remove(
+            "selected-for-entry"
+        );
+    });
+
+    const selectedRow=
+        document.getElementById(
+            "player-row-"+playerId
+        );
+
+    if(selectedRow){
+        selectedRow.classList.add(
+            "selected-for-entry"
+        );
+    }
 
     const feedback=
         document.getElementById(
@@ -6037,9 +6145,20 @@ async function renderPlayerRow(
 
 
     row.className=
-        onCourt
-        ?"on-court"
-        :"bench";
+        (
+            onCourt
+            ?"on-court"
+            :"bench"
+        )+
+        (
+            easySelectedPlayerId===player.id
+            ?" selected-for-entry"
+            :""
+        );
+
+    row.onclick=()=>{
+        selectEasyPlayer(player.id);
+    };
 
 
     row.innerHTML=`
@@ -6080,6 +6199,7 @@ class="sub-button ${
 }"
 
 onclick="
+event.stopPropagation();
 toggleSubstitution(
 '${player.id}'
 )
