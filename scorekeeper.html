@@ -1630,6 +1630,15 @@ nav{
     background:#2b2b2b;
     font-size:8px;
     line-height:1.05;
+    touch-action:manipulation;
+    transition:transform .08s ease,
+               filter .08s ease;
+}
+
+.hybrid-actions-layout .easy-action-button:active:not(:disabled),
+.easy-correction-controls .easy-action-button:active:not(:disabled){
+    transform:scale(.97);
+    filter:brightness(.92);
 }
 
 .hybrid-actions-layout .easy-action-button.primary{
@@ -1666,13 +1675,51 @@ nav{
     grid-template-columns:repeat(7,minmax(0,1fr));
 }
 
-.hybrid-action-panel #easyUndoButton{
+.easy-correction-controls{
     grid-column:3;
     grid-row:2;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:3px;
+    min-width:0;
+}
+
+.hybrid-action-panel #easyUndoButton,
+.hybrid-action-panel #easyDeductModeButton{
+    grid-column:auto;
+    grid-row:auto;
     min-height:36px;
     margin-top:0;
-    padding:4px;
+    padding:3px;
     font-size:8px;
+}
+
+.easy-action-button.deduct-toggle{
+    border:1px solid #a64242;
+    background:#fff;
+    color:#a64242;
+}
+
+.easy-action-button.deduct-toggle.active{
+    background:#a64242;
+    color:#fff;
+}
+
+.hybrid-action-panel.deduct-mode{
+    border-color:#a64242;
+    box-shadow:0 0 0 2px rgba(166,66,66,.16),
+               0 3px 8px rgba(0,0,0,.1);
+}
+
+.hybrid-action-panel.deduct-mode .hybrid-actions-layout{
+    padding:4px;
+    border:1px solid #d7a3a3;
+    border-radius:5px;
+    background:#fff7f7;
+}
+
+.hybrid-action-panel.deduct-mode .hybrid-actions-layout .easy-action-button{
+    box-shadow:inset 0 0 0 1px rgba(166,66,66,.75);
 }
 
 .hybrid-action-panel .easy-action-feedback{
@@ -1911,7 +1958,7 @@ nav{
         grid-row:2;
     }
 
-    .hybrid-action-panel #easyUndoButton{
+    .hybrid-action-panel .easy-correction-controls{
         grid-column:2;
         grid-row:2;
     }
@@ -1988,7 +2035,8 @@ nav{
         touch-action:manipulation;
     }
 
-    .hybrid-action-panel #easyUndoButton{
+    .hybrid-action-panel #easyUndoButton,
+    .hybrid-action-panel #easyDeductModeButton{
         min-height:40px;
     }
 
@@ -2356,42 +2404,52 @@ LOG OUT
 <div class="easy-action-group">
 <div class="easy-action-title">MADE SHOT</div>
 <div class="easy-action-grid">
-<button type="button" class="easy-action-button paint" data-easy-action onclick="easyRecordScore('two_pt_made',true)">PAINT<br>+2</button>
-<button type="button" class="easy-action-button primary" data-easy-action onclick="easyRecordScore('two_pt_made',false)">2PT<br>+2</button>
-<button type="button" class="easy-action-button primary" data-easy-action onclick="easyRecordScore('three_pt_made',false)">3PT<br>+3</button>
-<button type="button" class="easy-action-button primary" data-easy-action onclick="easyRecordScore('ft_made',false)">FREE THROW<br>+1</button>
+<button type="button" class="easy-action-button paint" data-easy-action data-deduct-label="PAINT<br>−2" onclick="easyRecordScore('two_pt_made',true)">PAINT<br>+2</button>
+<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="2PT<br>−2" onclick="easyRecordScore('two_pt_made',false)">2PT<br>+2</button>
+<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="3PT<br>−3" onclick="easyRecordScore('three_pt_made',false)">3PT<br>+3</button>
+<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="FREE THROW<br>−1" onclick="easyRecordScore('ft_made',false)">FREE THROW<br>+1</button>
 </div>
 </div>
 
 <div class="easy-action-group">
 <div class="easy-action-title">MISSED SHOT</div>
 <div class="easy-action-grid secondary">
-<button type="button" class="easy-action-button miss" data-easy-action onclick="easyRecordStat('two_pt_attempted')">2PT MISS</button>
-<button type="button" class="easy-action-button miss" data-easy-action onclick="easyRecordStat('three_pt_attempted')">3PT MISS</button>
-<button type="button" class="easy-action-button miss" data-easy-action onclick="easyRecordStat('ft_attempted')">FT MISS</button>
+<button type="button" class="easy-action-button miss" data-easy-action data-deduct-label="− 2PT MISS" onclick="easyRecordStat('two_pt_attempted')">2PT MISS</button>
+<button type="button" class="easy-action-button miss" data-easy-action data-deduct-label="− 3PT MISS" onclick="easyRecordStat('three_pt_attempted')">3PT MISS</button>
+<button type="button" class="easy-action-button miss" data-easy-action data-deduct-label="− FT MISS" onclick="easyRecordStat('ft_attempted')">FT MISS</button>
 </div>
 </div>
 
 <div class="easy-action-group">
 <div class="easy-action-title">OTHER STAT</div>
 <div class="easy-action-grid other-stats">
-<button type="button" class="easy-action-button stat-rebound" data-easy-action onclick="easyRecordStat('offensive_rebounds')" title="Offensive rebound — prepares second-chance points">OREB</button>
-<button type="button" class="easy-action-button stat-rebound" data-easy-action onclick="easyRecordStat('defensive_rebounds')" title="Defensive rebound — ends the previous possession">DREB</button>
-<button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('assists')">AST</button>
-<button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('steals')">STL</button>
-<button type="button" class="easy-action-button" data-easy-action onclick="easyRecordStat('blocks')">BLK</button>
-<button type="button" class="easy-action-button stat-turnover" data-easy-action onclick="easyRecordStat('turnovers')" title="Turnover — prepares points off turnover for the opponent">TO</button>
-<button type="button" class="easy-action-button stat-foul" data-easy-action onclick="easyRecordStat('fouls')">PF</button>
+<button type="button" class="easy-action-button stat-rebound" data-easy-action data-deduct-label="− OREB" onclick="easyRecordStat('offensive_rebounds')" title="Offensive rebound — prepares second-chance points">OREB</button>
+<button type="button" class="easy-action-button stat-rebound" data-easy-action data-deduct-label="− DREB" onclick="easyRecordStat('defensive_rebounds')" title="Defensive rebound — ends the previous possession">DREB</button>
+<button type="button" class="easy-action-button" data-easy-action data-deduct-label="− AST" onclick="easyRecordStat('assists')">AST</button>
+<button type="button" class="easy-action-button" data-easy-action data-deduct-label="− STL" onclick="easyRecordStat('steals')">STL</button>
+<button type="button" class="easy-action-button" data-easy-action data-deduct-label="− BLK" onclick="easyRecordStat('blocks')">BLK</button>
+<button type="button" class="easy-action-button stat-turnover" data-easy-action data-deduct-label="− TO" onclick="easyRecordStat('turnovers')" title="Turnover — prepares points off turnover for the opponent">TO</button>
+<button type="button" class="easy-action-button stat-foul" data-easy-action data-deduct-label="− PF" onclick="easyRecordStat('fouls')">PF</button>
 </div>
 </div>
 </div>
 
+<div class="easy-correction-controls">
+<button
+    type="button"
+    id="easyDeductModeButton"
+    class="easy-action-button deduct-toggle"
+    aria-pressed="false"
+    onclick="toggleEasyDeductMode()"
+    title="Subtract one specific statistic from the selected player"
+>− STAT</button>
 <button
     type="button"
     id="easyUndoButton"
     class="easy-action-button undo"
     onclick="undoEasyLastStat()"
->UNDO LAST STAT</button>
+>UNDO</button>
+</div>
 
 <div id="easyActionFeedback" class="easy-action-feedback" aria-live="polite">
 Tap an on-court player above, then tap the stat. You can still select players from the full tables.
@@ -2978,6 +3036,11 @@ let minutePersistTimer=null;
 let statSaveQueue=new Map();
 let statSaveTimers=new Map();
 let statSaveInFlight=new Set();
+let statSaveRetryAfter=new Map();
+let gameScoreSaveQueue=new Map();
+let gameScoreSaveTimers=new Map();
+let gameScoreSaveInFlight=new Set();
+let gameScoreSaveRetryAfter=new Map();
 
 let hoveredPlayerId=null;
 let hoverTimer=null;
@@ -2986,6 +3049,7 @@ let quickScoreInFlight=false;
 let quickFastBreak=false;
 let easySelectedPlayerId=null;
 let easyActionInFlight=false;
+let easyDeductMode=false;
 let easyUndoStack=[];
 let quickScoringContext={
     home:{
@@ -2997,6 +3061,26 @@ let quickScoringContext={
         secondChance:false
     }
 };
+
+
+window.addEventListener(
+    "beforeunload",
+    event=>{
+
+        const hasPendingSaves=
+            statSaveQueue.size>0||
+            statSaveInFlight.size>0||
+            gameScoreSaveQueue.size>0||
+            gameScoreSaveInFlight.size>0;
+
+        if(!hasPendingSaves){
+            return;
+        }
+
+        event.preventDefault();
+        event.returnValue="";
+    }
+);
 
 /* =========================================================
    GENERAL HELPERS
@@ -3980,6 +4064,7 @@ async function loadGame(){
 
     easySelectedPlayerId=null;
     easyActionInFlight=false;
+    easyDeductMode=false;
     easyUndoStack=[];
 
     playerMinuteBaseSeconds={};
@@ -3995,6 +4080,19 @@ async function loadGame(){
     );
 
     statSaveTimers.clear();
+    statSaveInFlight.clear();
+    statSaveRetryAfter.clear();
+
+    gameScoreSaveQueue.clear();
+
+    gameScoreSaveTimers
+    .forEach(
+        t=>clearTimeout(t)
+    );
+
+    gameScoreSaveTimers.clear();
+    gameScoreSaveInFlight.clear();
+    gameScoreSaveRetryAfter.clear();
 
 
     await loadPersistedClock();
@@ -4669,6 +4767,15 @@ function queueStatSave(
     );
 
 
+    /*
+       A fresh scorekeeper action should retry immediately,
+       even when an earlier background save was waiting for
+       its connection-retry delay.
+    */
+
+    statSaveRetryAfter.delete(key);
+
+
     clearTimeout(
         statSaveTimers.get(key)
     );
@@ -4690,21 +4797,53 @@ function queueStatSave(
 async function flushStatSave(playerId){
 
     if(!currentGame){
-        return;
+        return false;
     }
 
+
+    const gameId=currentGame.id;
 
     const key=
         playerId+
         "|"+
-        currentGame.id;
+        gameId;
 
 
     if(
         statSaveInFlight.has(key)
     ){
 
-        return;
+        return false;
+    }
+
+
+    const retryAfter=
+        Number(
+            statSaveRetryAfter.get(key)||0
+        );
+
+
+    if(retryAfter>Date.now()){
+
+        const remaining=
+            Math.max(
+                10,
+                retryAfter-Date.now()+10
+            );
+
+        clearTimeout(
+            statSaveTimers.get(key)
+        );
+
+        statSaveTimers.set(
+            key,
+            setTimeout(
+                ()=>flushStatSave(playerId),
+                remaining
+            )
+        );
+
+        return false;
     }
 
 
@@ -4713,7 +4852,7 @@ async function flushStatSave(playerId){
 
 
     if(!changes){
-        return;
+        return true;
     }
 
 
@@ -4722,6 +4861,10 @@ async function flushStatSave(playerId){
     statSaveTimers.delete(key);
 
     statSaveInFlight.add(key);
+
+
+    let saveFailed=false;
+    let saved=false;
 
 
     try{
@@ -4743,7 +4886,7 @@ async function flushStatSave(playerId){
             {
                 player_id:playerId,
 
-                game_id:currentGame.id,
+                game_id:gameId,
 
                 ...changes
             },
@@ -4763,23 +4906,84 @@ async function flushStatSave(playerId){
         }
 
 
-        playerStatsMap[playerId]={
+        if(
+            currentGame&&
+            String(currentGame.id)===String(gameId)
+        ){
 
-            ...stats,
+            const newerChanges=
+                statSaveQueue.get(key)||{};
 
-            ...data
-        };
+            playerStatsMap[playerId]={
+
+                ...stats,
+
+                ...data,
+
+                ...newerChanges
+            };
+        }
+
+
+        statSaveRetryAfter.delete(key);
+        saved=true;
 
     }
     catch(error){
+
+        saveFailed=true;
 
         console.error(
             "Background stat save error:",
             error
         );
 
+
+        if(
+            currentGame&&
+            String(currentGame.id)===String(gameId)
+        ){
+
+            const newerChanges=
+                statSaveQueue.get(key)||{};
+
+
+            /*
+               Keep the absolute stat values that failed to save.
+               Any newer values win, so no scorekeeper tap is lost.
+            */
+
+            statSaveQueue.set(
+                key,
+                {
+                    ...changes,
+                    ...newerChanges
+                }
+            );
+
+
+            const retryDelay=1000;
+
+            statSaveRetryAfter.set(
+                key,
+                Date.now()+retryDelay
+            );
+
+            clearTimeout(
+                statSaveTimers.get(key)
+            );
+
+            statSaveTimers.set(
+                key,
+                setTimeout(
+                    ()=>flushStatSave(playerId),
+                    retryDelay
+                )
+            );
+        }
+
         showStatus(
-            "Stat save failed. Please check connection."
+            "Connection interrupted. The stat is queued and will retry automatically."
         );
 
     }
@@ -4791,7 +4995,8 @@ async function flushStatSave(playerId){
 
 
         if(
-            statSaveQueue.has(key)
+            statSaveQueue.has(key)&&
+            !saveFailed
         ){
 
             flushStatSave(
@@ -4799,6 +5004,211 @@ async function flushStatSave(playerId){
             );
         }
     }
+
+
+    return saved;
+}
+
+
+function queueGameScoreSave(
+    gameId,
+    changes
+){
+
+    if(
+        !currentGame||
+        String(currentGame.id)!==String(gameId)
+    ){
+        return;
+    }
+
+
+    const key=String(gameId);
+    const old=
+        gameScoreSaveQueue.get(key)||{};
+
+
+    gameScoreSaveQueue.set(
+        key,
+        {
+            ...old,
+            ...changes
+        }
+    );
+
+    gameScoreSaveRetryAfter.delete(key);
+
+    clearTimeout(
+        gameScoreSaveTimers.get(key)
+    );
+
+    gameScoreSaveTimers.set(
+        key,
+        setTimeout(
+            ()=>flushGameScoreSave(gameId),
+            150
+        )
+    );
+}
+
+
+async function flushGameScoreSave(gameId){
+
+    if(gameId===null||gameId===undefined){
+        return false;
+    }
+
+
+    const key=String(gameId);
+
+    if(gameScoreSaveInFlight.has(key)){
+        return false;
+    }
+
+
+    const retryAfter=
+        Number(
+            gameScoreSaveRetryAfter.get(key)||0
+        );
+
+    if(retryAfter>Date.now()){
+
+        const remaining=
+            Math.max(
+                10,
+                retryAfter-Date.now()+10
+            );
+
+        clearTimeout(
+            gameScoreSaveTimers.get(key)
+        );
+
+        gameScoreSaveTimers.set(
+            key,
+            setTimeout(
+                ()=>flushGameScoreSave(gameId),
+                remaining
+            )
+        );
+
+        return false;
+    }
+
+
+    const changes=
+        gameScoreSaveQueue.get(key);
+
+    if(!changes){
+        return true;
+    }
+
+
+    gameScoreSaveQueue.delete(key);
+    gameScoreSaveTimers.delete(key);
+    gameScoreSaveInFlight.add(key);
+
+    let saveFailed=false;
+    let saved=false;
+
+
+    try{
+
+        const {
+            data,
+            error
+        }=
+        await supabaseClient
+        .from("games")
+        .update(changes)
+        .eq("id",gameId)
+        .select("id,home_score,away_score")
+        .single();
+
+        if(error){
+            throw error;
+        }
+
+        if(
+            currentGame&&
+            String(currentGame.id)===key
+        ){
+
+            const newerChanges=
+                gameScoreSaveQueue.get(key)||{};
+
+            currentGame={
+                ...currentGame,
+                ...data,
+                ...newerChanges
+            };
+        }
+
+        gameScoreSaveRetryAfter.delete(key);
+        saved=true;
+    }
+    catch(error){
+
+        saveFailed=true;
+
+        console.error(
+            "Game score save error:",
+            error
+        );
+
+        if(
+            currentGame&&
+            String(currentGame.id)===key
+        ){
+
+            const newerChanges=
+                gameScoreSaveQueue.get(key)||{};
+
+            gameScoreSaveQueue.set(
+                key,
+                {
+                    ...changes,
+                    ...newerChanges
+                }
+            );
+
+            const retryDelay=1000;
+
+            gameScoreSaveRetryAfter.set(
+                key,
+                Date.now()+retryDelay
+            );
+
+            clearTimeout(
+                gameScoreSaveTimers.get(key)
+            );
+
+            gameScoreSaveTimers.set(
+                key,
+                setTimeout(
+                    ()=>flushGameScoreSave(gameId),
+                    retryDelay
+                )
+            );
+        }
+
+        showStatus(
+            "Connection interrupted. The score is queued and will retry automatically."
+        );
+    }
+    finally{
+
+        gameScoreSaveInFlight.delete(key);
+
+        if(
+            gameScoreSaveQueue.has(key)&&
+            !saveFailed
+        ){
+            flushGameScoreSave(gameId);
+        }
+    }
+
+
+    return saved;
 }
 
 
@@ -5411,6 +5821,15 @@ function setEasyActionAvailability(){
             isCurrentGameFinal();
     }
 
+    const deductButton=
+        document.getElementById(
+            "easyDeductModeButton"
+        );
+
+    if(deductButton){
+        deductButton.disabled=disabled;
+    }
+
     const fastBreakButton=
         document.getElementById(
             "quickFastBreakButton"
@@ -5551,6 +5970,7 @@ function renderEasySelectedPlayer(){
         playerOnCourt[easySelectedPlayerId]!==true
     ){
         easySelectedPlayerId=null;
+        easyDeductMode=false;
         nameElement.textContent=
             "Tap a player above";
         pointsElement.textContent="—";
@@ -5568,6 +5988,91 @@ function renderEasySelectedPlayer(){
         Number(stats.points||0)+" PTS";
 
     setEasyActionAvailability();
+}
+
+
+function updateEasyDeductModeDisplay(){
+
+    const panel=
+        document.querySelector(
+            ".hybrid-action-panel"
+        );
+
+    if(panel){
+        panel.classList.toggle(
+            "deduct-mode",
+            easyDeductMode
+        );
+    }
+
+    const deductButton=
+        document.getElementById(
+            "easyDeductModeButton"
+        );
+
+    if(deductButton){
+        deductButton.textContent=
+            easyDeductMode
+            ?"CANCEL"
+            :"− STAT";
+
+        deductButton.classList.toggle(
+            "active",
+            easyDeductMode
+        );
+
+        deductButton.setAttribute(
+            "aria-pressed",
+            String(easyDeductMode)
+        );
+    }
+
+    document.querySelectorAll(
+        "[data-easy-action]"
+    ).forEach(button=>{
+
+        if(!button.dataset.addLabel){
+            button.dataset.addLabel=
+                button.innerHTML;
+        }
+
+        button.innerHTML=
+            easyDeductMode
+            ?button.dataset.deductLabel
+            :button.dataset.addLabel;
+    });
+}
+
+
+function toggleEasyDeductMode(){
+
+    if(
+        !easySelectedPlayerId||
+        easyActionInFlight||
+        isCurrentGameFinal()
+    ){
+        showStatus(
+            "Select an on-court player first."
+        );
+        return;
+    }
+
+    easyDeductMode=!easyDeductMode;
+
+    updateEasyDeductModeDisplay();
+    setEasyActionAvailability();
+
+    const feedback=
+        document.getElementById(
+            "easyActionFeedback"
+        );
+
+    if(feedback){
+        feedback.textContent=
+            easyDeductMode
+            ?"DEDUCT MODE: Tap one specific stat to subtract. It turns off after a successful correction."
+            :"Deduct mode cancelled.";
+    }
 }
 
 
@@ -5703,6 +6208,7 @@ function renderEasyScorekeeper(){
     renderQuickPlayerPicker();
     setEasyActionAvailability();
     updateQuickScoringDisplay();
+    updateEasyDeductModeDisplay();
 }
 
 
@@ -5713,6 +6219,13 @@ function selectEasyPlayer(playerId){
             "Sub in the player before recording a stat."
         );
         return;
+    }
+
+    if(
+        easySelectedPlayerId!==playerId&&
+        easyDeductMode
+    ){
+        easyDeductMode=false;
     }
 
     easySelectedPlayerId=playerId;
@@ -5765,6 +6278,104 @@ function getEasyActionSnapshot(){
 }
 
 
+function getEasyStatLabel(statKey){
+
+    const labels={
+        two_pt_attempted:"2PT MISS",
+        three_pt_attempted:"3PT MISS",
+        ft_attempted:"FT MISS",
+        offensive_rebounds:"OREB",
+        defensive_rebounds:"DREB",
+        assists:"AST",
+        steals:"STL",
+        blocks:"BLK",
+        turnovers:"TO",
+        fouls:"PF"
+    };
+
+    return labels[statKey]||statKey;
+}
+
+
+function getEasyDeductableCount(stats,statKey){
+
+    const madeKey={
+        two_pt_attempted:"two_pt_made",
+        three_pt_attempted:"three_pt_made",
+        ft_attempted:"ft_made"
+    }[statKey];
+
+    if(madeKey){
+        return Math.max(
+            0,
+            Number(stats[statKey]||0)-
+            Number(stats[madeKey]||0)
+        );
+    }
+
+    return Math.max(
+        0,
+        Number(stats[statKey]||0)
+    );
+}
+
+
+function getScoringTagsFromEvent(
+    event,
+    fallback={}
+){
+
+    if(!event){
+        return {
+            is_paint:fallback.is_paint===true,
+            is_fast_break:fallback.is_fast_break===true,
+            is_off_turnover:fallback.is_off_turnover===true,
+            is_second_chance:fallback.is_second_chance===true
+        };
+    }
+
+    return {
+        is_paint:event.is_paint===true,
+        is_fast_break:event.is_fast_break===true,
+        is_off_turnover:event.is_off_turnover===true,
+        is_second_chance:event.is_second_chance===true
+    };
+}
+
+
+function clearCorrectedPossessionTag(
+    playerId,
+    statKey
+){
+
+    const team=playerTeamMap[playerId];
+
+    if(!team){
+        return;
+    }
+
+    const opponent=
+        team==="home"
+        ?"away"
+        :"home";
+
+    if(statKey==="offensive_rebounds"){
+        quickScoringContext[team]
+        .secondChance=false;
+    }
+    else if(statKey==="turnovers"){
+        quickScoringContext[opponent]
+        .offTurnover=false;
+    }
+    else{
+        return;
+    }
+
+    updateQuickScoringDisplay();
+    saveQuickScoringState();
+}
+
+
 async function easyRecordScore(
     statKey,
     isPaint
@@ -5776,22 +6387,121 @@ async function easyRecordScore(
 
     const playerId=easySelectedPlayerId;
     const snapshot=getEasyActionSnapshot();
+    const amount=easyDeductMode?-1:1;
+    const team=playerTeamMap[playerId];
 
     easyActionInFlight=true;
     setEasyActionAvailability();
 
     try{
-        await quickScorePlayer(
+
+        const stats=
+            await getPlayerGameStats(
+                playerId
+            );
+
+        if(
+            amount<0&&
+            Number(stats[statKey]||0)<=0
+        ){
+            const feedback=
+                document.getElementById(
+                    "easyActionFeedback"
+                );
+
+            if(feedback){
+                feedback.textContent=
+                    "Nothing to deduct — this made-shot stat is already 0.";
+            }
+
+            return;
+        }
+
+        const scoringTags=
+            amount>0
+            ?getQuickScoringTags(
+                team,
+                isPaint===true
+            )
+            :{
+                is_paint:isPaint===true,
+                is_fast_break:false,
+                is_off_turnover:false,
+                is_second_chance:false
+            };
+
+        if(
+            amount<0&&
+            statKey==="two_pt_made"
+        ){
+            const matchingEvent=
+                await findLatestScoringBreakdownEvent(
+                    playerId,
+                    "2PT",
+                    scoringTags
+                );
+
+            if(!matchingEvent){
+                const feedback=
+                    document.getElementById(
+                        "easyActionFeedback"
+                    );
+
+                if(feedback){
+                    feedback.textContent=
+                        isPaint
+                        ?"No recorded PAINT +2 is available to deduct for this player."
+                        :"No recorded non-paint 2PT is available to deduct for this player.";
+                }
+
+                return;
+            }
+        }
+
+        const result=
+            await updatePlayerStat(
             playerId,
             statKey,
-            isPaint===true
+            amount,
+            scoringTags
         );
+
+        if(!result||result.changed!==true){
+            return;
+        }
+
+        const undoScoringTags=
+            amount<0
+            ?getScoringTagsFromEvent(
+                result.removedScoringEvent,
+                scoringTags
+            )
+            :scoringTags;
 
         easyUndoStack.push({
             playerId,
             statKey,
+            amount,
+            scoringTags:undoScoringTags,
             snapshot
         });
+
+        if(amount<0){
+            easyDeductMode=false;
+            renderEasyScorekeeper();
+
+            const savingFeedback=
+                document.getElementById(
+                    "easyActionFeedback"
+                );
+
+            if(savingFeedback){
+                savingFeedback.textContent=
+                    "Correction applied. Saving…";
+            }
+
+            await flushAllPendingStats();
+        }
 
         const feedback=
             document.getElementById(
@@ -5806,11 +6516,35 @@ async function easyRecordScore(
                 ?2
                 :1;
 
-            feedback.textContent=
+            const playerName=
                 getEasyPlayerName(
                     playerDataMap[playerId]
-                )+" scored "+points+" point"+
-                (points===1?"":"s")+".";
+                );
+
+            feedback.textContent=
+                amount<0
+                ?points+" point"+
+                    (points===1?" was":"s were")+
+                    " deducted from "+playerName+"."
+                :playerName+
+                    " scored "+points+" point"+
+                    (points===1?"":"s")+".";
+        }
+    }
+    catch(error){
+        console.error(
+            "Easy scoring correction error:",
+            error
+        );
+
+        const feedback=
+            document.getElementById(
+                "easyActionFeedback"
+            );
+
+        if(feedback){
+            feedback.textContent=
+                "Correction is queued and will retry automatically. Keep this game open and check the connection.";
         }
     }
     finally{
@@ -5828,35 +6562,80 @@ async function easyRecordStat(statKey){
 
     const playerId=easySelectedPlayerId;
     const snapshot=getEasyActionSnapshot();
+    const amount=easyDeductMode?-1:1;
 
     easyActionInFlight=true;
     setEasyActionAvailability();
 
     try{
-        await updatePlayerStat(
+
+        const stats=
+            await getPlayerGameStats(
+                playerId
+            );
+
+        if(
+            amount<0&&
+            getEasyDeductableCount(
+                stats,
+                statKey
+            )<=0
+        ){
+            const feedback=
+                document.getElementById(
+                    "easyActionFeedback"
+                );
+
+            if(feedback){
+                feedback.textContent=
+                    "Nothing to deduct — "+
+                    getEasyStatLabel(statKey)+
+                    " is already 0.";
+            }
+
+            return;
+        }
+
+        const result=
+            await updatePlayerStat(
             playerId,
             statKey,
-            1
+            amount
         );
+
+        if(!result||result.changed!==true){
+            return;
+        }
 
         easyUndoStack.push({
             playerId,
             statKey,
+            amount,
+            scoringTags:null,
             snapshot
         });
 
-        const labels={
-            two_pt_attempted:"2PT MISS",
-            three_pt_attempted:"3PT MISS",
-            ft_attempted:"FT MISS",
-            offensive_rebounds:"OREB",
-            defensive_rebounds:"DREB",
-            assists:"AST",
-            steals:"STL",
-            blocks:"BLK",
-            turnovers:"TO",
-            fouls:"PF"
-        };
+        if(amount<0){
+            clearCorrectedPossessionTag(
+                playerId,
+                statKey
+            );
+
+            easyDeductMode=false;
+            renderEasyScorekeeper();
+
+            const savingFeedback=
+                document.getElementById(
+                    "easyActionFeedback"
+                );
+
+            if(savingFeedback){
+                savingFeedback.textContent=
+                    "Correction applied. Saving…";
+            }
+
+            await flushAllPendingStats();
+        }
 
         const feedback=
             document.getElementById(
@@ -5869,7 +6648,14 @@ async function easyRecordStat(statKey){
                     playerDataMap[playerId]
                 );
 
-            if(statKey==="offensive_rebounds"){
+            if(amount<0){
+                feedback.textContent=
+                    playerName+
+                    " — 1 "+
+                    getEasyStatLabel(statKey)+
+                    " deducted.";
+            }
+            else if(statKey==="offensive_rebounds"){
                 feedback.textContent=
                     playerName+
                     " — OREB recorded. SECOND CHANCE is ready for the next score.";
@@ -5888,8 +6674,24 @@ async function easyRecordStat(statKey){
                 feedback.textContent=
                     playerName+
                     " — "+
-                    (labels[statKey]||statKey)+" recorded.";
+                    getEasyStatLabel(statKey)+" recorded.";
             }
+        }
+    }
+    catch(error){
+        console.error(
+            "Easy statistic correction error:",
+            error
+        );
+
+        const feedback=
+            document.getElementById(
+                "easyActionFeedback"
+            );
+
+        if(feedback){
+            feedback.textContent=
+                "Correction is queued and will retry automatically. Keep this game open and check the connection.";
         }
     }
     finally{
@@ -5910,16 +6712,30 @@ async function undoEasyLastStat(){
     }
 
     const action=easyUndoStack.pop();
+    const originalAmount=
+        Number(action.amount??1);
+    let undoApplied=false;
 
     easyActionInFlight=true;
     setEasyActionAvailability();
 
     try{
-        await updatePlayerStat(
+        const result=
+            await updatePlayerStat(
             action.playerId,
             action.statKey,
-            -1
+            -originalAmount,
+            action.scoringTags||null
         );
+
+        if(!result||result.changed!==true){
+            easyUndoStack.push(action);
+            return;
+        }
+
+        undoApplied=true;
+
+        easyDeductMode=false;
 
         quickScoringContext=
             action.snapshot.context;
@@ -5937,6 +6753,20 @@ async function undoEasyLastStat(){
                 action.playerId;
         }
 
+        renderEasyScorekeeper();
+
+        const savingFeedback=
+            document.getElementById(
+                "easyActionFeedback"
+            );
+
+        if(savingFeedback){
+            savingFeedback.textContent=
+                "Undo applied. Saving…";
+        }
+
+        await flushAllPendingStats();
+
         const feedback=
             document.getElementById(
                 "easyActionFeedback"
@@ -5944,7 +6774,31 @@ async function undoEasyLastStat(){
 
         if(feedback){
             feedback.textContent=
-                "Last statistic was undone.";
+                originalAmount<0
+                ?"Last deduction was undone."
+                :"Last statistic was undone.";
+        }
+    }
+    catch(error){
+        console.error(
+            "Easy undo error:",
+            error
+        );
+
+        if(!undoApplied){
+            easyUndoStack.push(action);
+        }
+
+        const feedback=
+            document.getElementById(
+                "easyActionFeedback"
+            );
+
+        if(feedback){
+            feedback.textContent=
+                undoApplied
+                ?"Undo is queued and will retry automatically. Keep this game open and check the connection."
+                :"Undo could not be applied. Please try again.";
         }
     }
     finally{
@@ -6358,25 +7212,41 @@ async function recordScoringBreakdown(
 }
 
 
-async function removeLatestScoringBreakdown(
+async function findLatestScoringBreakdownEvent(
     playerId,
-    shotType
+    shotType,
+    scoringTagsFilter=null
 ){
 
     if(!currentGame){
-        return;
+        return null;
+    }
+
+    let query=
+        supabaseClient
+        .from("scoring_breakdown_events")
+        .select(
+            "id,is_paint,is_fast_break,is_off_turnover,is_second_chance"
+        )
+        .eq("game_id",currentGame.id)
+        .eq("player_id",playerId)
+        .eq("shot_type",shotType);
+
+    if(
+        shotType==="2PT"&&
+        typeof scoringTagsFilter?.is_paint==="boolean"
+    ){
+        query=query.eq(
+            "is_paint",
+            scoringTagsFilter.is_paint
+        );
     }
 
     const {
         data:event,
         error:findError
     }=
-    await supabaseClient
-    .from("scoring_breakdown_events")
-    .select("id")
-    .eq("game_id",currentGame.id)
-    .eq("player_id",playerId)
-    .eq("shot_type",shotType)
+    await query
     .order("created_at",{ascending:false})
     .limit(1)
     .maybeSingle();
@@ -6384,11 +7254,28 @@ async function removeLatestScoringBreakdown(
     if(findError){
         console.error("Scoring breakdown correction error:",findError);
         showStatus("Unable to correct the scoring breakdown.");
-        return;
+        return null;
     }
 
+    return event||null;
+}
+
+
+async function removeLatestScoringBreakdown(
+    playerId,
+    shotType,
+    scoringTagsFilter=null
+){
+
+    const event=
+        await findLatestScoringBreakdownEvent(
+            playerId,
+            shotType,
+            scoringTagsFilter
+        );
+
     if(!event){
-        return;
+        return null;
     }
 
     const {
@@ -6402,10 +7289,11 @@ async function removeLatestScoringBreakdown(
     if(deleteError){
         console.error("Scoring breakdown delete error:",deleteError);
         showStatus("Unable to correct the scoring breakdown.");
-        return;
+        return null;
     }
 
     await loadScoringBreakdown();
+    return event;
 }
 
 
@@ -6428,7 +7316,7 @@ async function updatePlayerStat(
             "Player is on the bench. SUB IN the player first."
         );
 
-        return;
+        return {changed:false};
     }
 
 
@@ -6701,30 +7589,21 @@ async function updatePlayerStat(
                Save the updated team score.
             */
 
-            supabaseClient
-            .from("games")
-            .update({
-                [column]:
-                    newScore
-            })
-            .eq(
-                "id",
-                currentGame.id
-            )
-            .then(
-                ({error})=>{
-
-                    if(error){
-
-                        console.error(
-                            "Score save error:",
-                            error
-                        );
-                    }
+            queueGameScoreSave(
+                currentGame.id,
+                {
+                    [column]:
+                        newScore
                 }
+            );
+
+            await flushGameScoreSave(
+                currentGame.id
             );
         }
 
+
+        let removedScoringEvent=null;
 
         if(
             team&&
@@ -6745,9 +7624,11 @@ async function updatePlayerStat(
         }
         else if(madeDelta<0){
 
+            removedScoringEvent=
             await removeLatestScoringBreakdown(
                 playerId,
-                shotType
+                shotType,
+                scoringTagsOverride
             );
         }
 
@@ -6779,7 +7660,11 @@ async function updatePlayerStat(
             updatePopupContent(playerId);
         }
 
-        return;
+        return {
+            changed:madeDelta!==0,
+            removedScoringEvent,
+            scoringTags:selectedScoringTags
+        };
     }
 
 
@@ -6852,6 +7737,10 @@ async function updatePlayerStat(
     if (hoveredPlayerId === playerId) {
         updatePopupContent(playerId);
     }
+
+    return {
+        changed:newValue!==current
+    };
 }
 
 
@@ -9160,14 +10049,28 @@ function setFinalizedLock(locked){
 
 async function flushAllPendingStats(){
 
+    const gameId=
+        currentGame
+        ?currentGame.id
+        :null;
+
     for(const playerId of Object.keys(playerStatsMap)){
         await flushStatSave(playerId);
+    }
+
+    if(gameId!==null){
+        await flushGameScoreSave(gameId);
     }
 
     const deadline=Date.now()+5000;
 
     while(
-        (statSaveQueue.size>0 || statSaveInFlight.size>0) &&
+        (
+            statSaveQueue.size>0||
+            statSaveInFlight.size>0||
+            gameScoreSaveQueue.size>0||
+            gameScoreSaveInFlight.size>0
+        )&&
         Date.now()<deadline
     ){
         await new Promise(resolve=>setTimeout(resolve,50));
@@ -9175,10 +10078,19 @@ async function flushAllPendingStats(){
         for(const playerId of Object.keys(playerStatsMap)){
             await flushStatSave(playerId);
         }
+
+        if(gameId!==null){
+            await flushGameScoreSave(gameId);
+        }
     }
 
-    if(statSaveQueue.size>0 || statSaveInFlight.size>0){
-        throw new Error("Some player statistics are still saving. Please try again.");
+    if(
+        statSaveQueue.size>0||
+        statSaveInFlight.size>0||
+        gameScoreSaveQueue.size>0||
+        gameScoreSaveInFlight.size>0
+    ){
+        throw new Error("Some game statistics are still saving. Please check the connection.");
     }
 }
 
