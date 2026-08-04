@@ -4846,6 +4846,184 @@ align-items:start;
 }
 
 </style>
+<style>
+
+/* =========================================================
+   REMOVE EMPTY SPACE — LET PLAYER TABLE FILL THE TEAM BOX
+   ========================================================= */
+
+/*
+Use a true 3-row layout:
+1. team header
+2. player table (fills all available space)
+3. fixed Bench footer
+*/
+.hybrid-team-stats{
+    position:relative!important;
+    display:grid!important;
+    grid-template-rows:
+        24px
+        minmax(0,1fr)
+        27px!important;
+
+    width:100%!important;
+    height:var(--complete-team-box-height, clamp(220px, calc((100vh - 255px) / 2), 360px))!important;
+
+    padding:5px!important;
+    overflow:hidden!important;
+}
+
+/* Header stays at the top of the same box. */
+.hybrid-team-stats .easy-team-header{
+    grid-row:1!important;
+    height:24px!important;
+    min-height:24px!important;
+    max-height:24px!important;
+
+    margin:0 0 3px!important;
+    padding:1px 26px 3px 4px!important;
+}
+
+/*
+The roster table now occupies ALL remaining space.
+This removes the large blank area shown in the screenshot.
+*/
+.hybrid-team-stats .table-scroll.roster-view{
+    grid-row:2!important;
+
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+
+    margin:0!important;
+    padding:0!important;
+
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+
+    border:1px solid #e5e5e5!important;
+    border-radius:4px!important;
+    background:#fff!important;
+
+    scrollbar-gutter:stable;
+    overscroll-behavior:contain;
+}
+
+/* Bench click keeps the same size and only enables vertical scrolling. */
+.hybrid-team-stats .table-scroll.roster-view.expanded{
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+
+    overflow-x:auto!important;
+    overflow-y:auto!important;
+}
+
+/* Bench rows hidden until button is pressed. */
+.hybrid-team-stats .table-scroll.roster-view:not(.expanded) .bench-player-row{
+    display:none!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view.expanded .bench-player-row{
+    display:table-row!important;
+}
+
+/* Keep column headings visible while scrolling. */
+.hybrid-team-stats .table-scroll.roster-view .player-table th{
+    position:sticky!important;
+    top:0!important;
+    z-index:8!important;
+}
+
+/*
+Footer is now the third grid row—not absolutely floating.
+It remains in the same lower-left position and never overlaps the table.
+*/
+.hybrid-team-stats .team-bench-footer{
+    grid-row:3!important;
+    position:relative!important;
+
+    left:auto!important;
+    right:auto!important;
+    top:auto!important;
+    bottom:auto!important;
+
+    width:100%!important;
+    height:27px!important;
+    min-height:27px!important;
+    max-height:27px!important;
+
+    display:flex!important;
+    align-items:flex-end!important;
+    justify-content:flex-start!important;
+
+    margin:0!important;
+    padding:4px 4px 1px!important;
+
+    border-top:1px solid #ddd!important;
+    background:#fff!important;
+
+    z-index:50!important;
+    visibility:visible!important;
+    opacity:1!important;
+}
+
+/* Bench button stays small and fixed at lower-left. */
+.hybrid-team-stats .team-bench-footer .view-all-button{
+    width:50px!important;
+    min-width:50px!important;
+    max-width:50px!important;
+
+    height:19px!important;
+    min-height:19px!important;
+    max-height:19px!important;
+
+    margin:0!important;
+    padding:0 6px!important;
+
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+
+    border:1px solid #ff6b00!important;
+    border-radius:3px!important;
+
+    background:#fff8f2!important;
+    color:#c44f00!important;
+
+    font-size:8px!important;
+    font-weight:700!important;
+    line-height:1!important;
+
+    cursor:pointer!important;
+    transform:none!important;
+    box-shadow:none!important;
+}
+
+/* Same size while open. */
+.hybrid-team-stats .team-bench-footer .view-all-button[aria-pressed="true"]{
+    background:#ff6b00!important;
+    color:#fff!important;
+}
+
+/* Prevent old rules from reserving extra bottom space. */
+.hybrid-team-stats{
+    padding-bottom:5px!important;
+}
+
+/* Same layout in fullscreen. */
+:fullscreen .hybrid-team-stats,
+:-webkit-full-screen .hybrid-team-stats{
+    display:grid!important;
+    grid-template-rows:
+        24px
+        minmax(0,1fr)
+        27px!important;
+}
+
+</style>
 </head>
 
 <body class="auth-pending">
