@@ -7090,6 +7090,61 @@ function clearCorrectedPossessionTag(
 }
 
 
+async function syncDeductedPlayerStatDisplay(playerId){
+
+    if(!currentGame||!playerId){
+        return;
+    }
+
+    const {
+        data,
+        error
+    }=
+    await supabaseClient
+    .from("player_game_stats")
+    .select("*")
+    .eq("game_id",currentGame.id)
+    .eq("player_id",playerId)
+    .maybeSingle();
+
+    if(error){
+        console.error(
+            "Deducted stat display synchronization error:",
+            error
+        );
+        return;
+    }
+
+    if(data){
+
+        const playerKey=String(playerId);
+
+        playerStatsMap[playerKey]={
+            ...(playerStatsMap[playerKey]||{}),
+            ...data
+        };
+
+        playerOnCourt[playerKey]=
+            Boolean(data.on_court);
+
+        await refreshPlayerRow(
+            playerKey
+        );
+
+        renderEasyScorekeeper();
+
+        if(
+            hoveredPlayerId&&
+            String(hoveredPlayerId)===playerKey
+        ){
+            updatePopupContent(
+                playerKey
+            );
+        }
+    }
+}
+
+
 async function easyRecordScore(
     statKey,
     isPaint
@@ -7215,6 +7270,10 @@ async function easyRecordScore(
             }
 
             await flushAllPendingStats();
+
+            await syncDeductedPlayerStatDisplay(
+                playerId
+            );
         }
 
         const feedback=
@@ -7349,6 +7408,10 @@ async function easyRecordStat(statKey){
             }
 
             await flushAllPendingStats();
+
+            await syncDeductedPlayerStatDisplay(
+                playerId
+            );
         }
 
         const feedback=
