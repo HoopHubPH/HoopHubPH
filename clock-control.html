@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -11,7 +9,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
 *{
     margin:0;
     padding:0;
@@ -27,7 +24,7 @@ body{
 header{
     background:#111;
     color:#fff;
-    padding:14px 5%;
+    padding:12px 4%;
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -46,19 +43,20 @@ header{
 }
 
 .controller-title{
-    font-size:14px;
-    letter-spacing:.6px;
+    font-size:13px;
+    font-weight:900;
+    letter-spacing:.8px;
 }
 
 .container{
-    width:min(900px,96%);
-    margin:20px auto;
+    width:min(1000px,97%);
+    margin:14px auto;
 }
 
 .panel{
     background:#fff;
     border-radius:10px;
-    padding:16px;
+    padding:14px;
     box-shadow:0 4px 14px rgba(0,0,0,.08);
 }
 
@@ -78,36 +76,41 @@ header{
 }
 
 .game-loader input:focus{
-    outline:2px solid rgba(255,107,0,.25);
+    outline:2px solid rgba(255,107,0,.22);
     border-color:#ff6b00;
+}
+
+button{
+    font-family:inherit;
+}
+
+.game-loader button,
+.control-button{
+    border:0;
+    border-radius:5px;
+    font-weight:900;
+    cursor:pointer;
 }
 
 .game-loader button{
     padding:9px 14px;
-    border:0;
-    border-radius:5px;
     background:#ff6b00;
     color:#fff;
-    font-weight:bold;
-    cursor:pointer;
 }
 
-.game-loader button:hover{
-    background:#e65f00;
-}
-
-.game-loader button:disabled{
-    background:#bbb;
-    cursor:wait;
+button:disabled{
+    cursor:not-allowed!important;
+    opacity:.45!important;
 }
 
 #statusMessage{
-    margin-top:12px;
-    padding:9px;
+    margin-top:10px;
+    padding:8px 10px;
     border-radius:5px;
     background:#f3f3f3;
     color:#555;
-    font-size:12px;
+    font-size:11px;
+    font-weight:bold;
 }
 
 #statusMessage.success{
@@ -120,125 +123,323 @@ header{
     color:#c62828;
 }
 
-.controller-content{
-    display:none;
-    margin-top:18px;
+#statusMessage.warning{
+    background:#fff3e0;
+    color:#a34b00;
 }
 
-.game-title{
-    text-align:center;
-    font-size:17px;
-    margin-bottom:14px;
+.controller-content{
+    display:none;
+    margin-top:12px;
+}
+
+.game-heading{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:9px;
+    padding:8px 10px;
+    border:1px solid #e6e6e6;
+    border-radius:7px;
+    background:#fafafa;
+}
+
+.game-heading h2{
+    font-size:14px;
+}
+
+.connection-indicator{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    color:#777;
+    font-size:9px;
+    font-weight:900;
+}
+
+.connection-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#aaa;
+}
+
+.connection-dot.connected{
+    background:#16803c;
 }
 
 .scoreboard{
     display:grid;
     grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
     align-items:center;
-    gap:18px;
-    padding:18px;
-    border:1px solid #e6e6e6;
-    border-radius:10px;
+    gap:12px;
+    padding:12px;
+    border:1px solid #e5e5e5;
+    border-radius:8px;
     background:#fafafa;
     text-align:center;
 }
 
-.team{
-    min-width:0;
-}
-
 .team-name{
-    min-height:42px;
+    min-height:30px;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:19px;
+    font-size:16px;
     font-weight:900;
-    line-height:1.15;
+    line-height:1.1;
     text-transform:uppercase;
     overflow-wrap:anywhere;
 }
 
 .team-label{
-    margin-top:5px;
+    margin-top:3px;
     color:#777;
-    font-size:10px;
+    font-size:8px;
     font-weight:900;
-    letter-spacing:.7px;
+    letter-spacing:.8px;
 }
 
 .team-score{
-    margin-top:8px;
+    margin-top:4px;
     color:#ff6b00;
-    font-size:64px;
+    font-size:48px;
     font-weight:900;
     line-height:1;
 }
 
 .vs{
     color:#777;
-    font-size:22px;
+    font-size:18px;
     font-weight:900;
 }
 
-.game-info{
+.game-meta{
     display:grid;
     grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:10px;
-    margin-top:14px;
+    gap:7px;
+    margin-top:8px;
 }
 
-.info-card{
-    padding:13px;
-    border:1px solid #e5e5e5;
-    border-radius:8px;
-    background:#fff;
+.meta-card{
+    padding:8px;
+    border:1px solid #e6e6e6;
+    border-radius:6px;
     text-align:center;
 }
 
-.info-label{
+.meta-label{
     color:#777;
-    font-size:9px;
+    font-size:8px;
     font-weight:900;
-    letter-spacing:.8px;
+    letter-spacing:.7px;
 }
 
-.info-value{
-    margin-top:5px;
-    color:#222;
-    font-size:17px;
+.meta-value{
+    margin-top:3px;
+    font-size:13px;
     font-weight:900;
     text-transform:uppercase;
 }
 
-.info-value.live{
+.meta-value.live{
     color:#16803c;
 }
 
-.info-value.halftime{
+.meta-value.halftime{
     color:#d96516;
 }
 
-.info-value.final{
+.meta-value.final{
     color:#c62828;
 }
 
-.next-section{
-    margin-top:16px;
-    padding:14px;
-    border:1px dashed #ccc;
+.clock-grid{
+    display:grid;
+    grid-template-columns:1.35fr .85fr;
+    gap:9px;
+    margin-top:9px;
+}
+
+.clock-panel{
+    padding:12px;
+    border:1px solid #e3e3e3;
     border-radius:8px;
-    background:#fafafa;
-    color:#777;
-    font-size:12px;
-    font-weight:bold;
+    background:#fff;
+}
+
+.clock-panel.shot{
+    background:#fff8f2;
+    border-color:#f0d9c8;
+}
+
+.clock-panel-title{
+    color:#555;
+    font-size:9px;
+    font-weight:900;
+    letter-spacing:1px;
     text-align:center;
 }
 
-@media(max-width:600px){
+.clock-value{
+    margin:7px 0 10px;
+    color:#ff6b00;
+    font-size:72px;
+    font-weight:900;
+    line-height:.95;
+    text-align:center;
+    font-variant-numeric:tabular-nums;
+}
 
+.shot .clock-value{
+    color:#e85b21;
+}
+
+.control-grid{
+    display:grid;
+    gap:5px;
+}
+
+.game-clock-controls{
+    grid-template-columns:repeat(7,minmax(0,1fr));
+}
+
+.shot-clock-controls{
+    grid-template-columns:repeat(6,minmax(0,1fr));
+}
+
+.control-button{
+    min-height:39px;
+    padding:6px 3px;
+    background:#111;
+    color:#fff;
+    font-size:9px;
+}
+
+.control-button:hover:not(:disabled){
+    background:#ff6b00;
+}
+
+.control-button.primary{
+    background:#ff6b00;
+}
+
+.control-button.pause{
+    background:#777;
+}
+
+.control-button.reset{
+    border:1px solid #ccc;
+    background:#f3f3f3;
+    color:#333;
+}
+
+.control-button.shot-reset{
+    background:#d96516;
+}
+
+.section{
+    margin-top:9px;
+    padding:10px;
+    border:1px solid #e5e5e5;
+    border-radius:8px;
+}
+
+.section-title{
+    margin-bottom:7px;
+    color:#666;
+    font-size:9px;
+    font-weight:900;
+    letter-spacing:.8px;
+    text-align:center;
+}
+
+.period-buttons{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:6px;
+}
+
+.status-buttons{
+    display:grid;
+    grid-template-columns:1fr 1fr 1.3fr;
+    gap:6px;
+}
+
+.period-button,
+.status-button{
+    min-height:42px;
+    padding:7px;
+    border:1px solid #ddd;
+    border-radius:6px;
+    background:#fafafa;
+    color:#333;
+    font-size:10px;
+    font-weight:900;
+    cursor:pointer;
+}
+
+.period-button.active,
+.status-button.active{
+    border-color:#ff6b00;
+    background:#111;
+    color:#fff;
+    box-shadow:0 0 0 2px rgba(255,107,0,.18);
+}
+
+.status-button.live{
+    background:#16803c;
+    color:#fff;
+    border-color:#16803c;
+}
+
+.status-button.halftime{
+    background:#d96516;
+    color:#fff;
+    border-color:#d96516;
+}
+
+.status-button.finalize{
+    background:#c62828;
+    color:#fff;
+    border-color:#c62828;
+}
+
+.status-button.active.live,
+.status-button.active.halftime{
+    box-shadow:0 0 0 3px rgba(255,107,0,.35);
+}
+
+.finalized-notice{
+    display:none;
+    margin-top:9px;
+    padding:10px;
+    border-radius:6px;
+    background:#ffebee;
+    color:#c62828;
+    font-size:11px;
+    font-weight:900;
+    text-align:center;
+}
+
+.finalized-notice.visible{
+    display:block;
+}
+
+@media(max-width:760px){
+    .clock-grid{
+        grid-template-columns:1fr;
+    }
+
+    .clock-value{
+        font-size:62px;
+    }
+}
+
+@media(max-width:600px){
     header{
-        padding:12px 4%;
+        padding:11px 3%;
     }
 
     .logo{
@@ -246,40 +447,44 @@ header{
     }
 
     .controller-title{
-        font-size:11px;
+        font-size:10px;
     }
 
     .scoreboard{
         grid-template-columns:1fr;
-        gap:10px;
+        gap:7px;
     }
 
     .vs{
-        font-size:15px;
-    }
-
-    .team-name{
-        min-height:auto;
-        font-size:16px;
+        font-size:12px;
     }
 
     .team-score{
-        font-size:52px;
+        font-size:40px;
     }
 
-    .game-info{
+    .game-clock-controls{
+        grid-template-columns:repeat(4,minmax(0,1fr));
+    }
+
+    .shot-clock-controls{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+    }
+
+    .period-buttons{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .status-buttons{
         grid-template-columns:1fr;
     }
 }
-
 </style>
-
 </head>
 
 <body>
 
 <header>
-
     <a class="logo" href="index.html">
         HOOP <span>HUB PH</span>
     </a>
@@ -287,15 +492,12 @@ header{
     <strong class="controller-title">
         CLOCK CONTROLLER
     </strong>
-
 </header>
 
 <div class="container">
-
     <div class="panel">
 
         <div class="game-loader">
-
             <label for="gameIdInput">
                 <strong>Game ID:</strong>
             </label>
@@ -314,7 +516,6 @@ header{
             >
                 LOAD GAME
             </button>
-
         </div>
 
         <div id="statusMessage">
@@ -325,18 +526,22 @@ header{
             id="controllerContent"
             class="controller-content"
         >
+            <div class="game-heading">
+                <h2 id="gameTitle">Game</h2>
 
-            <h2
-                id="gameTitle"
-                class="game-title"
-            >
-                Game
-            </h2>
+                <div class="connection-indicator">
+                    <span
+                        id="connectionDot"
+                        class="connection-dot"
+                    ></span>
+                    <span id="connectionText">
+                        NOT CONNECTED
+                    </span>
+                </div>
+            </div>
 
             <div class="scoreboard">
-
-                <div class="team">
-
+                <div>
                     <div
                         id="homeTeamName"
                         class="team-name"
@@ -354,15 +559,13 @@ header{
                     >
                         0
                     </div>
-
                 </div>
 
                 <div class="vs">
                     VS
                 </div>
 
-                <div class="team">
-
+                <div>
                     <div
                         id="awayTeamName"
                         class="team-name"
@@ -380,57 +583,263 @@ header{
                     >
                         0
                     </div>
-
                 </div>
-
             </div>
 
-            <div class="game-info">
-
-                <div class="info-card">
-
-                    <div class="info-label">
+            <div class="game-meta">
+                <div class="meta-card">
+                    <div class="meta-label">
                         CURRENT PERIOD
                     </div>
 
                     <div
                         id="gamePeriod"
-                        class="info-value"
+                        class="meta-value"
                     >
                         —
                     </div>
-
                 </div>
 
-                <div class="info-card">
-
-                    <div class="info-label">
+                <div class="meta-card">
+                    <div class="meta-label">
                         GAME STATUS
                     </div>
 
                     <div
                         id="gameStatus"
-                        class="info-value"
+                        class="meta-value"
                     >
                         —
                     </div>
+                </div>
+            </div>
 
+            <div class="clock-grid">
+
+                <section class="clock-panel">
+                    <div class="clock-panel-title">
+                        GAME CLOCK
+                    </div>
+
+                    <div
+                        id="gameClock"
+                        class="clock-value"
+                    >
+                        10:00.0
+                    </div>
+
+                    <div class="control-grid game-clock-controls">
+                        <button
+                            id="startClockButton"
+                            class="control-button primary"
+                            type="button"
+                        >
+                            START
+                        </button>
+
+                        <button
+                            id="pauseClockButton"
+                            class="control-button pause"
+                            type="button"
+                        >
+                            PAUSE
+                        </button>
+
+                        <button
+                            id="resetClockButton"
+                            class="control-button reset"
+                            type="button"
+                        >
+                            RESET
+                        </button>
+
+                        <button
+                            id="gameMinusOneButton"
+                            class="control-button"
+                            type="button"
+                        >
+                            −1
+                        </button>
+
+                        <button
+                            id="gamePlusOneButton"
+                            class="control-button"
+                            type="button"
+                        >
+                            +1
+                        </button>
+
+                        <button
+                            id="gameMinusTenthButton"
+                            class="control-button"
+                            type="button"
+                        >
+                            −0.1
+                        </button>
+
+                        <button
+                            id="gamePlusTenthButton"
+                            class="control-button"
+                            type="button"
+                        >
+                            +0.1
+                        </button>
+                    </div>
+                </section>
+
+                <section class="clock-panel shot">
+                    <div class="clock-panel-title">
+                        SHOT CLOCK
+                    </div>
+
+                    <div
+                        id="shotClock"
+                        class="clock-value"
+                    >
+                        24.0
+                    </div>
+
+                    <div class="control-grid shot-clock-controls">
+                        <button
+                            id="shot24Button"
+                            class="control-button shot-reset"
+                            type="button"
+                        >
+                            24
+                        </button>
+
+                        <button
+                            id="shot14Button"
+                            class="control-button shot-reset"
+                            type="button"
+                        >
+                            14
+                        </button>
+
+                        <button
+                            id="shotMinusOneButton"
+                            class="control-button"
+                            type="button"
+                        >
+                            −1
+                        </button>
+
+                        <button
+                            id="shotPlusOneButton"
+                            class="control-button"
+                            type="button"
+                        >
+                            +1
+                        </button>
+
+                        <button
+                            id="shotMinusTenthButton"
+                            class="control-button"
+                            type="button"
+                        >
+                            −0.1
+                        </button>
+
+                        <button
+                            id="shotPlusTenthButton"
+                            class="control-button"
+                            type="button"
+                        >
+                            +0.1
+                        </button>
+                    </div>
+                </section>
+
+            </div>
+
+            <section class="section">
+                <div class="section-title">
+                    PERIOD
                 </div>
 
-            </div>
+                <div class="period-buttons">
+                    <button
+                        id="period-1st"
+                        class="period-button"
+                        type="button"
+                        data-period="1st Quarter"
+                    >
+                        1ST QTR
+                    </button>
 
-            <div class="next-section">
-                Game-clock, shot-clock, quarter and game-status controls will be added in the next step.
-            </div>
+                    <button
+                        id="period-2nd"
+                        class="period-button"
+                        type="button"
+                        data-period="2nd Quarter"
+                    >
+                        2ND QTR
+                    </button>
 
+                    <button
+                        id="period-3rd"
+                        class="period-button"
+                        type="button"
+                        data-period="3rd Quarter"
+                    >
+                        3RD QTR
+                    </button>
+
+                    <button
+                        id="period-4th"
+                        class="period-button"
+                        type="button"
+                        data-period="4th Quarter"
+                    >
+                        4TH QTR
+                    </button>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-title">
+                    GAME STATUS
+                </div>
+
+                <div class="status-buttons">
+                    <button
+                        id="status-live"
+                        class="status-button live"
+                        type="button"
+                    >
+                        LIVE
+                    </button>
+
+                    <button
+                        id="status-half"
+                        class="status-button halftime"
+                        type="button"
+                    >
+                        HALFTIME
+                    </button>
+
+                    <button
+                        id="status-final"
+                        class="status-button finalize"
+                        type="button"
+                    >
+                        FINALIZE GAME
+                    </button>
+                </div>
+            </section>
+
+            <div
+                id="finalizedNotice"
+                class="finalized-notice"
+            >
+                THIS GAME IS FINALIZED AND LOCKED.
+            </div>
         </div>
 
     </div>
-
 </div>
 
 <script>
-
 const SUPABASE_URL =
     "https://tkrsyiwffqkgfyooewsf.supabase.co";
 
@@ -443,7 +852,20 @@ const supabaseClient =
         SUPABASE_ANON_KEY
     );
 
+const DEFAULT_GAME_CLOCK_SECONDS = 600;
+const DEFAULT_SHOT_CLOCK_SECONDS = 24;
+
 let currentGame = null;
+let gameChannel = null;
+let pollTimer = null;
+let displayTimer = null;
+let saveInProgress = false;
+
+let clockSeconds = DEFAULT_GAME_CLOCK_SECONDS;
+let shotClockSeconds = DEFAULT_SHOT_CLOCK_SECONDS;
+let clockRunning = false;
+let clockEndTime = null;
+let shotClockEndTime = null;
 
 const gameIdInput =
     document.getElementById("gameIdInput");
@@ -478,17 +900,32 @@ const gamePeriod =
 const gameStatus =
     document.getElementById("gameStatus");
 
+const gameClock =
+    document.getElementById("gameClock");
+
+const shotClock =
+    document.getElementById("shotClock");
+
+const connectionDot =
+    document.getElementById("connectionDot");
+
+const connectionText =
+    document.getElementById("connectionText");
+
+const finalizedNotice =
+    document.getElementById("finalizedNotice");
+
 
 function showStatus(
     message,
     type = ""
 ){
-
     statusMessage.textContent = message;
 
     statusMessage.classList.remove(
         "success",
-        "error"
+        "error",
+        "warning"
     );
 
     if(type){
@@ -501,7 +938,6 @@ function safeText(
     value,
     fallback = "—"
 ){
-
     const text =
         String(value ?? "").trim();
 
@@ -510,7 +946,6 @@ function safeText(
 
 
 function getHomeTeamName(game){
-
     return safeText(
         game.home_team ||
         game.home_team_name,
@@ -520,7 +955,6 @@ function getHomeTeamName(game){
 
 
 function getAwayTeamName(game){
-
     return safeText(
         game.away_team ||
         game.away_team_name,
@@ -529,93 +963,225 @@ function getAwayTeamName(game){
 }
 
 
-function formatPeriod(period){
-
-    const value =
-        safeText(period, "Not Set");
-
-    const normalized =
-        value.toLowerCase()
-            .replace(/\s+/g, "")
-            .replace(/_/g, "");
-
-    const periodLabels = {
-
-        "1":"1st Quarter",
-        "q1":"1st Quarter",
-        "1q":"1st Quarter",
-        "1st":"1st Quarter",
-        "1stquarter":"1st Quarter",
-
-        "2":"2nd Quarter",
-        "q2":"2nd Quarter",
-        "2q":"2nd Quarter",
-        "2nd":"2nd Quarter",
-        "2ndquarter":"2nd Quarter",
-
-        "3":"3rd Quarter",
-        "q3":"3rd Quarter",
-        "3q":"3rd Quarter",
-        "3rd":"3rd Quarter",
-        "3rdquarter":"3rd Quarter",
-
-        "4":"4th Quarter",
-        "q4":"4th Quarter",
-        "4q":"4th Quarter",
-        "4th":"4th Quarter",
-        "4thquarter":"4th Quarter",
-
-        "halftime":"Halftime",
-        "half":"Halftime",
-
-        "ot":"Overtime",
-        "overtime":"Overtime"
-    };
-
-    return periodLabels[normalized] || value;
+function normalizeStatus(status){
+    return String(status || "")
+        .trim()
+        .toLowerCase();
 }
 
 
-function applyStatusClass(status){
+function isGameFinalized(){
+    if(!currentGame){
+        return false;
+    }
 
+    const status =
+        normalizeStatus(currentGame.status);
+
+    return Boolean(
+        currentGame.finalized_at ||
+        status === "final" ||
+        status === "finalized" ||
+        status === "completed"
+    );
+}
+
+
+function setConnectionState(connected){
+    connectionDot.classList.toggle(
+        "connected",
+        Boolean(connected)
+    );
+
+    connectionText.textContent =
+        connected
+            ? "LIVE SYNC"
+            : "NOT CONNECTED";
+}
+
+
+function calculateDisplayedTimes(){
+    if(!clockRunning){
+        return;
+    }
+
+    const now = Date.now();
+
+    if(clockEndTime){
+        clockSeconds = Math.max(
+            0,
+            (clockEndTime - now) / 1000
+        );
+    }
+
+    if(shotClockEndTime){
+        shotClockSeconds = Math.max(
+            0,
+            (shotClockEndTime - now) / 1000
+        );
+    }
+
+    shotClockSeconds = Math.min(
+        Math.max(0, shotClockSeconds),
+        Math.max(0, clockSeconds)
+    );
+
+    if(shotClockSeconds <= 0){
+        shotClockSeconds = 0;
+        shotClockEndTime = null;
+    }
+
+    if(clockSeconds <= 0){
+        clockSeconds = 0;
+        shotClockSeconds = 0;
+        clockRunning = false;
+        clockEndTime = null;
+        shotClockEndTime = null;
+
+        saveClockState().catch(error=>{
+            console.error(
+                "Unable to save expired clock:",
+                error
+            );
+        });
+    }
+}
+
+
+function formatGameClock(secondsValue){
+    const safeMilliseconds =
+        Math.max(
+            0,
+            Math.ceil(
+                Number(secondsValue || 0) * 1000
+            )
+        );
+
+    const totalTenths =
+        Math.ceil(
+            safeMilliseconds / 100
+        );
+
+    const minutes =
+        Math.floor(
+            totalTenths / 600
+        );
+
+    const seconds =
+        Math.floor(
+            (totalTenths % 600) / 10
+        );
+
+    const tenths =
+        totalTenths % 10;
+
+    return (
+        String(minutes).padStart(2, "0") +
+        ":" +
+        String(seconds).padStart(2, "0") +
+        "." +
+        tenths
+    );
+}
+
+
+function formatShotClock(secondsValue){
+    const safeMilliseconds =
+        Math.max(
+            0,
+            Math.ceil(
+                Number(secondsValue || 0) * 1000
+            )
+        );
+
+    const totalTenths =
+        Math.ceil(
+            safeMilliseconds / 100
+        );
+
+    const seconds =
+        Math.floor(
+            totalTenths / 10
+        );
+
+    const tenths =
+        totalTenths % 10;
+
+    return (
+        String(seconds).padStart(2, "0") +
+        "." +
+        tenths
+    );
+}
+
+
+function updateClockDisplays(){
+    calculateDisplayedTimes();
+
+    gameClock.textContent =
+        formatGameClock(clockSeconds);
+
+    shotClock.textContent =
+        formatShotClock(shotClockSeconds);
+
+    updateControlAvailability();
+}
+
+
+function applyStatusAppearance(){
     gameStatus.classList.remove(
         "live",
         "halftime",
         "final"
     );
 
-    const normalized =
-        String(status || "")
-            .trim()
-            .toLowerCase();
+    document
+        .querySelectorAll(".status-button")
+        .forEach(button=>{
+            button.classList.remove("active");
+        });
+
+    const status =
+        normalizeStatus(currentGame?.status);
 
     if(
-        normalized === "live" ||
-        normalized === "in progress" ||
-        normalized === "in_progress"
+        status === "live" ||
+        status === "in progress" ||
+        status === "in_progress"
     ){
         gameStatus.classList.add("live");
+        document
+            .getElementById("status-live")
+            .classList.add("active");
     }
-
-    if(
-        normalized === "halftime" ||
-        normalized === "half"
+    else if(
+        status === "halftime" ||
+        status === "half"
     ){
         gameStatus.classList.add("halftime");
+        document
+            .getElementById("status-half")
+            .classList.add("active");
     }
-
-    if(
-        normalized === "final" ||
-        normalized === "finalized" ||
-        normalized === "completed"
-    ){
+    else if(isGameFinalized()){
         gameStatus.classList.add("final");
     }
 }
 
 
-function renderGameInformation(){
+function setActivePeriod(period){
+    document
+        .querySelectorAll(".period-button")
+        .forEach(button=>{
+            button.classList.toggle(
+                "active",
+                button.dataset.period === period
+            );
+        });
+}
 
+
+function renderGameInformation(){
     if(!currentGame){
         return;
     }
@@ -636,46 +1202,853 @@ function renderGameInformation(){
         Number(currentGame.away_score || 0);
 
     gamePeriod.textContent =
-        formatPeriod(currentGame.period);
+        safeText(
+            currentGame.period,
+            "Not Set"
+        );
 
-    const status =
+    gameStatus.textContent =
         safeText(
             currentGame.status,
             "Not Set"
         );
 
-    gameStatus.textContent =
-        status;
+    setActivePeriod(
+        currentGame.period
+    );
 
-    applyStatusClass(status);
+    applyStatusAppearance();
+
+    const finalized =
+        isGameFinalized();
+
+    finalizedNotice.classList.toggle(
+        "visible",
+        finalized
+    );
+
+    document
+        .getElementById("status-final")
+        .textContent =
+            finalized
+                ? "GAME FINALIZED"
+                : "FINALIZE GAME";
+
+    updateClockDisplays();
+    updateControlAvailability();
+}
+
+
+function updateControlAvailability(){
+    const loaded =
+        Boolean(currentGame);
+
+    const locked =
+        !loaded ||
+        isGameFinalized() ||
+        saveInProgress;
+
+    const adjustmentLocked =
+        locked ||
+        clockRunning;
+
+    document
+        .querySelectorAll(
+            ".period-button, " +
+            "#status-live, " +
+            "#status-half"
+        )
+        .forEach(button=>{
+            button.disabled =
+                locked ||
+                clockRunning;
+        });
+
+    document
+        .getElementById("status-final")
+        .disabled =
+            locked ||
+            clockRunning;
+
+    document
+        .getElementById("startClockButton")
+        .disabled =
+            locked ||
+            clockRunning ||
+            clockSeconds <= 0;
+
+    document
+        .getElementById("pauseClockButton")
+        .disabled =
+            locked ||
+            !clockRunning;
+
+    document
+        .getElementById("resetClockButton")
+        .disabled =
+            adjustmentLocked;
+
+    [
+        "gameMinusOneButton",
+        "gamePlusOneButton",
+        "gameMinusTenthButton",
+        "gamePlusTenthButton",
+        "shot24Button",
+        "shot14Button",
+        "shotMinusOneButton",
+        "shotPlusOneButton",
+        "shotMinusTenthButton",
+        "shotPlusTenthButton"
+    ].forEach(id=>{
+        document.getElementById(id).disabled =
+            adjustmentLocked;
+    });
+}
+
+
+function applyClockData(game){
+    const hasMilliseconds =
+        game.clock_milliseconds !== null &&
+        game.clock_milliseconds !== undefined;
+
+    clockSeconds =
+        Math.max(
+            0,
+            hasMilliseconds
+                ? Number(
+                    game.clock_milliseconds
+                ) / 1000
+                : Number(
+                    game.clock_seconds ??
+                    DEFAULT_GAME_CLOCK_SECONDS
+                )
+        );
+
+    shotClockSeconds =
+        Math.max(
+            0,
+            Number(
+                game.shot_clock_milliseconds ??
+                DEFAULT_SHOT_CLOCK_SECONDS * 1000
+            ) / 1000
+        );
+
+    clockRunning =
+        game.clock_running === true;
+
+    clockEndTime =
+        game.clock_end_time
+            ? new Date(
+                game.clock_end_time
+            ).getTime()
+            : null;
+
+    shotClockEndTime =
+        game.shot_clock_end_time
+            ? new Date(
+                game.shot_clock_end_time
+            ).getTime()
+            : null;
+
+    if(
+        clockRunning &&
+        !clockEndTime
+    ){
+        clockEndTime =
+            Date.now() +
+            Math.round(
+                clockSeconds * 1000
+            );
+    }
+
+    if(
+        clockRunning &&
+        !shotClockEndTime &&
+        shotClockSeconds > 0
+    ){
+        shotClockEndTime =
+            Date.now() +
+            Math.round(
+                Math.min(
+                    shotClockSeconds,
+                    clockSeconds
+                ) * 1000
+            );
+    }
+
+    calculateDisplayedTimes();
+}
+
+
+async function fetchCurrentGame(
+    silent = false
+){
+    if(!currentGame){
+        return;
+    }
+
+    const { data, error } =
+        await supabaseClient
+            .from("games")
+            .select("*")
+            .eq("id", currentGame.id)
+            .single();
+
+    if(error){
+        if(!silent){
+            showStatus(
+                "Unable to refresh game: " +
+                error.message,
+                "error"
+            );
+        }
+
+        return;
+    }
+
+    currentGame = data;
+    applyClockData(data);
+    renderGameInformation();
+}
+
+
+async function saveClockState(){
+    if(
+        !currentGame ||
+        isGameFinalized()
+    ){
+        return false;
+    }
+
+    calculateDisplayedTimes();
+
+    const remainingMilliseconds =
+        Math.max(
+            0,
+            Math.round(
+                clockSeconds * 1000
+            )
+        );
+
+    const shotClockRemainingMilliseconds =
+        Math.max(
+            0,
+            Math.round(
+                shotClockSeconds * 1000
+            )
+        );
+
+    const { data, error } =
+        await supabaseClient
+            .from("games")
+            .update({
+                clock_seconds:
+                    Math.ceil(
+                        clockSeconds
+                    ),
+
+                clock_milliseconds:
+                    remainingMilliseconds,
+
+                clock_running:
+                    clockRunning,
+
+                clock_end_time:
+                    clockRunning &&
+                    clockEndTime
+                        ? new Date(
+                            clockEndTime
+                        ).toISOString()
+                        : null,
+
+                shot_clock_milliseconds:
+                    shotClockRemainingMilliseconds,
+
+                shot_clock_end_time:
+                    clockRunning &&
+                    shotClockEndTime
+                        ? new Date(
+                            shotClockEndTime
+                        ).toISOString()
+                        : null
+            })
+            .eq("id", currentGame.id)
+            .select("*")
+            .single();
+
+    if(error){
+        showStatus(
+            "Unable to save clock: " +
+            error.message,
+            "error"
+        );
+
+        return false;
+    }
+
+    currentGame = data;
+    applyClockData(data);
+    renderGameInformation();
+
+    return true;
+}
+
+
+async function startClock(){
+    if(
+        !currentGame ||
+        clockRunning ||
+        isGameFinalized()
+    ){
+        return;
+    }
+
+    if(clockSeconds <= 0){
+        showStatus(
+            "Clock is at 00:00. Reset it first.",
+            "warning"
+        );
+        return;
+    }
+
+    const now = Date.now();
+
+    clockEndTime =
+        now +
+        Math.round(
+            clockSeconds * 1000
+        );
+
+    shotClockSeconds =
+        Math.min(
+            Math.max(
+                0,
+                shotClockSeconds
+            ),
+            clockSeconds
+        );
+
+    shotClockEndTime =
+        shotClockSeconds > 0
+            ? now +
+              Math.round(
+                  shotClockSeconds * 1000
+              )
+            : null;
+
+    clockRunning = true;
+
+    updateClockDisplays();
+
+    const saved =
+        await saveClockState();
+
+    if(saved){
+        showStatus(
+            "Game clock started.",
+            "success"
+        );
+    }
+}
+
+
+async function pauseClock(){
+    if(
+        !currentGame ||
+        !clockRunning
+    ){
+        return;
+    }
+
+    calculateDisplayedTimes();
+
+    clockRunning = false;
+    clockEndTime = null;
+    shotClockEndTime = null;
+
+    updateClockDisplays();
+
+    const saved =
+        await saveClockState();
+
+    if(saved){
+        showStatus(
+            "Game and shot clocks paused.",
+            "success"
+        );
+    }
+}
+
+
+async function resetClock(){
+    if(
+        !currentGame ||
+        clockRunning ||
+        isGameFinalized()
+    ){
+        return;
+    }
+
+    clockSeconds =
+        DEFAULT_GAME_CLOCK_SECONDS;
+
+    shotClockSeconds =
+        DEFAULT_SHOT_CLOCK_SECONDS;
+
+    clockRunning = false;
+    clockEndTime = null;
+    shotClockEndTime = null;
+
+    updateClockDisplays();
+
+    const saved =
+        await saveClockState();
+
+    if(saved){
+        showStatus(
+            "Game clock reset to 10:00.0 and shot clock reset to 24.0.",
+            "success"
+        );
+    }
+}
+
+
+async function adjustGameClock(amount){
+    if(
+        !currentGame ||
+        clockRunning ||
+        isGameFinalized()
+    ){
+        return;
+    }
+
+    clockSeconds =
+        Math.max(
+            0,
+            Math.round(
+                (clockSeconds + amount) * 10
+            ) / 10
+        );
+
+    shotClockSeconds =
+        Math.min(
+            shotClockSeconds,
+            clockSeconds
+        );
+
+    updateClockDisplays();
+
+    const saved =
+        await saveClockState();
+
+    if(saved){
+        showStatus(
+            `Game clock adjusted by ${amount > 0 ? "+" : ""}${amount.toFixed(1)} second.`,
+            "success"
+        );
+    }
+}
+
+
+async function resetShotClock(seconds){
+    if(
+        !currentGame ||
+        clockRunning ||
+        isGameFinalized()
+    ){
+        return;
+    }
+
+    shotClockSeconds =
+        Math.min(
+            Number(seconds),
+            clockSeconds
+        );
+
+    shotClockEndTime = null;
+
+    updateClockDisplays();
+
+    const saved =
+        await saveClockState();
+
+    if(saved){
+        showStatus(
+            `Shot clock reset to ${seconds}.0 seconds.`,
+            "success"
+        );
+    }
+}
+
+
+async function adjustShotClock(amount){
+    if(
+        !currentGame ||
+        clockRunning ||
+        isGameFinalized()
+    ){
+        return;
+    }
+
+    shotClockSeconds =
+        Math.min(
+            clockSeconds,
+            Math.max(
+                0,
+                Math.round(
+                    (shotClockSeconds + amount) * 10
+                ) / 10
+            )
+        );
+
+    shotClockEndTime = null;
+
+    updateClockDisplays();
+
+    const saved =
+        await saveClockState();
+
+    if(saved){
+        showStatus(
+            `Shot clock adjusted by ${amount > 0 ? "+" : ""}${amount.toFixed(1)} second.`,
+            "success"
+        );
+    }
+}
+
+
+async function setPeriod(period){
+    if(
+        !currentGame ||
+        clockRunning ||
+        isGameFinalized()
+    ){
+        return;
+    }
+
+    saveInProgress = true;
+    updateControlAvailability();
+
+    try{
+        const { data, error } =
+            await supabaseClient
+                .from("games")
+                .update({
+                    period,
+                    clock_seconds:
+                        DEFAULT_GAME_CLOCK_SECONDS,
+                    clock_milliseconds:
+                        DEFAULT_GAME_CLOCK_SECONDS * 1000,
+                    clock_running:
+                        false,
+                    clock_end_time:
+                        null,
+                    shot_clock_milliseconds:
+                        DEFAULT_SHOT_CLOCK_SECONDS * 1000,
+                    shot_clock_end_time:
+                        null
+                })
+                .eq("id", currentGame.id)
+                .select("*")
+                .single();
+
+        if(error){
+            throw error;
+        }
+
+        currentGame = data;
+        applyClockData(data);
+        renderGameInformation();
+
+        showStatus(
+            `${period} selected. Clocks reset.`,
+            "success"
+        );
+    }
+    catch(error){
+        showStatus(
+            "Unable to change period: " +
+            error.message,
+            "error"
+        );
+    }
+    finally{
+        saveInProgress = false;
+        updateControlAvailability();
+    }
+}
+
+
+async function setGameStatus(status){
+    if(
+        !currentGame ||
+        clockRunning ||
+        isGameFinalized()
+    ){
+        return;
+    }
+
+    saveInProgress = true;
+    updateControlAvailability();
+
+    try{
+        const { data, error } =
+            await supabaseClient
+                .from("games")
+                .update({ status })
+                .eq("id", currentGame.id)
+                .select("*")
+                .single();
+
+        if(error){
+            throw error;
+        }
+
+        currentGame = data;
+        renderGameInformation();
+
+        showStatus(
+            `Game status changed to ${status}.`,
+            "success"
+        );
+    }
+    catch(error){
+        showStatus(
+            "Unable to change game status: " +
+            error.message,
+            "error"
+        );
+    }
+    finally{
+        saveInProgress = false;
+        updateControlAvailability();
+    }
+}
+
+
+async function finalizeCurrentGame(){
+    if(!currentGame){
+        return;
+    }
+
+    if(clockRunning){
+        showStatus(
+            "Pause the game clock before finalizing.",
+            "warning"
+        );
+        return;
+    }
+
+    if(isGameFinalized()){
+        showStatus(
+            "This game is already finalized.",
+            "warning"
+        );
+        return;
+    }
+
+    const home =
+        Number(
+            currentGame.home_score || 0
+        );
+
+    const away =
+        Number(
+            currentGame.away_score || 0
+        );
+
+    if(home === away){
+        showStatus(
+            "A basketball game cannot be finalized while the score is tied.",
+            "warning"
+        );
+        return;
+    }
+
+    const confirmed =
+        window.confirm(
+            "Finalize this game?\n\n" +
+            "The score, player statistics and standings will be locked."
+        );
+
+    if(!confirmed){
+        return;
+    }
+
+    saveInProgress = true;
+
+    const finalButton =
+        document.getElementById(
+            "status-final"
+        );
+
+    finalButton.textContent =
+        "FINALIZING...";
+
+    updateControlAvailability();
+
+    try{
+        await saveClockState();
+
+        const { data, error } =
+            await supabaseClient.rpc(
+                "finalize_basketball_game",
+                {
+                    p_game_id:
+                        currentGame.id
+                }
+            );
+
+        if(error){
+            throw error;
+        }
+
+        const result =
+            Array.isArray(data)
+                ? data[0]
+                : data;
+
+        currentGame = {
+            ...currentGame,
+            status:"Final",
+            finalized_at:
+                result?.finalized_at ||
+                new Date().toISOString()
+        };
+
+        clockRunning = false;
+        clockEndTime = null;
+        shotClockEndTime = null;
+
+        renderGameInformation();
+
+        showStatus(
+            result?.already_finalized
+                ? "This game was already finalized."
+                : "Game finalized. Standings and totals are locked.",
+            "success"
+        );
+    }
+    catch(error){
+        finalButton.textContent =
+            "FINALIZE GAME";
+
+        showStatus(
+            "Unable to finalize game: " +
+            (
+                error?.message ||
+                "Unknown error"
+            ),
+            "error"
+        );
+    }
+    finally{
+        saveInProgress = false;
+        updateControlAvailability();
+    }
+}
+
+
+function unsubscribeFromGame(){
+    if(gameChannel){
+        supabaseClient.removeChannel(
+            gameChannel
+        );
+
+        gameChannel = null;
+    }
+
+    if(pollTimer){
+        clearInterval(pollTimer);
+        pollTimer = null;
+    }
+
+    setConnectionState(false);
+}
+
+
+function subscribeToGame(){
+    unsubscribeFromGame();
+
+    if(!currentGame){
+        return;
+    }
+
+    gameChannel =
+        supabaseClient
+            .channel(
+                `clock-controller-game-${currentGame.id}`
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event:"UPDATE",
+                    schema:"public",
+                    table:"games",
+                    filter:
+                        `id=eq.${currentGame.id}`
+                },
+                payload=>{
+                    if(!payload?.new){
+                        return;
+                    }
+
+                    currentGame =
+                        payload.new;
+
+                    applyClockData(
+                        payload.new
+                    );
+
+                    renderGameInformation();
+                }
+            )
+            .subscribe(status=>{
+                setConnectionState(
+                    status === "SUBSCRIBED"
+                );
+            });
+
+    pollTimer =
+        setInterval(
+            ()=>{
+                fetchCurrentGame(true)
+                    .catch(error=>{
+                        console.error(
+                            "Game polling error:",
+                            error
+                        );
+                    });
+            },
+            3000
+        );
 }
 
 
 async function loadGame(){
-
     const gameId =
-        Number(gameIdInput.value);
+        Number(
+            gameIdInput.value
+        );
 
     if(
         !Number.isInteger(gameId) ||
         gameId <= 0
     ){
-
         showStatus(
             "Enter a valid Game ID.",
             "error"
         );
-
         return;
     }
 
     loadGameButton.disabled = true;
-
     loadGameButton.textContent =
         "LOADING...";
 
-    try{
+    unsubscribeFromGame();
 
+    try{
         const { data, error } =
             await supabaseClient
                 .from("games")
@@ -689,19 +2062,20 @@ async function loadGame(){
 
         currentGame = data;
 
+        applyClockData(data);
         renderGameInformation();
 
         controllerContent.style.display =
             "block";
 
+        subscribeToGame();
+
         showStatus(
             `Game ${currentGame.id} loaded successfully.`,
             "success"
         );
-
     }
     catch(error){
-
         console.error(
             "Unable to load game:",
             error
@@ -720,39 +2094,176 @@ async function loadGame(){
             ),
             "error"
         );
-
     }
     finally{
-
         loadGameButton.disabled = false;
-
         loadGameButton.textContent =
             "LOAD GAME";
     }
 }
 
 
+document
+    .getElementById("startClockButton")
+    .addEventListener(
+        "click",
+        startClock
+    );
+
+document
+    .getElementById("pauseClockButton")
+    .addEventListener(
+        "click",
+        pauseClock
+    );
+
+document
+    .getElementById("resetClockButton")
+    .addEventListener(
+        "click",
+        resetClock
+    );
+
+document
+    .getElementById("gameMinusOneButton")
+    .addEventListener(
+        "click",
+        ()=>adjustGameClock(-1)
+    );
+
+document
+    .getElementById("gamePlusOneButton")
+    .addEventListener(
+        "click",
+        ()=>adjustGameClock(1)
+    );
+
+document
+    .getElementById("gameMinusTenthButton")
+    .addEventListener(
+        "click",
+        ()=>adjustGameClock(-0.1)
+    );
+
+document
+    .getElementById("gamePlusTenthButton")
+    .addEventListener(
+        "click",
+        ()=>adjustGameClock(0.1)
+    );
+
+document
+    .getElementById("shot24Button")
+    .addEventListener(
+        "click",
+        ()=>resetShotClock(24)
+    );
+
+document
+    .getElementById("shot14Button")
+    .addEventListener(
+        "click",
+        ()=>resetShotClock(14)
+    );
+
+document
+    .getElementById("shotMinusOneButton")
+    .addEventListener(
+        "click",
+        ()=>adjustShotClock(-1)
+    );
+
+document
+    .getElementById("shotPlusOneButton")
+    .addEventListener(
+        "click",
+        ()=>adjustShotClock(1)
+    );
+
+document
+    .getElementById("shotMinusTenthButton")
+    .addEventListener(
+        "click",
+        ()=>adjustShotClock(-0.1)
+    );
+
+document
+    .getElementById("shotPlusTenthButton")
+    .addEventListener(
+        "click",
+        ()=>adjustShotClock(0.1)
+    );
+
+document
+    .querySelectorAll(".period-button")
+    .forEach(button=>{
+        button.addEventListener(
+            "click",
+            ()=>{
+                setPeriod(
+                    button.dataset.period
+                );
+            }
+        );
+    });
+
+document
+    .getElementById("status-live")
+    .addEventListener(
+        "click",
+        ()=>setGameStatus("Live")
+    );
+
+document
+    .getElementById("status-half")
+    .addEventListener(
+        "click",
+        ()=>setGameStatus("Halftime")
+    );
+
+document
+    .getElementById("status-final")
+    .addEventListener(
+        "click",
+        finalizeCurrentGame
+    );
+
 loadGameButton.addEventListener(
     "click",
     loadGame
 );
 
-
 gameIdInput.addEventListener(
     "keydown",
-    event => {
-
+    event=>{
         if(event.key === "Enter"){
-
             event.preventDefault();
-
             loadGame();
         }
     }
 );
 
+displayTimer =
+    setInterval(
+        updateClockDisplays,
+        50
+    );
+
+window.addEventListener(
+    "beforeunload",
+    ()=>{
+        unsubscribeFromGame();
+
+        if(displayTimer){
+            clearInterval(
+                displayTimer
+            );
+        }
+    }
+);
+
+updateControlAvailability();
 </script>
 
 </body>
-
 </html>
