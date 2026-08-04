@@ -3740,6 +3740,11 @@ let clockEndTime=null;
 let shotClockSeconds=24;
 let shotClockEndTime=null;
 
+/* Separate clock-controller synchronization */
+let externalClockSyncChannel=null;
+let externalClockSyncPollTimer=null;
+let applyingExternalClockState=false;
+
 let playerMinuteBaseSeconds={};
 let playerMinuteLastClockSeconds={};
 let playerMinuteLastPersisted={};
@@ -3780,6 +3785,8 @@ let quickScoringContext={
 window.addEventListener(
     "beforeunload",
     event=>{
+
+        stopExternalClockSync();
 
         const hasPendingSaves=
             statSaveQueue.size>0||
@@ -4810,6 +4817,8 @@ async function loadGame(){
 
 
     await loadPersistedClock();
+
+    startExternalClockSync();
 
     await loadTeamPlayers();
 
@@ -10298,6 +10307,342 @@ async function loadPersistedClock(){
         startClockInternal();
     }
 }
+
+
+/* =========================================================
+   EXTERNAL CLOCK CONTROLLER SYNC
+   ========================================================= */
+
+function stopExternalClockSync(){
+
+    if(externalClockSyncChannel){
+
+        supabaseClient.removeChannel(
+            externalClockSyncChannel
+        );
+
+        externalClockSyncChannel=null;
+    }
+
+    if(externalClockSyncPollTimer){
+
+        clearInterval(
+            externalClockSyncPollTimer
+        );
+
+        externalClockSyncPollTimer=null;
+    }
+}
+
+
+function applyExternalClockState(data){
+
+    if(
+        !currentGame ||
+        !data ||
+        Number(data.id)!==Number(currentGame.id)
+    ){
+        return;
+    }
+
+    applyingExternalClockState=true;
+
+    const wasRunning=
+        clockRunning===true;
+
+    const hasMilliseconds=
+        data.clock_milliseconds!==null &&
+        data.clock_milliseconds!==undefined;
+
+    clockSeconds=
+        Math.max(
+            0,
+            hasMilliseconds
+                ?Number(
+                    data.clock_milliseconds
+                )/1000
+                :Number(
+                    data.clock_seconds??600
+                )
+        );
+
+    shotClockSeconds=
+        Math.max(
+            0,
+            Number(
+                data.shot_clock_milliseconds??24000
+            )/1000
+        );
+
+    clockRunning=
+        data.clock_running===true;
+
+    clockEndTime=
+        data.clock_end_time
+            ?new Date(
+                data.clock_end_time
+            ).getTime()
+            :null;
+
+    shotClockEndTime=
+        data.shot_clock_end_time
+            ?new Date(
+                data.shot_clock_end_time
+            ).getTime()
+            :null;
+
+    if(
+        clockRunning &&
+        clockEndTime
+    ){
+
+        clockSeconds=
+            Math.max(
+                0,
+                (
+                    clockEndTime-
+                    Date.now()
+                )/1000
+            );
+    }
+
+    if(
+        clockRunning &&
+        shotClockEndTime
+    ){
+
+        shotClockSeconds=
+            Math.max(
+                0,
+                (
+                    shotClockEndTime-
+                    Date.now()
+                )/1000
+            );
+    }
+
+    shotClockSeconds=
+        Math.min(
+            Math.max(
+                0,
+                shotClockSeconds
+            ),
+            Math.max(
+                0,
+                clockSeconds
+            )
+        );
+
+    currentGame={
+        ...currentGame,
+        ...data
+    };
+
+    if(
+        data.period!==undefined &&
+        data.period!==null
+    ){
+        setActivePeriod(
+            data.period
+        );
+    }
+
+    if(
+        data.status!==undefined &&
+        data.status!==null
+    ){
+        setActiveStatus(
+            data.status
+        );
+    }
+
+    const finalized=
+        Boolean(
+            data.finalized_at
+        )||
+        String(
+            data.status||""
+        ).toLowerCase()==="final";
+
+    setFinalizedLock(
+        finalized
+    );
+
+    if(clockInterval){
+
+        clearInterval(
+            clockInterval
+        );
+
+        clockInterval=null;
+    }
+
+    if(
+        clockRunning &&
+        clockEndTime &&
+        clockSeconds>0
+    ){
+
+        if(!wasRunning){
+
+            for(
+                const playerId of
+                Object.keys(
+                    playerOnCourt
+                )
+            ){
+
+                if(
+                    playerOnCourt[playerId]===true
+                ){
+
+                    playerMinuteLastClockSeconds[
+                        playerId
+                    ]=clockSeconds;
+                }
+            }
+        }
+
+        startClockInternal();
+    }
+    else{
+
+        synchronizePlayerMinutes();
+
+        for(
+            const playerId of
+            Object.keys(
+                playerOnCourt
+            )
+        ){
+
+            if(
+                playerOnCourt[playerId]===true
+            ){
+
+                playerMinuteLastClockSeconds[
+                    playerId
+                ]=clockSeconds;
+            }
+        }
+    }
+
+    updateClockDisplay();
+    updateShotClockDisplay();
+    updateVisibleMinutes();
+    updateSubstitutionButtons();
+
+    applyingExternalClockState=false;
+}
+
+
+async function pollExternalClockState(){
+
+    if(!currentGame){
+        return;
+    }
+
+    const {
+        data,
+        error
+    }=
+    await supabaseClient
+    .from("games")
+    .select(
+        "id,period,status,finalized_at,clock_seconds,clock_milliseconds,clock_running,clock_end_time,shot_clock_milliseconds,shot_clock_end_time"
+    )
+    .eq(
+        "id",
+        currentGame.id
+    )
+    .single();
+
+    if(
+        error ||
+        !data
+    ){
+        return;
+    }
+
+    const localSignature=[
+        currentGame.period,
+        currentGame.status,
+        currentGame.finalized_at,
+        currentGame.clock_seconds,
+        currentGame.clock_milliseconds,
+        currentGame.clock_running,
+        currentGame.clock_end_time,
+        currentGame.shot_clock_milliseconds,
+        currentGame.shot_clock_end_time
+    ].join("|");
+
+    const remoteSignature=[
+        data.period,
+        data.status,
+        data.finalized_at,
+        data.clock_seconds,
+        data.clock_milliseconds,
+        data.clock_running,
+        data.clock_end_time,
+        data.shot_clock_milliseconds,
+        data.shot_clock_end_time
+    ].join("|");
+
+    if(
+        localSignature!==remoteSignature
+    ){
+
+        applyExternalClockState(
+            data
+        );
+    }
+}
+
+
+function startExternalClockSync(){
+
+    stopExternalClockSync();
+
+    if(!currentGame){
+        return;
+    }
+
+    externalClockSyncChannel=
+        supabaseClient
+        .channel(
+            "scorekeeper-clock-sync-"+currentGame.id
+        )
+        .on(
+            "postgres_changes",
+            {
+                event:"UPDATE",
+                schema:"public",
+                table:"games",
+                filter:
+                    "id=eq."+currentGame.id
+            },
+            payload=>{
+
+                if(
+                    payload &&
+                    payload.new
+                ){
+
+                    applyExternalClockState(
+                        payload.new
+                    );
+                }
+            }
+        )
+        .subscribe();
+
+    externalClockSyncPollTimer=
+        setInterval(
+            pollExternalClockState,
+            1000
+        );
+}
+
 
 /* =========================================================
    CLOCK DISPLAY
