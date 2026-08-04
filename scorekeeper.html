@@ -4719,90 +4719,38 @@ align-items:start;
 <style>
 
 /* =========================================================
-   ONE COMPLETE TEAM-STAT BOX
-   Bench/Close is anchored inside the lower-left corner.
+   FUNCTIONAL FIXED BENCH BUTTON
    ========================================================= */
 
-:root{
-    --complete-team-box-height:
-        clamp(
-            220px,
-            calc((100vh - 255px) / 2),
-            360px
-        );
-}
-
-/* One unified outer box containing title, table, and Bench button. */
 .hybrid-team-stats{
     position:relative!important;
-    display:flex!important;
-    flex-direction:column!important;
-
-    width:100%!important;
-    height:var(--complete-team-box-height)!important;
-    min-height:220px!important;
-    max-height:360px!important;
-
-    padding:5px 5px 34px!important;
-
-    border:1px solid #dcdcdc!important;
-    border-radius:7px!important;
-    background:#fff!important;
-    box-shadow:0 2px 5px rgba(0,0,0,.06)!important;
-
-    overflow:hidden!important;
-    align-self:start!important;
-}
-
-/* Team title remains part of the same complete box. */
-.hybrid-team-stats .easy-team-header{
-    flex:0 0 24px!important;
-    width:100%!important;
-    height:24px!important;
-    min-height:24px!important;
-    max-height:24px!important;
-
-    margin:0 0 3px!important;
-    padding:1px 26px 3px 4px!important;
-
-    border-bottom:1px solid #ff6b00!important;
     overflow:hidden!important;
 }
 
-/* Table fills the space above the Bench footer. */
+/* Reserve permanent space for the button inside the complete team box. */
+.hybrid-team-stats{
+    padding-bottom:34px!important;
+}
+
+/* Roster area never covers or moves the footer. */
 .hybrid-team-stats .table-scroll.roster-view{
-    flex:1 1 auto!important;
-
-    width:100%!important;
-    height:auto!important;
+    height:calc(100% - 27px)!important;
     min-height:0!important;
-    max-height:none!important;
-
+    max-height:calc(100% - 27px)!important;
     overflow-x:auto!important;
     overflow-y:hidden!important;
-
-    border:1px solid #e5e5e5!important;
-    border-radius:4px!important;
-    background:#fff!important;
-
-    scrollbar-gutter:stable;
-    overscroll-behavior:contain;
 }
 
-/* Clicking Bench keeps the complete box fixed and enables internal scrolling. */
+/* Clicking Bench only enables internal vertical scrolling. */
 .hybrid-team-stats .table-scroll.roster-view.expanded{
-    flex:1 1 auto!important;
-
-    width:100%!important;
-    height:auto!important;
+    height:calc(100% - 27px)!important;
     min-height:0!important;
-    max-height:none!important;
-
+    max-height:calc(100% - 27px)!important;
     overflow-x:auto!important;
     overflow-y:auto!important;
 }
 
-/* Bench rows remain hidden until Bench is pressed. */
+/* Hidden until button is pressed. */
 .hybrid-team-stats .table-scroll.roster-view:not(.expanded) .bench-player-row{
     display:none!important;
 }
@@ -4811,14 +4759,7 @@ align-items:start;
     display:table-row!important;
 }
 
-/* Keep table headings visible while scrolling. */
-.hybrid-team-stats .table-scroll.roster-view .player-table th{
-    position:sticky!important;
-    top:0!important;
-    z-index:8!important;
-}
-
-/* Bench footer is inside the outer team-stat box. */
+/* Button footer stays locked at the lower-left corner. */
 .hybrid-team-stats .team-bench-footer{
     position:absolute!important;
     left:5px!important;
@@ -4826,7 +4767,6 @@ align-items:start;
     bottom:5px!important;
     top:auto!important;
 
-    width:auto!important;
     height:25px!important;
     min-height:25px!important;
     max-height:25px!important;
@@ -4839,21 +4779,16 @@ align-items:start;
     padding:3px 4px!important;
 
     border-top:1px solid #ddd!important;
-    border-radius:0 0 4px 4px!important;
     background:#fff!important;
 
-    z-index:50!important;
+    z-index:100!important;
     visibility:visible!important;
     opacity:1!important;
-    overflow:visible!important;
+    transform:none!important;
 }
 
-/* Small readable control on the lower-left. */
+/* Same exact button in open and closed states. */
 .hybrid-team-stats .team-bench-footer .view-all-button{
-    display:inline-flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-
     width:50px!important;
     min-width:50px!important;
     max-width:50px!important;
@@ -4861,6 +4796,10 @@ align-items:start;
     height:19px!important;
     min-height:19px!important;
     max-height:19px!important;
+
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
 
     margin:0!important;
     padding:0 6px!important;
@@ -4875,11 +4814,17 @@ align-items:start;
     font-weight:700!important;
     line-height:1!important;
 
-    cursor:pointer!important;
-    opacity:1!important;
     visibility:visible!important;
+    opacity:1!important;
     transform:none!important;
     box-shadow:none!important;
+}
+
+/* Small state cue without changing size or position. */
+.hybrid-team-stats .team-bench-footer .view-all-button[aria-pressed="true"]{
+    border-color:#ff6b00!important;
+    background:#fff3e8!important;
+    color:#c44f00!important;
 }
 
 .hybrid-team-stats .team-bench-footer .view-all-button:hover{
@@ -4889,78 +4834,6 @@ align-items:start;
     transform:none!important;
 }
 
-/* Equal complete boxes for home and away on desktop. */
-@media(min-width:901px){
-    .hybrid-scorekeeper{
-        grid-template-rows:
-            var(--complete-team-box-height)
-            var(--complete-team-box-height)!important;
-
-        align-content:start!important;
-        overflow:hidden!important;
-    }
-
-    .hybrid-scorekeeper > .hybrid-team-stats{
-        height:var(--complete-team-box-height)!important;
-        min-height:220px!important;
-        max-height:360px!important;
-    }
-}
-
-/* Larger screens receive taller complete boxes. */
-@media(min-height:900px){
-    :root{
-        --complete-team-box-height:
-            clamp(
-                260px,
-                calc((100vh - 280px) / 2),
-                410px
-            );
-    }
-
-    .hybrid-team-stats,
-    .hybrid-scorekeeper > .hybrid-team-stats{
-        min-height:260px!important;
-        max-height:410px!important;
-    }
-}
-
-/* Short laptop screens remain compact without overlap. */
-@media(max-height:700px){
-    :root{
-        --complete-team-box-height:
-            clamp(
-                185px,
-                calc((100vh - 205px) / 2),
-                245px
-            );
-    }
-
-    .hybrid-team-stats,
-    .hybrid-scorekeeper > .hybrid-team-stats{
-        min-height:185px!important;
-        max-height:245px!important;
-    }
-}
-
-/* Tablet and mobile sizing. */
-@media(max-width:900px){
-    :root{
-        --complete-team-box-height:
-            clamp(
-                220px,
-                42vh,
-                340px
-            );
-    }
-
-    .hybrid-team-stats{
-        min-height:220px!important;
-        max-height:340px!important;
-    }
-}
-
-/* Stop coarse-pointer rules from enlarging the Bench button. */
 @media(pointer:coarse){
     .hybrid-team-stats .team-bench-footer .view-all-button{
         width:50px!important;
@@ -4970,21 +4843,6 @@ align-items:start;
         min-height:19px!important;
         max-height:19px!important;
     }
-}
-
-/* Fullscreen uses the same complete-box structure. */
-:fullscreen .hybrid-team-stats,
-:-webkit-full-screen .hybrid-team-stats{
-    height:var(--complete-team-box-height)!important;
-}
-
-:fullscreen .hybrid-team-stats .team-bench-footer,
-:-webkit-full-screen .hybrid-team-stats .team-bench-footer{
-    display:flex!important;
-    visibility:visible!important;
-    opacity:1!important;
-    left:5px!important;
-    bottom:5px!important;
 }
 
 </style>
@@ -7356,25 +7214,12 @@ async function renderTeamPlayers(team){
             "view-all-button";
 
 
-        if(teamExpandedMap[team]){
+        btn.textContent="Bench";
 
-            btn.textContent="Close";
-
-            btn.onclick=
-                ()=>hideExtraBenchPlayers(
-                    team
-                );
-
-        }
-        else{
-
-            btn.textContent="Bench";
-
-            btn.onclick=
-                ()=>viewAllBenchPlayers(
-                    team
-                );
-        }
+        btn.onclick=
+            ()=>toggleBenchPlayers(
+                team
+            );
 
 
         footer.appendChild(
@@ -7391,9 +7236,14 @@ async function renderTeamPlayers(team){
 }
 
 
-async function viewAllBenchPlayers(team){
+async function toggleBenchPlayers(team){
 
-    teamExpandedMap[team]=true;
+    const nextExpanded=
+        !teamExpandedMap[team];
+
+    teamExpandedMap[team]=
+        nextExpanded;
+
 
     const containerId=
         teamContainerMap[team];
@@ -7409,52 +7259,6 @@ async function viewAllBenchPlayers(team){
         return;
     }
 
-    const scroll=
-        container.querySelector(
-            ".table-scroll"
-        );
-
-    const button=
-        container.querySelector(
-            ".team-bench-footer .view-all-button"
-        );
-
-    if(scroll){
-
-        scroll.classList.add(
-            "expanded"
-        );
-
-        scroll.scrollTop=
-            teamRosterScrollMap[team] ||
-            0;
-    }
-
-    if(button){
-
-        button.textContent=
-            "Close";
-    }
-}
-
-
-async function hideExtraBenchPlayers(team){
-
-    teamExpandedMap[team]=false;
-
-    const containerId=
-        teamContainerMap[team];
-
-    const container=
-        containerId
-            ?document.getElementById(
-                containerId
-            )
-            :null;
-
-    if(!container){
-        return;
-    }
 
     const scroll=
         container.querySelector(
@@ -7466,22 +7270,49 @@ async function hideExtraBenchPlayers(team){
             ".team-bench-footer .view-all-button"
         );
 
+
     if(scroll){
 
-        teamRosterScrollMap[team]=
-            scroll.scrollTop;
+        if(nextExpanded){
 
-        scroll.scrollTop=0;
+            scroll.classList.add(
+                "expanded"
+            );
 
-        scroll.classList.remove(
-            "expanded"
-        );
+            scroll.scrollTop=
+                teamRosterScrollMap[team] ||
+                0;
+        }
+        else{
+
+            teamRosterScrollMap[team]=
+                scroll.scrollTop;
+
+            scroll.scrollTop=0;
+
+            scroll.classList.remove(
+                "expanded"
+            );
+        }
     }
+
 
     if(button){
 
         button.textContent=
             "Bench";
+
+        button.setAttribute(
+            "aria-pressed",
+            nextExpanded
+                ?"true"
+                :"false"
+        );
+
+        button.title=
+            nextExpanded
+                ?"Hide bench players"
+                :"Show bench players";
     }
 }
 
