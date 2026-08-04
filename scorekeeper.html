@@ -2557,6 +2557,155 @@ body.auth-pending > *:not(#scorekeeperAuthScreen):not(script){
     border-color:#ff6b00;
     color:#ff6b00;
 }
+
+/* =========================================================
+   PAPER-SHEET PRINT PREVIEW OVERRIDE
+   The preview is rendered as a complete A4 landscape sheet.
+   ========================================================= */
+
+.team-stats-modal{
+    align-items:flex-start;
+    overflow:auto;
+}
+
+.team-stats-modal-content{
+    width:min(1280px,98vw);
+    max-width:1280px;
+    margin:auto;
+}
+
+.team-stats-preview{
+    padding:24px;
+    background:#d9dde2;
+    overflow:auto;
+}
+
+.print-report{
+    width:297mm;
+    min-height:210mm;
+    margin:0 auto;
+    padding:12mm;
+    box-sizing:border-box;
+    background:#fff;
+    border:0;
+    box-shadow:0 4px 22px rgba(0,0,0,.22);
+}
+
+.print-report .table-scroll{
+    width:100%;
+    overflow:visible!important;
+}
+
+.print-report .player-table{
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    table-layout:fixed!important;
+}
+
+.print-report .player-table th,
+.print-report .player-table td{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.print-report .col-number{
+    width:4%;
+}
+
+.print-report .col-player{
+    width:15%;
+}
+
+.print-report .col-min{
+    width:5%;
+}
+
+.print-report .col-stat{
+    width:4.5%;
+}
+
+.print-report .col-shot{
+    width:7%;
+}
+
+.print-report .col-plusminus{
+    width:5%;
+}
+
+@media(max-width:1100px){
+    .print-report{
+        transform-origin:top left;
+    }
+}
+
+@page{
+    size:A4 landscape;
+    margin:0;
+}
+
+@media print{
+
+    html,
+    body{
+        width:297mm;
+        min-height:210mm;
+        margin:0!important;
+        padding:0!important;
+        background:#fff!important;
+    }
+
+    #teamStatsModal{
+        width:297mm!important;
+        min-height:210mm!important;
+        margin:0!important;
+        padding:0!important;
+        overflow:visible!important;
+    }
+
+    .team-stats-modal-content{
+        width:297mm!important;
+        min-height:210mm!important;
+        margin:0!important;
+        padding:0!important;
+        background:#fff!important;
+    }
+
+    .team-stats-preview{
+        width:297mm!important;
+        min-height:210mm!important;
+        margin:0!important;
+        padding:0!important;
+        overflow:visible!important;
+        background:#fff!important;
+    }
+
+    .print-report{
+        width:297mm!important;
+        min-height:210mm!important;
+        margin:0!important;
+        padding:10mm!important;
+        border:0!important;
+        box-shadow:none!important;
+        page-break-inside:avoid;
+    }
+
+    .print-report-header,
+    .print-team-banner,
+    .print-summary-grid,
+    .print-signatures{
+        break-inside:avoid;
+        page-break-inside:avoid;
+    }
+
+    .print-report .player-table{
+        width:100%!important;
+        min-width:0!important;
+        table-layout:fixed!important;
+    }
+}
+
 </style>
 </head>
 
