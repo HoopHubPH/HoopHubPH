@@ -8169,9 +8169,74 @@ async function updatePlayerStat(
                 selectedScoringTags||{};
 
             /*
-               Finish any pending substitution/stat saves before
+               Synchronize every loaded player\'s game assignment
+               and current on-court status before the scoring RPC.
+
+               The RPC updates plus/minus by team_id and on_court.
+               Some older player_game_stats rows may have a null
+               team_id, which causes only the scorer to receive the
+               plus/minus change.
+            */
+            const lineupRows=
+                Object.keys(playerTeamMap)
+                .map(id=>{
+
+                    const playerTeam=
+                        playerTeamMap[id];
+
+                    const assignedTeamId=
+                        playerTeam
+                        ?teamIdMap[playerTeam]
+                        :null;
+
+                    if(!assignedTeamId){
+                        return null;
+                    }
+
+                    return {
+                        player_id:id,
+                        game_id:currentGame.id,
+                        team_id:assignedTeamId,
+                        on_court:
+                            playerOnCourt[id]===true
+                    };
+                })
+                .filter(Boolean);
+
+            if(lineupRows.length){
+
+                const {
+                    error:lineupSyncError
+                }=
+                await supabaseClient
+                .from("player_game_stats")
+                .upsert(
+                    lineupRows,
+                    {
+                        onConflict:
+                            "player_id,game_id"
+                    }
+                );
+
+                if(lineupSyncError){
+
+                    console.error(
+                        "Lineup synchronization error:",
+                        lineupSyncError
+                    );
+
+                    showStatus(
+                        "Unable to synchronize the active lineups before scoring."
+                    );
+
+                    return {changed:false};
+                }
+            }
+
+            /*
+               Finish any remaining pending stat saves before
                recording the basket. This prevents an older queued
-               plus/minus value from overwriting the RPC result.
+               value from overwriting the RPC result.
             */
             await flushAllPendingStats();
 
