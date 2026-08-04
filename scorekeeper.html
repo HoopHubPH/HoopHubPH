@@ -3828,6 +3828,163 @@ align-items:start;
 }
 
 </style>
+<style>
+
+/* =========================================================
+   PROPORTIONAL TEAM STAT BOX + EASY BENCH ACCESS
+   Final override for the live scorekeeper tables.
+   ========================================================= */
+
+.hybrid-team-stats{
+    min-height:0!important;
+    height:100%!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow:hidden!important;
+    padding:5px!important;
+}
+
+.hybrid-team-stats .easy-team-header{
+    flex:0 0 24px!important;
+    min-height:24px!important;
+    margin:0 0 3px!important;
+    padding:2px 26px 3px 4px!important;
+}
+
+.hybrid-team-stats .table-scroll{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    width:100%!important;
+    max-height:none!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    border:1px solid #e5e5e5;
+    border-radius:4px;
+    background:#fff;
+}
+
+.hybrid-team-stats .player-table{
+    min-width:820px!important;
+}
+
+.hybrid-team-stats .player-table th{
+    padding:3px 2px!important;
+    font-size:8px!important;
+    line-height:1!important;
+}
+
+.hybrid-team-stats .player-table td{
+    height:25px!important;
+    padding:2px 3px!important;
+    font-size:8.5px!important;
+    line-height:1!important;
+}
+
+.hybrid-team-stats .player-name,
+.hybrid-team-stats .stat-value{
+    font-size:9px!important;
+    line-height:1!important;
+}
+
+.hybrid-team-stats .sub-button{
+    min-height:18px!important;
+    padding:2px 5px!important;
+    margin:0!important;
+    font-size:7px!important;
+    line-height:1!important;
+}
+
+/* Compact bench control row */
+.hybrid-team-stats .view-all-row{
+    display:table-row!important;
+    background:#fff!important;
+}
+
+.hybrid-team-stats .view-all-row td{
+    height:24px!important;
+    padding:2px 5px!important;
+    text-align:left!important;
+    background:#fff!important;
+    border-top:1px solid #ddd!important;
+    border-bottom:0!important;
+}
+
+.hybrid-team-stats .view-all-button{
+    display:inline-flex!important;
+    width:auto!important;
+    min-width:46px!important;
+    height:18px!important;
+    min-height:18px!important;
+    align-items:center!important;
+    justify-content:center!important;
+    padding:0 7px!important;
+    border:1px solid #999!important;
+    border-radius:3px!important;
+    background:#f1f1f1!important;
+    color:#222!important;
+    font-size:8px!important;
+    font-weight:700!important;
+    line-height:1!important;
+    opacity:1!important;
+    cursor:pointer!important;
+    box-shadow:none!important;
+}
+
+.hybrid-team-stats .view-all-button:hover{
+    border-color:#ff6b00!important;
+    background:#ff6b00!important;
+    color:#fff!important;
+}
+
+/* When Bench is open, keep the team box proportional and scroll internally. */
+.hybrid-team-stats .table-scroll.expanded,
+.hybrid-team-stats .table-scroll.roster-expanded,
+.hybrid-team-stats .table-scroll.nba-roster-expanded{
+    overflow-y:auto!important;
+    max-height:100%!important;
+    scrollbar-gutter:stable;
+    overscroll-behavior:contain;
+}
+
+/* Desktop/laptop: equal home and away team boxes on the left */
+@media(min-width:901px){
+    .hybrid-scorekeeper{
+        grid-template-columns:minmax(0,1.65fr) minmax(330px,.75fr)!important;
+        grid-template-rows:minmax(0,1fr) minmax(0,1fr)!important;
+        grid-template-areas:
+            "home controls"
+            "away controls"!important;
+        align-items:stretch!important;
+        min-height:0!important;
+        height:100%!important;
+        overflow:hidden!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-team-stats:nth-of-type(2){
+        grid-area:home!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-team-stats:nth-of-type(3){
+        grid-area:away!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-action-panel{
+        grid-area:controls!important;
+        min-height:0!important;
+        height:100%!important;
+        overflow:auto!important;
+    }
+}
+
+/* Prevent coarse-pointer rule from making Bench tall again. */
+@media(pointer:coarse){
+    .hybrid-team-stats .view-all-button{
+        min-height:18px!important;
+        height:18px!important;
+    }
+}
+
+</style>
 </head>
 
 <body class="auth-pending">
@@ -6198,8 +6355,7 @@ async function renderTeamPlayers(team){
 
         if(teamExpandedMap[team]){
 
-            btn.innerHTML=
-                "<span>⌃</span> SHOW LESS";
+            btn.textContent="Close";
 
             btn.onclick=
                 ()=>hideExtraBenchPlayers(
@@ -6209,10 +6365,7 @@ async function renderTeamPlayers(team){
         }
         else{
 
-            btn.innerHTML=
-                "<span>⌄</span> VIEW BENCH ("+
-                bench.length+
-                ")";
+            btn.textContent="Bench";
 
             btn.onclick=
                 ()=>viewAllBenchPlayers(
