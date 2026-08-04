@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Clock Controller | Hoop Hub PH</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f5f5f5;
+    color:#222;
+}
+
+header{
+    background:#111;
+    color:#fff;
+    padding:14px 5%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.logo{
+    color:#fff;
+    text-decoration:none;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.logo span{
+    color:#ff6b00;
+}
+
+.container{
+    width:min(900px,96%);
+    margin:20px auto;
+}
+
+.panel{
+    background:#fff;
+    border-radius:10px;
+    padding:16px;
+    box-shadow:0 4px 14px rgba(0,0,0,.08);
+}
+
+.game-loader{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.game-loader input{
+    width:110px;
+    padding:9px;
+    border:1px solid #ccc;
+    border-radius:5px;
+}
+
+.game-loader button{
+    padding:9px 14px;
+    border:0;
+    border-radius:5px;
+    background:#ff6b00;
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#statusMessage{
+    margin-top:12px;
+    padding:9px;
+    border-radius:5px;
+    background:#f3f3f3;
+    color:#555;
+    font-size:12px;
+}
+
+.controller-content{
+    display:none;
+    margin-top:15px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+    <a class="logo" href="index.html">
+        HOOP <span>HUB PH</span>
+    </a>
+
+    <strong>CLOCK CONTROLLER</strong>
+
+</header>
+
+<div class="container">
+
+    <div class="panel">
+
+        <div class="game-loader">
+
+            <label for="gameIdInput">
+                <strong>Game ID:</strong>
+            </label>
+
+            <input
+                id="gameIdInput"
+                type="number"
+                min="1"
+                placeholder="Enter ID"
+            >
+
+            <button
+                id="loadGameButton"
+                type="button"
+            >
+                LOAD GAME
+            </button>
+
+        </div>
+
+        <div id="statusMessage">
+            Enter a Game ID to begin.
+        </div>
+
+        <div
+            id="controllerContent"
+            class="controller-content"
+        >
+            Clock controls will appear here.
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+/*
+Replace these two values with the same values
+used in your scorekeeper.html.
+*/
+
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
+let currentGame = null;
+
+const gameIdInput =
+    document.getElementById("gameIdInput");
+
+const loadGameButton =
+    document.getElementById("loadGameButton");
+
+const statusMessage =
+    document.getElementById("statusMessage");
+
+const controllerContent =
+    document.getElementById("controllerContent");
+
+
+function showStatus(message){
+
+    statusMessage.textContent = message;
+}
+
+
+async function loadGame(){
+
+    const gameId =
+        Number(gameIdInput.value);
+
+    if(!Number.isInteger(gameId) || gameId <= 0){
+
+        showStatus("Enter a valid Game ID.");
+        return;
+    }
+
+    loadGameButton.disabled = true;
+    loadGameButton.textContent = "LOADING...";
+
+    try{
+
+        const { data, error } =
+            await supabaseClient
+                .from("games")
+                .select("*")
+                .eq("id", gameId)
+                .single();
+
+        if(error){
+            throw error;
+        }
+
+        currentGame = data;
+
+        showStatus(
+            `Game ${currentGame.id} loaded successfully.`
+        );
+
+        controllerContent.style.display =
+            "block";
+
+    }
+    catch(error){
+
+        console.error(error);
+
+        currentGame = null;
+
+        controllerContent.style.display =
+            "none";
+
+        showStatus(
+            "Unable to load the game: " +
+            error.message
+        );
+    }
+    finally{
+
+        loadGameButton.disabled = false;
+        loadGameButton.textContent = "LOAD GAME";
+    }
+}
+
+
+loadGameButton.addEventListener(
+    "click",
+    loadGame
+);
+
+
+gameIdInput.addEventListener(
+    "keydown",
+    event => {
+
+        if(event.key === "Enter"){
+            loadGame();
+        }
+    }
+);
+
+</script>
+
+</body>
+
+</html>
