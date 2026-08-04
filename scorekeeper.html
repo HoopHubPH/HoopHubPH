@@ -8128,6 +8128,184 @@ async function updatePlayerStat(
             :null;
 
 
+        /*
+           RELIABLE MADE-SHOT TRANSACTION
+
+           Positive made shots are now recorded through one
+           Supabase RPC. The database updates the game score,
+           scorer statistics, all on-court plus/minus values,
+           and the scoring-history event as one transaction.
+
+           Negative amounts still use the existing correction
+           path until reverse_basketball_score() is installed.
+        */
+
+        if(
+            madeDelta>0&&
+            currentGame
+        ){
+
+            const team=
+                playerTeamMap[playerId];
+
+            const teamId=
+                team
+                ?teamIdMap[team]
+                :null;
+
+            if(!team||!teamId){
+                showStatus(
+                    "Unable to identify the scoring team."
+                );
+
+                return {changed:false};
+            }
+
+            const tags=
+                selectedScoringTags||{};
+
+            const {
+                data:rpcData,
+                error:rpcError
+            }=
+            await supabaseClient.rpc(
+                "record_basketball_score",
+                {
+                    p_game_id:
+                        currentGame.id,
+
+                    p_player_id:
+                        playerId,
+
+                    p_team_id:
+                        teamId,
+
+                    p_shot_type:
+                        shotType,
+
+                    p_period:
+                        currentGame.period||null,
+
+                    p_game_clock_seconds:
+                        Number(clockSeconds||0),
+
+                    p_is_paint:
+                        shotType==="2PT"&&
+                        tags.is_paint===true,
+
+                    p_is_fast_break:
+                        tags.is_fast_break===true,
+
+                    p_is_off_turnover:
+                        tags.is_off_turnover===true,
+
+                    p_is_second_chance:
+                        tags.is_second_chance===true
+                }
+            );
+
+            if(rpcError){
+                console.error(
+                    "Reliable scoring RPC error:",
+                    rpcError
+                );
+
+                showStatus(
+                    "Unable to record the basket: "+
+                    (rpcError.message||"Unknown error")
+                );
+
+                return {changed:false};
+            }
+
+            const rpcResult=
+                Array.isArray(rpcData)
+                ?rpcData[0]
+                :rpcData;
+
+            if(!rpcResult){
+                showStatus(
+                    "The scoring function returned no result."
+                );
+
+                return {changed:false};
+            }
+
+            currentGame={
+                ...currentGame,
+                home_score:
+                    Number(rpcResult.home_score||0),
+                away_score:
+                    Number(rpcResult.away_score||0)
+            };
+
+            document.getElementById(
+                "homeScore"
+            ).textContent=
+                currentGame.home_score;
+
+            document.getElementById(
+                "awayScore"
+            ).textContent=
+                currentGame.away_score;
+
+            /*
+               Reload every player's game row because the RPC
+               also changed plus/minus for all on-court players.
+            */
+
+            const {
+                data:updatedRows,
+                error:statsReloadError
+            }=
+            await supabaseClient
+            .from("player_game_stats")
+            .select("*")
+            .eq("game_id",currentGame.id);
+
+            if(statsReloadError){
+                console.error(
+                    "Post-score stat reload error:",
+                    statsReloadError
+                );
+
+                showStatus(
+                    "Basket saved, but the refreshed statistics could not be loaded."
+                );
+            }
+            else{
+
+                for(const row of updatedRows||[]){
+                    playerStatsMap[String(row.player_id)]={
+                        ...(playerStatsMap[String(row.player_id)]||{}),
+                        ...row
+                    };
+                }
+
+                for(const id of Object.keys(playerStatsMap)){
+                    await refreshPlayerRow(id);
+                }
+            }
+
+            clearSelectedScoringTags();
+            quickFastBreak=false;
+            resetQuickScoringContext(team);
+            await loadScoringBreakdown();
+
+            if(hoveredPlayerId===playerId){
+                updatePopupContent(playerId);
+            }
+
+            return {
+                changed:true,
+                removedScoringEvent:null,
+                scoringTags:selectedScoringTags,
+                eventId:rpcResult.event_id,
+                eventSequence:rpcResult.event_sequence
+            };
+        }
+
+
         stats[statKey]=
             newMade;
 
