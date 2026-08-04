@@ -3540,9 +3540,7 @@ align-items:start;
     }
 
     /* The full bench is already shown, so this row is unnecessary. */
-    .hybrid-team-stats .view-all-row{
-        display:none!important;
-    }
+    .hybrid-team-stats 
 }
 
 @media (min-width:901px) and (max-height:760px){
@@ -3733,6 +3731,104 @@ align-items:start;
 
     .hybrid-team-stats .view-all-button{
         transition:none;
+    }
+}
+
+</style>
+<style>
+
+/* =========================================================
+   FINAL ROSTER CONTROL — VIEW BENCH BEFORE SCROLL
+   This block intentionally overrides older roster CSS.
+   ========================================================= */
+
+.hybrid-team-stats .view-all-row{
+    display:table-row!important;
+    visibility:visible!important;
+}
+
+.hybrid-team-stats .view-all-row td{
+    display:table-cell!important;
+    position:sticky;
+    bottom:0;
+    z-index:20;
+    padding:5px!important;
+    background:#fff!important;
+    border-top:1px solid #ddd!important;
+    box-shadow:0 -3px 8px rgba(0,0,0,.08);
+}
+
+.hybrid-team-stats .view-all-button{
+    display:flex!important;
+    width:100%!important;
+    min-height:30px;
+    align-items:center;
+    justify-content:center;
+    border:1px solid #ff6b00!important;
+    border-radius:6px;
+    background:#111!important;
+    color:#fff!important;
+    font-size:9px!important;
+    font-weight:900!important;
+    letter-spacing:.35px;
+    cursor:pointer;
+}
+
+.hybrid-team-stats .view-all-button:hover{
+    background:#ff6b00!important;
+    color:#fff!important;
+}
+
+/* Before VIEW BENCH: show court players and button, no vertical scrollbar. */
+.hybrid-team-stats .table-scroll.roster-collapsed{
+    height:auto!important;
+    max-height:none!important;
+    overflow-y:hidden!important;
+    overflow-x:auto!important;
+}
+
+/* After VIEW BENCH: reveal roster and activate vertical scrolling. */
+.hybrid-team-stats .table-scroll.roster-expanded{
+    height:clamp(145px,calc((100vh - 245px) / 2),320px)!important;
+    max-height:clamp(145px,calc((100vh - 245px) / 2),320px)!important;
+    overflow-y:auto!important;
+    overflow-x:auto!important;
+    scrollbar-gutter:stable;
+    overscroll-behavior:contain;
+    scroll-behavior:smooth;
+}
+
+.hybrid-team-stats .table-scroll.roster-expanded::-webkit-scrollbar{
+    width:10px;
+    height:9px;
+}
+
+.hybrid-team-stats .table-scroll.roster-expanded::-webkit-scrollbar-track{
+    background:#eee;
+}
+
+.hybrid-team-stats .table-scroll.roster-expanded::-webkit-scrollbar-thumb{
+    background:#777;
+    border:2px solid #eee;
+    border-radius:8px;
+}
+
+.hybrid-team-stats .table-scroll.roster-expanded::-webkit-scrollbar-thumb:hover{
+    background:#ff6b00;
+}
+
+.hybrid-team-stats .table-scroll.roster-expanded tbody tr:not(.on-court):not(.view-all-row){
+    animation:hoopBenchReveal .22s ease both;
+}
+
+@keyframes hoopBenchReveal{
+    from{
+        opacity:0;
+        transform:translateY(-4px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
     }
 }
 
@@ -5961,7 +6057,9 @@ async function renderTeamPlayers(team){
         );
 
     scroll.className=
-        "table-scroll"+(teamExpandedMap[team]?" expanded nba-roster-expanded":"");
+        teamExpandedMap[team]
+            ?"table-scroll roster-expanded"
+            :"table-scroll roster-collapsed";
 
     scroll.dataset.team=
         team;
@@ -6107,8 +6205,7 @@ async function renderTeamPlayers(team){
 
         if(teamExpandedMap[team]){
 
-            btn.innerHTML=
-                "<span>⌃</span> SHOW LESS";
+            btn.textContent="SHOW LESS";
 
             btn.onclick=
                 ()=>hideExtraBenchPlayers(
@@ -6118,10 +6215,7 @@ async function renderTeamPlayers(team){
         }
         else{
 
-            btn.innerHTML=
-                "<span>⌄</span> VIEW BENCH ("+
-                bench.length+
-                ")";
+            btn.textContent="VIEW BENCH ("+bench.length+")";
 
             btn.onclick=
                 ()=>viewAllBenchPlayers(
@@ -6150,7 +6244,7 @@ async function renderTeamPlayers(team){
 
 async function viewAllBenchPlayers(team){
 
-    teamExpandedMap[team]=true;
+    teamExpandedMap[team]=false;
 
     await renderTeamPlayers(
         team
