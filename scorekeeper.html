@@ -2938,6 +2938,18 @@ body.auth-pending > *:not(#scorekeeperAuthScreen):not(script){
     }
 }
 
+
+
+/* Scroll only after VIEW ALL is used */
+.hybrid-team-stats .table-scroll{
+    max-height:none;
+    overflow-y:visible;
+}
+.hybrid-team-stats .table-scroll.expanded{
+    max-height:320px;
+    overflow-y:auto;
+}
+
 </style>
 
 <style>
@@ -5645,7 +5657,7 @@ async function loadPlayersForTeam(
         containerId;
 
     teamExpandedMap[team]=
-        true;
+        false;
 
 
     const {
@@ -5763,7 +5775,7 @@ async function renderTeamPlayers(team){
         );
 
     scroll.className=
-        "table-scroll";
+        "table-scroll"+(teamExpandedMap[team]?" expanded":"");
 
 
     const table=
