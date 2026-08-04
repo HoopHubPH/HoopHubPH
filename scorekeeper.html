@@ -219,7 +219,7 @@ nav{
 
 .clock-controls{
     display:grid;
-    grid-template-columns:repeat(5,minmax(0,1fr));
+    grid-template-columns:repeat(7,minmax(0,1fr));
     gap:3px;
 }
 
@@ -245,7 +245,7 @@ nav{
 
 .shot-clock-controls{
     display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
+    grid-template-columns:repeat(6,minmax(0,1fr));
     gap:3px;
 }
 
@@ -3022,6 +3022,8 @@ LOG OUT
 <button onclick="resetClock()">RESET</button>
 <button class="manual-time-adjustment" onclick="adjustGameClock(-1)" title="Remove 1 second from game clock">−1</button>
 <button class="manual-time-adjustment" onclick="adjustGameClock(1)" title="Add 1 second to game clock">+1</button>
+<button class="manual-time-adjustment" onclick="adjustGameClock(-0.1)" title="Remove 0.1 second from game clock">−0.1</button>
+<button class="manual-time-adjustment" onclick="adjustGameClock(0.1)" title="Add 0.1 second to game clock">+0.1</button>
 </div>
 
 </div>
@@ -3038,6 +3040,8 @@ LOG OUT
 <button onclick="resetShotClock(14)" title="Reset shot clock to 14 seconds">14</button>
 <button class="manual-time-adjustment" onclick="adjustShotClock(-1)" title="Remove 1 second from shot clock">−1</button>
 <button class="manual-time-adjustment" onclick="adjustShotClock(1)" title="Add 1 second to shot clock">+1</button>
+<button class="manual-time-adjustment" onclick="adjustShotClock(-0.1)" title="Remove 0.1 second from shot clock">−0.1</button>
+<button class="manual-time-adjustment" onclick="adjustShotClock(0.1)" title="Add 0.1 second to shot clock">+0.1</button>
 </div>
 </div>
 
@@ -9725,10 +9729,16 @@ async function adjustShotClock(amount){
 
     await saveClockState();
 
+    const adjustmentLabel=
+        Math.abs(adjustment) === 0.1
+        ?"0.1 second"
+        :Math.abs(adjustment) + " second" +
+            (Math.abs(adjustment) === 1 ? "" : "s");
+
     showStatus(
         adjustment > 0
-        ?"Added 1 second to the shot clock."
-        :"Removed 1 second from the shot clock."
+        ?"Added " + adjustmentLabel + " to the shot clock."
+        :"Removed " + adjustmentLabel + " from the shot clock."
     );
 }
 
@@ -10677,10 +10687,16 @@ async function adjustGameClock(amount){
     await saveClockState();
 
 
+    const adjustmentLabel=
+        Math.abs(adjustment) === 0.1
+        ?"0.1 second"
+        :Math.abs(adjustment) + " second" +
+            (Math.abs(adjustment) === 1 ? "" : "s");
+
     showStatus(
         adjustment > 0
-        ?"Added 1 second to the game clock."
-        :"Removed 1 second from the game clock."
+        ?"Added " + adjustmentLabel + " to the game clock."
+        :"Removed " + adjustmentLabel + " from the game clock."
     );
 }
 
