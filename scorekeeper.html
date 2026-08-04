@@ -8168,6 +8168,13 @@ async function updatePlayerStat(
             const tags=
                 selectedScoringTags||{};
 
+            /*
+               Finish any pending substitution/stat saves before
+               recording the basket. This prevents an older queued
+               plus/minus value from overwriting the RPC result.
+            */
+            await flushAllPendingStats();
+
             const {
                 data:rpcData,
                 error:rpcError
@@ -8280,14 +8287,81 @@ async function updatePlayerStat(
             else{
 
                 for(const row of updatedRows||[]){
-                    playerStatsMap[String(row.player_id)]={
-                        ...(playerStatsMap[String(row.player_id)]||{}),
+
+                    const playerKey=
+                        String(row.player_id);
+
+                    /*
+                       Remove any stale queued plus/minus value for
+                       this player and game. The database RPC result
+                       is now the authoritative value.
+                    */
+                    const saveKey=
+                        playerKey+
+                        "|"+
+                        String(currentGame.id);
+
+                    const queuedChanges=
+                        statSaveQueue.get(saveKey);
+
+                    if(
+                        queuedChanges&&
+                        Object.prototype.hasOwnProperty.call(
+                            queuedChanges,
+                            "plus_minus"
+                        )
+                    ){
+
+                        const remainingChanges={
+                            ...queuedChanges
+                        };
+
+                        delete remainingChanges.plus_minus;
+
+                        if(
+                            Object.keys(remainingChanges).length
+                        ){
+                            statSaveQueue.set(
+                                saveKey,
+                                remainingChanges
+                            );
+                        }
+                        else{
+                            statSaveQueue.delete(saveKey);
+                            clearTimeout(
+                                statSaveTimers.get(saveKey)
+                            );
+                            statSaveTimers.delete(saveKey);
+                            statSaveRetryAfter.delete(saveKey);
+                        }
+                    }
+
+                    playerStatsMap[playerKey]={
+                        ...(playerStatsMap[playerKey]||{}),
                         ...row
                     };
+
+                    playerOnCourt[playerKey]=
+                        Boolean(row.on_court);
                 }
 
-                for(const id of Object.keys(playerStatsMap)){
-                    await refreshPlayerRow(id);
+                /*
+                   Re-render both complete team tables so every
+                   visible plus/minus cell uses the fresh Supabase
+                   value, including rows that were collapsed or
+                   were not currently in the DOM.
+                */
+                await renderTeamPlayers("home");
+                await renderTeamPlayers("away");
+                renderEasyScorekeeper();
+
+                if(
+                    hoveredPlayerId&&
+                    playerStatsMap[String(hoveredPlayerId)]
+                ){
+                    updatePopupContent(
+                        String(hoveredPlayerId)
+                    );
                 }
             }
 
