@@ -2983,6 +2983,492 @@ align-items:start;
 }
 </style>
 
+<style>
+
+/* =========================================================
+   HOOP HUB PH — TRUE ONE-SCREEN SCOREKEEPER
+   Desktop/laptop viewport layout. No full-page scrolling.
+   Existing functions and data logic are unchanged.
+   ========================================================= */
+
+@media (min-width: 901px) and (min-height: 620px){
+
+    html,
+    body{
+        width:100%;
+        height:100%;
+        overflow:hidden;
+    }
+
+    body{
+        display:flex;
+        flex-direction:column;
+    }
+
+    header{
+        flex:0 0 34px;
+        min-height:34px;
+        padding:5px 1.5%;
+    }
+
+    .logo{
+        font-size:16px;
+    }
+
+    nav a{
+        margin-left:9px;
+        font-size:10px;
+    }
+
+    .container{
+        flex:1 1 auto;
+        min-height:0;
+        height:calc(100vh - 34px);
+        padding:4px;
+        display:grid;
+        grid-template-rows:30px minmax(105px,16vh) minmax(0,1fr) 34px;
+        gap:4px;
+        overflow:hidden;
+    }
+
+    .game-selector{
+        height:30px;
+        min-height:30px;
+        margin:0;
+        padding:3px 7px;
+        gap:6px;
+        border-radius:5px;
+    }
+
+    .game-selector h2{
+        font-size:11px;
+    }
+
+    .game-selector input{
+        width:70px;
+        height:23px;
+        padding:2px 5px;
+        font-size:10px;
+    }
+
+    .load-button{
+        height:23px;
+        padding:2px 8px;
+        font-size:9px;
+    }
+
+    #statusMessage{
+        position:fixed;
+        top:37px;
+        left:50%;
+        z-index:999;
+        width:min(460px,80vw);
+        margin:0;
+        padding:5px 8px;
+        transform:translateX(-50%);
+        font-size:9px;
+        box-shadow:0 3px 10px rgba(0,0,0,.15);
+    }
+
+    .scoreboard{
+        min-height:0;
+        height:100%;
+        margin:0;
+        padding:4px;
+        gap:5px;
+        border-radius:6px;
+        overflow:hidden;
+    }
+
+    .team-control{
+        height:100%;
+        min-height:0;
+        padding:4px;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+    }
+
+    .team-control h2{
+        max-width:100%;
+        overflow:hidden;
+        font-size:13px;
+        line-height:1.05;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+    }
+
+    .score{
+        margin:1px 0 2px;
+        font-size:30px;
+        line-height:1;
+    }
+
+    .clock-area{
+        height:100%;
+        min-height:0;
+        padding:4px;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        overflow:hidden;
+    }
+
+    .clock-display-row{
+        min-height:0;
+        margin-bottom:3px;
+        gap:4px;
+    }
+
+    .clock-card{
+        min-height:50px;
+        padding:4px;
+        gap:2px;
+    }
+
+    .clock-label,
+    .shot-clock-label{
+        font-size:8px;
+    }
+
+    .clock,
+    .shot-clock{
+        font-size:25px;
+    }
+
+    .clock-controls,
+    .shot-clock-controls{
+        gap:2px;
+    }
+
+    .clock-card button{
+        min-height:19px;
+        padding:2px 1px;
+        font-size:6.8px;
+    }
+
+    .period-buttons{
+        margin-top:3px;
+        gap:3px;
+    }
+
+    .period-buttons button{
+        min-height:20px;
+        padding:2px 7px;
+        font-size:8px;
+    }
+
+    .hybrid-scorekeeper{
+        min-height:0;
+        height:100%;
+        margin:0;
+        display:grid;
+        grid-template-columns:minmax(0,1.67fr) minmax(340px,.73fr);
+        grid-template-rows:minmax(0,1fr) minmax(0,1fr);
+        grid-template-areas:
+            "home controls"
+            "away controls";
+        gap:4px;
+        overflow:hidden;
+    }
+
+    .hybrid-scorekeeper > .hybrid-action-panel{
+        grid-area:controls;
+    }
+
+    .hybrid-scorekeeper > .hybrid-team-stats:nth-of-type(2){
+        grid-area:home;
+    }
+
+    .hybrid-scorekeeper > .hybrid-team-stats:nth-of-type(3){
+        grid-area:away;
+    }
+
+    .hybrid-scorekeeper > .easy-breakdown{
+        display:none;
+    }
+
+    .hybrid-team-stats{
+        min-width:0;
+        min-height:0;
+        height:100%;
+        padding:4px;
+        display:flex;
+        flex-direction:column;
+        overflow:hidden;
+        border-radius:6px;
+    }
+
+    .hybrid-team-stats .easy-team-header{
+        flex:0 0 22px;
+        min-height:22px;
+        margin:0 0 2px;
+        padding:1px 25px 3px 3px;
+    }
+
+    .hybrid-team-stats .easy-team-header h2{
+        font-size:11px;
+    }
+
+    .hybrid-team-stats .print-icon{
+        top:0;
+        width:20px;
+        height:20px;
+        font-size:12px;
+    }
+
+    .hybrid-instruction{
+        display:none;
+    }
+
+    .hybrid-team-stats .table-scroll{
+        flex:1 1 auto;
+        min-height:0;
+        max-height:none;
+        overflow:auto;
+        border:1px solid #eee;
+        border-radius:3px;
+    }
+
+    .hybrid-team-stats .player-table{
+        width:100%;
+        min-width:820px;
+    }
+
+    .hybrid-team-stats .player-table th{
+        padding:2px 1px;
+        font-size:7px;
+    }
+
+    .hybrid-team-stats .player-table td{
+        height:21px;
+        padding:1px 2px;
+        font-size:8.5px;
+        line-height:1;
+    }
+
+    .hybrid-team-stats .player-name,
+    .hybrid-team-stats .stat-value{
+        font-size:9px;
+        line-height:1;
+    }
+
+    .hybrid-team-stats .sub-button{
+        min-height:15px;
+        margin:0;
+        padding:1px 3px;
+        font-size:6.5px;
+    }
+
+    .hybrid-action-panel{
+        min-width:0;
+        min-height:0;
+        height:100%;
+        max-height:none;
+        position:static;
+        padding:5px;
+        display:grid;
+        grid-template-columns:minmax(0,1fr) 78px;
+        grid-template-rows:auto auto auto minmax(0,1fr) auto;
+        gap:3px;
+        overflow:hidden;
+        border-radius:6px;
+    }
+
+    .hybrid-action-panel .quick-player-picker{
+        grid-column:1 / -1;
+        grid-row:1;
+        display:grid;
+        grid-template-columns:1fr;
+        gap:2px;
+    }
+
+    .hybrid-action-panel .quick-player-lane{
+        grid-template-columns:35px minmax(0,1fr);
+        gap:2px;
+    }
+
+    .hybrid-action-panel .quick-player-team-label{
+        min-height:24px;
+        padding:1px;
+        font-size:7px;
+    }
+
+    .hybrid-action-panel .quick-player-buttons{
+        gap:2px;
+    }
+
+    .hybrid-action-panel .quick-player-chip{
+        min-height:28px;
+        padding:3px 2px;
+        font-size:8.3px;
+        line-height:1;
+    }
+
+    .hybrid-action-panel .easy-selected-player{
+        grid-column:1;
+        grid-row:2;
+        min-height:36px;
+        padding:4px 6px;
+    }
+
+    .hybrid-action-panel .easy-selected-label{
+        font-size:6.5px;
+    }
+
+    .hybrid-action-panel .easy-selected-name{
+        font-size:12px;
+    }
+
+    .hybrid-action-panel .easy-selected-stat{
+        font-size:15px;
+    }
+
+    .hybrid-action-panel .easy-correction-controls{
+        grid-column:2;
+        grid-row:2;
+        display:grid;
+        grid-template-columns:1fr;
+        gap:2px;
+    }
+
+    .hybrid-action-panel #easyUndoButton,
+    .hybrid-action-panel #easyDeductModeButton{
+        min-height:17px;
+        margin:0;
+        padding:1px;
+        font-size:7px;
+    }
+
+    .hybrid-action-panel .easy-context-row{
+        grid-column:1 / -1;
+        grid-row:3;
+        margin:0;
+        gap:2px;
+    }
+
+    .hybrid-action-panel .quick-context-heading{
+        font-size:6.5px;
+    }
+
+    .hybrid-action-panel .quick-score-context,
+    .hybrid-action-panel .quick-fast-break-button,
+    .hybrid-action-panel .quick-reset-context-button{
+        min-height:21px;
+        padding:2px 4px;
+        font-size:7px;
+    }
+
+    .hybrid-action-panel .hybrid-actions-layout{
+        grid-column:1 / -1;
+        grid-row:4;
+        min-height:0;
+        display:grid;
+        grid-template-columns:1fr;
+        grid-template-rows:auto auto auto;
+        align-content:stretch;
+        gap:3px;
+        overflow:hidden;
+    }
+
+    .hybrid-action-panel .hybrid-actions-layout .easy-action-group{
+        min-height:0;
+        margin:0;
+        display:flex;
+        flex-direction:column;
+    }
+
+    .hybrid-action-panel .hybrid-actions-layout .easy-action-title{
+        flex:0 0 auto;
+        margin:0 0 2px;
+        font-size:7px;
+    }
+
+    .hybrid-action-panel .hybrid-actions-layout .easy-action-grid{
+        flex:1 1 auto;
+        gap:2px;
+    }
+
+    .hybrid-action-panel .hybrid-actions-layout .easy-action-grid.other-stats{
+        grid-template-columns:repeat(4,minmax(0,1fr));
+    }
+
+    .hybrid-action-panel .hybrid-actions-layout .easy-action-button{
+        min-height:25px;
+        padding:2px 1px;
+        font-size:7.5px;
+        line-height:1;
+    }
+
+    .hybrid-action-panel .easy-action-feedback{
+        grid-column:1 / -1;
+        grid-row:5;
+        min-height:10px;
+        margin:0;
+        font-size:7px;
+    }
+
+    .game-footer-controls{
+        height:34px;
+        min-height:34px;
+        margin:0;
+        padding:4px;
+        gap:8px;
+        align-items:center;
+        overflow:hidden;
+    }
+
+    .game-footer-controls .control-button{
+        min-height:22px;
+        padding:3px 7px;
+        font-size:8px;
+    }
+}
+
+/* Slightly tighter mode for common 1366 x 768 laptop screens */
+@media (min-width: 901px) and (max-height: 760px){
+    .container{
+        grid-template-rows:27px minmax(96px,15vh) minmax(0,1fr) 30px;
+        gap:3px;
+    }
+
+    .game-selector{
+        height:27px;
+        min-height:27px;
+    }
+
+    .hybrid-team-stats .player-table td{
+        height:19px;
+        font-size:8px;
+    }
+
+    .hybrid-action-panel .quick-player-chip{
+        min-height:25px;
+        font-size:7.8px;
+    }
+
+    .hybrid-action-panel .hybrid-actions-layout .easy-action-button{
+        min-height:22px;
+        font-size:7px;
+    }
+
+    .game-footer-controls{
+        height:30px;
+        min-height:30px;
+    }
+}
+
+/* Narrow devices retain normal page scrolling for usability */
+@media (max-width:900px), (max-height:619px){
+    html,
+    body{
+        height:auto;
+        overflow:auto;
+    }
+}
+
+</style>
 </head>
 
 <body class="auth-pending">
