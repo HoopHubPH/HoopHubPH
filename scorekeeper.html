@@ -2832,6 +2832,42 @@ body.auth-pending > *:not(#scorekeeperAuthScreen):not(script){
     font-weight:800;
 }
 
+/* Lead statistics in the official team comparison report */
+.comparison-lead-grid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
+    margin:12px 0 16px;
+}
+
+.comparison-lead-card{
+    padding:12px;
+    border:1px solid #ddd;
+    border-top:4px solid #ff6b00;
+    background:#fafafa;
+    text-align:center;
+}
+
+.comparison-lead-label{
+    color:#666;
+    font-size:8px;
+    font-weight:900;
+    letter-spacing:.7px;
+}
+
+.comparison-lead-value{
+    margin-top:4px;
+    color:#111;
+    font-size:22px;
+    font-weight:900;
+}
+
+@media(max-width:700px){
+    .comparison-lead-grid{
+        grid-template-columns:1fr;
+    }
+}
+
 .comparison-breakdown-grid{
     display:grid;
     grid-template-columns:repeat(4,minmax(0,1fr));
@@ -11182,6 +11218,83 @@ function formatComparisonDifference(homeValue,awayValue){
 }
 
 
+async function calculateGameLeadStatistics(){
+
+    const emptyResult={
+        leadChanges:0,
+        homeBiggestLead:0,
+        awayBiggestLead:0,
+        available:false
+    };
+
+    if(!currentGame){
+        return emptyResult;
+    }
+
+    const {data,error}=
+        await supabaseClient
+        .from("scoring_breakdown_events")
+        .select("team_id,points,created_at")
+        .eq("game_id",currentGame.id)
+        .order("created_at",{ascending:true});
+
+    if(error){
+        console.error("Lead statistics load error:",error);
+        return emptyResult;
+    }
+
+    let homeScore=0;
+    let awayScore=0;
+    let homeBiggestLead=0;
+    let awayBiggestLead=0;
+    let leadChanges=0;
+    let lastLeader=null;
+
+    (data||[]).forEach(event=>{
+
+        const points=Number(event.points||0);
+
+        if(event.team_id===teamIdMap.home){
+            homeScore+=points;
+        }
+        else if(event.team_id===teamIdMap.away){
+            awayScore+=points;
+        }
+        else{
+            return;
+        }
+
+        const margin=homeScore-awayScore;
+
+        if(margin>0){
+            homeBiggestLead=Math.max(homeBiggestLead,margin);
+
+            if(lastLeader==="away"){
+                leadChanges+=1;
+            }
+
+            lastLeader="home";
+        }
+        else if(margin<0){
+            awayBiggestLead=Math.max(awayBiggestLead,Math.abs(margin));
+
+            if(lastLeader==="home"){
+                leadChanges+=1;
+            }
+
+            lastLeader="away";
+        }
+    });
+
+    return{
+        leadChanges,
+        homeBiggestLead,
+        awayBiggestLead,
+        available:true
+    };
+}
+
+
 async function printGameComparison(){
 
     if(!currentGame){
@@ -11238,6 +11351,9 @@ async function printGameComparison(){
     const awayBreakdown =
         scoringBreakdownTotals.away ||
         emptyBreakdownTotals();
+
+    const leadStats =
+        await calculateGameLeadStatistics();
 
     const gameDateRaw =
         currentGame.game_date ||
@@ -11334,6 +11450,29 @@ async function printGameComparison(){
                 <div class="comparison-score-side">AWAY TEAM</div>
                 <div class="comparison-score-name">${awayName}</div>
                 <div class="comparison-score-number">${awayScore}</div>
+            </div>
+        </div>
+
+        <div class="comparison-lead-grid">
+            <div class="comparison-lead-card">
+                <div class="comparison-lead-label">LEAD CHANGES</div>
+                <div class="comparison-lead-value">
+                    ${leadStats.available ? leadStats.leadChanges : "—"}
+                </div>
+            </div>
+
+            <div class="comparison-lead-card">
+                <div class="comparison-lead-label">${homeName} BIGGEST LEAD</div>
+                <div class="comparison-lead-value">
+                    ${leadStats.available ? leadStats.homeBiggestLead : "—"}
+                </div>
+            </div>
+
+            <div class="comparison-lead-card">
+                <div class="comparison-lead-label">${awayName} BIGGEST LEAD</div>
+                <div class="comparison-lead-value">
+                    ${leadStats.available ? leadStats.awayBiggestLead : "—"}
+                </div>
             </div>
         </div>
 
