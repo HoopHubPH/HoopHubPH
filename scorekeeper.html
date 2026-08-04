@@ -3985,6 +3985,75 @@ align-items:start;
 }
 
 </style>
+<style>
+
+/* =========================================================
+   FULLSCREEN TEAM BOX CLEANUP + PERMANENT BENCH CONTROL
+   ========================================================= */
+
+/* Do not stretch a collapsed team box and leave empty space. */
+.hybrid-team-stats{
+    height:auto!important;
+    min-height:0!important;
+    align-self:start!important;
+}
+
+/* The table wrapper should follow its content while collapsed. */
+.hybrid-team-stats .table-scroll:not(.expanded):not(.roster-expanded):not(.nba-roster-expanded){
+    flex:0 0 auto!important;
+    height:auto!important;
+    max-height:none!important;
+    overflow-y:hidden!important;
+}
+
+/* Expanded bench keeps a controlled internal scrolling area. */
+.hybrid-team-stats .table-scroll.expanded,
+.hybrid-team-stats .table-scroll.roster-expanded,
+.hybrid-team-stats .table-scroll.nba-roster-expanded{
+    flex:0 1 auto!important;
+    height:auto!important;
+    max-height:clamp(165px,34vh,310px)!important;
+    overflow-y:auto!important;
+    overflow-x:auto!important;
+}
+
+/* Keep Bench/Close control visible directly below the active five. */
+.hybrid-team-stats .view-all-row td{
+    position:sticky!important;
+    top:24px!important;
+    bottom:auto!important;
+    z-index:18!important;
+    background:#fff!important;
+    box-shadow:0 2px 5px rgba(0,0,0,.08)!important;
+}
+
+/* Keep both team boxes cleanly sized in fullscreen and normal desktop view. */
+@media(min-width:901px){
+    .hybrid-scorekeeper{
+        grid-template-rows:auto auto!important;
+        align-content:start!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-team-stats{
+        height:auto!important;
+        align-self:start!important;
+    }
+}
+
+/* Fullscreen-specific cleanup. */
+:fullscreen .hybrid-scorekeeper,
+:-webkit-full-screen .hybrid-scorekeeper{
+    grid-template-rows:auto auto!important;
+    align-content:start!important;
+}
+
+:fullscreen .hybrid-team-stats,
+:-webkit-full-screen .hybrid-team-stats{
+    height:auto!important;
+    align-self:start!important;
+}
+
+</style>
 </head>
 
 <body class="auth-pending">
@@ -6382,9 +6451,30 @@ async function renderTeamPlayers(team){
             cell
         );
 
-        tbody.appendChild(
-            row
-        );
+        if(teamExpandedMap[team]){
+
+            const insertPosition=
+                Math.min(
+                    onCourt.length,
+                    tbody.children.length
+                );
+
+            const referenceRow=
+                tbody.children[
+                    insertPosition
+                ] || null;
+
+            tbody.insertBefore(
+                row,
+                referenceRow
+            );
+        }
+        else{
+
+            tbody.appendChild(
+                row
+            );
+        }
     }
 
     updateSubstitutionButtons();
