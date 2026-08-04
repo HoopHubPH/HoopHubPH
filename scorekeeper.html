@@ -2832,56 +2832,60 @@ body.auth-pending > *:not(#scorekeeperAuthScreen):not(script){
     font-weight:800;
 }
 
-/* Lead statistics in the official team comparison report */
-.comparison-lead-grid{
+/* Combined scoring and lead summary in the official comparison report */
+.comparison-summary-grid{
     display:grid;
-    grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:10px;
-    margin:12px 0 16px;
-}
-
-.comparison-lead-card{
-    padding:12px;
-    border:1px solid #ddd;
-    border-top:4px solid #ff6b00;
-    background:#fafafa;
-    text-align:center;
-}
-
-.comparison-lead-label{
-    color:#666;
-    font-size:8px;
-    font-weight:900;
-    letter-spacing:.7px;
-}
-
-.comparison-lead-value{
-    margin-top:4px;
-    color:#111;
-    font-size:22px;
-    font-weight:900;
-}
-
-@media(max-width:700px){
-    .comparison-lead-grid{
-        grid-template-columns:1fr;
-    }
-}
-
-.comparison-breakdown-grid{
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:8px;
+    grid-template-columns:repeat(7,minmax(0,1fr));
+    gap:7px;
     margin-top:10px;
 }
 
+.comparison-lead-card,
 .comparison-breakdown-card{
-    padding:9px 7px;
+    min-width:0;
+    min-height:74px;
+    padding:9px 6px;
     border:1px solid #ddd;
     border-top:3px solid #ff6b00;
     background:#fafafa;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
     text-align:center;
 }
+
+.comparison-lead-label,
+.comparison-breakdown-label{
+    color:#666;
+    font-size:7px;
+    font-weight:900;
+    line-height:1.2;
+    letter-spacing:.45px;
+    overflow-wrap:anywhere;
+}
+
+.comparison-lead-value,
+.comparison-breakdown-values{
+    margin-top:5px;
+    color:#111;
+    font-size:17px;
+    font-weight:900;
+    line-height:1;
+}
+
+@media(max-width:900px){
+    .comparison-summary-grid{
+        grid-template-columns:repeat(4,minmax(0,1fr));
+    }
+}
+
+@media(max-width:560px){
+    .comparison-summary-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+}
+
 
 .comparison-breakdown-label{
     color:#666;
@@ -11453,29 +11457,6 @@ async function printGameComparison(){
             </div>
         </div>
 
-        <div class="comparison-lead-grid">
-            <div class="comparison-lead-card">
-                <div class="comparison-lead-label">LEAD CHANGES</div>
-                <div class="comparison-lead-value">
-                    ${leadStats.available ? leadStats.leadChanges : "—"}
-                </div>
-            </div>
-
-            <div class="comparison-lead-card">
-                <div class="comparison-lead-label">${homeName} BIGGEST LEAD</div>
-                <div class="comparison-lead-value">
-                    ${leadStats.available ? leadStats.homeBiggestLead : "—"}
-                </div>
-            </div>
-
-            <div class="comparison-lead-card">
-                <div class="comparison-lead-label">${awayName} BIGGEST LEAD</div>
-                <div class="comparison-lead-value">
-                    ${leadStats.available ? leadStats.awayBiggestLead : "—"}
-                </div>
-            </div>
-        </div>
-
         <div class="comparison-report-title">
             TEAM STATISTICS COMPARISON
         </div>
@@ -11507,7 +11488,7 @@ async function printGameComparison(){
             SCORING BREAKDOWN
         </div>
 
-        <div class="comparison-breakdown-grid">
+        <div class="comparison-summary-grid">
             <div class="comparison-breakdown-card">
                 <div class="comparison-breakdown-label">POINTS IN PAINT</div>
                 <div class="comparison-breakdown-values">
@@ -11533,6 +11514,27 @@ async function printGameComparison(){
                 <div class="comparison-breakdown-label">SECOND CHANCE</div>
                 <div class="comparison-breakdown-values">
                     ${homeBreakdown.secondChance} — ${awayBreakdown.secondChance}
+                </div>
+            </div>
+
+            <div class="comparison-lead-card">
+                <div class="comparison-lead-label">LEAD CHANGES</div>
+                <div class="comparison-lead-value">
+                    ${leadStats.available ? leadStats.leadChanges : "—"}
+                </div>
+            </div>
+
+            <div class="comparison-lead-card">
+                <div class="comparison-lead-label">${homeName} BIGGEST LEAD</div>
+                <div class="comparison-lead-value">
+                    ${leadStats.available ? leadStats.homeBiggestLead : "—"}
+                </div>
+            </div>
+
+            <div class="comparison-lead-card">
+                <div class="comparison-lead-label">${awayName} BIGGEST LEAD</div>
+                <div class="comparison-lead-value">
+                    ${leadStats.available ? leadStats.awayBiggestLead : "—"}
                 </div>
             </div>
         </div>
