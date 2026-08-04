@@ -3469,6 +3469,62 @@ align-items:start;
 }
 
 </style>
+<style>
+
+/* =========================================================
+   TEAM TABLE VERTICAL SCROLL — BENCH PLAYERS ACCESS
+   Specific change only: each team table scrolls independently.
+   ========================================================= */
+
+.hybrid-team-stats{
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+    overflow:hidden;
+}
+
+.hybrid-team-stats .easy-team-header{
+    flex:0 0 auto;
+}
+
+.hybrid-team-stats .table-scroll{
+    flex:1 1 auto;
+    min-height:0;
+    max-height:100%;
+    overflow-y:auto!important;
+    overflow-x:auto!important;
+    scrollbar-width:thin;
+    scrollbar-color:#999 #f1f1f1;
+    overscroll-behavior:contain;
+}
+
+.hybrid-team-stats .table-scroll::-webkit-scrollbar{
+    width:10px;
+    height:10px;
+}
+
+.hybrid-team-stats .table-scroll::-webkit-scrollbar-track{
+    background:#f1f1f1;
+    border-radius:8px;
+}
+
+.hybrid-team-stats .table-scroll::-webkit-scrollbar-thumb{
+    background:#999;
+    border:2px solid #f1f1f1;
+    border-radius:8px;
+}
+
+.hybrid-team-stats .table-scroll::-webkit-scrollbar-thumb:hover{
+    background:#ff6b00;
+}
+
+.hybrid-team-stats .player-table th{
+    position:sticky;
+    top:0;
+    z-index:6;
+}
+
+</style>
 </head>
 
 <body class="auth-pending">
