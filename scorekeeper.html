@@ -2870,9 +2870,21 @@ body.auth-pending > *:not(#scorekeeperAuthScreen):not(script){
 
 .comparison-breakdown-grid{
     display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
+    grid-template-columns:repeat(7,minmax(0,1fr));
     gap:8px;
     margin-top:10px;
+}
+
+@media(max-width:1000px){
+    .comparison-breakdown-grid{
+        grid-template-columns:repeat(4,minmax(0,1fr));
+    }
+}
+
+@media(max-width:700px){
+    .comparison-breakdown-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
 }
 
 .comparison-breakdown-card{
@@ -11452,29 +11464,6 @@ async function printGameComparison(){
             </div>
         </div>
 
-        <div class="comparison-lead-grid">
-            <div class="comparison-lead-card">
-                <div class="comparison-lead-label">LEAD CHANGES</div>
-                <div class="comparison-lead-value">
-                    ${leadStats.available ? leadStats.leadChanges : "—"}
-                </div>
-            </div>
-
-            <div class="comparison-lead-card">
-                <div class="comparison-lead-label">${homeName} BIGGEST LEAD</div>
-                <div class="comparison-lead-value">
-                    ${leadStats.available ? leadStats.homeBiggestLead : "—"}
-                </div>
-            </div>
-
-            <div class="comparison-lead-card">
-                <div class="comparison-lead-label">${awayName} BIGGEST LEAD</div>
-                <div class="comparison-lead-value">
-                    ${leadStats.available ? leadStats.awayBiggestLead : "—"}
-                </div>
-            </div>
-        </div>
-
         <div class="comparison-report-title">
             TEAM STATISTICS COMPARISON
         </div>
@@ -11532,6 +11521,27 @@ async function printGameComparison(){
                 <div class="comparison-breakdown-label">SECOND CHANCE</div>
                 <div class="comparison-breakdown-values">
                     ${homeBreakdown.secondChance} — ${awayBreakdown.secondChance}
+                </div>
+            </div>
+
+            <div class="comparison-breakdown-card">
+                <div class="comparison-breakdown-label">LEAD CHANGES</div>
+                <div class="comparison-breakdown-values">
+                    ${leadStats.available ? leadStats.leadChanges : "—"}
+                </div>
+            </div>
+
+            <div class="comparison-breakdown-card">
+                <div class="comparison-breakdown-label">${homeName} BIGGEST LEAD</div>
+                <div class="comparison-breakdown-values">
+                    ${leadStats.available ? leadStats.homeBiggestLead : "—"}
+                </div>
+            </div>
+
+            <div class="comparison-breakdown-card">
+                <div class="comparison-breakdown-label">${awayName} BIGGEST LEAD</div>
+                <div class="comparison-breakdown-values">
+                    ${leadStats.available ? leadStats.awayBiggestLead : "—"}
                 </div>
             </div>
         </div>
