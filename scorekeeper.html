@@ -3553,6 +3553,190 @@ align-items:start;
 }
 
 </style>
+<style>
+
+/* =========================================================
+   NBA-STYLE ROSTER EXPANSION
+   ========================================================= */
+
+.hybrid-team-stats .view-all-row td{
+    position:sticky;
+    bottom:0;
+    z-index:7;
+    padding:5px!important;
+    background:linear-gradient(
+        to bottom,
+        rgba(255,255,255,.92),
+        #fff
+    )!important;
+    border-top:1px solid #e7e7e7;
+    box-shadow:0 -3px 8px rgba(0,0,0,.06);
+}
+
+.hybrid-team-stats .view-all-button{
+    width:100%;
+    min-height:28px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    border:1px solid #ddd;
+    border-radius:6px;
+    background:#111;
+    color:#fff;
+    font-size:8.5px;
+    font-weight:900;
+    letter-spacing:.45px;
+    cursor:pointer;
+    transition:
+        transform .12s ease,
+        background .12s ease,
+        border-color .12s ease;
+}
+
+.hybrid-team-stats .view-all-button span{
+    color:#ff6b00;
+    font-size:12px;
+    line-height:1;
+}
+
+.hybrid-team-stats .view-all-button:hover{
+    border-color:#ff6b00;
+    background:#ff6b00;
+    color:#fff;
+    transform:translateY(-1px);
+}
+
+.hybrid-team-stats .view-all-button:hover span{
+    color:#fff;
+}
+
+/* Collapsed roster: no vertical scrollbar. */
+.hybrid-team-stats .table-scroll:not(.expanded){
+    overflow-y:hidden!important;
+}
+
+/* Expanded roster: scrollbar appears only when required. */
+.hybrid-team-stats .table-scroll.expanded{
+    max-height:clamp(
+        150px,
+        calc((100vh - 245px) / 2),
+        330px
+    )!important;
+    overflow-y:auto!important;
+    overflow-x:auto!important;
+    scrollbar-gutter:stable;
+    scroll-behavior:smooth;
+    overscroll-behavior:contain;
+}
+
+.hybrid-team-stats .table-scroll.expanded::-webkit-scrollbar{
+    width:9px;
+    height:9px;
+}
+
+.hybrid-team-stats .table-scroll.expanded::-webkit-scrollbar-track{
+    background:#eee;
+    border-radius:10px;
+}
+
+.hybrid-team-stats .table-scroll.expanded::-webkit-scrollbar-thumb{
+    background:#777;
+    border:2px solid #eee;
+    border-radius:10px;
+}
+
+.hybrid-team-stats .table-scroll.expanded::-webkit-scrollbar-thumb:hover{
+    background:#ff6b00;
+}
+
+/* Animate newly revealed bench rows. */
+.hybrid-team-stats .nba-roster-expanded tbody tr:not(.on-court):not(.view-all-row){
+    animation:nbaBenchReveal .26s ease both;
+}
+
+.hybrid-team-stats .nba-roster-expanded tbody tr:nth-child(6){
+    animation-delay:.02s;
+}
+
+.hybrid-team-stats .nba-roster-expanded tbody tr:nth-child(7){
+    animation-delay:.04s;
+}
+
+.hybrid-team-stats .nba-roster-expanded tbody tr:nth-child(8){
+    animation-delay:.06s;
+}
+
+.hybrid-team-stats .nba-roster-expanded tbody tr:nth-child(9){
+    animation-delay:.08s;
+}
+
+.hybrid-team-stats .nba-roster-expanded tbody tr:nth-child(n+10){
+    animation-delay:.1s;
+}
+
+.hybrid-team-stats .nba-roster-opening{
+    animation:nbaRosterOpen .3s ease both;
+}
+
+.hybrid-team-stats .nba-roster-closing{
+    animation:nbaRosterClose .18s ease both;
+}
+
+@keyframes nbaBenchReveal{
+    from{
+        opacity:0;
+        transform:translateY(-5px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+@keyframes nbaRosterOpen{
+    from{
+        opacity:.72;
+        transform:scaleY(.97);
+        transform-origin:top;
+    }
+
+    to{
+        opacity:1;
+        transform:scaleY(1);
+        transform-origin:top;
+    }
+}
+
+@keyframes nbaRosterClose{
+    from{
+        opacity:1;
+        transform:scaleY(1);
+        transform-origin:top;
+    }
+
+    to{
+        opacity:.65;
+        transform:scaleY(.98);
+        transform-origin:top;
+    }
+}
+
+@media(prefers-reduced-motion:reduce){
+
+    .hybrid-team-stats .nba-roster-expanded tbody tr,
+    .hybrid-team-stats .nba-roster-opening,
+    .hybrid-team-stats .nba-roster-closing{
+        animation:none!important;
+    }
+
+    .hybrid-team-stats .view-all-button{
+        transition:none;
+    }
+}
+
+</style>
 </head>
 
 <body class="auth-pending">
@@ -4340,6 +4524,7 @@ let playerCourtOrder={};
 let teamPlayersMap={};
 let teamContainerMap={};
 let teamExpandedMap={};
+let teamRosterScrollMap={};
 let teamIdMap={};
 let scoringBreakdownTotals={
     home:null,
@@ -5399,6 +5584,7 @@ async function loadGame(){
     teamPlayersMap={};
     teamContainerMap={};
     teamExpandedMap={};
+    teamRosterScrollMap={};
     teamIdMap={};
 
     easySelectedPlayerId=null;
@@ -5775,7 +5961,10 @@ async function renderTeamPlayers(team){
         );
 
     scroll.className=
-        "table-scroll"+(teamExpandedMap[team]?" expanded":"");
+        "table-scroll"+(teamExpandedMap[team]?" expanded nba-roster-expanded":"");
+
+    scroll.dataset.team=
+        team;
 
 
     const table=
@@ -5824,6 +6013,34 @@ async function renderTeamPlayers(team){
 
     scroll.appendChild(
         table
+    );
+
+    if(teamExpandedMap[team]){
+
+        requestAnimationFrame(
+            ()=>{
+
+                scroll.scrollTo({
+                    top:
+                        teamRosterScrollMap[team] ||
+                        0,
+                    behavior:"smooth"
+                });
+            }
+        );
+    }
+
+    scroll.addEventListener(
+        "scroll",
+        ()=>{
+
+            if(teamExpandedMap[team]){
+
+                teamRosterScrollMap[team]=
+                    scroll.scrollTop;
+            }
+        },
+        {passive:true}
     );
 
     container.appendChild(
@@ -5890,8 +6107,8 @@ async function renderTeamPlayers(team){
 
         if(teamExpandedMap[team]){
 
-            btn.textContent=
-                "SHOW LESS";
+            btn.innerHTML=
+                "<span>⌃</span> SHOW LESS";
 
             btn.onclick=
                 ()=>hideExtraBenchPlayers(
@@ -5901,10 +6118,10 @@ async function renderTeamPlayers(team){
         }
         else{
 
-            btn.textContent=
-                "VIEW ALL ("+
+            btn.innerHTML=
+                "<span>⌄</span> VIEW BENCH ("+
                 bench.length+
-                " MORE)";
+                ")";
 
             btn.onclick=
                 ()=>viewAllBenchPlayers(
@@ -5938,10 +6155,78 @@ async function viewAllBenchPlayers(team){
     await renderTeamPlayers(
         team
     );
+
+    const containerId=
+        teamContainerMap[team];
+
+    const container=
+        containerId
+            ?document.getElementById(
+                containerId
+            )
+            :null;
+
+    const scroll=
+        container
+            ?container.querySelector(
+                ".table-scroll"
+            )
+            :null;
+
+    if(scroll){
+
+        scroll.classList.add(
+            "nba-roster-opening"
+        );
+
+        setTimeout(
+            ()=>{
+                scroll.classList.remove(
+                    "nba-roster-opening"
+                );
+            },
+            320
+        );
+    }
 }
 
 
 async function hideExtraBenchPlayers(team){
+
+    const containerId=
+        teamContainerMap[team];
+
+    const container=
+        containerId
+            ?document.getElementById(
+                containerId
+            )
+            :null;
+
+    const scroll=
+        container
+            ?container.querySelector(
+                ".table-scroll"
+            )
+            :null;
+
+    if(scroll){
+
+        teamRosterScrollMap[team]=
+            scroll.scrollTop;
+
+        scroll.classList.add(
+            "nba-roster-closing"
+        );
+
+        await new Promise(
+            resolve=>
+                setTimeout(
+                    resolve,
+                    180
+                )
+        );
+    }
 
     teamExpandedMap[team]=false;
 
