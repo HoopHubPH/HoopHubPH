@@ -4456,6 +4456,266 @@ align-items:start;
 }
 
 </style>
+<style>
+
+/* =========================================================
+   RESPONSIVE TEAM STAT BOX + PERMANENT BENCH FOOTER
+   ========================================================= */
+
+:root{
+    --team-stat-box-height:
+        clamp(
+            220px,
+            calc((100vh - 255px) / 2),
+            360px
+        );
+
+    --team-stat-header-height:24px;
+    --team-stat-footer-height:27px;
+}
+
+/* Each team box receives the same proportional screen height. */
+.hybrid-team-stats{
+    position:relative!important;
+    display:grid!important;
+    grid-template-rows:
+        var(--team-stat-header-height)
+        minmax(0,1fr)
+        var(--team-stat-footer-height)!important;
+
+    width:100%!important;
+    height:var(--team-stat-box-height)!important;
+    min-height:220px!important;
+    max-height:360px!important;
+
+    padding:5px!important;
+    overflow:hidden!important;
+    align-self:start!important;
+}
+
+/* Fixed team title area. */
+.hybrid-team-stats .easy-team-header{
+    grid-row:1!important;
+    min-height:0!important;
+    height:var(--team-stat-header-height)!important;
+    max-height:var(--team-stat-header-height)!important;
+    margin:0 0 3px!important;
+    padding:1px 26px 3px 4px!important;
+    overflow:hidden!important;
+}
+
+/* Player table fills only the middle area of the box. */
+.hybrid-team-stats .table-scroll.roster-view{
+    grid-row:2!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+
+    border:1px solid #e5e5e5!important;
+    border-radius:4px!important;
+    background:#fff!important;
+
+    scrollbar-gutter:stable;
+    overscroll-behavior:contain;
+}
+
+/* Bench click does not change dimensions; it only activates scrolling. */
+.hybrid-team-stats .table-scroll.roster-view.expanded{
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow-y:auto!important;
+    overflow-x:auto!important;
+}
+
+/* Bench rows remain hidden until the Bench button is pressed. */
+.hybrid-team-stats .table-scroll.roster-view:not(.expanded) .bench-player-row{
+    display:none!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view.expanded .bench-player-row{
+    display:table-row!important;
+}
+
+/* Keep headings visible while scrolling. */
+.hybrid-team-stats .table-scroll.roster-view .player-table th{
+    position:sticky!important;
+    top:0!important;
+    z-index:8!important;
+}
+
+/* Permanent lower-left Bench / Close footer. */
+.hybrid-team-stats .team-bench-footer{
+    grid-row:3!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+
+    width:100%!important;
+    height:var(--team-stat-footer-height)!important;
+    min-height:var(--team-stat-footer-height)!important;
+    max-height:var(--team-stat-footer-height)!important;
+
+    margin:0!important;
+    padding:4px 3px 1px!important;
+
+    border-top:1px solid #ddd!important;
+    background:#fff!important;
+
+    position:relative!important;
+    left:auto!important;
+    right:auto!important;
+    top:auto!important;
+    bottom:auto!important;
+
+    z-index:40!important;
+    visibility:visible!important;
+    opacity:1!important;
+    overflow:visible!important;
+}
+
+/* Small, readable, fixed-size button. */
+.hybrid-team-stats .team-bench-footer .view-all-button{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+
+    width:50px!important;
+    min-width:50px!important;
+    max-width:50px!important;
+
+    height:19px!important;
+    min-height:19px!important;
+    max-height:19px!important;
+
+    margin:0!important;
+    padding:0 6px!important;
+
+    border:1px solid #999!important;
+    border-radius:3px!important;
+
+    background:#f1f1f1!important;
+    color:#222!important;
+
+    font-size:8px!important;
+    font-weight:700!important;
+    line-height:1!important;
+
+    cursor:pointer!important;
+    visibility:visible!important;
+    opacity:1!important;
+    transform:none!important;
+    box-shadow:none!important;
+}
+
+.hybrid-team-stats .team-bench-footer .view-all-button:hover{
+    border-color:#ff6b00!important;
+    background:#ff6b00!important;
+    color:#fff!important;
+    transform:none!important;
+}
+
+/* Stop older touch rules from enlarging or hiding the button. */
+@media(pointer:coarse){
+    .hybrid-team-stats .team-bench-footer .view-all-button{
+        width:50px!important;
+        min-width:50px!important;
+        max-width:50px!important;
+        height:19px!important;
+        min-height:19px!important;
+        max-height:19px!important;
+    }
+}
+
+/* Keep both team rows proportional on ordinary desktop screens. */
+@media(min-width:901px){
+    .hybrid-scorekeeper{
+        grid-template-rows:
+            var(--team-stat-box-height)
+            var(--team-stat-box-height)!important;
+
+        align-content:start!important;
+        overflow:hidden!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-team-stats{
+        height:var(--team-stat-box-height)!important;
+        min-height:220px!important;
+        max-height:360px!important;
+    }
+}
+
+/* Larger displays can use more vertical space. */
+@media(min-height:900px){
+    :root{
+        --team-stat-box-height:
+            clamp(
+                260px,
+                calc((100vh - 280px) / 2),
+                410px
+            );
+    }
+
+    .hybrid-team-stats,
+    .hybrid-scorekeeper > .hybrid-team-stats{
+        min-height:260px!important;
+        max-height:410px!important;
+    }
+}
+
+/* Short laptop screens remain usable without overlap. */
+@media(max-height:700px){
+    :root{
+        --team-stat-box-height:
+            clamp(
+                185px,
+                calc((100vh - 205px) / 2),
+                245px
+            );
+    }
+
+    .hybrid-team-stats,
+    .hybrid-scorekeeper > .hybrid-team-stats{
+        min-height:185px!important;
+        max-height:245px!important;
+    }
+}
+
+/* Normal mobile/tablet layout: proportional width and a practical height. */
+@media(max-width:900px){
+    :root{
+        --team-stat-box-height:
+            clamp(
+                220px,
+                42vh,
+                340px
+            );
+    }
+
+    .hybrid-team-stats{
+        min-height:220px!important;
+        max-height:340px!important;
+    }
+}
+
+/* Fullscreen uses the same reserved footer and responsive sizing. */
+:fullscreen .hybrid-team-stats,
+:-webkit-full-screen .hybrid-team-stats{
+    height:var(--team-stat-box-height)!important;
+}
+
+:fullscreen .hybrid-team-stats .team-bench-footer,
+:-webkit-full-screen .hybrid-team-stats .team-bench-footer{
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+}
+
+</style>
 </head>
 
 <body class="auth-pending">
