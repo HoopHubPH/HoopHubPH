@@ -1,3 +1,6 @@
+SCOREKEEPER
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2711,22 +2714,28 @@ body.auth-pending > *:not(#scorekeeperAuthScreen):not(script){
 
 .game-comparison-print-button{
     margin-left:auto;
-    width:30px;
-    height:28px;
-    display:grid;
-    place-items:center;
+    width:24px;
+    height:24px;
     padding:0;
-    border:1px solid #ddd;
-    border-radius:5px;
-    background:#111;
-    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:transparent;
+    border:0;
+    color:#bbb;
     font-size:14px;
+    line-height:1;
     cursor:pointer;
+    opacity:.65;
+    transition:.2s;
+    user-select:none;
 }
 
 .game-comparison-print-button:hover{
-    border-color:#ff6b00;
-    background:#ff6b00;
+    color:#ff6b00;
+    background:transparent;
+    opacity:1;
+    transform:scale(1.05);
 }
 
 .comparison-report-title{
@@ -2937,7 +2946,7 @@ LOG OUT
     title="Print home and away team comparison"
     aria-label="Print home and away team comparison"
 >
-    &#128424;
+    🖨️
 </button>
 </div>
 
