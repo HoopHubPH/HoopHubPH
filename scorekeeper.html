@@ -4054,6 +4054,59 @@ align-items:start;
 }
 
 </style>
+<style>
+
+/* =========================================================
+   TEAM BENCH FOOTER — CLEAN BOTTOM POSITION
+   ========================================================= */
+
+/* The Bench/Close control is now outside the scrolling table. */
+.hybrid-team-stats .team-bench-footer{
+    flex:0 0 24px!important;
+    min-height:24px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    padding:3px 4px 2px!important;
+    margin-top:3px!important;
+    border-top:1px solid #ddd!important;
+    background:#fff!important;
+}
+
+/* Keep the footer button small, thin, and readable. */
+.hybrid-team-stats .team-bench-footer .view-all-button{
+    display:inline-flex!important;
+    width:auto!important;
+    min-width:46px!important;
+    height:18px!important;
+    min-height:18px!important;
+    padding:0 7px!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border:1px solid #999!important;
+    border-radius:3px!important;
+    background:#f1f1f1!important;
+    color:#222!important;
+    font-size:8px!important;
+    font-weight:700!important;
+    line-height:1!important;
+    opacity:1!important;
+    box-shadow:none!important;
+}
+
+/* Disable old in-table floating-row behavior. */
+.hybrid-team-stats .view-all-row{
+    display:none!important;
+}
+
+/* Bench players scroll above the footer while footer stays fixed below. */
+.hybrid-team-stats .table-scroll.expanded,
+.hybrid-team-stats .table-scroll.roster-expanded,
+.hybrid-team-stats .table-scroll.nba-roster-expanded{
+    margin-bottom:0!important;
+}
+
+</style>
 </head>
 
 <body class="auth-pending">
@@ -6396,21 +6449,13 @@ async function renderTeamPlayers(team){
 
     if(bench.length){
 
-        const row=
+        const footer=
             document.createElement(
-                "tr"
+                "div"
             );
 
-        row.className=
-            "view-all-row";
-
-
-        const cell=
-            document.createElement(
-                "td"
-            );
-
-        cell.colSpan=17;
+        footer.className=
+            "team-bench-footer";
 
 
         const btn=
@@ -6443,38 +6488,13 @@ async function renderTeamPlayers(team){
         }
 
 
-        cell.appendChild(
+        footer.appendChild(
             btn
         );
 
-        row.appendChild(
-            cell
+        container.appendChild(
+            footer
         );
-
-        if(teamExpandedMap[team]){
-
-            const insertPosition=
-                Math.min(
-                    onCourt.length,
-                    tbody.children.length
-                );
-
-            const referenceRow=
-                tbody.children[
-                    insertPosition
-                ] || null;
-
-            tbody.insertBefore(
-                row,
-                referenceRow
-            );
-        }
-        else{
-
-            tbody.appendChild(
-                row
-            );
-        }
     }
 
     updateSubstitutionButtons();
