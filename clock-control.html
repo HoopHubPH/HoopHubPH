@@ -859,7 +859,13 @@ let currentGame = null;
 let gameChannel = null;
 let pollTimer = null;
 let displayTimer = null;
+let displayAnimationFrame = null;
 let saveInProgress = false;
+
+const clockBroadcastChannel =
+    "BroadcastChannel" in window
+        ? new BroadcastChannel("hoophub-clock-sync")
+        : null;
 
 let clockSeconds = DEFAULT_GAME_CLOCK_SECONDS;
 let shotClockSeconds = DEFAULT_SHOT_CLOCK_SECONDS;
@@ -914,6 +920,18 @@ const connectionText =
 
 const finalizedNotice =
     document.getElementById("finalizedNotice");
+
+
+function broadcastClockState(game){
+    if(!clockBroadcastChannel || !game){
+        return;
+    }
+
+    clockBroadcastChannel.postMessage({
+        source:"clock-control",
+        game
+    });
+}
 
 
 function showStatus(
@@ -1489,6 +1507,7 @@ async function saveClockState(){
     currentGame = data;
     applyClockData(data);
     renderGameInformation();
+    broadcastClockState(data);
 
     return true;
 }
@@ -2001,6 +2020,7 @@ function subscribeToGame(){
                     );
 
                     renderGameInformation();
+                    broadcastClockState(payload.new);
                 }
             )
             .subscribe(status=>{
@@ -2020,7 +2040,7 @@ function subscribeToGame(){
                         );
                     });
             },
-            3000
+            500
         );
 }
 
@@ -2243,21 +2263,66 @@ gameIdInput.addEventListener(
     }
 );
 
-displayTimer =
-    setInterval(
-        updateClockDisplays,
-        50
+function runDisplayAnimation(){
+    updateClockDisplays();
+    displayAnimationFrame =
+        requestAnimationFrame(
+            runDisplayAnimation
+        );
+}
+
+runDisplayAnimation();
+
+window.addEventListener(
+    "focus",
+    ()=>{
+        fetchCurrentGame(true).catch(console.error);
+    }
+);
+
+document.addEventListener(
+    "visibilitychange",
+    ()=>{
+        if(!document.hidden){
+            fetchCurrentGame(true).catch(console.error);
+        }
+    }
+);
+
+if(clockBroadcastChannel){
+    clockBroadcastChannel.addEventListener(
+        "message",
+        event=>{
+            const game = event?.data?.game;
+
+            if(
+                !currentGame ||
+                !game ||
+                Number(game.id) !== Number(currentGame.id)
+            ){
+                return;
+            }
+
+            currentGame = game;
+            applyClockData(game);
+            renderGameInformation();
+        }
     );
+}
 
 window.addEventListener(
     "beforeunload",
     ()=>{
         unsubscribeFromGame();
 
-        if(displayTimer){
-            clearInterval(
-                displayTimer
+        if(displayAnimationFrame){
+            cancelAnimationFrame(
+                displayAnimationFrame
             );
+        }
+
+        if(clockBroadcastChannel){
+            clockBroadcastChannel.close();
         }
     }
 );
