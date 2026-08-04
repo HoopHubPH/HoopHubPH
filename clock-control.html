@@ -31,6 +31,7 @@ header{
     display:flex;
     align-items:center;
     justify-content:space-between;
+    gap:12px;
 }
 
 .logo{
@@ -42,6 +43,11 @@ header{
 
 .logo span{
     color:#ff6b00;
+}
+
+.controller-title{
+    font-size:14px;
+    letter-spacing:.6px;
 }
 
 .container{
@@ -68,6 +74,12 @@ header{
     padding:9px;
     border:1px solid #ccc;
     border-radius:5px;
+    font-size:14px;
+}
+
+.game-loader input:focus{
+    outline:2px solid rgba(255,107,0,.25);
+    border-color:#ff6b00;
 }
 
 .game-loader button{
@@ -80,6 +92,15 @@ header{
     cursor:pointer;
 }
 
+.game-loader button:hover{
+    background:#e65f00;
+}
+
+.game-loader button:disabled{
+    background:#bbb;
+    cursor:wait;
+}
+
 #statusMessage{
     margin-top:12px;
     padding:9px;
@@ -89,9 +110,166 @@ header{
     font-size:12px;
 }
 
+#statusMessage.success{
+    background:#e8f5e9;
+    color:#2e7d32;
+}
+
+#statusMessage.error{
+    background:#ffebee;
+    color:#c62828;
+}
+
 .controller-content{
     display:none;
-    margin-top:15px;
+    margin-top:18px;
+}
+
+.game-title{
+    text-align:center;
+    font-size:17px;
+    margin-bottom:14px;
+}
+
+.scoreboard{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+    align-items:center;
+    gap:18px;
+    padding:18px;
+    border:1px solid #e6e6e6;
+    border-radius:10px;
+    background:#fafafa;
+    text-align:center;
+}
+
+.team{
+    min-width:0;
+}
+
+.team-name{
+    min-height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:19px;
+    font-weight:900;
+    line-height:1.15;
+    text-transform:uppercase;
+    overflow-wrap:anywhere;
+}
+
+.team-label{
+    margin-top:5px;
+    color:#777;
+    font-size:10px;
+    font-weight:900;
+    letter-spacing:.7px;
+}
+
+.team-score{
+    margin-top:8px;
+    color:#ff6b00;
+    font-size:64px;
+    font-weight:900;
+    line-height:1;
+}
+
+.vs{
+    color:#777;
+    font-size:22px;
+    font-weight:900;
+}
+
+.game-info{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+    margin-top:14px;
+}
+
+.info-card{
+    padding:13px;
+    border:1px solid #e5e5e5;
+    border-radius:8px;
+    background:#fff;
+    text-align:center;
+}
+
+.info-label{
+    color:#777;
+    font-size:9px;
+    font-weight:900;
+    letter-spacing:.8px;
+}
+
+.info-value{
+    margin-top:5px;
+    color:#222;
+    font-size:17px;
+    font-weight:900;
+    text-transform:uppercase;
+}
+
+.info-value.live{
+    color:#16803c;
+}
+
+.info-value.halftime{
+    color:#d96516;
+}
+
+.info-value.final{
+    color:#c62828;
+}
+
+.next-section{
+    margin-top:16px;
+    padding:14px;
+    border:1px dashed #ccc;
+    border-radius:8px;
+    background:#fafafa;
+    color:#777;
+    font-size:12px;
+    font-weight:bold;
+    text-align:center;
+}
+
+@media(max-width:600px){
+
+    header{
+        padding:12px 4%;
+    }
+
+    .logo{
+        font-size:17px;
+    }
+
+    .controller-title{
+        font-size:11px;
+    }
+
+    .scoreboard{
+        grid-template-columns:1fr;
+        gap:10px;
+    }
+
+    .vs{
+        font-size:15px;
+    }
+
+    .team-name{
+        min-height:auto;
+        font-size:16px;
+    }
+
+    .team-score{
+        font-size:52px;
+    }
+
+    .game-info{
+        grid-template-columns:1fr;
+    }
 }
 
 </style>
@@ -106,7 +284,9 @@ header{
         HOOP <span>HUB PH</span>
     </a>
 
-    <strong>CLOCK CONTROLLER</strong>
+    <strong class="controller-title">
+        CLOCK CONTROLLER
+    </strong>
 
 </header>
 
@@ -124,6 +304,7 @@ header{
                 id="gameIdInput"
                 type="number"
                 min="1"
+                inputmode="numeric"
                 placeholder="Enter ID"
             >
 
@@ -144,7 +325,104 @@ header{
             id="controllerContent"
             class="controller-content"
         >
-            Clock controls will appear here.
+
+            <h2
+                id="gameTitle"
+                class="game-title"
+            >
+                Game
+            </h2>
+
+            <div class="scoreboard">
+
+                <div class="team">
+
+                    <div
+                        id="homeTeamName"
+                        class="team-name"
+                    >
+                        Home Team
+                    </div>
+
+                    <div class="team-label">
+                        HOME
+                    </div>
+
+                    <div
+                        id="homeScore"
+                        class="team-score"
+                    >
+                        0
+                    </div>
+
+                </div>
+
+                <div class="vs">
+                    VS
+                </div>
+
+                <div class="team">
+
+                    <div
+                        id="awayTeamName"
+                        class="team-name"
+                    >
+                        Away Team
+                    </div>
+
+                    <div class="team-label">
+                        AWAY
+                    </div>
+
+                    <div
+                        id="awayScore"
+                        class="team-score"
+                    >
+                        0
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="game-info">
+
+                <div class="info-card">
+
+                    <div class="info-label">
+                        CURRENT PERIOD
+                    </div>
+
+                    <div
+                        id="gamePeriod"
+                        class="info-value"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+                <div class="info-card">
+
+                    <div class="info-label">
+                        GAME STATUS
+                    </div>
+
+                    <div
+                        id="gameStatus"
+                        class="info-value"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="next-section">
+                Game-clock, shot-clock, quarter and game-status controls will be added in the next step.
+            </div>
+
         </div>
 
     </div>
@@ -153,13 +431,11 @@ header{
 
 <script>
 
-/*
-Replace these two values with the same values
-used in your scorekeeper.html.
-*/
+const SUPABASE_URL =
+    "https://tkrsyiwffqkgfyooewsf.supabase.co";
 
-const SUPABASE_URL = "https://tkrsyiwffqkgfyooewsf.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
+const SUPABASE_ANON_KEY =
+    "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
 
 const supabaseClient =
     window.supabase.createClient(
@@ -181,10 +457,197 @@ const statusMessage =
 const controllerContent =
     document.getElementById("controllerContent");
 
+const gameTitle =
+    document.getElementById("gameTitle");
 
-function showStatus(message){
+const homeTeamName =
+    document.getElementById("homeTeamName");
+
+const awayTeamName =
+    document.getElementById("awayTeamName");
+
+const homeScore =
+    document.getElementById("homeScore");
+
+const awayScore =
+    document.getElementById("awayScore");
+
+const gamePeriod =
+    document.getElementById("gamePeriod");
+
+const gameStatus =
+    document.getElementById("gameStatus");
+
+
+function showStatus(
+    message,
+    type = ""
+){
 
     statusMessage.textContent = message;
+
+    statusMessage.classList.remove(
+        "success",
+        "error"
+    );
+
+    if(type){
+        statusMessage.classList.add(type);
+    }
+}
+
+
+function safeText(
+    value,
+    fallback = "—"
+){
+
+    const text =
+        String(value ?? "").trim();
+
+    return text || fallback;
+}
+
+
+function getHomeTeamName(game){
+
+    return safeText(
+        game.home_team ||
+        game.home_team_name,
+        "Home Team"
+    );
+}
+
+
+function getAwayTeamName(game){
+
+    return safeText(
+        game.away_team ||
+        game.away_team_name,
+        "Away Team"
+    );
+}
+
+
+function formatPeriod(period){
+
+    const value =
+        safeText(period, "Not Set");
+
+    const normalized =
+        value.toLowerCase()
+            .replace(/\s+/g, "")
+            .replace(/_/g, "");
+
+    const periodLabels = {
+
+        "1":"1st Quarter",
+        "q1":"1st Quarter",
+        "1q":"1st Quarter",
+        "1st":"1st Quarter",
+        "1stquarter":"1st Quarter",
+
+        "2":"2nd Quarter",
+        "q2":"2nd Quarter",
+        "2q":"2nd Quarter",
+        "2nd":"2nd Quarter",
+        "2ndquarter":"2nd Quarter",
+
+        "3":"3rd Quarter",
+        "q3":"3rd Quarter",
+        "3q":"3rd Quarter",
+        "3rd":"3rd Quarter",
+        "3rdquarter":"3rd Quarter",
+
+        "4":"4th Quarter",
+        "q4":"4th Quarter",
+        "4q":"4th Quarter",
+        "4th":"4th Quarter",
+        "4thquarter":"4th Quarter",
+
+        "halftime":"Halftime",
+        "half":"Halftime",
+
+        "ot":"Overtime",
+        "overtime":"Overtime"
+    };
+
+    return periodLabels[normalized] || value;
+}
+
+
+function applyStatusClass(status){
+
+    gameStatus.classList.remove(
+        "live",
+        "halftime",
+        "final"
+    );
+
+    const normalized =
+        String(status || "")
+            .trim()
+            .toLowerCase();
+
+    if(
+        normalized === "live" ||
+        normalized === "in progress" ||
+        normalized === "in_progress"
+    ){
+        gameStatus.classList.add("live");
+    }
+
+    if(
+        normalized === "halftime" ||
+        normalized === "half"
+    ){
+        gameStatus.classList.add("halftime");
+    }
+
+    if(
+        normalized === "final" ||
+        normalized === "finalized" ||
+        normalized === "completed"
+    ){
+        gameStatus.classList.add("final");
+    }
+}
+
+
+function renderGameInformation(){
+
+    if(!currentGame){
+        return;
+    }
+
+    gameTitle.textContent =
+        "Game #" + currentGame.id;
+
+    homeTeamName.textContent =
+        getHomeTeamName(currentGame);
+
+    awayTeamName.textContent =
+        getAwayTeamName(currentGame);
+
+    homeScore.textContent =
+        Number(currentGame.home_score || 0);
+
+    awayScore.textContent =
+        Number(currentGame.away_score || 0);
+
+    gamePeriod.textContent =
+        formatPeriod(currentGame.period);
+
+    const status =
+        safeText(
+            currentGame.status,
+            "Not Set"
+        );
+
+    gameStatus.textContent =
+        status;
+
+    applyStatusClass(status);
 }
 
 
@@ -193,14 +656,23 @@ async function loadGame(){
     const gameId =
         Number(gameIdInput.value);
 
-    if(!Number.isInteger(gameId) || gameId <= 0){
+    if(
+        !Number.isInteger(gameId) ||
+        gameId <= 0
+    ){
 
-        showStatus("Enter a valid Game ID.");
+        showStatus(
+            "Enter a valid Game ID.",
+            "error"
+        );
+
         return;
     }
 
     loadGameButton.disabled = true;
-    loadGameButton.textContent = "LOADING...";
+
+    loadGameButton.textContent =
+        "LOADING...";
 
     try{
 
@@ -217,17 +689,23 @@ async function loadGame(){
 
         currentGame = data;
 
-        showStatus(
-            `Game ${currentGame.id} loaded successfully.`
-        );
+        renderGameInformation();
 
         controllerContent.style.display =
             "block";
 
+        showStatus(
+            `Game ${currentGame.id} loaded successfully.`,
+            "success"
+        );
+
     }
     catch(error){
 
-        console.error(error);
+        console.error(
+            "Unable to load game:",
+            error
+        );
 
         currentGame = null;
 
@@ -236,13 +714,20 @@ async function loadGame(){
 
         showStatus(
             "Unable to load the game: " +
-            error.message
+            (
+                error?.message ||
+                "Unknown error"
+            ),
+            "error"
         );
+
     }
     finally{
 
         loadGameButton.disabled = false;
-        loadGameButton.textContent = "LOAD GAME";
+
+        loadGameButton.textContent =
+            "LOAD GAME";
     }
 }
 
@@ -258,6 +743,9 @@ gameIdInput.addEventListener(
     event => {
 
         if(event.key === "Enter"){
+
+            event.preventDefault();
+
             loadGame();
         }
     }
