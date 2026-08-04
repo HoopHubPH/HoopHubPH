@@ -4110,73 +4110,69 @@ align-items:start;
 <style>
 
 /* =========================================================
-   ALWAYS-VISIBLE BENCH FOOTER
-   Bench/Close stays visible in normal and fullscreen modes.
+   FIXED COURT / BENCH ROSTER BOX
+   Clicking Bench switches the roster inside the same box.
    ========================================================= */
 
 .hybrid-team-stats{
     display:flex!important;
     flex-direction:column!important;
-    min-height:0!important;
     height:auto!important;
+    min-height:0!important;
     overflow:hidden!important;
 }
 
-.hybrid-team-stats .table-scroll{
-    min-height:0!important;
-    width:100%!important;
-}
-
-/* Collapsed: five active players remain visible with footer below. */
-.hybrid-team-stats .table-scroll:not(.expanded):not(.roster-expanded):not(.nba-roster-expanded){
+.hybrid-team-stats .table-scroll.roster-view{
     flex:0 0 auto!important;
-    height:auto!important;
-    max-height:none!important;
-    overflow-y:hidden!important;
+    width:100%!important;
+    height:151px!important;
+    min-height:151px!important;
+    max-height:151px!important;
     overflow-x:auto!important;
-}
-
-/* Expanded: bench scrolls internally while footer stays outside the scroll area. */
-.hybrid-team-stats .table-scroll.expanded,
-.hybrid-team-stats .table-scroll.roster-expanded,
-.hybrid-team-stats .table-scroll.nba-roster-expanded{
-    flex:0 1 auto!important;
-    height:auto!important;
-    max-height:clamp(160px,32vh,300px)!important;
     overflow-y:auto!important;
-    overflow-x:auto!important;
+    border:1px solid #e5e5e5!important;
+    border-radius:4px!important;
+    background:#fff!important;
     scrollbar-gutter:stable;
     overscroll-behavior:contain;
 }
 
-/* Footer is outside the table scroll, so it never disappears. */
+.hybrid-team-stats .table-scroll.roster-view .player-table th{
+    position:sticky!important;
+    top:0!important;
+    z-index:8!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view .player-table td{
+    height:25px!important;
+}
+
 .hybrid-team-stats .team-bench-footer{
     flex:0 0 25px!important;
-    min-height:25px!important;
     width:100%!important;
+    height:25px!important;
+    min-height:25px!important;
     display:flex!important;
     align-items:center!important;
     justify-content:flex-start!important;
     padding:3px 4px!important;
-    margin-top:3px!important;
+    margin:3px 0 0!important;
     border-top:1px solid #ddd!important;
-    border-radius:0 0 4px 4px!important;
     background:#fff!important;
     position:relative!important;
     z-index:30!important;
-    visibility:visible!important;
-    opacity:1!important;
 }
 
 .hybrid-team-stats .team-bench-footer .view-all-button{
-    display:inline-flex!important;
-    width:auto!important;
-    min-width:46px!important;
+    width:48px!important;
+    min-width:48px!important;
+    max-width:48px!important;
     height:18px!important;
     min-height:18px!important;
+    padding:0!important;
+    display:inline-flex!important;
     align-items:center!important;
     justify-content:center!important;
-    padding:0 7px!important;
     border:1px solid #999!important;
     border-radius:3px!important;
     background:#f1f1f1!important;
@@ -4184,54 +4180,35 @@ align-items:start;
     font-size:8px!important;
     font-weight:700!important;
     line-height:1!important;
-    opacity:1!important;
-    visibility:visible!important;
-    cursor:pointer!important;
     box-shadow:none!important;
+    transform:none!important;
 }
 
 .hybrid-team-stats .team-bench-footer .view-all-button:hover{
     border-color:#ff6b00!important;
     background:#ff6b00!important;
     color:#fff!important;
+    transform:none!important;
 }
 
-/* Disable any old floating table-row version. */
-.hybrid-team-stats .view-all-row{
-    display:none!important;
+.hybrid-team-stats .nba-roster-opening,
+.hybrid-team-stats .nba-roster-closing,
+.hybrid-team-stats .nba-roster-expanded{
+    animation:none!important;
+    transform:none!important;
 }
 
-/* Keep identical behavior in fullscreen. */
-:fullscreen .hybrid-team-stats,
-:-webkit-full-screen .hybrid-team-stats{
-    display:flex!important;
-    flex-direction:column!important;
-    height:auto!important;
-    overflow:hidden!important;
+:fullscreen .hybrid-team-stats .table-scroll.roster-view,
+:-webkit-full-screen .hybrid-team-stats .table-scroll.roster-view{
+    height:151px!important;
+    min-height:151px!important;
+    max-height:151px!important;
 }
 
 :fullscreen .hybrid-team-stats .team-bench-footer,
 :-webkit-full-screen .hybrid-team-stats .team-bench-footer{
-    display:flex!important;
-    visibility:visible!important;
-    opacity:1!important;
-    position:relative!important;
-}
-
-@media(max-width:900px){
-    .hybrid-team-stats .table-scroll.expanded,
-    .hybrid-team-stats .table-scroll.roster-expanded,
-    .hybrid-team-stats .table-scroll.nba-roster-expanded{
-        max-height:260px!important;
-    }
-}
-
-/* Prevent coarse-pointer rules from enlarging or hiding the footer button. */
-@media(pointer:coarse){
-    .hybrid-team-stats .team-bench-footer .view-all-button{
-        min-height:18px!important;
-        height:18px!important;
-    }
+    height:25px!important;
+    min-height:25px!important;
 }
 
 </style>
@@ -6438,16 +6415,15 @@ async function renderTeamPlayers(team){
         );
 
 
-    const visibleBench=
+    /*
+    Fixed roster box:
+    false = show on-court players
+    true  = show bench players in the same box
+    */
+    const display=
         teamExpandedMap[team]
-        ?bench
-        :[];
-
-
-    const display=[
-        ...onCourt,
-        ...visibleBench
-    ];
+            ?bench
+            :onCourt;
 
 
     container.innerHTML="";
@@ -6459,7 +6435,9 @@ async function renderTeamPlayers(team){
         );
 
     scroll.className=
-        "table-scroll"+(teamExpandedMap[team]?" expanded nba-roster-expanded":"");
+        teamExpandedMap[team]
+            ?"table-scroll roster-view bench-view"
+            :"table-scroll roster-view court-view";
 
     scroll.dataset.team=
         team;
@@ -6597,7 +6575,7 @@ async function renderTeamPlayers(team){
 
         if(teamExpandedMap[team]){
 
-            btn.textContent="Close";
+            btn.textContent="Court";
 
             btn.onclick=
                 ()=>hideExtraBenchPlayers(
@@ -6637,39 +6615,6 @@ async function viewAllBenchPlayers(team){
     await renderTeamPlayers(
         team
     );
-
-    const containerId=
-        teamContainerMap[team];
-
-    const container=
-        containerId
-            ?document.getElementById(
-                containerId
-            )
-            :null;
-
-    const scroll=
-        container
-            ?container.querySelector(
-                ".table-scroll"
-            )
-            :null;
-
-    if(scroll){
-
-        scroll.classList.add(
-            "nba-roster-opening"
-        );
-
-        setTimeout(
-            ()=>{
-                scroll.classList.remove(
-                    "nba-roster-opening"
-                );
-            },
-            320
-        );
-    }
 }
 
 
@@ -6696,18 +6641,6 @@ async function hideExtraBenchPlayers(team){
 
         teamRosterScrollMap[team]=
             scroll.scrollTop;
-
-        scroll.classList.add(
-            "nba-roster-closing"
-        );
-
-        await new Promise(
-            resolve=>
-                setTimeout(
-                    resolve,
-                    180
-                )
-        );
     }
 
     teamExpandedMap[team]=false;
