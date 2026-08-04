@@ -2706,6 +2706,186 @@ body.auth-pending > *:not(#scorekeeperAuthScreen):not(script){
     }
 }
 
+
+
+/* =========================================================
+   FULL GAME TEAM COMPARISON PRINT
+   ========================================================= */
+
+.game-comparison-print-button{
+    margin-left:auto;
+    width:30px;
+    height:28px;
+    display:grid;
+    place-items:center;
+    padding:0;
+    border:1px solid #ddd;
+    border-radius:5px;
+    background:#111;
+    color:#fff;
+    font-size:14px;
+    cursor:pointer;
+}
+
+.game-comparison-print-button:hover{
+    border-color:#ff6b00;
+    background:#ff6b00;
+}
+
+.comparison-report-title{
+    margin-top:14px;
+    margin-bottom:7px;
+    padding-bottom:5px;
+    border-bottom:2px solid #111;
+    font-size:11px;
+    font-weight:900;
+    letter-spacing:.8px;
+}
+
+.comparison-score-panel{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+    gap:18px;
+    align-items:center;
+    margin:14px 0;
+    padding:14px;
+    border:1px solid #d7d7d7;
+    background:#fafafa;
+}
+
+.comparison-score-team{
+    text-align:center;
+}
+
+.comparison-score-side{
+    color:#777;
+    font-size:8px;
+    font-weight:900;
+    letter-spacing:1px;
+}
+
+.comparison-score-name{
+    margin-top:3px;
+    font-size:16px;
+    font-weight:900;
+    text-transform:uppercase;
+}
+
+.comparison-score-number{
+    margin-top:4px;
+    color:#ff6b00;
+    font-size:32px;
+    font-weight:900;
+    line-height:1;
+}
+
+.comparison-score-center{
+    color:#777;
+    font-size:12px;
+    font-weight:900;
+    text-align:center;
+}
+
+.team-comparison-table{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+    font-size:9px;
+}
+
+.team-comparison-table th,
+.team-comparison-table td{
+    padding:6px 7px;
+    border:1px solid #d9d9d9;
+    text-align:center;
+}
+
+.team-comparison-table th{
+    background:#111;
+    color:#fff;
+    font-size:8px;
+    letter-spacing:.4px;
+}
+
+.team-comparison-table th:first-child,
+.team-comparison-table td:first-child{
+    width:32%;
+    text-align:left;
+    font-weight:900;
+}
+
+.team-comparison-table tbody tr:nth-child(even) td{
+    background:#f5f5f5;
+}
+
+.team-comparison-value{
+    font-weight:900;
+}
+
+.team-comparison-difference{
+    color:#666;
+    font-size:8px;
+    font-weight:800;
+}
+
+.comparison-breakdown-grid{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:8px;
+    margin-top:10px;
+}
+
+.comparison-breakdown-card{
+    padding:9px 7px;
+    border:1px solid #ddd;
+    border-top:3px solid #ff6b00;
+    background:#fafafa;
+    text-align:center;
+}
+
+.comparison-breakdown-label{
+    color:#666;
+    font-size:7px;
+    font-weight:900;
+    letter-spacing:.5px;
+}
+
+.comparison-breakdown-values{
+    margin-top:4px;
+    font-size:14px;
+    font-weight:900;
+}
+
+@media(max-width:700px){
+    .game-comparison-print-button{
+        width:28px;
+        height:27px;
+    }
+
+    .comparison-score-panel{
+        grid-template-columns:1fr;
+        gap:8px;
+    }
+
+    .comparison-score-center{
+        order:3;
+    }
+
+    .comparison-breakdown-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+}
+
+@media print{
+    .comparison-score-panel,
+    .team-comparison-table th,
+    .team-comparison-table tbody tr:nth-child(even) td,
+    .comparison-breakdown-card{
+        -webkit-print-color-adjust:exact;
+        print-color-adjust:exact;
+    }
+}
+
 </style>
 </head>
 
@@ -2753,6 +2933,15 @@ LOG OUT
 <h2>Game ID:</h2>
 <input type="number" id="gameId" value="" placeholder="Game ID">
 <button class="load-button" onclick="loadGame()">LOAD</button>
+<button
+    type="button"
+    class="game-comparison-print-button"
+    onclick="printGameComparison()"
+    title="Print home and away team comparison"
+    aria-label="Print home and away team comparison"
+>
+    &#128424;
+</button>
 </div>
 
 <div id="statusMessage"></div>
@@ -10926,6 +11115,302 @@ ${totals.plus_minus}
         row
     );
 }
+
+
+function calculateTeamComparisonTotals(team){
+
+    const players = teamPlayersMap[team] || [];
+
+    const totals = {
+        points:0,
+        offensive_rebounds:0,
+        defensive_rebounds:0,
+        assists:0,
+        steals:0,
+        blocks:0,
+        turnovers:0,
+        fouls:0,
+        two_pt_made:0,
+        two_pt_attempted:0,
+        three_pt_made:0,
+        three_pt_attempted:0,
+        ft_made:0,
+        ft_attempted:0
+    };
+
+    players.forEach(player => {
+        const stats = playerStatsMap[player.id] || {};
+
+        Object.keys(totals).forEach(key => {
+            totals[key] += Number(stats[key] || 0);
+        });
+    });
+
+    totals.rebounds =
+        totals.offensive_rebounds +
+        totals.defensive_rebounds;
+
+    totals.field_goals_made =
+        totals.two_pt_made +
+        totals.three_pt_made;
+
+    totals.field_goals_attempted =
+        totals.two_pt_attempted +
+        totals.three_pt_attempted;
+
+    return totals;
+}
+
+
+function formatComparisonDifference(homeValue,awayValue){
+
+    const difference =
+        Number(homeValue || 0) -
+        Number(awayValue || 0);
+
+    if(difference === 0){
+        return "EVEN";
+    }
+
+    return difference > 0
+        ? `HOME +${difference}`
+        : `AWAY +${Math.abs(difference)}`;
+}
+
+
+async function printGameComparison(){
+
+    if(!currentGame){
+        showStatus("Load a game first.");
+        return;
+    }
+
+    const homePlayers = teamPlayersMap.home || [];
+    const awayPlayers = teamPlayersMap.away || [];
+
+    if(!homePlayers.length || !awayPlayers.length){
+        showStatus("Both team rosters must be loaded before printing the comparison.");
+        return;
+    }
+
+    const previewTitle =
+        document.getElementById("teamStatsModalTitle");
+
+    const previewContent =
+        document.getElementById("teamStatsPreviewContent");
+
+    const modal =
+        document.getElementById("teamStatsModal");
+
+    const homeName =
+        document.getElementById("homeTeam")?.textContent?.trim() ||
+        currentGame.home_team ||
+        "Home Team";
+
+    const awayName =
+        document.getElementById("awayTeam")?.textContent?.trim() ||
+        currentGame.away_team ||
+        "Away Team";
+
+    const homeScore = Number(
+        document.getElementById("homeScore")?.textContent ||
+        currentGame.home_score ||
+        0
+    );
+
+    const awayScore = Number(
+        document.getElementById("awayScore")?.textContent ||
+        currentGame.away_score ||
+        0
+    );
+
+    const home = calculateTeamComparisonTotals("home");
+    const away = calculateTeamComparisonTotals("away");
+
+    const homeBreakdown =
+        scoringBreakdownTotals.home ||
+        emptyBreakdownTotals();
+
+    const awayBreakdown =
+        scoringBreakdownTotals.away ||
+        emptyBreakdownTotals();
+
+    const gameDateRaw =
+        currentGame.game_date ||
+        currentGame.date ||
+        currentGame.scheduled_at ||
+        currentGame.created_at;
+
+    let gameDate = "—";
+
+    if(gameDateRaw){
+        const parsedDate = new Date(gameDateRaw);
+
+        if(!Number.isNaN(parsedDate.getTime())){
+            gameDate = parsedDate.toLocaleDateString(
+                undefined,
+                {
+                    year:"numeric",
+                    month:"short",
+                    day:"numeric"
+                }
+            );
+        }
+    }
+
+    const venue =
+        currentGame.venue ||
+        currentGame.location ||
+        "—";
+
+    const periodText =
+        document.querySelector(
+            ".period-buttons button.active"
+        )?.textContent?.trim() ||
+        currentGame.period ||
+        "—";
+
+    const status =
+        currentGame.status ||
+        "In Progress";
+
+    const rows = [
+        ["POINTS",home.points,away.points,false],
+        ["FIELD GOALS",`${home.field_goals_made}/${home.field_goals_attempted}`,`${away.field_goals_made}/${away.field_goals_attempted}`,true],
+        ["FG PERCENTAGE",calculatePercentage(home.field_goals_made,home.field_goals_attempted),calculatePercentage(away.field_goals_made,away.field_goals_attempted),true],
+        ["2-POINT FIELD GOALS",`${home.two_pt_made}/${home.two_pt_attempted}`,`${away.two_pt_made}/${away.two_pt_attempted}`,true],
+        ["3-POINT FIELD GOALS",`${home.three_pt_made}/${home.three_pt_attempted}`,`${away.three_pt_made}/${away.three_pt_attempted}`,true],
+        ["FREE THROWS",`${home.ft_made}/${home.ft_attempted}`,`${away.ft_made}/${away.ft_attempted}`,true],
+        ["OFFENSIVE REBOUNDS",home.offensive_rebounds,away.offensive_rebounds,false],
+        ["DEFENSIVE REBOUNDS",home.defensive_rebounds,away.defensive_rebounds,false],
+        ["TOTAL REBOUNDS",home.rebounds,away.rebounds,false],
+        ["ASSISTS",home.assists,away.assists,false],
+        ["STEALS",home.steals,away.steals,false],
+        ["BLOCKS",home.blocks,away.blocks,false],
+        ["TURNOVERS",home.turnovers,away.turnovers,false],
+        ["FOULS",home.fouls,away.fouls,false]
+    ];
+
+    const report = document.createElement("section");
+    report.className = "print-report";
+
+    report.innerHTML = `
+        <div class="print-report-header">
+            <div class="print-brand">
+                <div class="print-brand-mark">HH</div>
+                <div>
+                    <div class="print-brand-name">
+                        HOOP <span>HUB PH</span>
+                    </div>
+                    <div class="print-report-label">
+                        OFFICIAL TEAM COMPARISON REPORT
+                    </div>
+                </div>
+            </div>
+
+            <div class="print-meta">
+                <div><strong>GAME:</strong> #${currentGame.id ?? "—"}</div>
+                <div><strong>DATE:</strong> ${gameDate}</div>
+                <div><strong>VENUE:</strong> ${venue}</div>
+                <div><strong>PERIOD:</strong> ${periodText}</div>
+                <div><strong>STATUS:</strong> ${status}</div>
+            </div>
+        </div>
+
+        <div class="comparison-score-panel">
+            <div class="comparison-score-team">
+                <div class="comparison-score-side">HOME TEAM</div>
+                <div class="comparison-score-name">${homeName}</div>
+                <div class="comparison-score-number">${homeScore}</div>
+            </div>
+
+            <div class="comparison-score-center">VS</div>
+
+            <div class="comparison-score-team">
+                <div class="comparison-score-side">AWAY TEAM</div>
+                <div class="comparison-score-name">${awayName}</div>
+                <div class="comparison-score-number">${awayScore}</div>
+            </div>
+        </div>
+
+        <div class="comparison-report-title">
+            TEAM STATISTICS COMPARISON
+        </div>
+
+        <table class="team-comparison-table">
+            <thead>
+                <tr>
+                    <th>STATISTIC</th>
+                    <th>${homeName}</th>
+                    <th>${awayName}</th>
+                    <th>DIFFERENCE</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${rows.map(row => `
+                    <tr>
+                        <td>${row[0]}</td>
+                        <td class="team-comparison-value">${row[1]}</td>
+                        <td class="team-comparison-value">${row[2]}</td>
+                        <td class="team-comparison-difference">
+                            ${row[3] ? "—" : formatComparisonDifference(row[1],row[2])}
+                        </td>
+                    </tr>
+                `).join("")}
+            </tbody>
+        </table>
+
+        <div class="comparison-report-title">
+            SCORING BREAKDOWN
+        </div>
+
+        <div class="comparison-breakdown-grid">
+            <div class="comparison-breakdown-card">
+                <div class="comparison-breakdown-label">POINTS IN PAINT</div>
+                <div class="comparison-breakdown-values">
+                    ${homeBreakdown.paint} — ${awayBreakdown.paint}
+                </div>
+            </div>
+
+            <div class="comparison-breakdown-card">
+                <div class="comparison-breakdown-label">FAST BREAK</div>
+                <div class="comparison-breakdown-values">
+                    ${homeBreakdown.fastBreak} — ${awayBreakdown.fastBreak}
+                </div>
+            </div>
+
+            <div class="comparison-breakdown-card">
+                <div class="comparison-breakdown-label">OFF TURNOVERS</div>
+                <div class="comparison-breakdown-values">
+                    ${homeBreakdown.offTurnover} — ${awayBreakdown.offTurnover}
+                </div>
+            </div>
+
+            <div class="comparison-breakdown-card">
+                <div class="comparison-breakdown-label">SECOND CHANCE</div>
+                <div class="comparison-breakdown-values">
+                    ${homeBreakdown.secondChance} — ${awayBreakdown.secondChance}
+                </div>
+            </div>
+        </div>
+
+        <div class="print-signatures">
+            <div class="print-signature">OFFICIAL SCORER</div>
+            <div class="print-signature">GAME OFFICIAL</div>
+            <div class="print-signature">COMMISSIONER</div>
+        </div>
+
+        <div class="print-footer-note">
+            Generated through Hoop Hub PH Scorekeeper
+        </div>
+    `;
+
+    previewContent.replaceChildren(report);
+    previewTitle.textContent = "Official Team Comparison Report";
+    modal.classList.add("visible");
+}
+
+
 async function printTeamStats(team){
 
     if(!currentGame){
