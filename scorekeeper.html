@@ -3743,6 +3743,10 @@ let shotClockEndTime=null;
 /* Separate clock-controller synchronization */
 let externalClockSyncChannel=null;
 let externalClockSyncPollTimer=null;
+const externalClockBroadcastChannel=
+    "BroadcastChannel" in window
+        ?new BroadcastChannel("hoophub-clock-sync")
+        :null;
 let applyingExternalClockState=false;
 
 let playerMinuteBaseSeconds={};
@@ -4607,7 +4611,7 @@ function startMinuteDisplay(){
     minuteSyncTimer=
         setInterval(
             updateVisibleMinutes,
-            100
+            50
         );
 }
 
@@ -10639,9 +10643,53 @@ function startExternalClockSync(){
     externalClockSyncPollTimer=
         setInterval(
             pollExternalClockState,
-            1000
+            500
         );
 }
+
+
+if(externalClockBroadcastChannel){
+
+    externalClockBroadcastChannel.addEventListener(
+        "message",
+        event=>{
+
+            const data=
+                event &&
+                event.data
+                    ?event.data.game
+                    :null;
+
+            if(
+                !currentGame ||
+                !data ||
+                Number(data.id)!==Number(currentGame.id)
+            ){
+                return;
+            }
+
+            applyExternalClockState(data);
+        }
+    );
+}
+
+
+window.addEventListener(
+    "focus",
+    ()=>{
+        void pollExternalClockState();
+    }
+);
+
+
+document.addEventListener(
+    "visibilitychange",
+    ()=>{
+        if(!document.hidden){
+            void pollExternalClockState();
+        }
+    }
+);
 
 
 /* =========================================================
