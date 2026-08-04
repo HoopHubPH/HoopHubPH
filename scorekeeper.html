@@ -4333,6 +4333,129 @@ align-items:start;
 }
 
 </style>
+<style>
+
+/* FINAL: TEAM STATS STAYS STILL */
+.hybrid-team-stats{
+    display:flex!important;
+    flex-direction:column!important;
+    width:100%!important;
+    height:211px!important;
+    min-height:211px!important;
+    max-height:211px!important;
+    overflow:hidden!important;
+}
+
+.hybrid-team-stats .easy-team-header{
+    flex:0 0 24px!important;
+    height:24px!important;
+    min-height:24px!important;
+    max-height:24px!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view{
+    flex:0 0 151px!important;
+    width:100%!important;
+    height:151px!important;
+    min-height:151px!important;
+    max-height:151px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    border:1px solid #e5e5e5!important;
+    border-radius:4px!important;
+    background:#fff!important;
+    scrollbar-gutter:stable;
+    overscroll-behavior:contain;
+}
+
+.hybrid-team-stats .table-scroll.roster-view:not(.expanded) .bench-player-row{
+    display:none!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view.expanded{
+    height:151px!important;
+    min-height:151px!important;
+    max-height:151px!important;
+    overflow-y:auto!important;
+    overflow-x:auto!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view.expanded .bench-player-row{
+    display:table-row!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view .player-table th{
+    position:sticky!important;
+    top:0!important;
+    z-index:8!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view .player-table td{
+    height:25px!important;
+}
+
+.hybrid-team-stats .team-bench-footer{
+    flex:0 0 25px!important;
+    width:100%!important;
+    height:25px!important;
+    min-height:25px!important;
+    max-height:25px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    padding:3px 4px!important;
+    margin:3px 0 0!important;
+    border-top:1px solid #ddd!important;
+    background:#fff!important;
+    position:relative!important;
+    z-index:30!important;
+}
+
+.hybrid-team-stats .team-bench-footer .view-all-button{
+    width:48px!important;
+    min-width:48px!important;
+    max-width:48px!important;
+    height:18px!important;
+    min-height:18px!important;
+    max-height:18px!important;
+    padding:0!important;
+    margin:0!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border:1px solid #999!important;
+    border-radius:3px!important;
+    background:#f1f1f1!important;
+    color:#222!important;
+    font-size:8px!important;
+    font-weight:700!important;
+    line-height:1!important;
+    box-shadow:none!important;
+    transform:none!important;
+}
+
+@media(min-width:901px){
+    .hybrid-scorekeeper{
+        grid-template-rows:211px 211px!important;
+        align-content:start!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-team-stats{
+        height:211px!important;
+        min-height:211px!important;
+        max-height:211px!important;
+        align-self:start!important;
+    }
+}
+
+:fullscreen .hybrid-team-stats,
+:-webkit-full-screen .hybrid-team-stats{
+    height:211px!important;
+    min-height:211px!important;
+    max-height:211px!important;
+}
+
+</style>
 </head>
 
 <body class="auth-pending">
@@ -6536,15 +6659,13 @@ async function renderTeamPlayers(team){
         );
 
 
-    const visibleBench=
-        teamExpandedMap[team]
-            ?bench
-            :[];
-
-
+    /*
+    Keep every roster row mounted so pressing Bench
+    never rebuilds or moves the team-stat box.
+    */
     const display=[
         ...onCourt,
-        ...visibleBench
+        ...bench
     ];
 
 
@@ -6665,6 +6786,13 @@ async function renderTeamPlayers(team){
         row.id=
             "player-row-"+player.id;
 
+        if(playerOnCourt[player.id]!==true){
+
+            row.classList.add(
+                "bench-player-row"
+            );
+        }
+
         tbody.appendChild(
             row
         );
@@ -6735,13 +6863,52 @@ async function viewAllBenchPlayers(team){
 
     teamExpandedMap[team]=true;
 
-    await renderTeamPlayers(
-        team
-    );
+    const containerId=
+        teamContainerMap[team];
+
+    const container=
+        containerId
+            ?document.getElementById(
+                containerId
+            )
+            :null;
+
+    if(!container){
+        return;
+    }
+
+    const scroll=
+        container.querySelector(
+            ".table-scroll"
+        );
+
+    const button=
+        container.querySelector(
+            ".team-bench-footer .view-all-button"
+        );
+
+    if(scroll){
+
+        scroll.classList.add(
+            "expanded"
+        );
+
+        scroll.scrollTop=
+            teamRosterScrollMap[team] ||
+            0;
+    }
+
+    if(button){
+
+        button.textContent=
+            "Close";
+    }
 }
 
 
 async function hideExtraBenchPlayers(team){
+
+    teamExpandedMap[team]=false;
 
     const containerId=
         teamContainerMap[team];
@@ -6753,24 +6920,37 @@ async function hideExtraBenchPlayers(team){
             )
             :null;
 
+    if(!container){
+        return;
+    }
+
     const scroll=
-        container
-            ?container.querySelector(
-                ".table-scroll"
-            )
-            :null;
+        container.querySelector(
+            ".table-scroll"
+        );
+
+    const button=
+        container.querySelector(
+            ".team-bench-footer .view-all-button"
+        );
 
     if(scroll){
 
         teamRosterScrollMap[team]=
             scroll.scrollTop;
+
+        scroll.scrollTop=0;
+
+        scroll.classList.remove(
+            "expanded"
+        );
     }
 
-    teamExpandedMap[team]=false;
+    if(button){
 
-    await renderTeamPlayers(
-        team
-    );
+        button.textContent=
+            "Bench";
+    }
 }
 
 
