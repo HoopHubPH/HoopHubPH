@@ -114,7 +114,7 @@
         .hero-content {
     max-width: 1000px;
 }
-        }
+    
 
 .hero h1 {
     font-size: 48px;
@@ -337,7 +337,9 @@
 
         <a href="live-game.html">Live Game</a>
 
-        <a id="dashboardAccess" class="dashboard-access" href="#" hidden>My Dashboard</a>
+<a id="loginAccess" class="dashboard-access" href="login.html">Log In</a>
+
+<a id="dashboardAccess" class="dashboard-access" href="#" hidden>My Dashboard</a>
 
     </nav>
 
@@ -599,16 +601,18 @@
     };
 
     async function showDashboardAccess() {
-        const dashboardAccess = document.getElementById("dashboardAccess");
+    const dashboardAccess = document.getElementById("dashboardAccess");
+    const loginAccess = document.getElementById("loginAccess");
 
         try {
             const { data: userData, error: userError } =
                 await supabaseClient.auth.getUser();
 
             if (userError || !userData.user) {
-                dashboardAccess.hidden = true;
-                return;
-            }
+    dashboardAccess.hidden = true;
+    loginAccess.hidden = false;
+    return;
+}
 
             const { data: profile, error: profileError } = await supabaseClient
                 .from("profiles")
@@ -624,7 +628,8 @@
             }
 
             dashboardAccess.href = dashboardUrl;
-            dashboardAccess.hidden = false;
+dashboardAccess.hidden = false;
+loginAccess.hidden = true;
         } catch (error) {
             console.error("Unable to show dashboard access:", error);
             dashboardAccess.hidden = true;
