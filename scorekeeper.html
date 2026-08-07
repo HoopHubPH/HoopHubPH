@@ -5027,109 +5027,150 @@ It remains in the same lower-left position and never overlaps the table.
     <style>
 
 /* =========================================================
-   FINAL TEAM STAT BOX — FULL ROSTER WITH SCROLL
+   FINAL FULLSCREEN / RESOLUTION AUTOFIT OVERRIDE
+   Specific layout-only fix: keep both team stat boxes visible,
+   proportion them to the available viewport, and scroll each
+   full roster inside its own team box.
    ========================================================= */
 
-/*
-Team box structure:
-1. Team name
-2. Instruction
-3. Scrollable roster
-*/
+/* Team box has three real children: header, instruction, roster. */
 .hybrid-team-stats{
     display:grid!important;
-
-    grid-template-rows:
-        24px
-        14px
-        minmax(0,1fr)!important;
-
+    grid-template-rows:24px 14px minmax(0,1fr)!important;
+    min-width:0!important;
+    min-height:0!important;
     overflow:hidden!important;
 }
 
+.hybrid-team-stats .easy-team-header{
+    grid-row:1!important;
+    min-height:0!important;
+}
 
-/* Instruction stays above roster */
 .hybrid-team-stats .hybrid-instruction{
     grid-row:2!important;
-
+    min-height:0!important;
     margin:0!important;
-    padding:2px 3px!important;
-
+    padding:1px 3px!important;
     overflow:hidden!important;
     white-space:nowrap!important;
+    text-overflow:ellipsis!important;
 }
 
-
-/* This is the container that JS places the table inside */
 .hybrid-team-stats #homePlayersList,
 .hybrid-team-stats #awayPlayersList{
     grid-row:3!important;
-
     width:100%!important;
     height:100%!important;
-
+    min-width:0!important;
     min-height:0!important;
     overflow:hidden!important;
 }
 
-
-/* Actual player-table scrolling area */
-.hybrid-team-stats #homePlayersList .table-scroll.roster-view,
-.hybrid-team-stats #awayPlayersList .table-scroll.roster-view{
+/* Complete roster stays visible and scrolls vertically inside the box. */
+.hybrid-team-stats .table-scroll.roster-view{
     display:block!important;
-
     width:100%!important;
     height:100%!important;
+    min-width:0!important;
     min-height:0!important;
     max-height:none!important;
-
-    overflow-y:scroll!important;
+    margin:0!important;
     overflow-x:auto!important;
-
-    scrollbar-width:auto!important;
+    overflow-y:auto!important;
+    scrollbar-gutter:stable!important;
+    overscroll-behavior:contain!important;
 }
 
-
-/* ALWAYS show bench players */
-.hybrid-team-stats
-.table-scroll.roster-view
-.bench-player-row{
+.hybrid-team-stats .table-scroll.roster-view .bench-player-row{
     display:table-row!important;
 }
 
-
-/* Keep headings visible while scrolling down */
-.hybrid-team-stats
-.table-scroll.roster-view
-.player-table thead th{
+.hybrid-team-stats .table-scroll.roster-view .player-table thead th{
     position:sticky!important;
     top:0!important;
     z-index:30!important;
 }
 
-
-/* Remove old Bench button completely */
+/* The old Bench footer is unnecessary because the complete roster scrolls. */
 .hybrid-team-stats .team-bench-footer{
     display:none!important;
 }
 
+/* Desktop/laptop: use the exact remaining viewport space.
+   No fixed pixel team heights, so different screen resolutions auto-fit. */
+@media (min-width:901px) and (min-height:620px){
+    .hybrid-scorekeeper{
+        height:100%!important;
+        min-height:0!important;
+        grid-template-columns:minmax(0,1.67fr) minmax(340px,.73fr)!important;
+        grid-template-rows:minmax(0,1fr) minmax(0,1fr)!important;
+        grid-template-areas:
+            "home controls"
+            "away controls"!important;
+        align-content:stretch!important;
+        align-items:stretch!important;
+        overflow:hidden!important;
+    }
 
-/* Make scrollbar easier to see in Chrome/Edge */
-.hybrid-team-stats
-.table-scroll.roster-view::-webkit-scrollbar{
-    width:10px;
-    height:8px;
+    .hybrid-scorekeeper > .hybrid-team-stats:nth-of-type(2){
+        grid-area:home!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-team-stats:nth-of-type(3){
+        grid-area:away!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-action-panel{
+        grid-area:controls!important;
+        height:100%!important;
+        min-height:0!important;
+        max-height:none!important;
+        overflow:auto!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-team-stats{
+        width:100%!important;
+        height:100%!important;
+        min-height:0!important;
+        max-height:none!important;
+        align-self:stretch!important;
+    }
 }
 
-.hybrid-team-stats
-.table-scroll.roster-view::-webkit-scrollbar-thumb{
-    background:#999;
-    border-radius:10px;
+/* Browser fullscreen: explicitly preserve the same proportional grid. */
+:fullscreen .hybrid-scorekeeper,
+:-webkit-full-screen .hybrid-scorekeeper{
+    height:100%!important;
+    min-height:0!important;
+    grid-template-rows:minmax(0,1fr) minmax(0,1fr)!important;
+    align-content:stretch!important;
+    overflow:hidden!important;
 }
 
-.hybrid-team-stats
-.table-scroll.roster-view::-webkit-scrollbar-track{
-    background:#eee;
+:fullscreen .hybrid-scorekeeper > .hybrid-team-stats,
+:-webkit-full-screen .hybrid-scorekeeper > .hybrid-team-stats{
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+}
+
+:fullscreen .hybrid-team-stats .table-scroll.roster-view,
+:-webkit-full-screen .hybrid-team-stats .table-scroll.roster-view{
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow-y:auto!important;
+    overflow-x:auto!important;
+}
+
+/* Shorter desktop displays still use the available space instead of
+   forcing the older 185/220/260px minimum team heights. */
+@media (min-width:901px) and (max-height:900px){
+    .hybrid-scorekeeper > .hybrid-team-stats{
+        min-height:0!important;
+        max-height:none!important;
+    }
 }
 
 </style>
