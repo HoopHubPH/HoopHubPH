@@ -5027,32 +5027,109 @@ It remains in the same lower-left position and never overlaps the table.
     <style>
 
 /* =========================================================
-   FINAL TEAM STAT BOX — ALWAYS SHOW FULL ROSTER
+   FINAL TEAM STAT BOX — FULL ROSTER WITH SCROLL
    ========================================================= */
 
-.hybrid-team-stats .table-scroll.roster-view{
-    overflow-y:auto!important;
-    overflow-x:auto!important;
+/*
+Team box structure:
+1. Team name
+2. Instruction
+3. Scrollable roster
+*/
+.hybrid-team-stats{
+    display:grid!important;
+
+    grid-template-rows:
+        24px
+        14px
+        minmax(0,1fr)!important;
+
+    overflow:hidden!important;
 }
 
-.hybrid-team-stats .table-scroll.roster-view .bench-player-row{
+
+/* Instruction stays above roster */
+.hybrid-team-stats .hybrid-instruction{
+    grid-row:2!important;
+
+    margin:0!important;
+    padding:2px 3px!important;
+
+    overflow:hidden!important;
+    white-space:nowrap!important;
+}
+
+
+/* This is the container that JS places the table inside */
+.hybrid-team-stats #homePlayersList,
+.hybrid-team-stats #awayPlayersList{
+    grid-row:3!important;
+
+    width:100%!important;
+    height:100%!important;
+
+    min-height:0!important;
+    overflow:hidden!important;
+}
+
+
+/* Actual player-table scrolling area */
+.hybrid-team-stats #homePlayersList .table-scroll.roster-view,
+.hybrid-team-stats #awayPlayersList .table-scroll.roster-view{
+    display:block!important;
+
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+
+    overflow-y:scroll!important;
+    overflow-x:auto!important;
+
+    scrollbar-width:auto!important;
+}
+
+
+/* ALWAYS show bench players */
+.hybrid-team-stats
+.table-scroll.roster-view
+.bench-player-row{
     display:table-row!important;
 }
 
-.hybrid-team-stats .table-scroll.roster-view .player-table th{
+
+/* Keep headings visible while scrolling down */
+.hybrid-team-stats
+.table-scroll.roster-view
+.player-table thead th{
     position:sticky!important;
     top:0!important;
-    z-index:20!important;
+    z-index:30!important;
 }
 
+
+/* Remove old Bench button completely */
 .hybrid-team-stats .team-bench-footer{
     display:none!important;
 }
 
-.hybrid-team-stats{
-    grid-template-rows:
-        var(--team-stat-header-height)
-        minmax(0,1fr)!important;
+
+/* Make scrollbar easier to see in Chrome/Edge */
+.hybrid-team-stats
+.table-scroll.roster-view::-webkit-scrollbar{
+    width:10px;
+    height:8px;
+}
+
+.hybrid-team-stats
+.table-scroll.roster-view::-webkit-scrollbar-thumb{
+    background:#999;
+    border-radius:10px;
+}
+
+.hybrid-team-stats
+.table-scroll.roster-view::-webkit-scrollbar-track{
+    background:#eee;
 }
 
 </style>
