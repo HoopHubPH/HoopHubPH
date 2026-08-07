@@ -5024,6 +5024,38 @@ It remains in the same lower-left position and never overlaps the table.
 }
 
 </style>
+    <style>
+
+/* =========================================================
+   FINAL TEAM STAT BOX — ALWAYS SHOW FULL ROSTER
+   ========================================================= */
+
+.hybrid-team-stats .table-scroll.roster-view{
+    overflow-y:auto!important;
+    overflow-x:auto!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view .bench-player-row{
+    display:table-row!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view .player-table th{
+    position:sticky!important;
+    top:0!important;
+    z-index:20!important;
+}
+
+.hybrid-team-stats .team-bench-footer{
+    display:none!important;
+}
+
+.hybrid-team-stats{
+    grid-template-rows:
+        var(--team-stat-header-height)
+        minmax(0,1fr)!important;
+}
+
+</style>
 </head>
 
 <body class="auth-pending">
