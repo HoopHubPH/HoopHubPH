@@ -6977,6 +6977,52 @@ body:-webkit-full-screen {
     box-sizing: border-box !important;
 }
 </style>
+<style id="requested-readability-adjustments">
+/* Readability-only adjustments: jersey number, compact stat labels, and
+   proportional Add Stats player buttons. */
+.hybrid-team-stats .player-table tbody td:first-child {
+    color: #111 !important;
+    font-size: clamp(13px, .9vw, 16px) !important;
+    font-weight: 900 !important;
+    letter-spacing: .01em !important;
+    text-shadow: 0 0 .01px currentColor !important;
+}
+
+.hybrid-team-stats .player-table thead tr,
+.hybrid-team-stats .player-table thead th {
+    height: 25px !important;
+    min-height: 25px !important;
+    max-height: 25px !important;
+    padding-top: 2px !important;
+    padding-bottom: 2px !important;
+    font-size: clamp(8px, .58vw, 11px) !important;
+    line-height: 1 !important;
+}
+
+.hybrid-action-panel .quick-player-buttons {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: clamp(3px, .35vw, 5px) !important;
+}
+
+.hybrid-action-panel .quick-player-chip {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: clamp(44px, 5.2vh, 52px) !important;
+    padding: 7px 5px !important;
+    border-radius: 5px !important;
+    font-size: clamp(10px, .78vw, 13px) !important;
+    font-weight: 900 !important;
+    line-height: 1.12 !important;
+}
+
+@media (max-width: 900px) {
+    .hybrid-action-panel .quick-player-chip {
+        min-height: 42px !important;
+        padding: 6px 3px !important;
+        font-size: clamp(9px, 1.5vw, 12px) !important;
+    }
+}
+</style>
 </head>
 
 <body class="auth-pending">
