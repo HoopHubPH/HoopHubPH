@@ -5488,7 +5488,7 @@ HALF
 <button id="status-final"
 class="control-button"
 onclick="setGameStatus('Final')">
-FINALIZE GAME
+SUBMIT FOR REVIEW
 </button>
 
 </div>
@@ -7074,7 +7074,9 @@ async function loadGame(){
     );
 
     setFinalizedLock(
-        String(data.status||"").toLowerCase()==="final"
+        ["final","pending review"].includes(
+            String(data.status||"").toLowerCase()
+        )
     );
 
 
@@ -12776,8 +12778,11 @@ function applyExternalClockState(data){
             data.status||""
         ).toLowerCase()==="final";
 
+    const submitted=
+        String(data.status||"").toLowerCase()==="pending review";
+
     setFinalizedLock(
-        finalized
+        finalized||submitted
     );
 
     if(clockInterval){
@@ -13825,7 +13830,7 @@ async function setGameStatus(status){
     }
 
     if(status==="Final"){
-        await finalizeCurrentGame();
+        await submitCurrentGameForReview();
         return;
     }
 
@@ -13849,7 +13854,13 @@ function setFinalizedLock(locked){
 
     const finalButton=document.getElementById("status-final");
     if(finalButton){
-        finalButton.textContent=locked ? "GAME FINALIZED" : "FINALIZE GAME";
+        const status=String(currentGame?.status||"").toLowerCase();
+        finalButton.textContent=
+            status==="pending review"
+                ?"SUBMITTED FOR REVIEW"
+                :status==="final"
+                    ?"GAME FINALIZED"
+                    :"SUBMIT FOR REVIEW";
     }
 }
 
@@ -13902,10 +13913,10 @@ async function flushAllPendingStats(){
 }
 
 
-async function finalizeCurrentGame(){
+async function submitCurrentGameForReview(){
 
     if(clockRunning){
-        showStatus("Pause the game clock before finalizing the game.");
+        showStatus("Pause the game clock before submitting the game.");
         return;
     }
 
@@ -13913,12 +13924,12 @@ async function finalizeCurrentGame(){
     const awayScore=Number(document.getElementById("awayScore").textContent||0);
 
     if(homeScore===awayScore){
-        showStatus("A basketball game cannot be finalized while the score is tied.");
+        showStatus("A basketball game cannot be submitted while the score is tied.");
         return;
     }
 
     const confirmed=window.confirm(
-        "Finalize this game? The final score, player totals and league standings will be saved and the game will be locked."
+        "Submit this game for Commissioner review? Scoring will be locked until the Commissioner finalizes it or returns it for correction."
     );
 
     if(!confirmed){
@@ -13927,7 +13938,7 @@ async function finalizeCurrentGame(){
 
     const finalButton=document.getElementById("status-final");
     finalButton.disabled=true;
-    finalButton.textContent="FINALIZING...";
+    finalButton.textContent="SUBMITTING...";
 
     try{
         showStatus("Saving final player statistics...");
@@ -13935,7 +13946,7 @@ async function finalizeCurrentGame(){
         await flushAllPendingStats();
 
         const {data,error}=await supabaseClient.rpc(
-            "finalize_basketball_game",
+            "submit_basketball_game",
             {p_game_id:currentGame.id}
         );
 
@@ -13947,26 +13958,26 @@ async function finalizeCurrentGame(){
 
         currentGame={
             ...currentGame,
-            status:"Final",
-            finalized_at:result?.finalized_at||new Date().toISOString()
+            status:"Pending Review",
+            submitted_at:result?.submitted_at||new Date().toISOString()
         };
 
-        setActiveStatus("Final");
+        setActiveStatus("Pending Review");
         setFinalizedLock(true);
         stopMinuteDisplay();
         stopMinutePersistence();
 
         showStatus(
-            result?.already_finalized
-                ? "This game was already finalized."
-                : "Game finalized. Player totals and league standings are updated."
+            result?.already_submitted
+                ? "This game was already submitted for review."
+                : "Game submitted. The Commissioner or Super Admin must review and finalize it."
         );
     }
     catch(error){
-        console.error("Finalize game error:",error);
+        console.error("Submit game error:",error);
         finalButton.disabled=false;
-        finalButton.textContent="FINALIZE GAME";
-        showStatus("Unable to finalize game: "+(error.message||"Unknown error"));
+        finalButton.textContent="SUBMIT FOR REVIEW";
+        showStatus("Unable to submit game: "+(error.message||"Unknown error"));
     }
 }
 
