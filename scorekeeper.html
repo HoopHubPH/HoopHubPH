@@ -6741,6 +6741,71 @@ body:-webkit-full-screen .hybrid-team-stats .table-scroll.roster-view.expanded {
     overflow-y: auto !important;
 }
 </style>
+<style id="fullscreen-white-and-larger-stat-controls">
+/* Requested presentation adjustment only: white fullscreen canvas and a
+   larger, proportional Add Stats panel. */
+html:has(body:fullscreen),
+html:has(body:-webkit-full-screen),
+body:fullscreen,
+body:-webkit-full-screen,
+body:fullscreen > .container,
+body:-webkit-full-screen > .container {
+    background: #fff !important;
+}
+
+body:fullscreen,
+body:-webkit-full-screen {
+    color-scheme: light !important;
+}
+
+@media (min-width: 900px) {
+    .hybrid-scorekeeper,
+    body:fullscreen .hybrid-scorekeeper,
+    body:-webkit-full-screen .hybrid-scorekeeper {
+        grid-template-columns: minmax(0, 1.28fr) minmax(390px, .72fr) !important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-action-panel,
+    body:fullscreen .hybrid-scorekeeper > .hybrid-action-panel,
+    body:-webkit-full-screen .hybrid-scorekeeper > .hybrid-action-panel {
+        padding: 10px !important;
+        gap: 8px !important;
+        background: #fff !important;
+    }
+
+    .hybrid-action-panel .quick-player-chip {
+        min-height: 42px !important;
+        padding: 6px 7px !important;
+        font-size: 10.5px !important;
+    }
+
+    .hybrid-action-panel .hybrid-actions-layout {
+        gap: 7px !important;
+    }
+
+    .hybrid-action-panel .hybrid-actions-layout .easy-action-grid {
+        gap: 5px !important;
+    }
+
+    .hybrid-action-panel .hybrid-actions-layout .easy-action-title {
+        margin-bottom: 4px !important;
+        font-size: 9px !important;
+    }
+
+    .hybrid-action-panel .hybrid-actions-layout .easy-action-button {
+        min-height: 34px !important;
+        padding: 5px 3px !important;
+        font-size: 10px !important;
+        line-height: 1.1 !important;
+    }
+
+    .hybrid-action-panel #easyUndoButton,
+    .hybrid-action-panel #easyDeductModeButton {
+        min-height: 42px !important;
+        font-size: 10px !important;
+    }
+}
+</style>
 </head>
 
 <body class="auth-pending">
