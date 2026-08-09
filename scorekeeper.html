@@ -3030,7 +3030,7 @@ align-items:start;
 <style>
 
 /* =========================================================
-   HOOP HUB PH â€” TRUE ONE-SCREEN SCOREKEEPER
+   HOOP HUB PH — TRUE ONE-SCREEN SCOREKEEPER
    Desktop/laptop viewport layout. No full-page scrolling.
    Existing functions and data logic are unchanged.
    ========================================================= */
@@ -3516,7 +3516,7 @@ align-items:start;
 <style>
 
 /* =========================================================
-   BENCH PLAYER SCROLL â€” FORCE COMPLETE ROSTERS VISIBLE
+   BENCH PLAYER SCROLL — FORCE COMPLETE ROSTERS VISIBLE
    ========================================================= */
 
 @media (min-width:901px){
@@ -4072,7 +4072,7 @@ align-items:start;
 <style>
 
 /* =========================================================
-   TEAM BENCH FOOTER â€” CLEAN BOTTOM POSITION
+   TEAM BENCH FOOTER — CLEAN BOTTOM POSITION
    ========================================================= */
 
 /* The Bench/Close control is now outside the scrolling table. */
@@ -4258,7 +4258,7 @@ align-items:start;
     overscroll-behavior:contain;
 }
 
-/* After clicking Bench, same box sizeâ€”only internal vertical scrolling turns on. */
+/* After clicking Bench, same box size—only internal vertical scrolling turns on. */
 .hybrid-team-stats .table-scroll.roster-view.expanded{
     height:151px!important;
     min-height:151px!important;
@@ -4864,7 +4864,7 @@ align-items:start;
 <style>
 
 /* =========================================================
-   REMOVE EMPTY SPACE â€” LET PLAYER TABLE FILL THE TEAM BOX
+   REMOVE EMPTY SPACE — LET PLAYER TABLE FILL THE TEAM BOX
    ========================================================= */
 
 /*
@@ -4953,7 +4953,7 @@ This removes the large blank area shown in the screenshot.
 }
 
 /*
-Footer is now the third grid rowâ€”not absolutely floating.
+Footer is now the third grid row—not absolutely floating.
 It remains in the same lower-left position and never overlaps the table.
 */
 .hybrid-team-stats .team-bench-footer{
@@ -5320,7 +5320,7 @@ It remains in the same lower-left position and never overlaps the table.
 
 <style>
 /* =========================================================
-   AUTHORITATIVE RESPONSIVE ROSTER LAYOUT â€” 2026-08-09
+   AUTHORITATIVE RESPONSIVE ROSTER LAYOUT — 2026-08-09
    This block intentionally comes last. It replaces the older
    competing fullscreen/team-height rules without touching JS.
    ========================================================= */
@@ -5511,7 +5511,7 @@ It remains in the same lower-left position and never overlaps the table.
 
 <style>
 /* =========================================================
-   RESPONSIVE SCOREKEEPER SHELL â€” FINAL OVERRIDE
+   RESPONSIVE SCOREKEEPER SHELL — FINAL OVERRIDE
    Fits the usable browser viewport in normal/fullscreen mode.
    Each roster owns its vertical and horizontal scrolling.
    ========================================================= */
@@ -5793,7 +5793,7 @@ body{
 </style>
 <style id="hoophub-stable-scorekeeper-layout">
 /* =========================================================
-   STABLE SCOREKEEPER WORKSPACE â€” 2026-08-09
+   STABLE SCOREKEEPER WORKSPACE — 2026-08-09
    A deliberately simple final layout. It does not depend on
    inherited grid heights, which caused the roster to collapse.
    ========================================================= */
@@ -5983,7 +5983,7 @@ body{
 
 <style>
 /* =========================================================
-   CLEAN RESPONSIVE ROSTER LAYOUT â€” AUTHORITATIVE
+   CLEAN RESPONSIVE ROSTER LAYOUT — AUTHORITATIVE
    Keeps both team tables visible and independently scrollable.
    ========================================================= */
 
@@ -7257,6 +7257,76 @@ body:-webkit-full-screen {
     }
 }
 </style>
+<style>
+.scorekeeper-safety-bar{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    min-height:24px;
+    margin:-3px 0 5px;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.25px;
+}
+.save-safety-indicator{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    padding:3px 8px;
+    border:1px solid #cfd8dc;
+    border-radius:999px;
+    color:#37474f;
+    background:#fff;
+}
+.save-safety-indicator::before{
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#2e7d32;
+}
+.save-safety-indicator.saving::before{background:#ff6b00}
+.save-safety-indicator.offline,
+.save-safety-indicator.failed{color:#b71c1c;border-color:#ef9a9a;background:#fff5f5}
+.save-safety-indicator.offline::before,
+.save-safety-indicator.failed::before{background:#d32f2f}
+.device-control-warning{
+    display:none;
+    color:#b71c1c;
+    background:#fff3f3;
+    border:1px solid #ef9a9a;
+    border-radius:5px;
+    padding:3px 8px;
+}
+.device-control-warning.visible{display:inline-flex}
+.team-foul-control{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    margin-top:2px;
+    font-size:8px;
+    font-weight:900;
+    color:#333;
+    white-space:nowrap;
+}
+.team-foul-value{color:#ff6b00;font-size:10px;min-width:8px;text-align:center}
+.team-bonus-indicator{
+    display:none;
+    color:#fff;
+    background:#d32f2f;
+    border-radius:3px;
+    padding:1px 4px;
+    font-size:7px;
+}
+.team-bonus-indicator.active{display:inline-block}
+@media(max-width:900px){
+    .scorekeeper-safety-bar{font-size:9px;min-height:20px}
+    .save-safety-indicator{padding:2px 6px}
+    .team-foul-control{font-size:7px;gap:3px}
+    .team-foul-value{font-size:9px}
+}
+</style>
 </head>
 
 <body class="auth-pending">
@@ -7315,6 +7385,11 @@ LOG OUT
 </div>
 
 <div id="statusMessage"></div>
+
+<div class="scorekeeper-safety-bar" aria-live="polite">
+<span id="saveSafetyIndicator" class="save-safety-indicator">SAVED</span>
+<span id="deviceControlWarning" class="device-control-warning">VIEW ONLY: ANOTHER DEVICE IS CONTROLLING THIS GAME</span>
+</div>
 
 <div class="scoreboard">
 
@@ -7384,6 +7459,11 @@ LOG OUT
 <span class="team-timeout-value" id="homeTimeoutRemaining">2</span>
 <button type="button" id="homeTimeoutPlus" onclick="changeTimeout('home', -1)" title="Correct the most recent Home timeout">+</button>
 </div>
+<div class="team-foul-control" aria-label="Home team fouls this quarter">
+<span>FOULS</span>
+<span class="team-foul-value" id="homeTeamFouls">0</span>
+<span class="team-bonus-indicator" id="homeBonusIndicator">BONUS</span>
+</div>
 </div>
 <div class="score" id="homeScore">0</div>
 </div>
@@ -7396,6 +7476,11 @@ LOG OUT
 <button type="button" id="awayTimeoutMinus" onclick="changeTimeout('away', 1)" title="Use one Away timeout">−</button>
 <span class="team-timeout-value" id="awayTimeoutRemaining">2</span>
 <button type="button" id="awayTimeoutPlus" onclick="changeTimeout('away', -1)" title="Correct the most recent Away timeout">+</button>
+</div>
+<div class="team-foul-control" aria-label="Away team fouls this quarter">
+<span>FOULS</span>
+<span class="team-foul-value" id="awayTeamFouls">0</span>
+<span class="team-bonus-indicator" id="awayBonusIndicator">BONUS</span>
 </div>
 </div>
 <div class="score" id="awayScore">0</div>
@@ -7478,12 +7563,12 @@ LOG OUT
 <div class="easy-action-group">
 <div class="easy-action-title">OTHER STAT</div>
 <div class="easy-action-grid other-stats">
-<button type="button" class="easy-action-button stat-rebound" data-easy-action data-deduct-label="− OREB" onclick="queueEasyStat(event,'offensive_rebounds')" title="Offensive rebound â€” prepares second-chance points">OREB</button>
-<button type="button" class="easy-action-button stat-rebound" data-easy-action data-deduct-label="− DREB" onclick="queueEasyStat(event,'defensive_rebounds')" title="Defensive rebound â€” ends the previous possession">DREB</button>
+<button type="button" class="easy-action-button stat-rebound" data-easy-action data-deduct-label="− OREB" onclick="queueEasyStat(event,'offensive_rebounds')" title="Offensive rebound — prepares second-chance points">OREB</button>
+<button type="button" class="easy-action-button stat-rebound" data-easy-action data-deduct-label="− DREB" onclick="queueEasyStat(event,'defensive_rebounds')" title="Defensive rebound — ends the previous possession">DREB</button>
 <button type="button" class="easy-action-button" data-easy-action data-deduct-label="− AST" onclick="queueEasyStat(event,'assists')">AST</button>
 <button type="button" class="easy-action-button" data-easy-action data-deduct-label="− STL" onclick="queueEasyStat(event,'steals')">STL</button>
 <button type="button" class="easy-action-button" data-easy-action data-deduct-label="− BLK" onclick="queueEasyStat(event,'blocks')">BLK</button>
-<button type="button" class="easy-action-button stat-turnover" data-easy-action data-deduct-label="− TO" onclick="queueEasyStat(event,'turnovers')" title="Turnover â€” prepares points off turnover for the opponent">TO</button>
+<button type="button" class="easy-action-button stat-turnover" data-easy-action data-deduct-label="− TO" onclick="queueEasyStat(event,'turnovers')" title="Turnover — prepares points off turnover for the opponent">TO</button>
 <button type="button" class="easy-action-button stat-foul" data-easy-action data-deduct-label="− PF" onclick="queueEasyStat(event,'fouls')">PF</button>
 </div>
 </div>
@@ -7522,7 +7607,7 @@ Tap an on-court player above, then tap the stat. You can still select players fr
     aria-label="Print Home Team Stats"
 >🖨️</button>
 </div>
-<div class="hybrid-instruction">Tap an on-court row to score â€¢ Swipe the table for every stat â€¢ VIEW ALL opens the bench.</div>
+<div class="hybrid-instruction">Tap an on-court row to score • Swipe the table for every stat • VIEW ALL opens the bench.</div>
 <div id="homePlayersList"></div>
 </section>
 
@@ -7537,7 +7622,7 @@ Tap an on-court player above, then tap the stat. You can still select players fr
     aria-label="Print Away Team Stats"
 >🖨️</button>
 </div>
-<div class="hybrid-instruction">Tap a row to score â€¢ Hover or tap a player name for game and career stats.</div>
+<div class="hybrid-instruction">Tap a row to score • Hover or tap a player name for game and career stats.</div>
 <div id="awayPlayersList"></div>
 </section>
 
@@ -8079,6 +8164,28 @@ let quarterScoreTotals={
 };
 let timeoutEvents=[];
 let timeoutChangeInFlight=false;
+let teamFoulEvents=[];
+let pendingTeamFoulEvents=[];
+let teamFoulSaveInFlight=false;
+let saveSafetyHasFailure=false;
+
+const scorekeeperDeviceId=(()=>{
+    const key="hoophub_scorekeeper_device_id";
+    try{
+        let value=localStorage.getItem(key);
+        if(!value){
+            value=(crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random());
+            localStorage.setItem(key,value);
+        }
+        return value;
+    }
+    catch(error){
+        return "device-"+Date.now()+"-"+Math.random();
+    }
+})();
+let scorekeeperSessionHasControl=true;
+let scorekeeperSessionTimer=null;
+let scorekeeperSessionSupported=true;
 
 let clockSeconds=600;
 let clockInterval=null;
@@ -8147,7 +8254,11 @@ window.addEventListener(
             statSaveQueue.size>0||
             statSaveInFlight.size>0||
             gameScoreSaveQueue.size>0||
-            gameScoreSaveInFlight.size>0;
+            gameScoreSaveInFlight.size>0||
+            easyActionQueue.length>0||
+            easyActionQueueProcessing||
+            pendingTeamFoulEvents.length>0||
+            teamFoulSaveInFlight;
 
         if(!hasPendingSaves){
             return;
@@ -8157,6 +8268,30 @@ window.addEventListener(
         event.returnValue="";
     }
 );
+
+window.addEventListener("online",()=>{
+    saveSafetyHasFailure=false;
+    updateSaveSafetyIndicator();
+    restorePendingSaveQueues();
+    void flushAllPendingStats().catch(()=>{});
+    void flushPendingTeamFoulEvents();
+    void refreshScorekeeperSession();
+});
+
+window.addEventListener("offline",()=>{
+    persistPendingSaveQueues();
+    updateSaveSafetyIndicator();
+});
+
+document.addEventListener("visibilitychange",()=>{
+    if(document.visibilityState==="hidden"){
+        persistPendingSaveQueues();
+    }
+    else{
+        restorePendingSaveQueues();
+        void refreshScorekeeperSession();
+    }
+});
 
 /* =========================================================
    GENERAL HELPERS
@@ -8199,6 +8334,110 @@ function showStatus(message){
     showStatus.timer=setTimeout(()=>{
         el.style.display="none";
     },2500);
+}
+
+function getSaveRecoveryKey(){
+    if(!authenticatedUser||!currentGame){return null;}
+    return "hoophub_pending_saves:"+authenticatedUser.id+":"+currentGame.id;
+}
+
+function getPendingSaveCount(){
+    return statSaveQueue.size+
+        statSaveInFlight.size+
+        gameScoreSaveQueue.size+
+        gameScoreSaveInFlight.size+
+        easyActionQueue.length+
+        (easyActionQueueProcessing?1:0)+
+        pendingTeamFoulEvents.length+
+        (teamFoulSaveInFlight?1:0);
+}
+
+function updateSaveSafetyIndicator(){
+    const indicator=document.getElementById("saveSafetyIndicator");
+    if(!indicator){return;}
+    const pending=getPendingSaveCount();
+    indicator.className="save-safety-indicator";
+    if(!navigator.onLine){
+        indicator.classList.add("offline");
+        indicator.textContent="OFFLINE - "+pending+" QUEUED";
+    }
+    else if(saveSafetyHasFailure){
+        indicator.classList.add("failed");
+        indicator.textContent="SAVE FAILED - RETRYING";
+    }
+    else if(pending>0){
+        indicator.classList.add("saving");
+        indicator.textContent="SAVING "+pending+"...";
+    }
+    else{
+        indicator.textContent="SAVED";
+    }
+}
+
+function persistPendingSaveQueues(){
+    const key=getSaveRecoveryKey();
+    if(!key){return;}
+    try{
+        const payload={
+            stats:Array.from(statSaveQueue.entries()),
+            scores:Array.from(gameScoreSaveQueue.entries()),
+            fouls:pendingTeamFoulEvents,
+            actions:easyActionQueue,
+            savedAt:Date.now()
+        };
+        if(payload.stats.length||payload.scores.length||payload.fouls.length||payload.actions.length){
+            localStorage.setItem(key,JSON.stringify(payload));
+        }
+        else{
+            localStorage.removeItem(key);
+        }
+    }
+    catch(error){console.warn("Unable to preserve pending saves:",error);}
+    updateSaveSafetyIndicator();
+}
+
+function restorePendingSaveQueues(){
+    const key=getSaveRecoveryKey();
+    if(!key){return;}
+    try{
+        const raw=localStorage.getItem(key);
+        if(!raw){updateSaveSafetyIndicator();return;}
+        const payload=JSON.parse(raw);
+        for(const [saveKey,changes] of payload.stats||[]){
+            statSaveQueue.set(saveKey,{...(statSaveQueue.get(saveKey)||{}),...changes});
+        }
+        for(const [saveKey,changes] of payload.scores||[]){
+            gameScoreSaveQueue.set(String(saveKey),{...(gameScoreSaveQueue.get(String(saveKey))||{}),...changes});
+        }
+        const foulIds=new Set(pendingTeamFoulEvents.map(event=>event.client_event_id));
+        pendingTeamFoulEvents=[
+            ...(payload.fouls||[]).filter(event=>!foulIds.has(event.client_event_id)),
+            ...pendingTeamFoulEvents
+        ];
+        const visibleFoulIds=new Set(teamFoulEvents.map(event=>event.client_event_id));
+        teamFoulEvents.push(
+            ...pendingTeamFoulEvents.filter(event=>!visibleFoulIds.has(event.client_event_id))
+        );
+        updateTeamFoulDisplay();
+        const actionIds=new Set(easyActionQueue.map(action=>action.clientActionId));
+        easyActionQueue=[
+            ...(payload.actions||[]).filter(action=>!actionIds.has(action.clientActionId)),
+            ...easyActionQueue
+        ];
+        if(navigator.onLine){
+            for(const saveKey of statSaveQueue.keys()){
+                const playerId=String(saveKey).split("|")[0];
+                void flushStatSave(playerId);
+            }
+            for(const gameId of gameScoreSaveQueue.keys()){
+                void flushGameScoreSave(gameId);
+            }
+            void flushPendingTeamFoulEvents();
+            void processEasyActionQueue();
+        }
+    }
+    catch(error){console.warn("Unable to restore pending saves:",error);}
+    updateSaveSafetyIndicator();
 }
 
 
@@ -9190,6 +9429,12 @@ async function loadGame(){
 
     await loadTimeoutEvents();
 
+    await loadTeamFoulEvents();
+
+    restorePendingSaveQueues();
+
+    await startScorekeeperSession();
+
     setActivePeriod(
         data.period
     );
@@ -9219,6 +9464,8 @@ async function loadGame(){
     showStatus(
         "Game loaded successfully."
     );
+
+    updateSaveSafetyIndicator();
 }
 
 
@@ -9945,6 +10192,8 @@ function queueStatSave(
         }
     );
 
+    persistPendingSaveQueues();
+
 
     /*
        A fresh scorekeeper action should retry immediately,
@@ -9976,6 +10225,11 @@ function queueStatSave(
 async function flushStatSave(playerId){
 
     if(!currentGame){
+        return false;
+    }
+
+    if(!navigator.onLine){
+        persistPendingSaveQueues();
         return false;
     }
 
@@ -10105,12 +10359,14 @@ async function flushStatSave(playerId){
 
 
         statSaveRetryAfter.delete(key);
+        saveSafetyHasFailure=false;
         saved=true;
 
     }
     catch(error){
 
         saveFailed=true;
+        saveSafetyHasFailure=true;
 
         console.error(
             "Background stat save error:",
@@ -10182,6 +10438,9 @@ async function flushStatSave(playerId){
                 playerId
             );
         }
+
+        persistPendingSaveQueues();
+        updateSaveSafetyIndicator();
     }
 
 
@@ -10215,6 +10474,8 @@ function queueGameScoreSave(
         }
     );
 
+    persistPendingSaveQueues();
+
     gameScoreSaveRetryAfter.delete(key);
 
     clearTimeout(
@@ -10234,6 +10495,11 @@ function queueGameScoreSave(
 async function flushGameScoreSave(gameId){
 
     if(gameId===null||gameId===undefined){
+        return false;
+    }
+
+    if(!navigator.onLine){
+        persistPendingSaveQueues();
         return false;
     }
 
@@ -10323,11 +10589,13 @@ async function flushGameScoreSave(gameId){
         }
 
         gameScoreSaveRetryAfter.delete(key);
+        saveSafetyHasFailure=false;
         saved=true;
     }
     catch(error){
 
         saveFailed=true;
+        saveSafetyHasFailure=true;
 
         console.error(
             "Game score save error:",
@@ -10384,6 +10652,9 @@ async function flushGameScoreSave(gameId){
         ){
             flushGameScoreSave(gameId);
         }
+
+        persistPendingSaveQueues();
+        updateSaveSafetyIndicator();
     }
 
 
@@ -10939,7 +11210,7 @@ function getEasyPlayerName(player){
     ).trim();
 
     return "#"+
-        (player.jersey_number??"â€”")+
+        (player.jersey_number??"—")+
         " "+
         (name||"Player");
 }
@@ -10968,6 +11239,7 @@ function isCurrentGameLocked(){
     const status=String(currentGame.status||"").toLowerCase();
 
     return Boolean(
+        !scorekeeperSessionHasControl||
         currentGame.finalized_at||
         status==="final"||
         status==="pending review"
@@ -11107,7 +11379,7 @@ function renderEasyTeam(team){
                             onclick="selectEasyPlayer('${player.id}')"
                         >
                             <span class="easy-player-name">${escapeHTML(getEasyPlayerName(player))}</span>
-                            <span class="easy-player-mini-stats">PTS ${Number(stats.points||0)} Â· PF ${Number(stats.fouls||0)}</span>
+                            <span class="easy-player-mini-stats">PTS ${Number(stats.points||0)} · PF ${Number(stats.fouls||0)}</span>
                         </button>
                         <button
                             type="button"
@@ -11279,7 +11551,7 @@ function getQuickPlayerLabel(player){
     ).trim();
 
     return "#"+
-        (player.jersey_number??"â€”")+
+        (player.jersey_number??"—")+
         " "+
         shortName;
 }
@@ -11744,9 +12016,13 @@ function queueEasyAction(action,button){
 
     easyActionQueue.push({
         ...action,
+        clientActionId:crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random(),
         playerId:easySelectedPlayerId,
         deductMode:easyDeductMode
     });
+
+    persistPendingSaveQueues();
+    updateSaveSafetyIndicator();
 
     showEasyTapAccepted(button);
 
@@ -11786,10 +12062,19 @@ async function processEasyActionQueue(){
         return;
     }
 
+    if(!navigator.onLine){
+        persistPendingSaveQueues();
+        return;
+    }
+
     easyActionQueueProcessing=true;
 
     try{
         while(easyActionQueue.length){
+            if(!navigator.onLine){
+                persistPendingSaveQueues();
+                break;
+            }
             const action=easyActionQueue.shift();
 
             if(action.type==="score"){
@@ -11805,11 +12090,13 @@ async function processEasyActionQueue(){
                     action
                 );
             }
+            persistPendingSaveQueues();
         }
     }
     finally{
         easyActionQueueProcessing=false;
         setEasyActionAvailability();
+        updateSaveSafetyIndicator();
     }
 }
 
@@ -11858,7 +12145,7 @@ async function easyRecordScore(
 
             if(feedback){
                 feedback.textContent=
-                    "Nothing to deduct â€” this made-shot stat is already 0.";
+                    "Nothing to deduct — this made-shot stat is already 0.";
             }
 
             return;
@@ -11944,7 +12231,7 @@ async function easyRecordScore(
 
             if(savingFeedback){
                 savingFeedback.textContent=
-                    "Correction applied. Savingâ€¦";
+                    "Correction applied. Saving…";
             }
 
             await flushAllPendingStats();
@@ -12047,7 +12334,7 @@ async function easyRecordStat(statKey,queuedAction=null){
 
             if(feedback){
                 feedback.textContent=
-                    "Nothing to deduct â€” "+
+                    "Nothing to deduct — "+
                     getEasyStatLabel(statKey)+
                     " is already 0.";
             }
@@ -12090,7 +12377,7 @@ async function easyRecordStat(statKey,queuedAction=null){
 
             if(savingFeedback){
                 savingFeedback.textContent=
-                    "Correction applied. Savingâ€¦";
+                    "Correction applied. Saving…";
             }
 
             await flushAllPendingStats();
@@ -12114,29 +12401,29 @@ async function easyRecordStat(statKey,queuedAction=null){
             if(amount<0){
                 feedback.textContent=
                     playerName+
-                    " â€” 1 "+
+                    " — 1 "+
                     getEasyStatLabel(statKey)+
                     " deducted.";
             }
             else if(statKey==="offensive_rebounds"){
                 feedback.textContent=
                     playerName+
-                    " â€” OREB recorded. SECOND CHANCE is ready for the next score.";
+                    " — OREB recorded. SECOND CHANCE is ready for the next score.";
             }
             else if(statKey==="defensive_rebounds"){
                 feedback.textContent=
                     playerName+
-                    " â€” DREB recorded. Previous possession tags were cleared.";
+                    " — DREB recorded. Previous possession tags were cleared.";
             }
             else if(statKey==="turnovers"){
                 feedback.textContent=
                     playerName+
-                    " â€” TO recorded. OFF TURNOVER is ready for the opponent.";
+                    " — TO recorded. OFF TURNOVER is ready for the opponent.";
             }
             else{
                 feedback.textContent=
                     playerName+
-                    " â€” "+
+                    " — "+
                     getEasyStatLabel(statKey)+" recorded.";
             }
         }
@@ -12225,7 +12512,7 @@ async function undoEasyLastStat(){
 
         if(savingFeedback){
             savingFeedback.textContent=
-                "Undo applied. Savingâ€¦";
+                "Undo applied. Saving…";
         }
 
         await flushAllPendingStats();
@@ -12351,8 +12638,8 @@ function openSmartScoring(
     if(!isTwoPoint){
         automaticLocation.textContent=
             points===3
-            ?"3-POINT AREA â€” detected from the +3 button"
-            :"FREE-THROW LINE â€” detected from the +1 button";
+            ?"3-POINT AREA — detected from the +3 button"
+            :"FREE-THROW LINE — detected from the +1 button";
     }
 
     document.getElementById(
@@ -13611,6 +13898,13 @@ async function updatePlayerStat(
         amount
     );
 
+    if(statKey==="fouls"&&newValue!==current){
+        await recordTeamFoulEvent(
+            playerId,
+            newValue>current?1:-1
+        );
+    }
+
     if (hoveredPlayerId === playerId) {
         updatePopupContent(playerId);
     }
@@ -14301,7 +14595,7 @@ updatePlayerStat(
 "
 
 >
-âˆ’
+−
 </button>
 
 `;
@@ -16270,6 +16564,7 @@ function setActivePeriod(period){
     );
 
     updateTimeoutDisplay();
+    updateTeamFoulDisplay();
 }
 
 
@@ -16369,6 +16664,152 @@ function setFinalizedLock(locked){
     }
 }
 
+
+/* =========================================================
+   TEAM FOULS / BONUS
+   ========================================================= */
+
+function normalizeFoulPeriod(period){
+    const value=String(period||"").trim().toLowerCase();
+    if(value.includes("2nd")||value==="2q"){return "2nd Quarter";}
+    if(value.includes("3rd")||value==="3q"){return "3rd Quarter";}
+    if(value.includes("4th")||value==="4q"){return "4th Quarter";}
+    if(value.includes("overtime")||value==="ot"){return "Overtime";}
+    return "1st Quarter";
+}
+
+function getTeamFouls(teamSide,period){
+    const target=normalizeFoulPeriod(period);
+    return Math.max(0,teamFoulEvents.reduce((total,event)=>{
+        return event.team_side===teamSide&&normalizeFoulPeriod(event.period)===target
+            ?total+Number(event.foul_change||0)
+            :total;
+    },0));
+}
+
+function updateTeamFoulDisplay(){
+    const period=currentGame?.period||"1st Quarter";
+    for(const side of ["home","away"]){
+        const fouls=getTeamFouls(side,period);
+        const value=document.getElementById(side+"TeamFouls");
+        const bonus=document.getElementById(side+"BonusIndicator");
+        if(value){value.textContent=String(fouls);}
+        if(bonus){bonus.classList.toggle("active",fouls>=4);}
+    }
+}
+
+async function loadTeamFoulEvents(){
+    if(!currentGame){return;}
+    const {data,error}=await supabaseClient
+        .from("game_team_foul_events")
+        .select("id,team_side,player_id,period,foul_change,game_clock_seconds,created_at")
+        .eq("game_id",currentGame.id)
+        .order("created_at",{ascending:true});
+    if(error){
+        console.error("Team foul load error:",error);
+        teamFoulEvents=[];
+        updateTeamFoulDisplay();
+        return;
+    }
+    teamFoulEvents=data||[];
+    updateTeamFoulDisplay();
+}
+
+async function recordTeamFoulEvent(playerId,change){
+    if(!currentGame||!change){return;}
+    const side=playerTeamMap[playerId];
+    if(side!=="home"&&side!=="away"){return;}
+    const event={
+        client_event_id:crypto.randomUUID?crypto.randomUUID():scorekeeperDeviceId+"-"+Date.now()+"-"+Math.random(),
+        game_id:currentGame.id,
+        team_side:side,
+        player_id:playerId,
+        period:currentGame.period||"1st Quarter",
+        foul_change:change>0?1:-1,
+        game_clock_seconds:Number(clockSeconds||0)
+    };
+    teamFoulEvents.push(event);
+    pendingTeamFoulEvents.push(event);
+    updateTeamFoulDisplay();
+    persistPendingSaveQueues();
+    await flushPendingTeamFoulEvents();
+}
+
+async function flushPendingTeamFoulEvents(){
+    if(teamFoulSaveInFlight||!navigator.onLine||!pendingTeamFoulEvents.length){
+        updateSaveSafetyIndicator();
+        return;
+    }
+    teamFoulSaveInFlight=true;
+    updateSaveSafetyIndicator();
+    try{
+        while(pendingTeamFoulEvents.length&&navigator.onLine){
+            const event=pendingTeamFoulEvents[0];
+            const {error}=await supabaseClient
+                .from("game_team_foul_events")
+                .upsert(event,{onConflict:"client_event_id"});
+            if(error){throw error;}
+            pendingTeamFoulEvents.shift();
+            saveSafetyHasFailure=false;
+            persistPendingSaveQueues();
+        }
+    }
+    catch(error){
+        saveSafetyHasFailure=true;
+        console.error("Team foul save error:",error);
+    }
+    finally{
+        teamFoulSaveInFlight=false;
+        persistPendingSaveQueues();
+        updateSaveSafetyIndicator();
+    }
+}
+
+/* =========================================================
+   SINGLE-DEVICE GAME CONTROL
+   ========================================================= */
+
+function updateDeviceControlState(message=""){
+    const warning=document.getElementById("deviceControlWarning");
+    if(warning){
+        warning.textContent=message||"VIEW ONLY: ANOTHER DEVICE IS CONTROLLING THIS GAME";
+        warning.classList.toggle("visible",!scorekeeperSessionHasControl);
+    }
+    setEasyActionAvailability();
+    setFinalizedLock(isCurrentGameLocked());
+}
+
+async function refreshScorekeeperSession(){
+    if(!currentGame||!authenticatedUser||!scorekeeperSessionSupported){return;}
+    try{
+        const {data,error}=await supabaseClient.rpc("claim_scorekeeper_session",{
+            p_game_id:currentGame.id,
+            p_device_id:scorekeeperDeviceId
+        });
+        if(error){throw error;}
+        const result=Array.isArray(data)?data[0]:data;
+        scorekeeperSessionHasControl=result?.has_control!==false;
+        updateDeviceControlState(
+            scorekeeperSessionHasControl
+                ?""
+                :"VIEW ONLY: THIS GAME IS ACTIVE ON ANOTHER DEVICE"
+        );
+    }
+    catch(error){
+        console.error("Scorekeeper session check error:",error);
+        scorekeeperSessionSupported=false;
+        scorekeeperSessionHasControl=true;
+        updateDeviceControlState();
+    }
+}
+
+async function startScorekeeperSession(){
+    clearInterval(scorekeeperSessionTimer);
+    scorekeeperSessionHasControl=true;
+    scorekeeperSessionSupported=true;
+    await refreshScorekeeperSession();
+    scorekeeperSessionTimer=setInterval(refreshScorekeeperSession,15000);
+}
 
 /* =========================================================
    TEAM TIMEOUTS
