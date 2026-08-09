@@ -5493,6 +5493,289 @@ It remains in the same lower-left position and never overlaps the table.
     }
 }
 </style>
+
+<style>
+/* =========================================================
+   RESPONSIVE SCOREKEEPER SHELL — FINAL OVERRIDE
+   Fits the usable browser viewport in normal/fullscreen mode.
+   Each roster owns its vertical and horizontal scrolling.
+   ========================================================= */
+
+html{
+    min-width:320px!important;
+}
+
+body{
+    min-width:0!important;
+}
+
+/* Wide laptop/tablet landscape: keep every game control visible. */
+@media (min-width:900px){
+    html,
+    body{
+        width:100%!important;
+        height:100%!important;
+        height:100dvh!important;
+        min-height:0!important;
+        overflow:hidden!important;
+    }
+
+    body{
+        display:grid!important;
+        grid-template-rows:auto minmax(0,1fr)!important;
+    }
+
+    body > header{
+        min-height:0!important;
+        padding-top:7px!important;
+        padding-bottom:7px!important;
+    }
+
+    body > .container{
+        display:grid!important;
+        grid-template-rows:auto auto clamp(92px,14dvh,126px) minmax(0,1fr) auto!important;
+        gap:5px!important;
+        width:100%!important;
+        height:100%!important;
+        min-height:0!important;
+        padding:5px!important;
+        overflow:hidden!important;
+    }
+
+    .game-selector,
+    #statusMessage,
+    .scoreboard,
+    .game-footer-controls{
+        min-height:0!important;
+        margin:0!important;
+    }
+
+    #statusMessage:empty{
+        display:none!important;
+    }
+
+    .scoreboard{
+        height:100%!important;
+        overflow:hidden!important;
+    }
+
+    .hybrid-scorekeeper{
+        display:grid!important;
+        grid-template-columns:minmax(0,1.64fr) minmax(330px,.76fr)!important;
+        grid-template-rows:repeat(2,minmax(0,1fr))!important;
+        grid-template-areas:
+            "home controls"
+            "away controls"!important;
+        gap:5px!important;
+        width:100%!important;
+        height:100%!important;
+        min-width:0!important;
+        min-height:0!important;
+        overflow:hidden!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-action-panel{
+        grid-area:controls!important;
+        position:static!important;
+        width:100%!important;
+        height:100%!important;
+        min-width:0!important;
+        min-height:0!important;
+        max-height:none!important;
+        overflow:auto!important;
+        overscroll-behavior:contain!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-team-stats:nth-of-type(2){
+        grid-area:home!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-team-stats:nth-of-type(3){
+        grid-area:away!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-team-stats{
+        display:grid!important;
+        grid-template-rows:28px 16px minmax(0,1fr)!important;
+        width:100%!important;
+        height:100%!important;
+        min-width:0!important;
+        min-height:0!important;
+        max-height:none!important;
+        padding:5px!important;
+        overflow:hidden!important;
+    }
+}
+
+/* The list host must be allowed to shrink inside its team grid. */
+.hybrid-team-stats #homePlayersList,
+.hybrid-team-stats #awayPlayersList{
+    display:grid!important;
+    grid-template-rows:minmax(0,1fr)!important;
+    position:relative!important;
+    width:100%!important;
+    height:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:hidden!important;
+}
+
+/* This is the only vertical scroll viewport for a team roster. */
+.hybrid-team-stats .table-scroll.roster-view,
+.hybrid-team-stats .table-scroll.roster-view.expanded{
+    position:relative!important;
+    inset:auto!important;
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    max-width:100%!important;
+    max-height:100%!important;
+    overflow-x:auto!important;
+    overflow-y:scroll!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior:contain!important;
+    touch-action:pan-x pan-y!important;
+    scrollbar-gutter:stable both-edges!important;
+    border:1px solid #ddd!important;
+    background:#fff!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view::-webkit-scrollbar{
+    width:11px!important;
+    height:11px!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view::-webkit-scrollbar-track{
+    background:#ededed!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view::-webkit-scrollbar-thumb{
+    border:2px solid #ededed!important;
+    border-radius:8px!important;
+    background:#ff6b00!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view{
+    scrollbar-width:auto!important;
+    scrollbar-color:#ff6b00 #ededed!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view .player-table{
+    width:100%!important;
+    min-width:820px!important;
+    height:max-content!important;
+    table-layout:fixed!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view .bench-player-row,
+.hybrid-team-stats .table-scroll.roster-view:not(.expanded) .bench-player-row,
+.hybrid-team-stats .table-scroll.roster-view.expanded .bench-player-row{
+    display:table-row!important;
+}
+
+.hybrid-team-stats .team-bench-footer{
+    display:none!important;
+}
+
+/* Actual content wrapper keeps SUB IN/OUT left of the name. */
+.hybrid-team-stats .player-identity-row{
+    display:grid!important;
+    grid-template-columns:max-content minmax(0,1fr)!important;
+    align-items:center!important;
+    gap:6px!important;
+    width:100%!important;
+    min-width:0!important;
+}
+
+.hybrid-team-stats .player-text{
+    display:grid!important;
+    min-width:0!important;
+}
+
+.hybrid-team-stats .player-identity-row .sub-button{
+    grid-column:1!important;
+    grid-row:1!important;
+    margin:0!important;
+    white-space:nowrap!important;
+}
+
+.hybrid-team-stats .player-identity-row .player-name,
+.hybrid-team-stats .player-identity-row .player-position{
+    min-width:0!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+}
+
+/* Narrow/portrait devices use a clean stacked document with bounded rosters. */
+@media (max-width:899px){
+    html,
+    body{
+        width:100%!important;
+        min-width:0!important;
+        overflow-x:hidden!important;
+    }
+
+    body > .container{
+        width:100%!important;
+        max-width:none!important;
+        padding:6px!important;
+    }
+
+    .hybrid-scorekeeper{
+        display:grid!important;
+        grid-template-columns:minmax(0,1fr)!important;
+        grid-template-areas:
+            "controls"
+            "home"
+            "away"
+            "breakdown"!important;
+        width:100%!important;
+        min-width:0!important;
+        overflow:visible!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-action-panel,
+    .hybrid-scorekeeper > .hybrid-team-stats{
+        width:100%!important;
+        min-width:0!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-team-stats{
+        display:grid!important;
+        grid-template-rows:30px 18px minmax(0,1fr)!important;
+        height:clamp(280px,45dvh,420px)!important;
+        min-height:280px!important;
+        max-height:420px!important;
+        overflow:hidden!important;
+    }
+}
+
+/* Very short wide screens retain usable roster height by compressing chrome. */
+@media (min-width:900px) and (max-height:700px){
+    body > header{
+        padding-top:4px!important;
+        padding-bottom:4px!important;
+    }
+
+    body > .container{
+        grid-template-rows:auto auto 92px minmax(0,1fr) auto!important;
+        gap:3px!important;
+        padding:3px!important;
+    }
+
+    .hybrid-team-stats .hybrid-instruction{
+        display:none!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-team-stats{
+        grid-template-rows:25px minmax(0,1fr)!important;
+    }
+}
+</style>
 </head>
 
 <body class="auth-pending">
@@ -11582,6 +11865,8 @@ ${escapeHTML(
 
 <td class="col-player">
 
+<div class="player-identity-row">
+
 <button
 
 class="sub-button ${
@@ -11606,6 +11891,8 @@ ${
 
 </button>
 
+<span class="player-text">
+
 <span class="player-name"
     onmouseenter="handlePlayerHover(event, '${player.id}')"
     onmousemove="handlePlayerMove(event)"
@@ -11624,6 +11911,10 @@ ${escapeHTML(
     player.position||"N/A"
 )}
 </span>
+
+</span>
+
+</div>
 
 </td>
 
