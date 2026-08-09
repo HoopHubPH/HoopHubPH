@@ -7552,26 +7552,16 @@ body:-webkit-full-screen {
     box-shadow:0 0 0 2px rgba(255,107,0,.24),0 3px 9px rgba(0,0,0,.2)!important;
     transform:translateY(-1px);
 }
-.quick-player-chip.selected::after{
-    content:"✓";
-    position:absolute;
-    top:2px;
-    right:3px;
-    display:grid;
-    place-items:center;
-    width:13px;
-    height:13px;
-    border-radius:50%;
-    color:#fff;
-    background:#ff6b00;
-    font-size:8px;
-    font-weight:1000;
-    line-height:1;
-}
 .easy-selected-player.has-selection{
     border-color:#ff6b00!important;
     background:linear-gradient(90deg,rgba(255,107,0,.11),rgba(255,255,255,.98))!important;
     box-shadow:inset 3px 0 0 #ff6b00;
+}
+.easy-selected-player.has-selection .easy-selected-label{
+    color:#777;
+}
+.easy-selected-player.has-selection .easy-selected-name{
+    color:#222;
 }
 .easy-selected-label-row{
     display:flex;
@@ -7606,11 +7596,10 @@ body:-webkit-full-screen {
     .quick-player-chip.selected{transform:none}
 }
 @media(max-width:900px){
-    .quick-player-chip.selected::after{width:11px;height:11px;font-size:7px}
     .easy-selected-team-badge{font-size:6px;padding:1px 4px}
 }
 @media print{
-    .quick-player-chip.selected::after,.easy-selected-team-badge{display:none!important}
+    .easy-selected-team-badge{display:none!important}
 }
 </style>
 </head>
@@ -14287,6 +14276,17 @@ async function refreshPlayerRow(
         player,
         row
     );
+
+    const team=playerTeamMap[playerId];
+    const containerId=team&&teamContainerMap[team];
+    const container=containerId&&document.getElementById(containerId);
+    const currentTotals=container&&container.querySelector(".live-team-totals");
+
+    if(currentTotals){
+        currentTotals.replaceWith(
+            renderLiveTeamTotals(team)
+        );
+    }
 
     updateSubstitutionButtons();
     renderEasyScorekeeper();
