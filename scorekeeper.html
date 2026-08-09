@@ -6534,6 +6534,127 @@ body{
     }
 }
 </style>
+<style id="requested-final-roster-layout">
+/* Final requested layout: five rows, vertical-only roster scrolling, full fullscreen use. */
+.hybrid-team-stats .table-scroll.roster-view,
+.hybrid-team-stats .table-scroll.roster-view.expanded {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    touch-action: pan-y !important;
+    scrollbar-gutter: stable !important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view::-webkit-scrollbar {
+    width: 10px !important;
+    height: 0 !important;
+}
+
+.hybrid-team-stats .player-table {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    table-layout: fixed !important;
+}
+
+.hybrid-team-stats .player-table th,
+.hybrid-team-stats .player-table td {
+    min-width: 0 !important;
+    padding: 3px 2px !important;
+    overflow: hidden !important;
+    font-size: clamp(9px, .68vw, 13px) !important;
+    text-overflow: clip !important;
+}
+
+.hybrid-team-stats .player-table th:first-child,
+.hybrid-team-stats .player-table td:first-child {
+    width: 3.5% !important;
+}
+
+.hybrid-team-stats .player-table th.col-player,
+.hybrid-team-stats .player-table td.col-player,
+.hybrid-team-stats .player-table th:nth-child(2),
+.hybrid-team-stats .player-table td:nth-child(2) {
+    width: 23% !important;
+    min-width: 0 !important;
+}
+
+.hybrid-team-stats .player-table th:nth-child(3),
+.hybrid-team-stats .player-table td:nth-child(3) {
+    width: 6% !important;
+}
+
+.hybrid-team-stats .player-table th:nth-child(n+4),
+.hybrid-team-stats .player-table td:nth-child(n+4) {
+    width: 4.82% !important;
+    min-width: 0 !important;
+}
+
+.hybrid-team-stats .player-table td.col-player .sub-button {
+    flex: 0 0 clamp(42px, 4.2vw, 64px) !important;
+    width: clamp(42px, 4.2vw, 64px) !important;
+    min-width: 0 !important;
+    padding: 3px 2px !important;
+    font-size: clamp(8px, .58vw, 11px) !important;
+}
+
+.hybrid-team-stats .player-table td.col-player .player-name {
+    font-size: clamp(12px, .95vw, 17px) !important;
+}
+
+/* The resize helper sets this value from each roster's real available height. */
+.hybrid-team-stats .player-table tbody tr,
+.hybrid-team-stats .player-table tbody td {
+    height: var(--hh-exact-player-row, 50px) !important;
+    min-height: var(--hh-exact-player-row, 50px) !important;
+    max-height: var(--hh-exact-player-row, 50px) !important;
+}
+
+:fullscreen body > .container,
+:-webkit-full-screen body > .container {
+    display: flex !important;
+    flex-direction: column !important;
+    height: calc(100dvh - 44px) !important;
+    min-height: 0 !important;
+    max-height: calc(100dvh - 44px) !important;
+    overflow: hidden !important;
+}
+
+:fullscreen .game-selector,
+:fullscreen #statusMessage,
+:fullscreen .scoreboard,
+:fullscreen .game-footer-controls,
+:-webkit-full-screen .game-selector,
+:-webkit-full-screen #statusMessage,
+:-webkit-full-screen .scoreboard,
+:-webkit-full-screen .game-footer-controls {
+    flex: 0 0 auto !important;
+}
+
+:fullscreen .hybrid-scorekeeper,
+:-webkit-full-screen .hybrid-scorekeeper {
+    flex: 1 1 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
+}
+
+:fullscreen .hybrid-scorekeeper > .hybrid-team-stats,
+:-webkit-full-screen .hybrid-scorekeeper > .hybrid-team-stats {
+    min-height: 0 !important;
+}
+
+:fullscreen .hybrid-team-stats .table-scroll.roster-view,
+:fullscreen .hybrid-team-stats .table-scroll.roster-view.expanded,
+:-webkit-full-screen .hybrid-team-stats .table-scroll.roster-view,
+:-webkit-full-screen .hybrid-team-stats .table-scroll.roster-view.expanded {
+    flex: 1 1 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+}
+</style>
 </head>
 
 <body class="auth-pending">
@@ -16469,6 +16590,40 @@ initializeSmartScoreControls();
 renderEasyScorekeeper();
 initializeSecureScorekeeper();
 
+</script>
+<script>
+/* Keep exactly five complete player rows visible in every live roster viewport. */
+(function initializeExactFiveRowSizing(){
+    let queuedFrame=0;
+
+    function sizeRoster(scroll){
+        const table=scroll.querySelector(".player-table");
+        const header=table?.tHead;
+
+        if(!table || !header || scroll.clientHeight<=0){
+            return;
+        }
+
+        const available=Math.max(180,scroll.clientHeight-header.getBoundingClientRect().height);
+        const rowHeight=Math.max(34,Math.floor(available/5));
+        table.style.setProperty("--hh-exact-player-row",rowHeight+"px");
+    }
+
+    function sizeAllRosters(){
+        cancelAnimationFrame(queuedFrame);
+        queuedFrame=requestAnimationFrame(()=>{
+            document.querySelectorAll(".table-scroll.roster-view").forEach(sizeRoster);
+        });
+    }
+
+    const rosterObserver=new MutationObserver(sizeAllRosters);
+    rosterObserver.observe(document.body,{childList:true,subtree:true});
+
+    window.addEventListener("resize",sizeAllRosters,{passive:true});
+    document.addEventListener("fullscreenchange",sizeAllRosters);
+    window.addEventListener("load",sizeAllRosters,{once:true});
+    sizeAllRosters();
+})();
 </script>
 <div
     id="teamStatsModal"
