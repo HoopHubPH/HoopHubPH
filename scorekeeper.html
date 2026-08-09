@@ -7017,6 +7017,7 @@ body:-webkit-full-screen {
 }
 
 .hybrid-action-panel .quick-player-chip {
+    position: relative !important;
     width: 100% !important;
     min-width: 0 !important;
     min-height: clamp(60px, 6.6vh, 68px) !important;
@@ -7025,6 +7026,38 @@ body:-webkit-full-screen {
     font-size: clamp(11px, .86vw, 14px) !important;
     font-weight: 900 !important;
     line-height: 1.12 !important;
+}
+
+.hybrid-action-panel .quick-player-lane.keyboard-active {
+    border-radius: 8px !important;
+    box-shadow: 0 0 0 2px #ff6b00 !important;
+    background: rgba(255, 107, 0, .07) !important;
+}
+
+.hybrid-action-panel .quick-player-lane.keyboard-active .quick-player-team-label::after {
+    content: "  • KEYBOARD ACTIVE";
+    color: #ff6b00;
+    font-size: .72em;
+    font-weight: 900;
+}
+
+.hybrid-action-panel .quick-player-key {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 17px;
+    height: 17px;
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    background: rgba(255,255,255,.92);
+    color: #111;
+    font-size: 10px;
+    font-weight: 900;
+    line-height: 1;
+    pointer-events: none;
 }
 
 @media (max-width: 900px) {
@@ -7877,6 +7910,7 @@ let pendingSmartScore=null;
 let quickScoreInFlight=false;
 let quickFastBreak=false;
 let easySelectedPlayerId=null;
+let keyboardActiveTeam="home";
 let easyActionInFlight=false;
 let easyDeductMode=false;
 let easyUndoStack=[];
@@ -11058,7 +11092,10 @@ function renderQuickPlayerPicker(){
             document.createElement("div");
 
         lane.className=
-            "quick-player-lane "+team;
+            "quick-player-lane "+team+
+            (keyboardActiveTeam===team
+                ?" keyboard-active"
+                :"");
 
         const teamLabel=
             document.createElement("div");
@@ -11108,7 +11145,7 @@ function renderQuickPlayerPicker(){
         }
         else{
 
-            for(const player of onCourt){
+            for(const [playerIndex,player] of onCourt.entries()){
 
                 const button=
                     document.createElement("button");
@@ -11122,8 +11159,21 @@ function renderQuickPlayerPicker(){
                     team+
                     (selected?" selected":"");
 
-                button.textContent=
+                const playerLabel=
+                    document.createElement("span");
+
+                playerLabel.textContent=
                     getQuickPlayerLabel(player);
+
+                const keyLabel=
+                    document.createElement("span");
+
+                keyLabel.className="quick-player-key";
+                keyLabel.textContent=String(playerIndex+1);
+                keyLabel.setAttribute("aria-hidden","true");
+
+                button.appendChild(playerLabel);
+                button.appendChild(keyLabel);
 
                 button.title=
                     "Select "+
@@ -11178,6 +11228,15 @@ function selectEasyPlayer(playerId){
 
     easySelectedPlayerId=playerId;
 
+    for(const team of ["home","away"]){
+        if((teamPlayersMap[team]||[]).some(
+            player=>player.id===playerId
+        )){
+            keyboardActiveTeam=team;
+            break;
+        }
+    }
+
     document.querySelectorAll(
         ".player-table tbody tr"
     ).forEach(row=>{
@@ -11210,6 +11269,77 @@ function selectEasyPlayer(playerId){
     }
 
     renderEasyScorekeeper();
+}
+
+
+function isAddStatKeyboardBlocked(event){
+
+    const target=event.target;
+
+    if(
+        target&&(
+            target.isContentEditable||
+            /^(INPUT|TEXTAREA|SELECT)$/i.test(target.tagName)
+        )
+    ){
+        return true;
+    }
+
+    return Boolean(
+        document.querySelector(
+            ".smart-score-modal.visible, "+
+            ".team-stats-modal.visible, "+
+            "[role='dialog'].visible"
+        )
+    );
+}
+
+
+function initializeAddStatKeyboardShortcuts(){
+
+    document.addEventListener("keydown",event=>{
+
+        if(
+            event.repeat||
+            isAddStatKeyboardBlocked(event)||
+            !currentGame
+        ){
+            return;
+        }
+
+        if(event.key==="Tab"){
+            event.preventDefault();
+            keyboardActiveTeam=
+                keyboardActiveTeam==="home"
+                ?"away"
+                :"home";
+            renderQuickPlayerPicker();
+            return;
+        }
+
+        if(!/^[1-5]$/.test(event.key)){
+            return;
+        }
+
+        const onCourt=
+            (teamPlayersMap[keyboardActiveTeam]||[])
+            .filter(player=>
+                playerOnCourt[player.id]===true
+            );
+
+        const player=onCourt[Number(event.key)-1];
+
+        if(!player){
+            showStatus(
+                "No player is assigned to key "+event.key+
+                " for the "+keyboardActiveTeam+" team."
+            );
+            return;
+        }
+
+        event.preventDefault();
+        selectEasyPlayer(player.id);
+    });
 }
 
 
@@ -17065,6 +17195,7 @@ function closeTeamStatsPreview(){
     modal.classList.remove("visible");
 }
 initializeSmartScoreControls();
+initializeAddStatKeyboardShortcuts();
 renderEasyScorekeeper();
 initializeSecureScorekeeper();
 
