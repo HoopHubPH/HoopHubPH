@@ -16149,6 +16149,12 @@ async function setGameStatus(status){
 
 function setFinalizedLock(locked){
 
+    if(isCurrentGameFinal()){
+        document.querySelectorAll(".period-buttons button").forEach(button=>{
+            button.classList.remove("active");
+        });
+    }
+
     document.querySelectorAll(
         ".clock-controls button, .shot-clock-controls button, "+
         ".period-buttons button, .stat-btn, .shot-btn, .sub-button, "+
