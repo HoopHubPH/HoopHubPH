@@ -5302,6 +5302,197 @@ It remains in the same lower-left position and never overlaps the table.
     }
 }
 </style>
+
+<style>
+/* =========================================================
+   AUTHORITATIVE RESPONSIVE ROSTER LAYOUT — 2026-08-09
+   This block intentionally comes last. It replaces the older
+   competing fullscreen/team-height rules without touching JS.
+   ========================================================= */
+
+@media (min-width:760px) and (orientation:landscape){
+    html,
+    body{
+        height:100%!important;
+        height:100dvh!important;
+        min-height:0!important;
+        overflow:hidden!important;
+    }
+
+    body{
+        display:grid!important;
+        grid-template-rows:auto minmax(0,1fr)!important;
+    }
+
+    body > header{
+        min-height:0!important;
+    }
+
+    body > .container{
+        display:grid!important;
+        grid-template-rows:auto auto auto minmax(0,1fr) auto!important;
+        gap:5px!important;
+        width:100%!important;
+        height:auto!important;
+        min-height:0!important;
+        max-height:none!important;
+        padding:5px!important;
+        overflow:hidden!important;
+    }
+
+    .game-selector,
+    #statusMessage,
+    .scoreboard,
+    .game-footer-controls{
+        min-height:0!important;
+        margin:0!important;
+    }
+
+    .hybrid-scorekeeper{
+        display:grid!important;
+        grid-template-columns:minmax(0,1.62fr) minmax(330px,.82fr)!important;
+        grid-template-rows:minmax(0,1fr) minmax(0,1fr)!important;
+        grid-template-areas:
+            "home controls"
+            "away controls"!important;
+        gap:5px!important;
+        width:100%!important;
+        height:auto!important;
+        min-height:0!important;
+        max-height:none!important;
+        margin:0!important;
+        overflow:hidden!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-action-panel{
+        grid-area:controls!important;
+        position:static!important;
+        width:100%!important;
+        height:auto!important;
+        min-height:0!important;
+        max-height:none!important;
+        overflow:auto!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-team-stats:nth-of-type(2){
+        grid-area:home!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-team-stats:nth-of-type(3){
+        grid-area:away!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-team-stats{
+        display:grid!important;
+        grid-template-rows:28px 16px minmax(0,1fr)!important;
+        width:100%!important;
+        height:auto!important;
+        min-width:0!important;
+        min-height:0!important;
+        max-height:none!important;
+        padding:5px!important;
+        overflow:hidden!important;
+    }
+}
+
+/* The list host must shrink, otherwise its child grows the team box. */
+.hybrid-team-stats #homePlayersList,
+.hybrid-team-stats #awayPlayersList{
+    display:block!important;
+    position:relative!important;
+    width:100%!important;
+    height:auto!important;
+    min-width:0!important;
+    min-height:0!important;
+    max-height:none!important;
+    align-self:stretch!important;
+    overflow:hidden!important;
+}
+
+/* Each roster is its own permanent two-axis scrolling viewport. */
+.hybrid-team-stats .table-scroll.roster-view,
+.hybrid-team-stats .table-scroll.roster-view.expanded{
+    position:absolute!important;
+    inset:0!important;
+    display:block!important;
+    width:auto!important;
+    height:auto!important;
+    min-width:0!important;
+    min-height:0!important;
+    max-width:none!important;
+    max-height:none!important;
+    margin:0!important;
+    padding:0!important;
+    overflow-x:auto!important;
+    overflow-y:scroll!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior:contain!important;
+    touch-action:pan-x pan-y!important;
+    scrollbar-gutter:stable!important;
+    border:1px solid #e5e5e5!important;
+    background:#fff!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view .player-table{
+    position:relative!important;
+    display:table!important;
+    width:100%!important;
+    min-width:820px!important;
+    height:auto!important;
+    margin:0!important;
+    align-self:start!important;
+    table-layout:fixed!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view .player-table thead{
+    display:table-header-group!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view .player-table tbody{
+    display:table-row-group!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view .player-table tr{
+    display:table-row!important;
+    height:29px!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view .player-table th,
+.hybrid-team-stats .table-scroll.roster-view .player-table td{
+    display:table-cell!important;
+    height:29px!important;
+    min-height:29px!important;
+    max-height:29px!important;
+    vertical-align:middle!important;
+}
+
+.hybrid-team-stats .table-scroll.roster-view .player-table thead th{
+    position:sticky!important;
+    top:0!important;
+    z-index:100!important;
+}
+
+/* The complete roster is always present; scrolling reveals bench players. */
+.hybrid-team-stats .table-scroll.roster-view .bench-player-row,
+.hybrid-team-stats .table-scroll.roster-view:not(.expanded) .bench-player-row,
+.hybrid-team-stats .table-scroll.roster-view.expanded .bench-player-row{
+    display:table-row!important;
+}
+
+/* Browser fullscreen uses the same grid instead of a separate geometry. */
+:fullscreen body > .container,
+:-webkit-full-screen body > .container{
+    min-height:0!important;
+}
+
+@media (max-width:759px), (orientation:portrait){
+    .hybrid-team-stats #homePlayersList,
+    .hybrid-team-stats #awayPlayersList{
+        height:220px!important;
+        min-height:220px!important;
+    }
+}
+</style>
 </head>
 
 <body class="auth-pending">
