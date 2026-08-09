@@ -7206,6 +7206,8 @@ body:-webkit-full-screen {
 .live-quarter-score-panel #liveQuarterScores {
     width: 100%;
     min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: thin;
 }
 
 .live-quarter-score-panel .quarter-score-strip { margin: 0; }
@@ -7317,6 +7319,8 @@ body:-webkit-full-screen {
 
 .quarter-score-cell:nth-child(7n) { border-right: 0; }
 .quarter-score-cell:nth-last-child(-n+7) { border-bottom: 0; }
+.quarter-score-cell.quarter-score-row-end { border-right: 0; }
+.quarter-score-cell.quarter-score-last-row { border-bottom: 0; }
 .quarter-score-head { background: #111; color: #fff; font-size: 8px; letter-spacing: .45px; }
 .quarter-score-team { text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .quarter-score-total { background: #fff1e6; color: #ff6b00; }
@@ -7755,7 +7759,7 @@ LOG OUT
 <button id="period-2nd" onclick="setPeriod('2nd Quarter')">2Q</button>
 <button id="period-3rd" onclick="setPeriod('3rd Quarter')">3Q</button>
 <button id="period-4th" onclick="setPeriod('4th Quarter')">4Q</button>
-<button id="period-ot" onclick="setPeriod('Overtime')">OT</button>
+<button id="period-ot" onclick="startNextOvertime()" title="Start the next overtime period">OT1</button>
 </div>
 
 </div>
@@ -8482,9 +8486,10 @@ let scoringBreakdownTotals={
     away:null
 };
 let quarterScoreTotals={
-    home:{q1:0,q2:0,q3:0,q4:0,ot:0},
-    away:{q1:0,q2:0,q3:0,q4:0,ot:0}
+    home:{q1:0,q2:0,q3:0,q4:0,ot1:0},
+    away:{q1:0,q2:0,q3:0,q4:0,ot1:0}
 };
+let knownOvertimePeriods=new Set();
 let timeoutEvents=[];
 let timeoutChangeInFlight=false;
 let teamFoulEvents=[];
@@ -13210,8 +13215,61 @@ function emptyBreakdownTotals(){
 }
 
 
+function getOvertimeNumber(period){
+    const normalized=String(period||"").trim().toLowerCase();
+    if(normalized==="overtime"||normalized==="ot") return 1;
+    const match=normalized.match(/^(?:overtime\s*|ot\s*)(\d+)$/);
+    return match ? Math.max(1,Number(match[1])) : 0;
+}
+
+
+function isOvertimePeriod(period){
+    return getOvertimeNumber(period)>0;
+}
+
+
+function getOvertimeLabel(period){
+    const number=getOvertimeNumber(period);
+    return number ? "OT"+number : null;
+}
+
+
+function rememberOvertimePeriod(period){
+    const label=getOvertimeLabel(period);
+    if(label) knownOvertimePeriods.add(label);
+}
+
+
+function getKnownOvertimeNumbers(){
+    const numbers=[...knownOvertimePeriods]
+        .map(getOvertimeNumber)
+        .filter(Boolean);
+    const currentNumber=getOvertimeNumber(currentGame?.period);
+    if(currentNumber) numbers.push(currentNumber);
+    const highest=Math.max(0,...numbers);
+    return Array.from({length:highest},(_,index)=>index+1);
+}
+
+
+function getScorePeriodDefinitions(){
+    const definitions=[
+        ["q1","Q1","1st Quarter"],
+        ["q2","Q2","2nd Quarter"],
+        ["q3","Q3","3rd Quarter"],
+        ["q4","Q4","4th Quarter"]
+    ];
+    getKnownOvertimeNumbers().forEach(number=>{
+        definitions.push(["ot"+number,"OT"+number,"OT"+number]);
+    });
+    return definitions;
+}
+
+
 function emptyQuarterScoreTotals(){
-    return {q1:0,q2:0,q3:0,q4:0,ot:0};
+    return getScorePeriodDefinitions().reduce((totals,[key])=>{
+        totals[key]=0;
+        return totals;
+    },{});
 }
 
 
@@ -13222,14 +13280,15 @@ function getQuarterScoreKey(period){
     if(normalized==="2nd quarter"||normalized==="2q") return "q2";
     if(normalized==="3rd quarter"||normalized==="3q") return "q3";
     if(normalized==="4th quarter"||normalized==="4q") return "q4";
-    if(normalized==="overtime"||normalized==="ot"||normalized.startsWith("overtime ")||/^ot\d+$/.test(normalized)) return "ot";
+    const overtimeNumber=getOvertimeNumber(period);
+    if(overtimeNumber) return "ot"+overtimeNumber;
 
     return null;
 }
 
 
 function getQuarterScoreTotal(side){
-    return ["q1","q2","q3","q4","ot"].reduce(
+    return getScorePeriodDefinitions().map(([key])=>key).reduce(
         (total,key)=>total+Number(side?.[key]||0),
         0
     );
@@ -13237,15 +13296,15 @@ function getQuarterScoreTotal(side){
 
 
 function buildQuarterScoreStrip(homeName,awayName,home,away){
-    const periods=[
-        ["q1","Q1","1st Quarter"],
-        ["q2","Q2","2nd Quarter"],
-        ["q3","Q3","3rd Quarter"],
-        ["q4","Q4","4th Quarter"],
-        ["ot","OT","Overtime"]
-    ];
+    const periods=getScorePeriodDefinitions();
     const strip=document.createElement("div");
     strip.className="quarter-score-strip";
+    const columnCount=periods.length+2;
+    strip.style.setProperty(
+        "grid-template-columns",
+        "minmax(78px,1.7fr) repeat("+periods.length+",minmax(32px,.62fr)) minmax(44px,.8fr)",
+        "important"
+    );
 
     const cells=[
         ["TEAM / PERIOD","quarter-score-head quarter-score-team"],
@@ -13267,9 +13326,14 @@ function buildQuarterScoreStrip(homeName,awayName,home,away){
         [getQuarterScoreTotal(away),"quarter-score-total"]
     ];
 
-    cells.forEach(([value,className,title])=>{
+    cells.forEach(([value,className,title],index)=>{
         const cell=document.createElement("div");
         cell.className="quarter-score-cell "+(className||"");
+        if((index+1)%columnCount===0) cell.classList.add("quarter-score-row-end");
+        if(index>=cells.length-columnCount) cell.classList.add("quarter-score-last-row");
+        if(title&&String(title)===getOvertimeLabel(currentGame?.period)){
+            cell.classList.add("quarter-score-active");
+        }
         cell.textContent=String(value);
         if(title) cell.title=title;
         strip.appendChild(cell);
@@ -13311,10 +13375,10 @@ async function loadScoringBreakdown(){
 
     const home=emptyBreakdownTotals();
     const away=emptyBreakdownTotals();
-    const homeQuarters=emptyQuarterScoreTotals();
-    const awayQuarters=emptyQuarterScoreTotals();
-
     if(!currentGame){
+        knownOvertimePeriods=new Set();
+        const homeQuarters=emptyQuarterScoreTotals();
+        const awayQuarters=emptyQuarterScoreTotals();
         displayScoringBreakdown(home,away);
         displayQuarterScores(homeQuarters,awayQuarters);
         return;
@@ -13334,10 +13398,18 @@ async function loadScoringBreakdown(){
     if(error){
         console.error("Scoring breakdown load error:",error);
         showStatus("Unable to load the scoring breakdown.");
+        const homeQuarters=emptyQuarterScoreTotals();
+        const awayQuarters=emptyQuarterScoreTotals();
         displayScoringBreakdown(home,away);
         displayQuarterScores(homeQuarters,awayQuarters);
         return;
     }
+
+    knownOvertimePeriods=new Set();
+    rememberOvertimePeriod(currentGame.period);
+    (data||[]).forEach(event=>rememberOvertimePeriod(event.period));
+    const homeQuarters=emptyQuarterScoreTotals();
+    const awayQuarters=emptyQuarterScoreTotals();
 
     (data||[]).forEach(event=>{
 
@@ -15600,7 +15672,7 @@ async function loadPersistedClock(){
         !data
     ){
 
-        clockSeconds=600;
+        clockSeconds=getPeriodClockSeconds();
         clockRunning=false;
         clockEndTime=null;
 
@@ -15637,7 +15709,7 @@ async function loadPersistedClock(){
             Math.max(
                 0,
                 Number(
-                    data.clock_seconds ?? 600
+                    data.clock_seconds ?? getPeriodClockSeconds()
                 )
             );
     }
@@ -15839,7 +15911,7 @@ function applyExternalClockState(data){
                     data.clock_milliseconds
                 )/1000
                 :Number(
-                    data.clock_seconds??600
+                    data.clock_seconds??getPeriodClockSeconds()
                 )
         );
 
@@ -16779,7 +16851,7 @@ async function adjustGameClock(amount){
 function getPeriodClockSeconds(){
 
     return currentGame &&
-        currentGame.period === "Overtime"
+        isOvertimePeriod(currentGame.period)
         ?300
         :600;
 }
@@ -16924,6 +16996,8 @@ async function resetClock(options={}){
 
 function setActivePeriod(period){
 
+    rememberOvertimePeriod(period);
+
     document
     .querySelectorAll(
         ".period-buttons button"
@@ -16947,20 +17021,25 @@ function setActivePeriod(period){
             "period-3rd",
 
         "4th Quarter":
-            "period-4th",
-
-        "Overtime":
-            "period-ot"
+            "period-4th"
     };
 
+    const activeButtonId=isOvertimePeriod(period)?"period-ot":map[period];
 
-    if(map[period]){
+    if(activeButtonId){
 
         document.getElementById(
-            map[period]
+            activeButtonId
         ).classList.add(
             "active"
         );
+    }
+
+    const overtimeButton=document.getElementById("period-ot");
+    if(overtimeButton){
+        const nextNumber=Math.max(1,getOvertimeNumber(period)+1);
+        overtimeButton.textContent="OT"+nextNumber;
+        overtimeButton.title="Start OT"+nextNumber;
     }
 
     displayQuarterScores(
@@ -17079,7 +17158,7 @@ function normalizeFoulPeriod(period){
     if(value.includes("2nd")||value==="2q"){return "2nd Quarter";}
     if(value.includes("3rd")||value==="3q"){return "3rd Quarter";}
     if(value.includes("4th")||value==="4q"){return "4th Quarter";}
-    if(value.includes("overtime")||value==="ot"){return "Overtime";}
+    if(getOvertimeNumber(value)){return "4th Quarter";}
     return "1st Quarter";
 }
 
@@ -17231,8 +17310,9 @@ function getTimeoutPeriodGroup(period){
         return "second-half";
     }
 
-    if(normalized==="overtime"){
-        return "overtime";
+    const overtimeNumber=getOvertimeNumber(normalized);
+    if(overtimeNumber){
+        return "overtime-"+overtimeNumber;
     }
 
     return "first-half";
@@ -17241,7 +17321,7 @@ function getTimeoutPeriodGroup(period){
 
 function getTimeoutLimit(period){
     const group=getTimeoutPeriodGroup(period);
-    return group==="second-half" ? 3 : group==="overtime" ? 1 : 2;
+    return group==="second-half" ? 3 : group.startsWith("overtime-") ? 1 : 2;
 }
 
 
@@ -17503,6 +17583,37 @@ async function submitCurrentGameForReview(){
 }
 
 
+async function startNextOvertime(){
+    if(!currentGame){
+        showStatus("Load a game first.");
+        return;
+    }
+
+    const currentPeriod=currentGame.period||"1st Quarter";
+    if(currentPeriod!=="4th Quarter"&&!isOvertimePeriod(currentPeriod)){
+        showStatus("Overtime can only start after the 4th quarter or another overtime.");
+        return;
+    }
+
+    const homeScore=Number(document.getElementById("homeScore")?.textContent||0);
+    const awayScore=Number(document.getElementById("awayScore")?.textContent||0);
+    if(homeScore!==awayScore){
+        showStatus("Overtime can only start while the score is tied.");
+        return;
+    }
+
+    if(clockRunning||Number(clockSeconds)>0.001){
+        showStatus("Finish and stop the current period clock before starting overtime.");
+        return;
+    }
+
+    const nextNumber=isOvertimePeriod(currentPeriod)
+        ?getOvertimeNumber(currentPeriod)+1
+        :1;
+    await setPeriod("OT"+nextNumber);
+}
+
+
 async function setPeriod(period){
 
     if(!currentGame){
@@ -17523,6 +17634,33 @@ async function setPeriod(period){
         return;
     }
 
+    const overtimeNumber=getOvertimeNumber(period);
+    if(overtimeNumber){
+        period="OT"+overtimeNumber;
+
+        const expectedNumber=isOvertimePeriod(currentGame.period)
+            ?getOvertimeNumber(currentGame.period)+1
+            :currentGame.period==="4th Quarter"
+            ?1
+            :0;
+        if(overtimeNumber!==expectedNumber){
+            showStatus("Start overtime periods in order. The next period is OT"+Math.max(1,expectedNumber)+".");
+            return;
+        }
+
+        const homeScore=Number(document.getElementById("homeScore")?.textContent||0);
+        const awayScore=Number(document.getElementById("awayScore")?.textContent||0);
+        if(homeScore!==awayScore){
+            showStatus("Overtime can only start while the score is tied.");
+            return;
+        }
+
+        if(Number(clockSeconds)>0.001){
+            showStatus("The current period clock must reach 0:00 before overtime starts.");
+            return;
+        }
+    }
+
     const homeOnCourt=(teamPlayersMap.home||[]).filter(
         player=>playerOnCourt[player.id]===true
     ).length;
@@ -17535,6 +17673,16 @@ async function setPeriod(period){
     const awayScore=Number(document.getElementById("awayScore")?.textContent||0);
     const homeFouls=getTeamFouls("home",currentPeriod);
     const awayFouls=getTeamFouls("away",currentPeriod);
+
+    if(overtimeNumber&&pending>0){
+        showStatus("Wait until the save indicator says SAVED before starting "+period+".");
+        return;
+    }
+
+    if(overtimeNumber&&(homeOnCourt!==5||awayOnCourt!==5)){
+        showStatus("Both teams must have exactly five active players before starting "+period+".");
+        return;
+    }
     const checklist=[
         "END-OF-QUARTER CHECK",
         "",
@@ -17546,7 +17694,7 @@ async function setPeriod(period){
         "Away lineup: "+awayOnCourt+"/5"+(awayOnCourt===5?" ✓":" — CHECK"),
         "Team fouls: Home "+homeFouls+" · Away "+awayFouls,
         "",
-        "Continue and reset the clocks for "+period+"?"
+        "Continue and reset the clocks for "+period+" to "+(overtimeNumber?"5:00":"10:00")+"?"
     ].join("\n");
 
     if(!window.confirm(checklist)){
