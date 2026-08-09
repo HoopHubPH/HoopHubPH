@@ -2094,10 +2094,33 @@ nav{
 .team-stats-modal-actions{
     display:flex;
     justify-content:flex-end;
+    align-items:center;
     gap:8px;
     padding:10px 15px;
     border-top:1px solid #ddd;
     background:#f7f7f7;
+}
+
+.print-orientation-control{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-right:auto;
+    color:#555;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.print-orientation-control select{
+    height:30px;
+    padding:0 8px;
+    border:1px solid #ccc;
+    border-radius:5px;
+    background:#fff;
+    color:#222;
+    font-size:11px;
+    font-weight:bold;
+    cursor:pointer;
 }
 
 .team-stats-modal-actions button{
@@ -2621,6 +2644,11 @@ body.auth-pending > *:not(#scorekeeperAuthScreen):not(script){
     box-shadow:0 4px 22px rgba(0,0,0,.22);
 }
 
+body.team-print-portrait .print-report{
+    width:210mm;
+    min-height:297mm;
+}
+
 .print-report .table-scroll{
     width:100%;
     overflow:visible!important;
@@ -2734,6 +2762,15 @@ body.auth-pending > *:not(#scorekeeperAuthScreen):not(script){
         width:100%!important;
         min-width:0!important;
         table-layout:fixed!important;
+    }
+
+    body.team-print-portrait,
+    body.team-print-portrait #teamStatsModal,
+    body.team-print-portrait .team-stats-modal-content,
+    body.team-print-portrait .team-stats-preview,
+    body.team-print-portrait .print-report{
+        width:210mm!important;
+        min-height:297mm!important;
     }
 }
 
@@ -18405,6 +18442,49 @@ initializeSecureScorekeeper();
     sizeAllRosters();
 })();
 </script>
+<script>
+function setTeamPrintOrientation(orientation){
+    const selected = orientation === "portrait" ? "portrait" : "landscape";
+    const isPortrait = selected === "portrait";
+
+    document.body.classList.toggle("team-print-portrait", isPortrait);
+
+    const selector = document.getElementById("teamPrintOrientation");
+    if(selector && selector.value !== selected){
+        selector.value = selected;
+    }
+
+    let pageStyle = document.getElementById("teamPrintPageStyle");
+    if(!pageStyle){
+        pageStyle = document.createElement("style");
+        pageStyle.id = "teamPrintPageStyle";
+        document.head.appendChild(pageStyle);
+    }
+
+    const pageWidth = isPortrait ? "210mm" : "297mm";
+    const pageHeight = isPortrait ? "297mm" : "210mm";
+
+    pageStyle.textContent = `
+        @page { size: A4 ${selected}; margin: 0; }
+        @media print {
+            html, body {
+                width: ${pageWidth} !important;
+                min-height: ${pageHeight} !important;
+            }
+        }
+    `;
+}
+
+function printTeamStatsPreview(){
+    const selector = document.getElementById("teamPrintOrientation");
+    setTeamPrintOrientation(selector ? selector.value : "landscape");
+    window.print();
+}
+
+document.addEventListener("DOMContentLoaded",function(){
+    setTeamPrintOrientation("landscape");
+});
+</script>
 <div
     id="teamStatsModal"
     class="team-stats-modal"
@@ -18440,6 +18520,18 @@ initializeSecureScorekeeper();
 
         <div class="team-stats-modal-actions">
 
+            <label class="print-orientation-control" for="teamPrintOrientation">
+                ORIENTATION
+                <select
+                    id="teamPrintOrientation"
+                    onchange="setTeamPrintOrientation(this.value)"
+                    aria-label="Print orientation"
+                >
+                    <option value="landscape" selected>LANDSCAPE</option>
+                    <option value="portrait">PORTRAIT</option>
+                </select>
+            </label>
+
             <button
                 type="button"
                 class="preview-close-button"
@@ -18451,7 +18543,7 @@ initializeSecureScorekeeper();
             <button
                 type="button"
                 class="preview-print-button"
-                onclick="window.print()"
+                onclick="printTeamStatsPreview()"
             >
                 PRINT
             </button>
