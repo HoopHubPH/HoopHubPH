@@ -3015,7 +3015,7 @@ align-items:start;
 <style>
 
 /* =========================================================
-   HOOP HUB PH — TRUE ONE-SCREEN SCOREKEEPER
+   HOOP HUB PH â€” TRUE ONE-SCREEN SCOREKEEPER
    Desktop/laptop viewport layout. No full-page scrolling.
    Existing functions and data logic are unchanged.
    ========================================================= */
@@ -3501,7 +3501,7 @@ align-items:start;
 <style>
 
 /* =========================================================
-   BENCH PLAYER SCROLL — FORCE COMPLETE ROSTERS VISIBLE
+   BENCH PLAYER SCROLL â€” FORCE COMPLETE ROSTERS VISIBLE
    ========================================================= */
 
 @media (min-width:901px){
@@ -4057,7 +4057,7 @@ align-items:start;
 <style>
 
 /* =========================================================
-   TEAM BENCH FOOTER — CLEAN BOTTOM POSITION
+   TEAM BENCH FOOTER â€” CLEAN BOTTOM POSITION
    ========================================================= */
 
 /* The Bench/Close control is now outside the scrolling table. */
@@ -4243,7 +4243,7 @@ align-items:start;
     overscroll-behavior:contain;
 }
 
-/* After clicking Bench, same box size—only internal vertical scrolling turns on. */
+/* After clicking Bench, same box sizeâ€”only internal vertical scrolling turns on. */
 .hybrid-team-stats .table-scroll.roster-view.expanded{
     height:151px!important;
     min-height:151px!important;
@@ -4849,7 +4849,7 @@ align-items:start;
 <style>
 
 /* =========================================================
-   REMOVE EMPTY SPACE — LET PLAYER TABLE FILL THE TEAM BOX
+   REMOVE EMPTY SPACE â€” LET PLAYER TABLE FILL THE TEAM BOX
    ========================================================= */
 
 /*
@@ -4938,7 +4938,7 @@ This removes the large blank area shown in the screenshot.
 }
 
 /*
-Footer is now the third grid row—not absolutely floating.
+Footer is now the third grid rowâ€”not absolutely floating.
 It remains in the same lower-left position and never overlaps the table.
 */
 .hybrid-team-stats .team-bench-footer{
@@ -5305,7 +5305,7 @@ It remains in the same lower-left position and never overlaps the table.
 
 <style>
 /* =========================================================
-   AUTHORITATIVE RESPONSIVE ROSTER LAYOUT — 2026-08-09
+   AUTHORITATIVE RESPONSIVE ROSTER LAYOUT â€” 2026-08-09
    This block intentionally comes last. It replaces the older
    competing fullscreen/team-height rules without touching JS.
    ========================================================= */
@@ -5496,7 +5496,7 @@ It remains in the same lower-left position and never overlaps the table.
 
 <style>
 /* =========================================================
-   RESPONSIVE SCOREKEEPER SHELL — FINAL OVERRIDE
+   RESPONSIVE SCOREKEEPER SHELL â€” FINAL OVERRIDE
    Fits the usable browser viewport in normal/fullscreen mode.
    Each roster owns its vertical and horizontal scrolling.
    ========================================================= */
@@ -5778,7 +5778,7 @@ body{
 </style>
 <style id="hoophub-stable-scorekeeper-layout">
 /* =========================================================
-   STABLE SCOREKEEPER WORKSPACE — 2026-08-09
+   STABLE SCOREKEEPER WORKSPACE â€” 2026-08-09
    A deliberately simple final layout. It does not depend on
    inherited grid heights, which caused the roster to collapse.
    ========================================================= */
@@ -5968,7 +5968,7 @@ body{
 
 <style>
 /* =========================================================
-   CLEAN RESPONSIVE ROSTER LAYOUT — AUTHORITATIVE
+   CLEAN RESPONSIVE ROSTER LAYOUT â€” AUTHORITATIVE
    Keeps both team tables visible and independently scrollable.
    ========================================================= */
 
@@ -7029,16 +7029,17 @@ body:-webkit-full-screen {
 }
 
 .hybrid-action-panel .quick-player-lane.keyboard-active {
-    border-radius: 8px !important;
-    box-shadow: 0 0 0 2px #ff6b00 !important;
-    background: rgba(255, 107, 0, .07) !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+.hybrid-action-panel .quick-player-lane.keyboard-active .quick-player-team-label {
+    background: #d71920 !important;
+    color: #fff !important;
 }
 
 .hybrid-action-panel .quick-player-lane.keyboard-active .quick-player-team-label::after {
-    content: "  • KEYBOARD ACTIVE";
-    color: #ff6b00;
-    font-size: .72em;
-    font-weight: 900;
+    content: none !important;
 }
 
 .hybrid-action-panel .quick-player-key {
@@ -7102,7 +7103,7 @@ body:-webkit-full-screen {
     title="Open scorekeeper in fullscreen"
     aria-label="Open scorekeeper in fullscreen"
 >
-⛶
+â›¶
 </button>
 <button
     type="button"
@@ -7129,7 +7130,7 @@ LOG OUT
     title="Print home and away team comparison"
     aria-label="Print home and away team comparison"
 >
-    🖨️
+    ðŸ–¨ï¸
 </button>
 </div>
 
@@ -7157,9 +7158,9 @@ LOG OUT
 <button onclick="startClock()">START</button>
 <button onclick="pauseClock()">PAUSE</button>
 <button onclick="resetClock()">RESET</button>
-<button class="manual-time-adjustment" onclick="adjustGameClock(-1)" title="Remove 1 second from game clock">−1</button>
+<button class="manual-time-adjustment" onclick="adjustGameClock(-1)" title="Remove 1 second from game clock">âˆ’1</button>
 <button class="manual-time-adjustment" onclick="adjustGameClock(1)" title="Add 1 second to game clock">+1</button>
-<button class="manual-time-adjustment" onclick="adjustGameClock(-0.1)" title="Remove 0.1 second from game clock">−0.1</button>
+<button class="manual-time-adjustment" onclick="adjustGameClock(-0.1)" title="Remove 0.1 second from game clock">âˆ’0.1</button>
 <button class="manual-time-adjustment" onclick="adjustGameClock(0.1)" title="Add 0.1 second to game clock">+0.1</button>
 </div>
 
@@ -7175,9 +7176,9 @@ LOG OUT
 <div class="shot-clock-controls">
 <button onclick="resetShotClock(24)" title="Reset shot clock to 24 seconds">24</button>
 <button onclick="resetShotClock(14)" title="Reset shot clock to 14 seconds">14</button>
-<button class="manual-time-adjustment" onclick="adjustShotClock(-1)" title="Remove 1 second from shot clock">−1</button>
+<button class="manual-time-adjustment" onclick="adjustShotClock(-1)" title="Remove 1 second from shot clock">âˆ’1</button>
 <button class="manual-time-adjustment" onclick="adjustShotClock(1)" title="Add 1 second to shot clock">+1</button>
-<button class="manual-time-adjustment" onclick="adjustShotClock(-0.1)" title="Remove 0.1 second from shot clock">−0.1</button>
+<button class="manual-time-adjustment" onclick="adjustShotClock(-0.1)" title="Remove 0.1 second from shot clock">âˆ’0.1</button>
 <button class="manual-time-adjustment" onclick="adjustShotClock(0.1)" title="Add 0.1 second to shot clock">+0.1</button>
 </div>
 </div>
@@ -7215,7 +7216,7 @@ LOG OUT
 <div class="easy-selected-label">SELECTED PLAYER</div>
 <div id="easySelectedPlayerName" class="easy-selected-name">Tap a player above</div>
 </div>
-<div id="easySelectedPlayerPoints" class="easy-selected-stat">—</div>
+<div id="easySelectedPlayerPoints" class="easy-selected-stat">â€”</div>
 </div>
 
 <div class="easy-context-row">
@@ -7256,32 +7257,32 @@ LOG OUT
 <div class="easy-action-group">
 <div class="easy-action-title">MADE SHOT</div>
 <div class="easy-action-grid">
-<button type="button" class="easy-action-button paint" data-easy-action data-deduct-label="PAINT<br>−2" onclick="easyRecordScore('two_pt_made',true)">PAINT<br>+2</button>
-<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="2PT<br>−2" onclick="easyRecordScore('two_pt_made',false)">2PT<br>+2</button>
-<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="3PT<br>−3" onclick="easyRecordScore('three_pt_made',false)">3PT<br>+3</button>
-<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="FREE THROW<br>−1" onclick="easyRecordScore('ft_made',false)">FREE THROW<br>+1</button>
+<button type="button" class="easy-action-button paint" data-easy-action data-deduct-label="PAINT<br>âˆ’2" onclick="easyRecordScore('two_pt_made',true)">PAINT<br>+2</button>
+<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="2PT<br>âˆ’2" onclick="easyRecordScore('two_pt_made',false)">2PT<br>+2</button>
+<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="3PT<br>âˆ’3" onclick="easyRecordScore('three_pt_made',false)">3PT<br>+3</button>
+<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="FREE THROW<br>âˆ’1" onclick="easyRecordScore('ft_made',false)">FREE THROW<br>+1</button>
 </div>
 </div>
 
 <div class="easy-action-group">
 <div class="easy-action-title">MISSED SHOT</div>
 <div class="easy-action-grid secondary">
-<button type="button" class="easy-action-button miss" data-easy-action data-deduct-label="− 2PT MISS" onclick="easyRecordStat('two_pt_attempted')">2PT MISS</button>
-<button type="button" class="easy-action-button miss" data-easy-action data-deduct-label="− 3PT MISS" onclick="easyRecordStat('three_pt_attempted')">3PT MISS</button>
-<button type="button" class="easy-action-button miss" data-easy-action data-deduct-label="− FT MISS" onclick="easyRecordStat('ft_attempted')">FT MISS</button>
+<button type="button" class="easy-action-button miss" data-easy-action data-deduct-label="âˆ’ 2PT MISS" onclick="easyRecordStat('two_pt_attempted')">2PT MISS</button>
+<button type="button" class="easy-action-button miss" data-easy-action data-deduct-label="âˆ’ 3PT MISS" onclick="easyRecordStat('three_pt_attempted')">3PT MISS</button>
+<button type="button" class="easy-action-button miss" data-easy-action data-deduct-label="âˆ’ FT MISS" onclick="easyRecordStat('ft_attempted')">FT MISS</button>
 </div>
 </div>
 
 <div class="easy-action-group">
 <div class="easy-action-title">OTHER STAT</div>
 <div class="easy-action-grid other-stats">
-<button type="button" class="easy-action-button stat-rebound" data-easy-action data-deduct-label="− OREB" onclick="easyRecordStat('offensive_rebounds')" title="Offensive rebound — prepares second-chance points">OREB</button>
-<button type="button" class="easy-action-button stat-rebound" data-easy-action data-deduct-label="− DREB" onclick="easyRecordStat('defensive_rebounds')" title="Defensive rebound — ends the previous possession">DREB</button>
-<button type="button" class="easy-action-button" data-easy-action data-deduct-label="− AST" onclick="easyRecordStat('assists')">AST</button>
-<button type="button" class="easy-action-button" data-easy-action data-deduct-label="− STL" onclick="easyRecordStat('steals')">STL</button>
-<button type="button" class="easy-action-button" data-easy-action data-deduct-label="− BLK" onclick="easyRecordStat('blocks')">BLK</button>
-<button type="button" class="easy-action-button stat-turnover" data-easy-action data-deduct-label="− TO" onclick="easyRecordStat('turnovers')" title="Turnover — prepares points off turnover for the opponent">TO</button>
-<button type="button" class="easy-action-button stat-foul" data-easy-action data-deduct-label="− PF" onclick="easyRecordStat('fouls')">PF</button>
+<button type="button" class="easy-action-button stat-rebound" data-easy-action data-deduct-label="âˆ’ OREB" onclick="easyRecordStat('offensive_rebounds')" title="Offensive rebound â€” prepares second-chance points">OREB</button>
+<button type="button" class="easy-action-button stat-rebound" data-easy-action data-deduct-label="âˆ’ DREB" onclick="easyRecordStat('defensive_rebounds')" title="Defensive rebound â€” ends the previous possession">DREB</button>
+<button type="button" class="easy-action-button" data-easy-action data-deduct-label="âˆ’ AST" onclick="easyRecordStat('assists')">AST</button>
+<button type="button" class="easy-action-button" data-easy-action data-deduct-label="âˆ’ STL" onclick="easyRecordStat('steals')">STL</button>
+<button type="button" class="easy-action-button" data-easy-action data-deduct-label="âˆ’ BLK" onclick="easyRecordStat('blocks')">BLK</button>
+<button type="button" class="easy-action-button stat-turnover" data-easy-action data-deduct-label="âˆ’ TO" onclick="easyRecordStat('turnovers')" title="Turnover â€” prepares points off turnover for the opponent">TO</button>
+<button type="button" class="easy-action-button stat-foul" data-easy-action data-deduct-label="âˆ’ PF" onclick="easyRecordStat('fouls')">PF</button>
 </div>
 </div>
 </div>
@@ -7294,7 +7295,7 @@ LOG OUT
     aria-pressed="false"
     onclick="toggleEasyDeductMode()"
     title="Subtract one specific statistic from the selected player"
->− STAT</button>
+>âˆ’ STAT</button>
 <button
     type="button"
     id="easyUndoButton"
@@ -7317,9 +7318,9 @@ Tap an on-court player above, then tap the stat. You can still select players fr
     onclick="printTeamStats('home')"
     title="Print Home Team Stats"
     aria-label="Print Home Team Stats"
->🖨️</button>
+>ðŸ–¨ï¸</button>
 </div>
-<div class="hybrid-instruction">Tap an on-court row to score • Swipe the table for every stat • VIEW ALL opens the bench.</div>
+<div class="hybrid-instruction">Tap an on-court row to score â€¢ Swipe the table for every stat â€¢ VIEW ALL opens the bench.</div>
 <div id="homePlayersList"></div>
 </section>
 
@@ -7332,9 +7333,9 @@ Tap an on-court player above, then tap the stat. You can still select players fr
     onclick="printTeamStats('away')"
     title="Print Away Team Stats"
     aria-label="Print Away Team Stats"
->🖨️</button>
+>ðŸ–¨ï¸</button>
 </div>
-<div class="hybrid-instruction">Tap a row to score • Hover or tap a player name for game and career stats.</div>
+<div class="hybrid-instruction">Tap a row to score â€¢ Hover or tap a player name for game and career stats.</div>
 <div id="awayPlayersList"></div>
 </section>
 
@@ -8013,8 +8014,8 @@ function updateFullscreenButton(){
 
     button.textContent=
         isFullscreen
-        ?"✕"
-        :"⛶";
+        ?"âœ•"
+        :"â›¶";
 
     button.title=
         isFullscreen
@@ -10452,7 +10453,7 @@ function updateQuickScoringDisplay(){
     if(offTurnoverButton){
         const active=state.offTurnover===true;
         offTurnoverButton.textContent=
-            active?"✓ OFF TO":"OFF TO";
+            active?"âœ“ OFF TO":"OFF TO";
         offTurnoverButton.classList.toggle(
             "active",
             active
@@ -10471,7 +10472,7 @@ function updateQuickScoringDisplay(){
     if(secondChanceButton){
         const active=state.secondChance===true;
         secondChanceButton.textContent=
-            active?"✓ 2ND CHANCE":"2ND CHANCE";
+            active?"âœ“ 2ND CHANCE":"2ND CHANCE";
         secondChanceButton.classList.toggle(
             "active",
             active
@@ -10490,7 +10491,7 @@ function updateQuickScoringDisplay(){
     if(fastBreakButton){
         fastBreakButton.textContent=
             quickFastBreak
-            ?"✓ FAST BREAK"
+            ?"âœ“ FAST BREAK"
             :"FAST BREAK";
 
         fastBreakButton.classList.toggle(
@@ -10726,7 +10727,7 @@ function getEasyPlayerName(player){
     ).trim();
 
     return "#"+
-        (player.jersey_number??"—")+
+        (player.jersey_number??"â€”")+
         " "+
         (name||"Player");
 }
@@ -10895,7 +10896,7 @@ function renderEasyTeam(team){
                             onclick="selectEasyPlayer('${player.id}')"
                         >
                             <span class="easy-player-name">${escapeHTML(getEasyPlayerName(player))}</span>
-                            <span class="easy-player-mini-stats">PTS ${Number(stats.points||0)} · PF ${Number(stats.fouls||0)}</span>
+                            <span class="easy-player-mini-stats">PTS ${Number(stats.points||0)} Â· PF ${Number(stats.fouls||0)}</span>
                         </button>
                         <button
                             type="button"
@@ -10955,7 +10956,7 @@ function renderEasySelectedPlayer(){
         easyDeductMode=false;
         nameElement.textContent=
             "Tap a player above";
-        pointsElement.textContent="—";
+        pointsElement.textContent="â€”";
         setEasyActionAvailability();
         return;
     }
@@ -10996,7 +10997,7 @@ function updateEasyDeductModeDisplay(){
         deductButton.textContent=
             easyDeductMode
             ?"CANCEL"
-            :"− STAT";
+            :"âˆ’ STAT";
 
         deductButton.classList.toggle(
             "active",
@@ -11067,7 +11068,7 @@ function getQuickPlayerLabel(player){
     ).trim();
 
     return "#"+
-        (player.jersey_number??"—")+
+        (player.jersey_number??"â€”")+
         " "+
         shortName;
 }
@@ -11544,7 +11545,7 @@ async function easyRecordScore(
 
             if(feedback){
                 feedback.textContent=
-                    "Nothing to deduct — this made-shot stat is already 0.";
+                    "Nothing to deduct â€” this made-shot stat is already 0.";
             }
 
             return;
@@ -11630,7 +11631,7 @@ async function easyRecordScore(
 
             if(savingFeedback){
                 savingFeedback.textContent=
-                    "Correction applied. Saving…";
+                    "Correction applied. Savingâ€¦";
             }
 
             await flushAllPendingStats();
@@ -11725,7 +11726,7 @@ async function easyRecordStat(statKey){
 
             if(feedback){
                 feedback.textContent=
-                    "Nothing to deduct — "+
+                    "Nothing to deduct â€” "+
                     getEasyStatLabel(statKey)+
                     " is already 0.";
             }
@@ -11768,7 +11769,7 @@ async function easyRecordStat(statKey){
 
             if(savingFeedback){
                 savingFeedback.textContent=
-                    "Correction applied. Saving…";
+                    "Correction applied. Savingâ€¦";
             }
 
             await flushAllPendingStats();
@@ -11792,29 +11793,29 @@ async function easyRecordStat(statKey){
             if(amount<0){
                 feedback.textContent=
                     playerName+
-                    " — 1 "+
+                    " â€” 1 "+
                     getEasyStatLabel(statKey)+
                     " deducted.";
             }
             else if(statKey==="offensive_rebounds"){
                 feedback.textContent=
                     playerName+
-                    " — OREB recorded. SECOND CHANCE is ready for the next score.";
+                    " â€” OREB recorded. SECOND CHANCE is ready for the next score.";
             }
             else if(statKey==="defensive_rebounds"){
                 feedback.textContent=
                     playerName+
-                    " — DREB recorded. Previous possession tags were cleared.";
+                    " â€” DREB recorded. Previous possession tags were cleared.";
             }
             else if(statKey==="turnovers"){
                 feedback.textContent=
                     playerName+
-                    " — TO recorded. OFF TURNOVER is ready for the opponent.";
+                    " â€” TO recorded. OFF TURNOVER is ready for the opponent.";
             }
             else{
                 feedback.textContent=
                     playerName+
-                    " — "+
+                    " â€” "+
                     getEasyStatLabel(statKey)+" recorded.";
             }
         }
@@ -11903,7 +11904,7 @@ async function undoEasyLastStat(){
 
         if(savingFeedback){
             savingFeedback.textContent=
-                "Undo applied. Saving…";
+                "Undo applied. Savingâ€¦";
         }
 
         await flushAllPendingStats();
@@ -12029,8 +12030,8 @@ function openSmartScoring(
     if(!isTwoPoint){
         automaticLocation.textContent=
             points===3
-            ?"3-POINT AREA — detected from the +3 button"
-            :"FREE-THROW LINE — detected from the +1 button";
+            ?"3-POINT AREA â€” detected from the +3 button"
+            :"FREE-THROW LINE â€” detected from the +1 button";
     }
 
     document.getElementById(
@@ -13586,7 +13587,7 @@ updatePlayerStat(
 )
 "
 >
-−2
+âˆ’2
 </button>
 
 <button
@@ -13614,7 +13615,7 @@ updatePlayerStat(
 )
 "
 >
-A−
+Aâˆ’
 </button>
 
 </div>
@@ -13667,7 +13668,7 @@ updatePlayerStat(
 )
 "
 >
-−3
+âˆ’3
 </button>
 
 <button
@@ -13695,7 +13696,7 @@ updatePlayerStat(
 )
 "
 >
-A−
+Aâˆ’
 </button>
 
 </div>
@@ -13769,7 +13770,7 @@ updatePlayerStat(
 )
 "
 >
-−1
+âˆ’1
 </button>
 
 <button
@@ -13797,7 +13798,7 @@ updatePlayerStat(
 )
 "
 >
-A−
+Aâˆ’
 </button>
 
 </div>
@@ -13882,7 +13883,7 @@ updatePlayerStat(
 "
 
 >
-−
+âˆ’
 </button>
 
 `;
@@ -16553,7 +16554,7 @@ async function printGameComparison(){
         currentGame.scheduled_at ||
         currentGame.created_at;
 
-    let gameDate = "—";
+    let gameDate = "â€”";
 
     if(gameDateRaw){
         const parsedDate = new Date(gameDateRaw);
@@ -16573,14 +16574,14 @@ async function printGameComparison(){
     const venue =
         currentGame.venue ||
         currentGame.location ||
-        "—";
+        "â€”";
 
     const periodText =
         document.querySelector(
             ".period-buttons button.active"
         )?.textContent?.trim() ||
         currentGame.period ||
-        "—";
+        "â€”";
 
     const status =
         currentGame.status ||
@@ -16620,7 +16621,7 @@ async function printGameComparison(){
             </div>
 
             <div class="print-meta">
-                <div><strong>GAME:</strong> #${currentGame.id ?? "—"}</div>
+                <div><strong>GAME:</strong> #${currentGame.id ?? "â€”"}</div>
                 <div><strong>DATE:</strong> ${gameDate}</div>
                 <div><strong>VENUE:</strong> ${venue}</div>
                 <div><strong>PERIOD:</strong> ${periodText}</div>
@@ -16664,7 +16665,7 @@ async function printGameComparison(){
                         <td class="team-comparison-value">${row[1]}</td>
                         <td class="team-comparison-value">${row[2]}</td>
                         <td class="team-comparison-difference">
-                            ${row[3] ? "—" : formatComparisonDifference(row[1],row[2])}
+                            ${row[3] ? "â€”" : formatComparisonDifference(row[1],row[2])}
                         </td>
                     </tr>
                 `).join("")}
@@ -16679,49 +16680,49 @@ async function printGameComparison(){
             <div class="comparison-breakdown-card">
                 <div class="comparison-breakdown-label">POINTS IN PAINT</div>
                 <div class="comparison-breakdown-values">
-                    ${homeBreakdown.paint} — ${awayBreakdown.paint}
+                    ${homeBreakdown.paint} â€” ${awayBreakdown.paint}
                 </div>
             </div>
 
             <div class="comparison-breakdown-card">
                 <div class="comparison-breakdown-label">FAST BREAK</div>
                 <div class="comparison-breakdown-values">
-                    ${homeBreakdown.fastBreak} — ${awayBreakdown.fastBreak}
+                    ${homeBreakdown.fastBreak} â€” ${awayBreakdown.fastBreak}
                 </div>
             </div>
 
             <div class="comparison-breakdown-card">
                 <div class="comparison-breakdown-label">OFF TURNOVERS</div>
                 <div class="comparison-breakdown-values">
-                    ${homeBreakdown.offTurnover} — ${awayBreakdown.offTurnover}
+                    ${homeBreakdown.offTurnover} â€” ${awayBreakdown.offTurnover}
                 </div>
             </div>
 
             <div class="comparison-breakdown-card">
                 <div class="comparison-breakdown-label">SECOND CHANCE</div>
                 <div class="comparison-breakdown-values">
-                    ${homeBreakdown.secondChance} — ${awayBreakdown.secondChance}
+                    ${homeBreakdown.secondChance} â€” ${awayBreakdown.secondChance}
                 </div>
             </div>
 
             <div class="comparison-breakdown-card">
                 <div class="comparison-breakdown-label">LEAD CHANGES</div>
                 <div class="comparison-breakdown-values">
-                    ${leadStats.available ? leadStats.leadChanges : "—"}
+                    ${leadStats.available ? leadStats.leadChanges : "â€”"}
                 </div>
             </div>
 
             <div class="comparison-breakdown-card">
                 <div class="comparison-breakdown-label">${homeName} BIGGEST LEAD</div>
                 <div class="comparison-breakdown-values">
-                    ${leadStats.available ? leadStats.homeBiggestLead : "—"}
+                    ${leadStats.available ? leadStats.homeBiggestLead : "â€”"}
                 </div>
             </div>
 
             <div class="comparison-breakdown-card">
                 <div class="comparison-breakdown-label">${awayName} BIGGEST LEAD</div>
                 <div class="comparison-breakdown-values">
-                    ${leadStats.available ? leadStats.awayBiggestLead : "—"}
+                    ${leadStats.available ? leadStats.awayBiggestLead : "â€”"}
                 </div>
             </div>
         </div>
@@ -16853,7 +16854,7 @@ async function printTeamStats(team){
     const teamName =
         teamTitle
             ? teamTitle.textContent
-                .replace(/\s*—.*$/, "")
+                .replace(/\s*â€”.*$/, "")
                 .trim()
             : (
                 isHome
@@ -16908,7 +16909,7 @@ async function printTeamStats(team){
         currentGame.scheduled_at ||
         currentGame.created_at;
 
-    let gameDate = "—";
+    let gameDate = "â€”";
 
     if(gameDateRaw){
 
@@ -16932,14 +16933,14 @@ async function printTeamStats(team){
     const venue =
         currentGame.venue ||
         currentGame.location ||
-        "—";
+        "â€”";
 
     const periodText =
         document.querySelector(
             ".period-buttons button.active"
         )?.textContent?.trim() ||
         currentGame.period ||
-        "—";
+        "â€”";
 
     const breakdown =
         scoringBreakdownTotals[team] ||
@@ -17004,7 +17005,7 @@ async function printTeamStats(team){
             </div>
 
             <div class="print-score-divider">
-                –
+                â€“
             </div>
 
             <div>
@@ -17051,7 +17052,7 @@ async function printTeamStats(team){
 
             <div>
                 <strong>GAME:</strong>
-                #${currentGame.id ?? "—"}
+                #${currentGame.id ?? "â€”"}
             </div>
 
             <div>
@@ -17182,7 +17183,7 @@ async function printTeamStats(team){
 
     previewTitle.textContent =
         teamName +
-        " — Official Box Score";
+        " â€” Official Box Score";
 
     modal.classList.add("visible");
 }
