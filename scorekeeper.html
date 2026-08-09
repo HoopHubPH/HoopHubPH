@@ -7156,6 +7156,7 @@ LOG OUT
 <button id="period-2nd" onclick="setPeriod('2nd Quarter')">2Q</button>
 <button id="period-3rd" onclick="setPeriod('3rd Quarter')">3Q</button>
 <button id="period-4th" onclick="setPeriod('4th Quarter')">4Q</button>
+<button id="period-ot" onclick="setPeriod('Overtime')">OT</button>
 </div>
 
 </div>
@@ -15538,6 +15539,14 @@ async function adjustGameClock(amount){
    RESET CLOCK
    ========================================================= */
 
+function getPeriodClockSeconds(){
+
+    return currentGame &&
+        currentGame.period === "Overtime"
+        ?300
+        :600;
+}
+
 async function resetClock(){
 
     if(!currentGame){
@@ -15584,7 +15593,11 @@ async function resetClock(){
     }
 
 
-    clockSeconds=600;
+    const periodClockSeconds=
+        getPeriodClockSeconds();
+
+
+    clockSeconds=periodClockSeconds;
 
     shotClockSeconds=24;
 
@@ -15633,9 +15646,10 @@ async function resetClock(){
     .from("games")
     .update({
 
-    clock_seconds:600,
+    clock_seconds:periodClockSeconds,
 
-    clock_milliseconds:600000,
+    clock_milliseconds:
+        periodClockSeconds * 1000,
 
     clock_running:false,
 
@@ -15685,7 +15699,10 @@ function setActivePeriod(period){
             "period-3rd",
 
         "4th Quarter":
-            "period-4th"
+            "period-4th",
+
+        "Overtime":
+            "period-ot"
     };
 
 
