@@ -2999,18 +2999,6 @@ body.team-print-portrait .print-report{
 }
 
 @media print{
-    .comparison-breakdown-grid{
-        grid-template-columns:repeat(7,minmax(0,1fr))!important;
-        gap:8px!important;
-        width:100%!important;
-    }
-
-    .comparison-breakdown-card{
-        min-width:0!important;
-        break-inside:avoid;
-        page-break-inside:avoid;
-    }
-
     .comparison-score-panel,
     .team-comparison-table th,
     .team-comparison-table tbody tr:nth-child(even) td,
@@ -3032,9 +3020,10 @@ body.team-print-portrait .print-report{
     overflow-y:auto;
 }
 
-</style>
 
-<style>
+
+/* STYLE SECTION: continued */
+
 /* Large-screen optimized scorekeeper */
 .hybrid-scorekeeper{
 display:grid!important;
@@ -3075,9 +3064,10 @@ align-items:start;
 .hybrid-scorekeeper{grid-template-columns:1fr!important;grid-template-areas:"controls""home""away""breakdown";}
 .hybrid-scorekeeper>.hybrid-action-panel{position:static;max-height:none;}
 }
-</style>
 
-<style>
+
+/* STYLE SECTION: continued */
+
 
 /* =========================================================
    HOOP HUB PH — TRUE ONE-SCREEN SCOREKEEPER
@@ -3562,8 +3552,10 @@ align-items:start;
     }
 }
 
-</style>
-<style>
+
+
+/* STYLE SECTION: continued */
+
 
 /* =========================================================
    BENCH PLAYER SCROLL — FORCE COMPLETE ROSTERS VISIBLE
@@ -3630,8 +3622,10 @@ align-items:start;
     }
 }
 
-</style>
-<style>
+
+
+/* STYLE SECTION: continued */
+
 
 /* =========================================================
    NBA-STYLE ROSTER EXPANSION
@@ -3814,8 +3808,10 @@ align-items:start;
     }
 }
 
-</style>
-<style>
+
+
+/* STYLE SECTION: continued */
+
 
 /* FINAL FIX: SHOW VIEW BENCH BUTTON, THEN ENABLE SCROLL */
 .hybrid-team-stats .view-all-row{
@@ -3892,8 +3888,10 @@ align-items:start;
   background:#f3f3f3 !important;
 }
 
-</style>
-<style>
+
+
+/* STYLE SECTION: continued */
+
 
 /* =========================================================
    PROPORTIONAL TEAM STAT BOX + EASY BENCH ACCESS
@@ -4049,8 +4047,10 @@ align-items:start;
     }
 }
 
-</style>
-<style>
+
+
+/* STYLE SECTION: continued */
+
 
 /* =========================================================
    FULLSCREEN TEAM BOX CLEANUP + PERMANENT BENCH CONTROL
@@ -4118,8 +4118,10 @@ align-items:start;
     align-self:start!important;
 }
 
-</style>
-<style>
+
+
+/* STYLE SECTION: continued */
+
 
 /* =========================================================
    TEAM BENCH FOOTER — CLEAN BOTTOM POSITION
@@ -4171,8 +4173,10 @@ align-items:start;
     margin-bottom:0!important;
 }
 
-</style>
-<style>
+
+
+/* STYLE SECTION: continued */
+
 
 /* =========================================================
    FIXED COURT / BENCH ROSTER BOX
@@ -4276,8 +4280,10 @@ align-items:start;
     min-height:25px!important;
 }
 
-</style>
-<style>
+
+
+/* STYLE SECTION: continued */
+
 
 /* =========================================================
    FIXED TEAM BOX WITH INTERNAL BENCH SCROLL
@@ -4397,8 +4403,10 @@ align-items:start;
     min-height:25px!important;
 }
 
-</style>
-<style>
+
+
+/* STYLE SECTION: continued */
+
 
 /* FINAL: TEAM STATS STAYS STILL */
 .hybrid-team-stats{
@@ -4520,8 +4528,10 @@ align-items:start;
     max-height:211px!important;
 }
 
-</style>
-<style>
+
+
+/* STYLE SECTION: continued */
+
 
 /* =========================================================
    RESPONSIVE TEAM STAT BOX + PERMANENT BENCH FOOTER
@@ -4780,8 +4790,10 @@ align-items:start;
     opacity:1!important;
 }
 
-</style>
-<style>
+
+
+/* STYLE SECTION: continued */
+
 
 /* =========================================================
    FUNCTIONAL FIXED BENCH BUTTON
@@ -4910,8 +4922,10 @@ align-items:start;
     }
 }
 
-</style>
-<style>
+
+
+/* STYLE SECTION: continued */
+
 
 /* =========================================================
    REMOVE EMPTY SPACE — LET PLAYER TABLE FILL THE TEAM BOX
@@ -5088,8 +5102,10 @@ It remains in the same lower-left position and never overlaps the table.
         27px!important;
 }
 
-</style>
-    <style>
+
+
+/* STYLE SECTION: continued */
+
 
 /* =========================================================
    FINAL FULLSCREEN / RESOLUTION AUTOFIT OVERRIDE
@@ -5238,9 +5254,10 @@ It remains in the same lower-left position and never overlaps the table.
     }
 }
 
-</style>
 
-<style>
+
+/* STYLE SECTION: continued */
+
 /* =========================================================
    TABLET AUTOFIT + SUBSTITUTION CONTROL POSITION
    Final layout override. Scoring and game logic are unchanged.
@@ -5366,9 +5383,10 @@ It remains in the same lower-left position and never overlaps the table.
         font-size:8px!important;
     }
 }
-</style>
 
-<style>
+
+/* STYLE SECTION: continued */
+
 /* =========================================================
    AUTHORITATIVE RESPONSIVE ROSTER LAYOUT — 2026-08-09
    This block intentionally comes last. It replaces the older
@@ -5557,9 +5575,10 @@ It remains in the same lower-left position and never overlaps the table.
         min-height:220px!important;
     }
 }
-</style>
 
-<style>
+
+/* STYLE SECTION: continued */
+
 /* =========================================================
    RESPONSIVE SCOREKEEPER SHELL — FINAL OVERRIDE
    Fits the usable browser viewport in normal/fullscreen mode.
@@ -5840,8 +5859,10 @@ body{
         grid-template-rows:25px minmax(0,1fr)!important;
     }
 }
-</style>
-<style id="hoophub-stable-scorekeeper-layout">
+
+
+/* STYLE SECTION: hoophub-stable-scorekeeper-layout */
+
 /* =========================================================
    STABLE SCOREKEEPER WORKSPACE — 2026-08-09
    A deliberately simple final layout. It does not depend on
@@ -6029,9 +6050,10 @@ body{
         touch-action:pan-x pan-y!important;
     }
 }
-</style>
 
-<style>
+
+/* STYLE SECTION: continued */
+
 /* =========================================================
    CLEAN RESPONSIVE ROSTER LAYOUT — AUTHORITATIVE
    Keeps both team tables visible and independently scrollable.
@@ -6260,8 +6282,10 @@ body{
         height:560px!important;
     }
 }
-</style>
-<style id="five-player-roster-window">
+
+
+/* STYLE SECTION: five-player-roster-window */
+
 /*
    Show one table header and exactly five LARGE player rows per team.
    Additional players remain available through the team's own scrollbar.
@@ -6331,8 +6355,10 @@ body{
         font-size: 16px !important;
     }
 }
-</style>
-<style id="proportional-five-player-layout">
+
+
+/* STYLE SECTION: proportional-five-player-layout */
+
 /*
    Final roster sizing: five complete rows in normal mode, while fullscreen
    expands the whole scorekeeper and distributes the extra height evenly.
@@ -6437,8 +6463,10 @@ body:-webkit-full-screen > .container {
         --roster-player-row-height: clamp(48px, 7dvh, 56px);
     }
 }
-</style>
-<style id="uniform-proportional-player-stats">
+
+
+/* STYLE SECTION: uniform-proportional-player-stats */
+
 /*
    Authoritative roster geometry.
    One header plus five equal player rows are visible; remaining rows scroll.
@@ -6598,8 +6626,10 @@ body:-webkit-full-screen > .container {
         --hh-player-font: clamp(14px, 1.9vw, 16px);
     }
 }
-</style>
-<style id="requested-final-roster-layout">
+
+
+/* STYLE SECTION: requested-final-roster-layout */
+
 /* Final requested layout: five rows, vertical-only roster scrolling, full fullscreen use. */
 .hybrid-team-stats .table-scroll.roster-view,
 .hybrid-team-stats .table-scroll.roster-view.expanded {
@@ -6719,8 +6749,10 @@ body:-webkit-full-screen > .container {
     min-height: 0 !important;
     max-height: none !important;
 }
-</style>
-<style id="fullscreen-matches-normal-layout">
+
+
+/* STYLE SECTION: fullscreen-matches-normal-layout */
+
 /*
    Fullscreen intentionally reuses the normal landscape scorekeeper layout:
    scoreboard on top, Home/Away tables on the left, scoring controls on the right.
@@ -6805,8 +6837,10 @@ body:-webkit-full-screen .hybrid-team-stats .table-scroll.roster-view.expanded {
     overflow-x: hidden !important;
     overflow-y: auto !important;
 }
-</style>
-<style id="fullscreen-white-and-larger-stat-controls">
+
+
+/* STYLE SECTION: fullscreen-white-and-larger-stat-controls */
+
 /* Requested presentation adjustment only: white fullscreen canvas and a
    larger, proportional Add Stats panel. */
 html:has(body:fullscreen),
@@ -6870,8 +6904,10 @@ body:-webkit-full-screen {
         font-size: 10px !important;
     }
 }
-</style>
-<style id="live-team-totals-style">
+
+
+/* STYLE SECTION: live-team-totals-style */
+
 /* Fixed live totals below each independently scrollable team roster. */
 .live-team-totals {
     flex: 0 0 auto;
@@ -6928,8 +6964,10 @@ body:-webkit-full-screen {
         padding-block: 4px;
     }
 }
-</style>
-<style id="visible-live-team-totals-fix">
+
+
+/* STYLE SECTION: visible-live-team-totals-fix */
+
 /* Keep the live totals inside the black strip at the bottom of each team box. */
 .hybrid-team-stats > #homePlayersList,
 .hybrid-team-stats > #awayPlayersList {
@@ -7006,8 +7044,10 @@ body:-webkit-full-screen {
 .hybrid-team-stats .live-team-total-item.primary .live-team-total-value {
     color: #ff7a1a !important;
 }
-</style>
-<style id="proportional-five-player-totals-fix">
+
+
+/* STYLE SECTION: proportional-five-player-totals-fix */
+
 /* Keep the totals compact so five complete on-court rows remain visible. */
 .hybrid-team-stats > #homePlayersList > .live-team-totals,
 .hybrid-team-stats > #awayPlayersList > .live-team-totals {
@@ -7041,8 +7081,10 @@ body:-webkit-full-screen {
 .hybrid-team-stats .player-table tbody td {
     box-sizing: border-box !important;
 }
-</style>
-<style id="requested-readability-adjustments">
+
+
+/* STYLE SECTION: requested-readability-adjustments */
+
 /* Readability-only adjustments: jersey number, compact stat labels, and
    proportional Add Stats player buttons. */
 .hybrid-team-stats .player-table tbody td:first-child {
@@ -7141,8 +7183,10 @@ body:-webkit-full-screen {
         font-size: clamp(10px, 1.6vw, 13px) !important;
     }
 }
-</style>
-<style id="quarter-score-comparison-styles">
+
+
+/* STYLE SECTION: quarter-score-comparison-styles */
+
 /* Compact quarter scoring comparison shared by the live page and print reports. */
 .scoreboard {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -7311,8 +7355,10 @@ body:-webkit-full-screen {
         print-color-adjust: exact;
     }
 }
-</style>
-<style>
+
+
+/* STYLE SECTION: continued */
+
 .scorekeeper-safety-bar{
     display:flex;
     align-items:center;
@@ -7381,8 +7427,10 @@ body:-webkit-full-screen {
     .team-foul-control{font-size:7px;gap:3px}
     .team-foul-value{font-size:9px}
 }
-</style>
-<style id="balanced-top-scoreboard-overrides">
+
+
+/* STYLE SECTION: balanced-top-scoreboard-overrides */
+
 /* Keep the existing top scoreboard layout evenly proportioned. */
 .scoreboard{
     grid-template-columns:repeat(3,minmax(0,1fr))!important;
@@ -7433,8 +7481,10 @@ body:-webkit-full-screen {
     .scorekeeper-safety-bar{min-height:0;height:0;font-size:7px}
     .save-safety-indicator{padding:1px 4px}
 }
-</style>
-<style id="adaptive-window-scoreboard-fix">
+
+
+/* STYLE SECTION: adaptive-window-scoreboard-fix */
+
 /* Keep the complete top scoreboard visible in a normal, reduced browser window. */
 @media (min-width:900px) and (max-height:700px){
     body > .container{
@@ -7486,6 +7536,81 @@ body:-webkit-full-screen {
     .scoreboard-team-scores .team-control{padding:3px 5px!important;gap:4px!important}
     .scoreboard-team-scores .team-control h2{font-size:clamp(12px,1.35vw,17px)!important}
     .scoreboard-team-scores .score{min-width:30px!important;font-size:clamp(23px,2.3vw,30px)!important}
+}
+
+
+/* STYLE SECTION: scorekeeper-safety-and-selection-cleanup */
+
+/* Consolidated component rules for selection and safety additions. These are
+   intentionally scoped so existing desktop, compact-window, fullscreen and
+   print geometry keep their current cascade. */
+.quick-player-chip{
+    position:relative;
+}
+.quick-player-chip.selected{
+    border-color:#ff6b00!important;
+    box-shadow:0 0 0 2px rgba(255,107,0,.24),0 3px 9px rgba(0,0,0,.2)!important;
+    transform:translateY(-1px);
+}
+.quick-player-chip.selected::after{
+    content:"✓";
+    position:absolute;
+    top:2px;
+    right:3px;
+    display:grid;
+    place-items:center;
+    width:13px;
+    height:13px;
+    border-radius:50%;
+    color:#fff;
+    background:#ff6b00;
+    font-size:8px;
+    font-weight:1000;
+    line-height:1;
+}
+.easy-selected-player.has-selection{
+    border-color:#ff6b00!important;
+    background:linear-gradient(90deg,rgba(255,107,0,.11),rgba(255,255,255,.98))!important;
+    box-shadow:inset 3px 0 0 #ff6b00;
+}
+.easy-selected-label-row{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+.easy-selected-team-badge{
+    display:none;
+    max-width:150px;
+    padding:1px 5px;
+    border:1px solid currentColor;
+    border-radius:999px;
+    font-size:7px;
+    font-weight:1000;
+    letter-spacing:.45px;
+    line-height:1.4;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.easy-selected-player.has-selection .easy-selected-team-badge{display:inline-flex}
+.easy-selected-player.selected-home .easy-selected-team-badge{color:#1565c0}
+.easy-selected-player.selected-away .easy-selected-team-badge{color:#c62828}
+.easy-selected-player.stat-accepted{
+    animation:selectedStatAccepted .32s ease;
+}
+@keyframes selectedStatAccepted{
+    50%{background:rgba(255,107,0,.24);transform:scale(1.008)}
+}
+@media(prefers-reduced-motion:reduce){
+    .easy-selected-player.stat-accepted{animation:none}
+    .quick-player-chip.selected{transform:none}
+}
+@media(max-width:900px){
+    .quick-player-chip.selected::after{width:11px;height:11px;font-size:7px}
+    .easy-selected-team-badge{font-size:6px;padding:1px 4px}
+}
+@media print{
+    .quick-player-chip.selected::after,.easy-selected-team-badge{display:none!important}
 }
 </style>
 </head>
@@ -7659,9 +7784,12 @@ LOG OUT
     aria-label="Select an on-court player"
 ></div>
 
-<div class="easy-selected-player">
+<div id="easySelectedPlayerCard" class="easy-selected-player">
 <div>
+<div class="easy-selected-label-row">
 <div class="easy-selected-label">SELECTED PLAYER</div>
+<span id="easySelectedPlayerTeam" class="easy-selected-team-badge"></span>
+</div>
 <div id="easySelectedPlayerName" class="easy-selected-name">Tap a player above</div>
 </div>
 <div id="easySelectedPlayerPoints" class="easy-selected-stat">—</div>
@@ -8236,6 +8364,15 @@ async function initializeSecureScorekeeper(){
 
 
 async function logoutScorekeeper(){
+
+    if(
+        getPendingSaveCount()>0&&
+        !window.confirm(
+            "Some scorekeeper entries are still saving. Log out anyway? The queued entries will remain stored for recovery."
+        )
+    ){
+        return;
+    }
 
     const logoutButton=
         document.getElementById(
@@ -9436,6 +9573,19 @@ async function loadGame(){
             "Enter a valid Game ID."
         );
 
+        return;
+    }
+
+    if(
+        currentGame&&
+        Number(currentGame.id)!==gameId&&
+        getPendingSaveCount()>0&&
+        !window.confirm(
+            "Some entries for Game "+currentGame.id+
+            " are still saving. Load Game "+gameId+
+            " anyway? The queued entries will remain stored for recovery."
+        )
+    ){
         return;
     }
 
@@ -11587,6 +11737,9 @@ function renderEasySelectedPlayer(){
             "easySelectedPlayerPoints"
         );
 
+    const card=document.getElementById("easySelectedPlayerCard");
+    const teamBadge=document.getElementById("easySelectedPlayerTeam");
+
     const player=
         easySelectedPlayerId
         ?playerDataMap[easySelectedPlayerId]
@@ -11601,6 +11754,10 @@ function renderEasySelectedPlayer(){
         nameElement.textContent=
             "Tap a player above";
         pointsElement.textContent="—";
+        if(card){
+            card.classList.remove("has-selection","selected-home","selected-away");
+        }
+        if(teamBadge){teamBadge.textContent="";}
         setEasyActionAvailability();
         return;
     }
@@ -11614,7 +11771,29 @@ function renderEasySelectedPlayer(){
     pointsElement.textContent=
         Number(stats.points||0)+" PTS";
 
+    const selectedTeam=playerTeamMap[easySelectedPlayerId];
+    if(card){
+        card.classList.add("has-selection");
+        card.classList.toggle("selected-home",selectedTeam==="home");
+        card.classList.toggle("selected-away",selectedTeam==="away");
+    }
+    if(teamBadge){
+        const teamName=selectedTeam==="home"
+            ?(currentGame?.home_team||"HOME")
+            :(currentGame?.away_team||"AWAY");
+        teamBadge.textContent=(selectedTeam||"").toUpperCase()+" · "+teamName;
+    }
+
     setEasyActionAvailability();
+}
+
+function flashSelectedPlayerAfterStat(playerId){
+    if(easySelectedPlayerId!==playerId){return;}
+    const card=document.getElementById("easySelectedPlayerCard");
+    if(!card){return;}
+    card.classList.remove("stat-accepted");
+    void card.offsetWidth;
+    card.classList.add("stat-accepted");
 }
 
 
@@ -12449,6 +12628,7 @@ async function easyRecordScore(
     finally{
         easyActionInFlight=false;
         renderEasyScorekeeper();
+        flashSelectedPlayerAfterStat(playerId);
     }
 }
 
@@ -12608,6 +12788,7 @@ async function easyRecordStat(statKey,queuedAction=null){
     finally{
         easyActionInFlight=false;
         renderEasyScorekeeper();
+        flashSelectedPlayerAfterStat(playerId);
     }
 }
 
@@ -16551,9 +16732,20 @@ function getPeriodClockSeconds(){
         :600;
 }
 
-async function resetClock(){
+async function resetClock(options={}){
 
     if(!currentGame){
+        return;
+    }
+
+    if(
+        options.skipConfirmation!==true&&
+        !window.confirm(
+            "Reset the game clock to "+
+            (getPeriodClockSeconds()===300?"5:00":"10:00")+
+            " and the shot clock to 24?"
+        )
+    ){
         return;
     }
 
@@ -17275,6 +17467,40 @@ async function setPeriod(period){
         return;
     }
 
+    if(period===currentGame.period){
+        return;
+    }
+
+    const homeOnCourt=(teamPlayersMap.home||[]).filter(
+        player=>playerOnCourt[player.id]===true
+    ).length;
+    const awayOnCourt=(teamPlayersMap.away||[]).filter(
+        player=>playerOnCourt[player.id]===true
+    ).length;
+    const pending=getPendingSaveCount();
+    const currentPeriod=currentGame.period||"Current period";
+    const homeScore=Number(document.getElementById("homeScore")?.textContent||0);
+    const awayScore=Number(document.getElementById("awayScore")?.textContent||0);
+    const homeFouls=getTeamFouls("home",currentPeriod);
+    const awayFouls=getTeamFouls("away",currentPeriod);
+    const checklist=[
+        "END-OF-QUARTER CHECK",
+        "",
+        currentPeriod+" → "+period,
+        "Score: "+homeScore+" - "+awayScore,
+        "Clocks: PAUSED ✓",
+        "Pending saves: "+(pending===0?"NONE ✓":pending+" STILL SAVING"),
+        "Home lineup: "+homeOnCourt+"/5"+(homeOnCourt===5?" ✓":" — CHECK"),
+        "Away lineup: "+awayOnCourt+"/5"+(awayOnCourt===5?" ✓":" — CHECK"),
+        "Team fouls: Home "+homeFouls+" · Away "+awayFouls,
+        "",
+        "Continue and reset the clocks for "+period+"?"
+    ].join("\n");
+
+    if(!window.confirm(checklist)){
+        return;
+    }
+
 
     await persistAllPlayerMinutes(true);
 
@@ -17289,7 +17515,7 @@ async function setPeriod(period){
     });
 
 
-    await resetClock();
+    await resetClock({skipConfirmation:true});
 }
 
 
