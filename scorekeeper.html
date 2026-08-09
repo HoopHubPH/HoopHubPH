@@ -6322,8 +6322,8 @@ body{
     overflow: hidden !important;
 }
 
-:fullscreen body > .container,
-:-webkit-full-screen body > .container {
+body:fullscreen > .container,
+body:-webkit-full-screen > .container {
     display: grid !important;
     grid-template-rows: auto auto auto minmax(0, 1fr) auto !important;
     width: 100% !important;
@@ -6609,8 +6609,8 @@ body{
     max-height: var(--hh-exact-player-row, 50px) !important;
 }
 
-:fullscreen body > .container,
-:-webkit-full-screen body > .container {
+body:fullscreen > .container,
+body:-webkit-full-screen > .container {
     display: flex !important;
     flex-direction: column !important;
     height: calc(100dvh - 44px) !important;
@@ -7620,7 +7620,7 @@ async function toggleFullscreen(){
                 return;
             }
 
-            await document.documentElement
+            await document.body
             .requestFullscreen();
         }
         else{
