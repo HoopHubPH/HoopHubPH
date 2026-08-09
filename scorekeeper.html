@@ -6990,12 +6990,24 @@ body:-webkit-full-screen {
 
 .hybrid-team-stats .player-table thead tr,
 .hybrid-team-stats .player-table thead th {
-    height: 17px !important;
-    min-height: 17px !important;
-    max-height: 17px !important;
+    height: 14px !important;
+    min-height: 14px !important;
+    max-height: 14px !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
-    font-size: clamp(7px, .52vw, 10px) !important;
+    font-size: clamp(6px, .46vw, 9px) !important;
+    line-height: 1 !important;
+}
+
+/* Smaller Sub In / Sub Out controls without changing substitution behavior. */
+.hybrid-team-stats .player-table td.col-player .sub-button {
+    min-width: 34px !important;
+    width: auto !important;
+    min-height: 16px !important;
+    height: 16px !important;
+    padding: 1px 3px !important;
+    margin: 0 !important;
+    font-size: 6.5px !important;
     line-height: 1 !important;
 }
 
@@ -7016,6 +7028,14 @@ body:-webkit-full-screen {
 }
 
 @media (max-width: 900px) {
+    .hybrid-team-stats .player-table td.col-player .sub-button {
+        min-width: 32px !important;
+        min-height: 16px !important;
+        height: 16px !important;
+        padding: 1px 2px !important;
+        font-size: 6px !important;
+    }
+
     .hybrid-action-panel .quick-player-chip {
         min-height: 54px !important;
         padding: 8px 5px !important;
