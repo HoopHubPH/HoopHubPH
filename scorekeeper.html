@@ -17074,6 +17074,16 @@ async function printTeamStats(team){
         .forEach(row => row.remove());
 
     /*
+    Remove the larger live team-totals strip from the
+    per-team printout. The compact TEAM TOTAL table row
+    is added separately below.
+    */
+
+    tableWrap
+        .querySelectorAll(".live-team-totals")
+        .forEach(summary => summary.remove());
+
+    /*
     Remove duplicate element IDs from the copy.
     */
 
