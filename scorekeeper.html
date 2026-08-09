@@ -1659,6 +1659,15 @@ nav{
     filter:brightness(.92);
 }
 
+.hybrid-actions-layout .easy-action-button.tap-accepted{
+    animation:easyStatTap .16s ease-out;
+}
+
+@keyframes easyStatTap{
+    0%{transform:scale(.94);filter:brightness(.78)}
+    100%{transform:scale(1);filter:brightness(1)}
+}
+
 .hybrid-actions-layout .easy-action-button.primary{
     background:#d96516;
 }
@@ -7450,32 +7459,32 @@ LOG OUT
 <div class="easy-action-group">
 <div class="easy-action-title">MADE SHOT</div>
 <div class="easy-action-grid">
-<button type="button" class="easy-action-button paint" data-easy-action data-deduct-label="PAINT<br>−2" onclick="easyRecordScore('two_pt_made',true)">PAINT<br>+2</button>
-<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="2PT<br>−2" onclick="easyRecordScore('two_pt_made',false)">2PT<br>+2</button>
-<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="3PT<br>−3" onclick="easyRecordScore('three_pt_made',false)">3PT<br>+3</button>
-<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="FREE THROW<br>−1" onclick="easyRecordScore('ft_made',false)">FREE THROW<br>+1</button>
+<button type="button" class="easy-action-button paint" data-easy-action data-deduct-label="PAINT<br>−2" onclick="queueEasyScore(event,'two_pt_made',true)">PAINT<br>+2</button>
+<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="2PT<br>−2" onclick="queueEasyScore(event,'two_pt_made',false)">2PT<br>+2</button>
+<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="3PT<br>−3" onclick="queueEasyScore(event,'three_pt_made',false)">3PT<br>+3</button>
+<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="FREE THROW<br>−1" onclick="queueEasyScore(event,'ft_made',false)">FREE THROW<br>+1</button>
 </div>
 </div>
 
 <div class="easy-action-group">
 <div class="easy-action-title">MISSED SHOT</div>
 <div class="easy-action-grid secondary">
-<button type="button" class="easy-action-button miss" data-easy-action data-deduct-label="− 2PT MISS" onclick="easyRecordStat('two_pt_attempted')">2PT MISS</button>
-<button type="button" class="easy-action-button miss" data-easy-action data-deduct-label="− 3PT MISS" onclick="easyRecordStat('three_pt_attempted')">3PT MISS</button>
-<button type="button" class="easy-action-button miss" data-easy-action data-deduct-label="− FT MISS" onclick="easyRecordStat('ft_attempted')">FT MISS</button>
+<button type="button" class="easy-action-button miss" data-easy-action data-deduct-label="− 2PT MISS" onclick="queueEasyStat(event,'two_pt_attempted')">2PT MISS</button>
+<button type="button" class="easy-action-button miss" data-easy-action data-deduct-label="− 3PT MISS" onclick="queueEasyStat(event,'three_pt_attempted')">3PT MISS</button>
+<button type="button" class="easy-action-button miss" data-easy-action data-deduct-label="− FT MISS" onclick="queueEasyStat(event,'ft_attempted')">FT MISS</button>
 </div>
 </div>
 
 <div class="easy-action-group">
 <div class="easy-action-title">OTHER STAT</div>
 <div class="easy-action-grid other-stats">
-<button type="button" class="easy-action-button stat-rebound" data-easy-action data-deduct-label="− OREB" onclick="easyRecordStat('offensive_rebounds')" title="Offensive rebound â€” prepares second-chance points">OREB</button>
-<button type="button" class="easy-action-button stat-rebound" data-easy-action data-deduct-label="− DREB" onclick="easyRecordStat('defensive_rebounds')" title="Defensive rebound â€” ends the previous possession">DREB</button>
-<button type="button" class="easy-action-button" data-easy-action data-deduct-label="− AST" onclick="easyRecordStat('assists')">AST</button>
-<button type="button" class="easy-action-button" data-easy-action data-deduct-label="− STL" onclick="easyRecordStat('steals')">STL</button>
-<button type="button" class="easy-action-button" data-easy-action data-deduct-label="− BLK" onclick="easyRecordStat('blocks')">BLK</button>
-<button type="button" class="easy-action-button stat-turnover" data-easy-action data-deduct-label="− TO" onclick="easyRecordStat('turnovers')" title="Turnover â€” prepares points off turnover for the opponent">TO</button>
-<button type="button" class="easy-action-button stat-foul" data-easy-action data-deduct-label="− PF" onclick="easyRecordStat('fouls')">PF</button>
+<button type="button" class="easy-action-button stat-rebound" data-easy-action data-deduct-label="− OREB" onclick="queueEasyStat(event,'offensive_rebounds')" title="Offensive rebound â€” prepares second-chance points">OREB</button>
+<button type="button" class="easy-action-button stat-rebound" data-easy-action data-deduct-label="− DREB" onclick="queueEasyStat(event,'defensive_rebounds')" title="Defensive rebound â€” ends the previous possession">DREB</button>
+<button type="button" class="easy-action-button" data-easy-action data-deduct-label="− AST" onclick="queueEasyStat(event,'assists')">AST</button>
+<button type="button" class="easy-action-button" data-easy-action data-deduct-label="− STL" onclick="queueEasyStat(event,'steals')">STL</button>
+<button type="button" class="easy-action-button" data-easy-action data-deduct-label="− BLK" onclick="queueEasyStat(event,'blocks')">BLK</button>
+<button type="button" class="easy-action-button stat-turnover" data-easy-action data-deduct-label="− TO" onclick="queueEasyStat(event,'turnovers')" title="Turnover â€” prepares points off turnover for the opponent">TO</button>
+<button type="button" class="easy-action-button stat-foul" data-easy-action data-deduct-label="− PF" onclick="queueEasyStat(event,'fouls')">PF</button>
 </div>
 </div>
 </div>
@@ -8112,6 +8121,8 @@ let quickFastBreak=false;
 let easySelectedPlayerId=null;
 let keyboardActiveTeam="home";
 let easyActionInFlight=false;
+let easyActionQueue=[];
+let easyActionQueueProcessing=false;
 let easyDeductMode=false;
 let easyUndoStack=[];
 let quickScoringContext={
@@ -10968,7 +10979,6 @@ function setEasyActionAvailability(){
 
     const disabled=
         !easySelectedPlayerId||
-        easyActionInFlight||
         isCurrentGameLocked();
 
     document.querySelectorAll(
@@ -11711,18 +11721,120 @@ async function syncDeductedPlayerStatDisplay(playerId){
 }
 
 
-async function easyRecordScore(
-    statKey,
-    isPaint
-){
+function showEasyTapAccepted(button){
 
-    if(!easySelectedPlayerId||easyActionInFlight){
+    if(!button){
         return;
     }
 
-    const playerId=easySelectedPlayerId;
+    button.classList.remove("tap-accepted");
+    void button.offsetWidth;
+    button.classList.add("tap-accepted");
+}
+
+
+function queueEasyAction(action,button){
+
+    if(
+        !easySelectedPlayerId||
+        isCurrentGameLocked()
+    ){
+        return;
+    }
+
+    easyActionQueue.push({
+        ...action,
+        playerId:easySelectedPlayerId,
+        deductMode:easyDeductMode
+    });
+
+    showEasyTapAccepted(button);
+
+    const feedback=document.getElementById("easyActionFeedback");
+
+    if(feedback&&easyActionQueue.length>1){
+        feedback.textContent=
+            easyActionQueue.length+
+            " stat entries accepted and saving in order.";
+    }
+
+    processEasyActionQueue();
+}
+
+
+function queueEasyScore(event,statKey,isPaint){
+
+    queueEasyAction(
+        {type:"score",statKey,isPaint:isPaint===true},
+        event&&event.currentTarget
+    );
+}
+
+
+function queueEasyStat(event,statKey){
+
+    queueEasyAction(
+        {type:"stat",statKey},
+        event&&event.currentTarget
+    );
+}
+
+
+async function processEasyActionQueue(){
+
+    if(easyActionQueueProcessing){
+        return;
+    }
+
+    easyActionQueueProcessing=true;
+
+    try{
+        while(easyActionQueue.length){
+            const action=easyActionQueue.shift();
+
+            if(action.type==="score"){
+                await easyRecordScore(
+                    action.statKey,
+                    action.isPaint,
+                    action
+                );
+            }
+            else{
+                await easyRecordStat(
+                    action.statKey,
+                    action
+                );
+            }
+        }
+    }
+    finally{
+        easyActionQueueProcessing=false;
+        setEasyActionAvailability();
+    }
+}
+
+
+async function easyRecordScore(
+    statKey,
+    isPaint,
+    queuedAction=null
+){
+
+    const requestedPlayerId=
+        queuedAction&&queuedAction.playerId
+        ?queuedAction.playerId
+        :easySelectedPlayerId;
+
+    if(!requestedPlayerId||easyActionInFlight){
+        return;
+    }
+
+    const playerId=requestedPlayerId;
     const snapshot=getEasyActionSnapshot();
-    const amount=easyDeductMode?-1:1;
+    const amount=
+        queuedAction
+        ?(queuedAction.deductMode?-1:1)
+        :(easyDeductMode?-1:1);
     const team=playerTeamMap[playerId];
 
     easyActionInFlight=true;
@@ -11893,15 +12005,23 @@ async function easyRecordScore(
 }
 
 
-async function easyRecordStat(statKey){
+async function easyRecordStat(statKey,queuedAction=null){
 
-    if(!easySelectedPlayerId||easyActionInFlight){
+    const requestedPlayerId=
+        queuedAction&&queuedAction.playerId
+        ?queuedAction.playerId
+        :easySelectedPlayerId;
+
+    if(!requestedPlayerId||easyActionInFlight){
         return;
     }
 
-    const playerId=easySelectedPlayerId;
+    const playerId=requestedPlayerId;
     const snapshot=getEasyActionSnapshot();
-    const amount=easyDeductMode?-1:1;
+    const amount=
+        queuedAction
+        ?(queuedAction.deductMode?-1:1)
+        :(easyDeductMode?-1:1);
 
     easyActionInFlight=true;
     setEasyActionAvailability();
