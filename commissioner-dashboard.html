@@ -733,6 +733,22 @@
           <div class="table-wrap"><table><thead><tr><th>Player</th><th>Jersey</th><th>Position</th><th>Status</th><th>Actions</th></tr></thead><tbody id="rosterReviewBody"><tr><td class="empty-state" colspan="5">Loading roster reviews...</td></tr></tbody></table></div>
         </section>
 
+        <section id="gameReviewPanel" class="panel">
+          <header class="panel-header">
+            <div>
+              <h2>Games Pending Review</h2>
+              <p>Review the submitted score, then finalize it or return it to the scorekeeper for correction.</p>
+            </div>
+          </header>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Game</th><th>Matchup</th><th>Score</th><th>Submitted</th><th>Actions</th></tr></thead>
+              <tbody id="gameReviewBody"><tr><td class="empty-state" colspan="5">Loading submitted games...</td></tr></tbody>
+            </table>
+          </div>
+          <div id="gameReviewMessage" class="form-message" aria-live="polite"></div>
+        </section>
+
         <section id="schedulePanel" class="panel">
           <header class="panel-header">
             <div>
@@ -976,7 +992,7 @@
 
         const { data: gameRows, error: gameError } = await supabaseClient
           .from("games")
-          .select("id, league_id, home_team_id, away_team_id, home_team, away_team, scheduled_at, venue, status, created_at")
+            .select("id, league_id, home_team_id, away_team_id, home_team, away_team, home_score, away_score, scheduled_at, venue, status, submitted_at, submitted_by, finalized_at, created_at")
           .in("league_id", leagueIds)
           .order("scheduled_at", { ascending: true, nullsFirst: false });
         if (gameError) throw gameError;
@@ -1026,6 +1042,7 @@
         document.getElementById("approvedTeamCount").textContent = "0";
         document.getElementById("pendingTeamCount").textContent = "0";
         renderScheduling(null, []);
+        renderGameReviewQueue(null);
         return;
       }
 
@@ -1064,7 +1081,79 @@
         : '<tr><td class="empty-state" colspan="5">No teams are registered in this league yet.</td></tr>';
 
       renderScheduling(league, approved);
+      renderGameReviewQueue(league);
       loadRosterReviews(league.id);
+    }
+
+    function renderGameReviewQueue(league) {
+      const body = document.getElementById("gameReviewBody");
+      const games = league
+        ? scheduledGames.filter(game =>
+            game.league_id === league.id &&
+            String(game.status || "").toLowerCase() === "pending review"
+          )
+        : [];
+
+      body.innerHTML = games.length ? games.map(game => `
+        <tr>
+          <td><span class="game-id">#${escapeHtml(game.id)}</span></td>
+          <td><strong>${escapeHtml(game.home_team)} vs ${escapeHtml(game.away_team)}</strong></td>
+          <td><strong>${Number(game.home_score || 0)}–${Number(game.away_score || 0)}</strong></td>
+          <td>${escapeHtml(formatDateTime(game.submitted_at))}</td>
+          <td><div class="table-actions">
+            <a class="table-action view" href="live-game.html?id=${encodeURIComponent(game.id)}" target="_blank" rel="noopener">REVIEW</a>
+            <button class="review-button approve" type="button" onclick="finalizeReviewedGame(${Number(game.id)},this)">FINALIZE</button>
+            <button class="review-button reject" type="button" onclick="returnReviewedGame(${Number(game.id)},this)">RETURN</button>
+          </div></td>
+        </tr>
+      `).join("") : '<tr><td class="empty-state" colspan="5">No games are waiting for review.</td></tr>';
+    }
+
+    async function finalizeReviewedGame(gameId, button) {
+      const game = scheduledGames.find(item => Number(item.id) === Number(gameId));
+      if (!game || !window.confirm(`Finalize Game #${gameId}? This permanently locks the score and updates standings.`)) return;
+      button.disabled = true;
+      const message = document.getElementById("gameReviewMessage");
+      try {
+        const { data, error } = await supabaseClient.rpc("finalize_basketball_game", { p_game_id: gameId });
+        if (error) throw error;
+        const result = Array.isArray(data) ? data[0] : data;
+        game.status = "Final";
+        game.finalized_at = result?.finalized_at || new Date().toISOString();
+        message.className = "form-message success";
+        message.textContent = `Game #${gameId} finalized. Standings and player totals were updated.`;
+        renderWorkspace();
+      } catch (error) {
+        button.disabled = false;
+        message.className = "form-message error";
+        message.textContent = "Unable to finalize game: " + (error.message || "Unknown error");
+      }
+    }
+
+    async function returnReviewedGame(gameId, button) {
+      const game = scheduledGames.find(item => Number(item.id) === Number(gameId));
+      if (!game) return;
+      const reason = window.prompt("Reason for returning this game to the scorekeeper:", "Please review the submitted statistics.");
+      if (reason === null) return;
+      button.disabled = true;
+      const message = document.getElementById("gameReviewMessage");
+      try {
+        const { error } = await supabaseClient.rpc("return_basketball_game_for_correction", {
+          p_game_id: gameId,
+          p_reason: reason || null
+        });
+        if (error) throw error;
+        game.status = "In Progress";
+        game.submitted_at = null;
+        game.submitted_by = null;
+        message.className = "form-message success";
+        message.textContent = `Game #${gameId} returned to the scorekeeper for correction.`;
+        renderWorkspace();
+      } catch (error) {
+        button.disabled = false;
+        message.className = "form-message error";
+        message.textContent = "Unable to return game: " + (error.message || "Unknown error");
+      }
     }
 
     async function loadRosterReviews(leagueId) {
