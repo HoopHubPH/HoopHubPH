@@ -6928,6 +6928,80 @@ body{
     }
 }
 </style>
+<style id="fullscreen-and-five-row-repair">
+/* Repair only fullscreen targeting and exact five-row roster geometry. */
+body:fullscreen,
+body:-webkit-full-screen {
+    width: 100vw !important;
+    height: 100dvh !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+}
+
+body:fullscreen > header,
+body:-webkit-full-screen > header {
+    flex: 0 0 auto !important;
+}
+
+body:fullscreen > .container,
+body:-webkit-full-screen > .container {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    height: calc(100dvh - 40px) !important;
+    min-height: 0 !important;
+    max-height: calc(100dvh - 40px) !important;
+    overflow: hidden !important;
+}
+
+@media (min-width: 900px) and (orientation: landscape) {
+    body:fullscreen .hybrid-scorekeeper,
+    body:-webkit-full-screen .hybrid-scorekeeper {
+        flex: 1 1 0 !important;
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) clamp(300px, 28vw, 430px) !important;
+        grid-template-rows: repeat(2, minmax(0, 1fr)) auto !important;
+        grid-template-areas:
+            "home controls"
+            "away controls"
+            "breakdown controls" !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow: hidden !important;
+    }
+
+    body:fullscreen .hybrid-scorekeeper > .hybrid-team-stats,
+    body:-webkit-full-screen .hybrid-scorekeeper > .hybrid-team-stats {
+        height: 100% !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+    }
+
+    body:fullscreen .hybrid-team-stats #homePlayersList,
+    body:fullscreen .hybrid-team-stats #awayPlayersList,
+    body:-webkit-full-screen .hybrid-team-stats #homePlayersList,
+    body:-webkit-full-screen .hybrid-team-stats #awayPlayersList {
+        flex: 1 1 0 !important;
+        height: auto !important;
+        min-height: 0 !important;
+    }
+}
+
+.hybrid-team-stats .table-scroll.roster-view {
+    box-sizing: border-box !important;
+}
+
+.hybrid-team-stats .player-table,
+.hybrid-team-stats .player-table thead,
+.hybrid-team-stats .player-table tbody,
+.hybrid-team-stats .player-table tr,
+.hybrid-team-stats .player-table th,
+.hybrid-team-stats .player-table td {
+    box-sizing: border-box !important;
+}
+</style>
 </head>
 
 <body class="auth-pending">
@@ -7893,7 +7967,7 @@ async function toggleFullscreen(){
                 return;
             }
 
-            await document.documentElement
+            await document.body
             .requestFullscreen();
         }
         else{
@@ -16877,7 +16951,8 @@ initializeSecureScorekeeper();
             return;
         }
 
-        const available=Math.max(180,scroll.clientHeight-header.getBoundingClientRect().height);
+        const headerHeight=Math.ceil(header.getBoundingClientRect().height);
+        const available=Math.max(170,scroll.clientHeight-headerHeight-4);
         const rowHeight=Math.max(34,Math.floor(available/5));
         table.style.setProperty("--hh-exact-player-row",rowHeight+"px");
     }
