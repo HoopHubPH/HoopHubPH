@@ -6864,6 +6864,84 @@ body:-webkit-full-screen {
     }
 }
 </style>
+<style id="visible-live-team-totals-fix">
+/* Keep the live totals inside the black strip at the bottom of each team box. */
+.hybrid-team-stats > #homePlayersList,
+.hybrid-team-stats > #awayPlayersList {
+    grid-row: 2 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+.hybrid-team-stats > #homePlayersList > .table-scroll.roster-view,
+.hybrid-team-stats > #awayPlayersList > .table-scroll.roster-view {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+
+.hybrid-team-stats > #homePlayersList > .live-team-totals,
+.hybrid-team-stats > #awayPlayersList > .live-team-totals {
+    flex: 0 0 38px !important;
+    display: grid !important;
+    grid-template-columns: repeat(13, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-top: 3px solid #ff6b00 !important;
+    background: #111 !important;
+    color: #fff !important;
+    overflow: hidden !important;
+    position: relative !important;
+    z-index: 20 !important;
+}
+
+.hybrid-team-stats .live-team-total-item {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    min-width: 0 !important;
+    height: 35px !important;
+    padding: 0 2px !important;
+    border-right: 1px solid #383838 !important;
+    line-height: 1 !important;
+}
+
+.hybrid-team-stats .live-team-total-label,
+.hybrid-team-stats .live-team-total-value {
+    display: inline !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+}
+
+.hybrid-team-stats .live-team-total-label {
+    color: #bdbdbd !important;
+    font-size: clamp(6px, .48vw, 8px) !important;
+    font-weight: 800 !important;
+}
+
+.hybrid-team-stats .live-team-total-value {
+    color: #fff !important;
+    font-size: clamp(9px, .70vw, 12px) !important;
+    font-weight: 900 !important;
+}
+
+.hybrid-team-stats .live-team-total-item.primary .live-team-total-value {
+    color: #ff7a1a !important;
+}
+</style>
 </head>
 
 <body class="auth-pending">
