@@ -7103,7 +7103,7 @@ body:-webkit-full-screen {
     title="Open scorekeeper in fullscreen"
     aria-label="Open scorekeeper in fullscreen"
 >
-â›¶
+⛶
 </button>
 <button
     type="button"
@@ -7130,7 +7130,7 @@ LOG OUT
     title="Print home and away team comparison"
     aria-label="Print home and away team comparison"
 >
-    ðŸ–¨ï¸
+    🖨️
 </button>
 </div>
 
@@ -7158,9 +7158,9 @@ LOG OUT
 <button onclick="startClock()">START</button>
 <button onclick="pauseClock()">PAUSE</button>
 <button onclick="resetClock()">RESET</button>
-<button class="manual-time-adjustment" onclick="adjustGameClock(-1)" title="Remove 1 second from game clock">âˆ’1</button>
+<button class="manual-time-adjustment" onclick="adjustGameClock(-1)" title="Remove 1 second from game clock">−1</button>
 <button class="manual-time-adjustment" onclick="adjustGameClock(1)" title="Add 1 second to game clock">+1</button>
-<button class="manual-time-adjustment" onclick="adjustGameClock(-0.1)" title="Remove 0.1 second from game clock">âˆ’0.1</button>
+<button class="manual-time-adjustment" onclick="adjustGameClock(-0.1)" title="Remove 0.1 second from game clock">−0.1</button>
 <button class="manual-time-adjustment" onclick="adjustGameClock(0.1)" title="Add 0.1 second to game clock">+0.1</button>
 </div>
 
@@ -7176,9 +7176,9 @@ LOG OUT
 <div class="shot-clock-controls">
 <button onclick="resetShotClock(24)" title="Reset shot clock to 24 seconds">24</button>
 <button onclick="resetShotClock(14)" title="Reset shot clock to 14 seconds">14</button>
-<button class="manual-time-adjustment" onclick="adjustShotClock(-1)" title="Remove 1 second from shot clock">âˆ’1</button>
+<button class="manual-time-adjustment" onclick="adjustShotClock(-1)" title="Remove 1 second from shot clock">−1</button>
 <button class="manual-time-adjustment" onclick="adjustShotClock(1)" title="Add 1 second to shot clock">+1</button>
-<button class="manual-time-adjustment" onclick="adjustShotClock(-0.1)" title="Remove 0.1 second from shot clock">âˆ’0.1</button>
+<button class="manual-time-adjustment" onclick="adjustShotClock(-0.1)" title="Remove 0.1 second from shot clock">−0.1</button>
 <button class="manual-time-adjustment" onclick="adjustShotClock(0.1)" title="Add 0.1 second to shot clock">+0.1</button>
 </div>
 </div>
@@ -7257,10 +7257,10 @@ LOG OUT
 <div class="easy-action-group">
 <div class="easy-action-title">MADE SHOT</div>
 <div class="easy-action-grid">
-<button type="button" class="easy-action-button paint" data-easy-action data-deduct-label="PAINT<br>âˆ’2" onclick="easyRecordScore('two_pt_made',true)">PAINT<br>+2</button>
-<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="2PT<br>âˆ’2" onclick="easyRecordScore('two_pt_made',false)">2PT<br>+2</button>
-<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="3PT<br>âˆ’3" onclick="easyRecordScore('three_pt_made',false)">3PT<br>+3</button>
-<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="FREE THROW<br>âˆ’1" onclick="easyRecordScore('ft_made',false)">FREE THROW<br>+1</button>
+<button type="button" class="easy-action-button paint" data-easy-action data-deduct-label="PAINT<br>−2" onclick="easyRecordScore('two_pt_made',true)">PAINT<br>+2</button>
+<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="2PT<br>−2" onclick="easyRecordScore('two_pt_made',false)">2PT<br>+2</button>
+<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="3PT<br>−3" onclick="easyRecordScore('three_pt_made',false)">3PT<br>+3</button>
+<button type="button" class="easy-action-button primary" data-easy-action data-deduct-label="FREE THROW<br>−1" onclick="easyRecordScore('ft_made',false)">FREE THROW<br>+1</button>
 </div>
 </div>
 
@@ -7295,7 +7295,7 @@ LOG OUT
     aria-pressed="false"
     onclick="toggleEasyDeductMode()"
     title="Subtract one specific statistic from the selected player"
->âˆ’ STAT</button>
+>− STAT</button>
 <button
     type="button"
     id="easyUndoButton"
@@ -7318,7 +7318,7 @@ Tap an on-court player above, then tap the stat. You can still select players fr
     onclick="printTeamStats('home')"
     title="Print Home Team Stats"
     aria-label="Print Home Team Stats"
->ðŸ–¨ï¸</button>
+>🖨️</button>
 </div>
 <div class="hybrid-instruction">Tap an on-court row to score â€¢ Swipe the table for every stat â€¢ VIEW ALL opens the bench.</div>
 <div id="homePlayersList"></div>
@@ -7333,7 +7333,7 @@ Tap an on-court player above, then tap the stat. You can still select players fr
     onclick="printTeamStats('away')"
     title="Print Away Team Stats"
     aria-label="Print Away Team Stats"
->ðŸ–¨ï¸</button>
+>🖨️</button>
 </div>
 <div class="hybrid-instruction">Tap a row to score â€¢ Hover or tap a player name for game and career stats.</div>
 <div id="awayPlayersList"></div>
@@ -8014,8 +8014,8 @@ function updateFullscreenButton(){
 
     button.textContent=
         isFullscreen
-        ?"âœ•"
-        :"â›¶";
+        ?"✕"
+        :"⛶";
 
     button.title=
         isFullscreen
@@ -10453,7 +10453,7 @@ function updateQuickScoringDisplay(){
     if(offTurnoverButton){
         const active=state.offTurnover===true;
         offTurnoverButton.textContent=
-            active?"âœ“ OFF TO":"OFF TO";
+            active?"✓ OFF TO":"OFF TO";
         offTurnoverButton.classList.toggle(
             "active",
             active
@@ -10472,7 +10472,7 @@ function updateQuickScoringDisplay(){
     if(secondChanceButton){
         const active=state.secondChance===true;
         secondChanceButton.textContent=
-            active?"âœ“ 2ND CHANCE":"2ND CHANCE";
+            active?"✓ 2ND CHANCE":"2ND CHANCE";
         secondChanceButton.classList.toggle(
             "active",
             active
@@ -10491,7 +10491,7 @@ function updateQuickScoringDisplay(){
     if(fastBreakButton){
         fastBreakButton.textContent=
             quickFastBreak
-            ?"âœ“ FAST BREAK"
+            ?"✓ FAST BREAK"
             :"FAST BREAK";
 
         fastBreakButton.classList.toggle(
@@ -10997,7 +10997,7 @@ function updateEasyDeductModeDisplay(){
         deductButton.textContent=
             easyDeductMode
             ?"CANCEL"
-            :"âˆ’ STAT";
+            :"− STAT";
 
         deductButton.classList.toggle(
             "active",
@@ -13587,7 +13587,7 @@ updatePlayerStat(
 )
 "
 >
-âˆ’2
+−2
 </button>
 
 <button
@@ -13615,7 +13615,7 @@ updatePlayerStat(
 )
 "
 >
-Aâˆ’
+A−
 </button>
 
 </div>
@@ -13668,7 +13668,7 @@ updatePlayerStat(
 )
 "
 >
-âˆ’3
+−3
 </button>
 
 <button
@@ -13696,7 +13696,7 @@ updatePlayerStat(
 )
 "
 >
-Aâˆ’
+A−
 </button>
 
 </div>
@@ -13770,7 +13770,7 @@ updatePlayerStat(
 )
 "
 >
-âˆ’1
+−1
 </button>
 
 <button
@@ -13798,7 +13798,7 @@ updatePlayerStat(
 )
 "
 >
-Aâˆ’
+A−
 </button>
 
 </div>
