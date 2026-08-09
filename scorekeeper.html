@@ -6942,6 +6942,41 @@ body:-webkit-full-screen {
     color: #ff7a1a !important;
 }
 </style>
+<style id="proportional-five-player-totals-fix">
+/* Keep the totals compact so five complete on-court rows remain visible. */
+.hybrid-team-stats > #homePlayersList > .live-team-totals,
+.hybrid-team-stats > #awayPlayersList > .live-team-totals {
+    flex: 0 0 30px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    border-top-width: 2px !important;
+    grid-template-columns: 3.5fr 23fr 6fr repeat(14, 4.82fr) !important;
+}
+
+.hybrid-team-stats .live-team-totals > .live-team-total-item:first-child {
+    grid-column: 4 !important;
+}
+
+.hybrid-team-stats .live-team-total-item {
+    height: 28px !important;
+    gap: 2px !important;
+    padding: 0 1px !important;
+}
+
+.hybrid-team-stats .live-team-total-label {
+    font-size: clamp(6px, .43vw, 8px) !important;
+}
+
+.hybrid-team-stats .live-team-total-value {
+    font-size: clamp(8px, .62vw, 11px) !important;
+}
+
+/* The calculated height includes the whole cell, including padding/borders. */
+.hybrid-team-stats .player-table tbody tr,
+.hybrid-team-stats .player-table tbody td {
+    box-sizing: border-box !important;
+}
+</style>
 </head>
 
 <body class="auth-pending">
@@ -9166,9 +9201,9 @@ function renderLiveTeamTotals(team){
 
     const items=[
         ["PTS",totals.points,"primary"],
-        ["REB",totals.rebounds,"primary"],
         ["OREB",totals.offensive_rebounds],
         ["DREB",totals.defensive_rebounds],
+        ["REB",totals.rebounds,"primary"],
         ["AST",totals.assists,"primary"],
         ["STL",totals.steals,"primary"],
         ["BLK",totals.blocks],
@@ -9176,6 +9211,7 @@ function renderLiveTeamTotals(team){
         ["PF",totals.fouls],
         ["2PT",totals.two_pt_made+"/"+totals.two_pt_attempted],
         ["3PT",totals.three_pt_made+"/"+totals.three_pt_attempted],
+        ["FG",(totals.two_pt_made+totals.three_pt_made)+"/"+(totals.two_pt_attempted+totals.three_pt_attempted)],
         ["FT",totals.ft_made+"/"+totals.ft_attempted],
         ["+/-",(totals.plus_minus>0?"+":"")+totals.plus_minus]
     ];
@@ -16963,8 +16999,10 @@ initializeSecureScorekeeper();
             return;
         }
 
-        const available=Math.max(180,scroll.clientHeight-header.getBoundingClientRect().height);
-        const rowHeight=Math.max(34,Math.floor(available/5));
+        const headerHeight=Math.ceil(header.getBoundingClientRect().height);
+        /* Reserve table borders/rounding so row five is never clipped. */
+        const available=Math.max(0,scroll.clientHeight-headerHeight-6);
+        const rowHeight=Math.max(30,Math.floor(available/5));
         table.style.setProperty("--hh-exact-player-row",rowHeight+"px");
     }
 
