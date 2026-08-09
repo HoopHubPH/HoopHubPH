@@ -2376,16 +2376,16 @@ nav{
 }
 
 .print-report .team-total-row td{
-    background:#111!important;
-    color:#fff!important;
-    border-color:#333;
+    background:#fff!important;
+    color:#151515!important;
+    border-color:#ddd;
     border-top:3px solid #ff6b00;
     font-weight:900;
 }
 
 .print-report .team-total-row .team-total-label,
 .print-report .team-total-row .shot-percent{
-    color:#ff6b00!important;
+    color:#151515!important;
 }
 
 .print-summary-grid{
@@ -17072,16 +17072,6 @@ async function printTeamStats(team){
     tableWrap
         .querySelectorAll(".view-all-row")
         .forEach(row => row.remove());
-
-    /*
-    Remove the larger live team-totals strip from the
-    per-team printout. The compact TEAM TOTAL table row
-    is added separately below.
-    */
-
-    tableWrap
-        .querySelectorAll(".live-team-totals")
-        .forEach(summary => summary.remove());
 
     /*
     Remove duplicate element IDs from the copy.
