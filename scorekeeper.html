@@ -6267,6 +6267,112 @@ body{
     }
 }
 </style>
+<style id="proportional-five-player-layout">
+/*
+   Final roster sizing: five complete rows in normal mode, while fullscreen
+   expands the whole scorekeeper and distributes the extra height evenly.
+*/
+:root {
+    --roster-header-height: 36px;
+    --roster-player-row-height: clamp(46px, 5.1dvh, 54px);
+    --roster-five-row-height: calc(
+        var(--roster-header-height)
+        + var(--roster-player-row-height)
+        + var(--roster-player-row-height)
+        + var(--roster-player-row-height)
+        + var(--roster-player-row-height)
+        + var(--roster-player-row-height)
+    );
+}
+
+.hybrid-team-stats .table-scroll.roster-view,
+.hybrid-team-stats .table-scroll.roster-view.expanded {
+    height: var(--roster-five-row-height) !important;
+    min-height: var(--roster-five-row-height) !important;
+    max-height: var(--roster-five-row-height) !important;
+}
+
+.hybrid-team-stats .player-table tbody tr,
+.hybrid-team-stats .player-table tbody td {
+    height: var(--roster-player-row-height) !important;
+    min-height: var(--roster-player-row-height) !important;
+    max-height: var(--roster-player-row-height) !important;
+}
+
+.hybrid-team-stats .player-table tbody td {
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+}
+
+.hybrid-team-stats .player-table td.col-player .player-identity-row {
+    min-height: 0 !important;
+}
+
+.hybrid-team-stats .player-table td.col-player .sub-button {
+    min-height: 34px !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+}
+
+/* Fill the actual display when the page enters browser fullscreen. */
+:fullscreen body,
+:-webkit-full-screen body {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    overflow: hidden !important;
+}
+
+:fullscreen body > .container,
+:-webkit-full-screen body > .container {
+    display: grid !important;
+    grid-template-rows: auto auto auto minmax(0, 1fr) auto !important;
+    width: 100% !important;
+    height: calc(100dvh - 44px) !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: hidden !important;
+}
+
+:fullscreen .hybrid-scorekeeper,
+:-webkit-full-screen .hybrid-scorekeeper {
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
+    overflow: hidden !important;
+}
+
+:fullscreen .hybrid-scorekeeper > .hybrid-team-stats,
+:-webkit-full-screen .hybrid-scorekeeper > .hybrid-team-stats {
+    height: 100% !important;
+    min-height: 0 !important;
+}
+
+:fullscreen .hybrid-team-stats #homePlayersList,
+:fullscreen .hybrid-team-stats #awayPlayersList,
+:-webkit-full-screen .hybrid-team-stats #homePlayersList,
+:-webkit-full-screen .hybrid-team-stats #awayPlayersList {
+    flex: 1 1 0 !important;
+    min-height: 0 !important;
+}
+
+:fullscreen .hybrid-team-stats .table-scroll.roster-view,
+:fullscreen .hybrid-team-stats .table-scroll.roster-view.expanded,
+:-webkit-full-screen .hybrid-team-stats .table-scroll.roster-view,
+:-webkit-full-screen .hybrid-team-stats .table-scroll.roster-view.expanded {
+    flex: 1 1 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+}
+
+@media (max-width: 899px) {
+    :root {
+        --roster-player-row-height: clamp(48px, 7dvh, 56px);
+    }
+}
+</style>
 </head>
 
 <body class="auth-pending">
