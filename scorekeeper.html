@@ -7080,7 +7080,7 @@ body:-webkit-full-screen {
 <style id="quarter-score-comparison-styles">
 /* Compact quarter scoring comparison shared by the live page and print reports. */
 .scoreboard {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 42fr) minmax(0, 38fr) minmax(150px, 20fr);
     align-items: stretch;
 }
 
@@ -7174,7 +7174,7 @@ body:-webkit-full-screen {
 .print-report .quarter-score-active { background: #d71920; color: #fff; }
 
 @media (max-width: 700px) {
-    .scoreboard { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .scoreboard { grid-template-columns: minmax(0, 40fr) minmax(0, 40fr) minmax(120px, 20fr); }
     .live-quarter-score-panel { padding: 4px; }
     .scoreboard-team-scores .team-control { padding: 4px; gap: 4px; }
     .scoreboard-team-scores .team-control h2 { font-size: 10px; }
@@ -12380,7 +12380,6 @@ function buildQuarterScoreStrip(homeName,awayName,home,away){
         ["q4","Q4","4th Quarter"],
         ["ot","OT","Overtime"]
     ];
-    const activeKey=getQuarterScoreKey(currentGame?.period);
     const strip=document.createElement("div");
     strip.className="quarter-score-strip";
 
@@ -12391,14 +12390,14 @@ function buildQuarterScoreStrip(homeName,awayName,home,away){
         [homeName,"quarter-score-team"],
         ...periods.map(([key,,period])=>[
             Number(home?.[key]||0),
-            activeKey===key?"quarter-score-active":"",
+            "",
             period
         ]),
         [getQuarterScoreTotal(home),"quarter-score-total"],
         [awayName,"quarter-score-team"],
         ...periods.map(([key,,period])=>[
             Number(away?.[key]||0),
-            activeKey===key?"quarter-score-active":"",
+            "",
             period
         ]),
         [getQuarterScoreTotal(away),"quarter-score-total"]
@@ -16791,7 +16790,7 @@ async function printGameComparison(){
         currentGame.scheduled_at ||
         currentGame.created_at;
 
-    let gameDate = "â€”";
+    let gameDate = "N/A";
 
     if(gameDateRaw){
         const parsedDate = new Date(gameDateRaw);
@@ -16811,14 +16810,14 @@ async function printGameComparison(){
     const venue =
         currentGame.venue ||
         currentGame.location ||
-        "â€”";
+        "N/A";
 
     const periodText =
         document.querySelector(
             ".period-buttons button.active"
         )?.textContent?.trim() ||
         currentGame.period ||
-        "â€”";
+        "N/A";
 
     const status =
         currentGame.status ||
@@ -16858,7 +16857,7 @@ async function printGameComparison(){
             </div>
 
             <div class="print-meta">
-                <div><strong>GAME:</strong> #${currentGame.id ?? "â€”"}</div>
+                <div><strong>GAME:</strong> #${currentGame.id ?? "N/A"}</div>
                 <div><strong>DATE:</strong> ${gameDate}</div>
                 <div><strong>VENUE:</strong> ${venue}</div>
                 <div><strong>PERIOD:</strong> ${periodText}</div>
@@ -16908,7 +16907,7 @@ async function printGameComparison(){
                         <td class="team-comparison-value">${row[1]}</td>
                         <td class="team-comparison-value">${row[2]}</td>
                         <td class="team-comparison-difference">
-                            ${row[3] ? "â€”" : formatComparisonDifference(row[1],row[2])}
+                            ${row[3] ? "N/A" : formatComparisonDifference(row[1],row[2])}
                         </td>
                     </tr>
                 `).join("")}
@@ -16923,49 +16922,49 @@ async function printGameComparison(){
             <div class="comparison-breakdown-card">
                 <div class="comparison-breakdown-label">POINTS IN PAINT</div>
                 <div class="comparison-breakdown-values">
-                    ${homeBreakdown.paint} â€” ${awayBreakdown.paint}
+                    ${homeBreakdown.paint} - ${awayBreakdown.paint}
                 </div>
             </div>
 
             <div class="comparison-breakdown-card">
                 <div class="comparison-breakdown-label">FAST BREAK</div>
                 <div class="comparison-breakdown-values">
-                    ${homeBreakdown.fastBreak} â€” ${awayBreakdown.fastBreak}
+                    ${homeBreakdown.fastBreak} - ${awayBreakdown.fastBreak}
                 </div>
             </div>
 
             <div class="comparison-breakdown-card">
                 <div class="comparison-breakdown-label">OFF TURNOVERS</div>
                 <div class="comparison-breakdown-values">
-                    ${homeBreakdown.offTurnover} â€” ${awayBreakdown.offTurnover}
+                    ${homeBreakdown.offTurnover} - ${awayBreakdown.offTurnover}
                 </div>
             </div>
 
             <div class="comparison-breakdown-card">
                 <div class="comparison-breakdown-label">SECOND CHANCE</div>
                 <div class="comparison-breakdown-values">
-                    ${homeBreakdown.secondChance} â€” ${awayBreakdown.secondChance}
+                    ${homeBreakdown.secondChance} - ${awayBreakdown.secondChance}
                 </div>
             </div>
 
             <div class="comparison-breakdown-card">
                 <div class="comparison-breakdown-label">LEAD CHANGES</div>
                 <div class="comparison-breakdown-values">
-                    ${leadStats.available ? leadStats.leadChanges : "â€”"}
+                    ${leadStats.available ? leadStats.leadChanges : "N/A"}
                 </div>
             </div>
 
             <div class="comparison-breakdown-card">
                 <div class="comparison-breakdown-label">${homeName} BIGGEST LEAD</div>
                 <div class="comparison-breakdown-values">
-                    ${leadStats.available ? leadStats.homeBiggestLead : "â€”"}
+                    ${leadStats.available ? leadStats.homeBiggestLead : "N/A"}
                 </div>
             </div>
 
             <div class="comparison-breakdown-card">
                 <div class="comparison-breakdown-label">${awayName} BIGGEST LEAD</div>
                 <div class="comparison-breakdown-values">
-                    ${leadStats.available ? leadStats.awayBiggestLead : "â€”"}
+                    ${leadStats.available ? leadStats.awayBiggestLead : "N/A"}
                 </div>
             </div>
         </div>
@@ -17097,7 +17096,7 @@ async function printTeamStats(team){
     const teamName =
         teamTitle
             ? teamTitle.textContent
-                .replace(/\s*â€”.*$/, "")
+                .replace(/\s+-\s+.*$/, "")
                 .trim()
             : (
                 isHome
@@ -17152,7 +17151,7 @@ async function printTeamStats(team){
         currentGame.scheduled_at ||
         currentGame.created_at;
 
-    let gameDate = "â€”";
+    let gameDate = "N/A";
 
     if(gameDateRaw){
 
@@ -17176,14 +17175,14 @@ async function printTeamStats(team){
     const venue =
         currentGame.venue ||
         currentGame.location ||
-        "â€”";
+        "N/A";
 
     const periodText =
         document.querySelector(
             ".period-buttons button.active"
         )?.textContent?.trim() ||
         currentGame.period ||
-        "â€”";
+        "N/A";
 
     const breakdown =
         scoringBreakdownTotals[team] ||
@@ -17255,7 +17254,7 @@ async function printTeamStats(team){
             </div>
 
             <div class="print-score-divider">
-                â€“
+                -
             </div>
 
             <div>
@@ -17302,7 +17301,7 @@ async function printTeamStats(team){
 
             <div>
                 <strong>GAME:</strong>
-                #${currentGame.id ?? "â€”"}
+                #${currentGame.id ?? "N/A"}
             </div>
 
             <div>
@@ -17434,7 +17433,7 @@ async function printTeamStats(team){
 
     previewTitle.textContent =
         teamName +
-        " â€” Official Box Score";
+        " - Official Box Score";
 
     modal.classList.add("visible");
 }
