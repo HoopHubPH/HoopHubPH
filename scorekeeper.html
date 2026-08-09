@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Scorekeeper | Hoop Hub PH</title>
 
 <style>
@@ -5173,6 +5173,134 @@ It remains in the same lower-left position and never overlaps the table.
     }
 }
 
+</style>
+
+<style>
+/* =========================================================
+   TABLET AUTOFIT + SUBSTITUTION CONTROL POSITION
+   Final layout override. Scoring and game logic are unchanged.
+   ========================================================= */
+
+/* Keep the substitution control immediately left of the name. */
+.hybrid-team-stats .player-table td.col-player{
+    display:grid!important;
+    grid-template-columns:max-content minmax(0,1fr)!important;
+    grid-template-areas:
+        "sub name"
+        "sub position"!important;
+    align-items:center!important;
+    column-gap:6px!important;
+    min-width:0!important;
+}
+
+.hybrid-team-stats .player-table td.col-player .sub-button{
+    grid-area:sub!important;
+    align-self:center!important;
+    justify-self:start!important;
+    white-space:nowrap!important;
+}
+
+.hybrid-team-stats .player-table td.col-player .player-name{
+    grid-area:name!important;
+    display:block!important;
+    min-width:0!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+}
+
+.hybrid-team-stats .player-table td.col-player .player-position{
+    grid-area:position!important;
+    display:block!important;
+    min-width:0!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+}
+
+/* Landscape tablets and laptops use the complete available screen. */
+@media (min-width:901px),
+       (min-width:760px) and (orientation:landscape){
+    html,
+    body{
+        width:100%!important;
+        height:100%!important;
+        height:100dvh!important;
+        overflow:hidden!important;
+    }
+
+    .container{
+        height:calc(100dvh - 34px)!important;
+        min-height:0!important;
+        overflow:hidden!important;
+    }
+
+    .hybrid-scorekeeper{
+        height:100%!important;
+        min-height:0!important;
+        grid-template-columns:minmax(0,1.58fr) minmax(310px,.82fr)!important;
+        grid-template-rows:repeat(2,minmax(0,1fr))!important;
+        grid-template-areas:
+            "home controls"
+            "away controls"!important;
+        overflow:hidden!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-team-stats{
+        height:100%!important;
+        min-height:0!important;
+        max-height:none!important;
+    }
+}
+
+/* Portrait tablets remain touch-friendly and fit their width cleanly. */
+@media (min-width:600px) and (max-width:900px) and (orientation:portrait){
+    body{
+        overflow-x:hidden!important;
+    }
+
+    .container{
+        width:100%!important;
+        max-width:none!important;
+        padding:8px!important;
+    }
+
+    .hybrid-scorekeeper{
+        width:100%!important;
+        grid-template-columns:minmax(0,1fr)!important;
+        grid-template-areas:
+            "controls"
+            "home"
+            "away"
+            "breakdown"!important;
+    }
+
+    .hybrid-scorekeeper > .hybrid-action-panel,
+    .hybrid-scorekeeper > .hybrid-team-stats{
+        width:100%!important;
+        min-width:0!important;
+    }
+
+    .hybrid-team-stats{
+        height:clamp(260px,38dvh,380px)!important;
+        min-height:260px!important;
+        max-height:380px!important;
+    }
+}
+
+/* Comfortable touch target without widening the stat table excessively. */
+@media (pointer:coarse){
+    .hybrid-team-stats .player-table td.col-player{
+        column-gap:5px!important;
+    }
+
+    .hybrid-team-stats .player-table td.col-player .sub-button{
+        min-width:42px!important;
+        min-height:24px!important;
+        padding:3px 5px!important;
+        font-size:8px!important;
+    }
+}
 </style>
 </head>
 
@@ -11263,25 +11391,6 @@ ${escapeHTML(
 
 <td class="col-player">
 
-<span class="player-name"
-    onmouseenter="handlePlayerHover(event, '${player.id}')"
-    onmousemove="handlePlayerMove(event)"
-    onmouseleave="handlePlayerLeave()"
-    onclick="handlePlayerTap(event, '${player.id}')"
-    title="Hover or tap for game and career stats">
-${escapeHTML(
-    (player.first_name||"")+
-    " "+
-    (player.last_name||"")
-)}
-</span>
-
-<span class="player-position">
-${escapeHTML(
-    player.position||"N/A"
-)}
-</span>
-
 <button
 
 class="sub-button ${
@@ -11305,6 +11414,25 @@ ${
 }
 
 </button>
+
+<span class="player-name"
+    onmouseenter="handlePlayerHover(event, '${player.id}')"
+    onmousemove="handlePlayerMove(event)"
+    onmouseleave="handlePlayerLeave()"
+    onclick="handlePlayerTap(event, '${player.id}')"
+    title="Hover or tap for game and career stats">
+${escapeHTML(
+    (player.first_name||"")+
+    " "+
+    (player.last_name||"")
+)}
+</span>
+
+<span class="player-position">
+${escapeHTML(
+    player.position||"N/A"
+)}
+</span>
 
 </td>
 
