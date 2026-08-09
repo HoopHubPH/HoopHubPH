@@ -7119,6 +7119,52 @@ body:-webkit-full-screen {
     padding: 5px 7px;
 }
 
+.scoreboard-team-scores .team-score-info {
+    min-width: 0;
+}
+
+.team-timeout-control {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    white-space: nowrap;
+}
+
+.team-timeout-label {
+    margin-right: 2px;
+    color: #555;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: .35px;
+}
+
+.team-timeout-control button {
+    width: 20px;
+    height: 18px;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: #111;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 18px;
+    cursor: pointer;
+}
+
+.team-timeout-control button:first-of-type { background: #d71920; }
+.team-timeout-control button:hover:not(:disabled) { background: #ff6b00; }
+.team-timeout-control button:disabled { opacity: .4; cursor: not-allowed; }
+
+.team-timeout-value {
+    min-width: 16px;
+    color: #ff6b00;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 900;
+}
+
 .scoreboard-team-scores .team-control h2 {
     min-width: 0;
     margin: 0;
@@ -7319,12 +7365,28 @@ LOG OUT
 
 <div class="scoreboard-team-scores">
 <div class="team-control">
+<div class="team-score-info">
 <h2 id="homeTeam">Home Team</h2>
+<div class="team-timeout-control" aria-label="Home timeouts remaining">
+<span class="team-timeout-label">TIMEOUTS</span>
+<button type="button" id="homeTimeoutMinus" onclick="changeTimeout('home', 1)" title="Use one Home timeout">−</button>
+<span class="team-timeout-value" id="homeTimeoutRemaining">2</span>
+<button type="button" id="homeTimeoutPlus" onclick="changeTimeout('home', -1)" title="Correct the most recent Home timeout">+</button>
+</div>
+</div>
 <div class="score" id="homeScore">0</div>
 </div>
 
 <div class="team-control">
+<div class="team-score-info">
 <h2 id="awayTeam">Away Team</h2>
+<div class="team-timeout-control" aria-label="Away timeouts remaining">
+<span class="team-timeout-label">TIMEOUTS</span>
+<button type="button" id="awayTimeoutMinus" onclick="changeTimeout('away', 1)" title="Use one Away timeout">−</button>
+<span class="team-timeout-value" id="awayTimeoutRemaining">2</span>
+<button type="button" id="awayTimeoutPlus" onclick="changeTimeout('away', -1)" title="Correct the most recent Away timeout">+</button>
+</div>
+</div>
 <div class="score" id="awayScore">0</div>
 </div>
 </div>
@@ -8004,6 +8066,8 @@ let quarterScoreTotals={
     home:{q1:0,q2:0,q3:0,q4:0,ot:0},
     away:{q1:0,q2:0,q3:0,q4:0,ot:0}
 };
+let timeoutEvents=[];
+let timeoutChangeInFlight=false;
 
 let clockSeconds=600;
 let clockInterval=null;
@@ -9110,6 +9174,8 @@ async function loadGame(){
     await loadTeamPlayers();
 
     await loadScoringBreakdown();
+
+    await loadTimeoutEvents();
 
     setActivePeriod(
         data.period
@@ -16080,6 +16146,8 @@ function setActivePeriod(period){
         quarterScoreTotals.home,
         quarterScoreTotals.away
     );
+
+    updateTimeoutDisplay();
 }
 
 
@@ -16161,6 +16229,7 @@ function setFinalizedLock(locked){
         ".easy-action-button, .easy-sub-button, "+
         "#quickFastBreakButton, #quickOffTurnoverButton, "+
         "#quickSecondChanceButton, #quickResetContextButton, "+
+        ".team-timeout-control button, "+
         "#status-live, #status-half, #status-final"
     ).forEach(button=>{
         button.disabled=Boolean(locked);
@@ -16175,6 +16244,176 @@ function setFinalizedLock(locked){
                 :status==="final"
                     ?"GAME FINALIZED"
                     :"SUBMIT FOR REVIEW";
+    }
+}
+
+
+/* =========================================================
+   TEAM TIMEOUTS
+   ========================================================= */
+
+function getTimeoutPeriodGroup(period){
+    const normalized=String(period||"").trim().toLowerCase();
+
+    if(normalized==="1st quarter"||normalized==="2nd quarter"){
+        return "first-half";
+    }
+
+    if(normalized==="3rd quarter"||normalized==="4th quarter"){
+        return "second-half";
+    }
+
+    if(normalized==="overtime"){
+        return "overtime";
+    }
+
+    return "first-half";
+}
+
+
+function getTimeoutLimit(period){
+    const group=getTimeoutPeriodGroup(period);
+    return group==="second-half" ? 3 : group==="overtime" ? 1 : 2;
+}
+
+
+function getTimeoutsUsed(teamSide,period){
+    const group=getTimeoutPeriodGroup(period);
+
+    return Math.max(
+        0,
+        timeoutEvents.reduce((total,event)=>{
+            if(
+                event.team_side===teamSide&&
+                getTimeoutPeriodGroup(event.period)===group
+            ){
+                return total+Number(event.timeout_change||0);
+            }
+
+            return total;
+        },0)
+    );
+}
+
+
+function updateTimeoutDisplay(){
+    const period=currentGame?.period||"1st Quarter";
+    const limit=getTimeoutLimit(period);
+    const locked=isCurrentGameLocked()||timeoutChangeInFlight;
+
+    ["home","away"].forEach(teamSide=>{
+        const used=getTimeoutsUsed(teamSide,period);
+        const remaining=Math.max(0,limit-used);
+        const prefix=teamSide==="home" ? "home" : "away";
+        const value=document.getElementById(prefix+"TimeoutRemaining");
+        const minus=document.getElementById(prefix+"TimeoutMinus");
+        const plus=document.getElementById(prefix+"TimeoutPlus");
+
+        if(value){
+            value.textContent=remaining;
+        }
+
+        if(minus){
+            minus.disabled=locked||remaining<=0;
+        }
+
+        if(plus){
+            plus.disabled=locked||used<=0;
+        }
+    });
+}
+
+
+async function loadTimeoutEvents(){
+    timeoutEvents=[];
+
+    if(!currentGame){
+        updateTimeoutDisplay();
+        return;
+    }
+
+    const {data,error}=await supabaseClient
+    .from("game_timeout_events")
+    .select("id,team_side,period,timeout_change,game_clock_seconds,created_at")
+    .eq("game_id",currentGame.id)
+    .order("created_at",{ascending:true});
+
+    if(error){
+        console.error("Timeout load error:",error);
+        showStatus("Unable to load team timeouts: "+error.message);
+        updateTimeoutDisplay();
+        return;
+    }
+
+    timeoutEvents=Array.isArray(data) ? data : [];
+    updateTimeoutDisplay();
+}
+
+
+async function changeTimeout(teamSide,timeoutChange){
+    if(!currentGame){
+        showStatus("Load a game first.");
+        return;
+    }
+
+    if(isCurrentGameLocked()){
+        showStatus("Timeouts are locked because this game is submitted or finalized.");
+        return;
+    }
+
+    if(timeoutChangeInFlight||!["home","away"].includes(teamSide)){
+        return;
+    }
+
+    const period=currentGame.period||"1st Quarter";
+    const limit=getTimeoutLimit(period);
+    const used=getTimeoutsUsed(teamSide,period);
+
+    if(timeoutChange===1&&used>=limit){
+        showStatus("No timeouts remaining for this period.");
+        return;
+    }
+
+    if(timeoutChange===-1&&used<=0){
+        showStatus("There is no timeout deduction to correct.");
+        return;
+    }
+
+    timeoutChangeInFlight=true;
+    updateTimeoutDisplay();
+
+    try{
+        const {data,error}=await supabaseClient
+        .from("game_timeout_events")
+        .insert({
+            game_id:currentGame.id,
+            team_side:teamSide,
+            period,
+            timeout_change:timeoutChange,
+            game_clock_seconds:Number(clockSeconds||0)
+        })
+        .select("id,team_side,period,timeout_change,game_clock_seconds,created_at")
+        .single();
+
+        if(error){
+            throw error;
+        }
+
+        timeoutEvents.push(data);
+
+        showStatus(
+            timeoutChange===1
+                ?(teamSide==="home" ? "Home" : "Away")+" timeout recorded."
+                :(teamSide==="home" ? "Home" : "Away")+" timeout corrected."
+        );
+    }
+    catch(error){
+        console.error("Timeout save error:",error);
+        showStatus("Unable to update timeout: "+(error.message||"Unknown error"));
+    }
+    finally{
+        timeoutChangeInFlight=false;
+        updateTimeoutDisplay();
     }
 }
 
