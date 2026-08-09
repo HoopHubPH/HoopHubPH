@@ -2999,6 +2999,18 @@ body.team-print-portrait .print-report{
 }
 
 @media print{
+    .comparison-breakdown-grid{
+        grid-template-columns:repeat(7,minmax(0,1fr))!important;
+        gap:8px!important;
+        width:100%!important;
+    }
+
+    .comparison-breakdown-card{
+        min-width:0!important;
+        break-inside:avoid;
+        page-break-inside:avoid;
+    }
+
     .comparison-score-panel,
     .team-comparison-table th,
     .team-comparison-table tbody tr:nth-child(even) td,
