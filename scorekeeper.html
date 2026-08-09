@@ -2272,6 +2272,12 @@ nav{
     text-align:center;
 }
 
+.print-header-right{
+    display:grid;
+    justify-items:end;
+    gap:8px;
+}
+
 .print-score-team{
     max-width:145px;
     font-size:10px;
@@ -7080,7 +7086,7 @@ body:-webkit-full-screen {
 <style id="quarter-score-comparison-styles">
 /* Compact quarter scoring comparison shared by the live page and print reports. */
 .scoreboard {
-    grid-template-columns: minmax(0, 42fr) minmax(0, 38fr) minmax(150px, 20fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: stretch;
 }
 
@@ -7174,7 +7180,7 @@ body:-webkit-full-screen {
 .print-report .quarter-score-active { background: #d71920; color: #fff; }
 
 @media (max-width: 700px) {
-    .scoreboard { grid-template-columns: minmax(0, 40fr) minmax(0, 40fr) minmax(120px, 20fr); }
+    .scoreboard { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .live-quarter-score-panel { padding: 4px; }
     .scoreboard-team-scores .team-control { padding: 4px; gap: 4px; }
     .scoreboard-team-scores .team-control h2 { font-size: 10px; }
@@ -17236,10 +17242,19 @@ async function printTeamStats(team){
 
         </div>
 
-        <div
-            class="print-game-score"
-            aria-label="Game score"
-        >
+        <div class="print-header-right">
+
+            <div class="print-meta">
+                <div><strong>GAME:</strong> #${currentGame.id ?? "N/A"}</div>
+                <div><strong>DATE:</strong> ${gameDate}</div>
+                <div><strong>VENUE:</strong> ${venue}</div>
+                <div><strong>PERIOD:</strong> ${periodText}</div>
+            </div>
+
+            <div
+                class="print-game-score"
+                aria-label="Game score"
+            >
 
             <div>
 
@@ -17266,6 +17281,8 @@ async function printTeamStats(team){
                 <div class="print-score-value">
                     ${awayScore}
                 </div>
+
+            </div>
 
             </div>
 
@@ -17297,29 +17314,6 @@ async function printTeamStats(team){
 
         </div>
 
-        <div class="print-meta">
-
-            <div>
-                <strong>GAME:</strong>
-                #${currentGame.id ?? "N/A"}
-            </div>
-
-            <div>
-                <strong>DATE:</strong>
-                ${gameDate}
-            </div>
-
-            <div>
-                <strong>VENUE:</strong>
-                ${venue}
-            </div>
-
-            <div>
-                <strong>PERIOD:</strong>
-                ${periodText}
-            </div>
-
-        </div>
     `;
 
     /*
