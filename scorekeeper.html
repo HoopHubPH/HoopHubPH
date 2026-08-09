@@ -6806,6 +6806,64 @@ body:-webkit-full-screen {
     }
 }
 </style>
+<style id="live-team-totals-style">
+/* Fixed live totals below each independently scrollable team roster. */
+.live-team-totals {
+    flex: 0 0 auto;
+    display: grid;
+    grid-template-columns: repeat(13, minmax(0, 1fr));
+    width: 100%;
+    border: 1px solid #d8d8d8;
+    border-top: 3px solid #ff6b00;
+    background: #111;
+    color: #fff;
+    overflow: hidden;
+}
+
+.live-team-total-item {
+    min-width: 0;
+    padding: 5px 2px 6px;
+    border-right: 1px solid #363636;
+    text-align: center;
+    line-height: 1.05;
+}
+
+.live-team-total-item:last-child {
+    border-right: 0;
+}
+
+.live-team-total-label {
+    display: block;
+    margin-bottom: 3px;
+    color: #bdbdbd;
+    font-size: clamp(7px, .58vw, 9px);
+    font-weight: 800;
+    letter-spacing: .02em;
+    white-space: nowrap;
+}
+
+.live-team-total-value {
+    display: block;
+    color: #fff;
+    font-size: clamp(10px, .82vw, 14px);
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.live-team-total-item.primary .live-team-total-value {
+    color: #ff7a1a;
+}
+
+@media (max-width: 900px) {
+    .live-team-totals {
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+
+    .live-team-total-item {
+        padding-block: 4px;
+    }
+}
+</style>
 </head>
 
 <body class="auth-pending">
@@ -8991,6 +9049,73 @@ async function loadPlayersForTeam(
 }
 
 
+function renderLiveTeamTotals(team){
+
+    const players=teamPlayersMap[team]||[];
+
+    const totalKeys=[
+        "points",
+        "offensive_rebounds",
+        "defensive_rebounds",
+        "assists",
+        "steals",
+        "blocks",
+        "turnovers",
+        "fouls",
+        "two_pt_made",
+        "two_pt_attempted",
+        "three_pt_made",
+        "three_pt_attempted",
+        "ft_made",
+        "ft_attempted",
+        "plus_minus"
+    ];
+
+    const totals=Object.fromEntries(
+        totalKeys.map(key=>[key,0])
+    );
+
+    players.forEach(player=>{
+        const stats=playerStatsMap[player.id]||{};
+        totalKeys.forEach(key=>{
+            totals[key]+=Number(stats[key]||0);
+        });
+    });
+
+    totals.rebounds=
+        totals.offensive_rebounds+
+        totals.defensive_rebounds;
+
+    const items=[
+        ["PTS",totals.points,"primary"],
+        ["REB",totals.rebounds,"primary"],
+        ["OREB",totals.offensive_rebounds],
+        ["DREB",totals.defensive_rebounds],
+        ["AST",totals.assists,"primary"],
+        ["STL",totals.steals,"primary"],
+        ["BLK",totals.blocks],
+        ["TO",totals.turnovers],
+        ["PF",totals.fouls],
+        ["2PT",totals.two_pt_made+"/"+totals.two_pt_attempted],
+        ["3PT",totals.three_pt_made+"/"+totals.three_pt_attempted],
+        ["FT",totals.ft_made+"/"+totals.ft_attempted],
+        ["+/-",(totals.plus_minus>0?"+":"")+totals.plus_minus]
+    ];
+
+    const summary=document.createElement("div");
+    summary.className="live-team-totals";
+    summary.setAttribute("aria-label",team+" team totals");
+    summary.innerHTML=items.map(([label,value,kind])=>`
+        <div class="live-team-total-item ${kind||""}">
+            <span class="live-team-total-label">${label}</span>
+            <span class="live-team-total-value">${value}</span>
+        </div>
+    `).join("");
+
+    return summary;
+}
+
+
 async function renderTeamPlayers(team){
 
     const container=
@@ -9143,6 +9268,11 @@ async function renderTeamPlayers(team){
             row
         );
     }
+
+
+    container.appendChild(
+        renderLiveTeamTotals(team)
+    );
 
 
     updateSubstitutionButtons();
