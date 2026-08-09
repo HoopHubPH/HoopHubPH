@@ -823,7 +823,7 @@ button:disabled{
                         class="status-button finalize"
                         type="button"
                     >
-                        FINALIZE GAME
+                        SUBMIT FOR REVIEW
                     </button>
                 </div>
             </section>
@@ -832,7 +832,7 @@ button:disabled{
                 id="finalizedNotice"
                 class="finalized-notice"
             >
-                THIS GAME IS FINALIZED AND LOCKED.
+                THIS GAME IS LOCKED.
             </div>
         </div>
 
@@ -1000,7 +1000,8 @@ function isGameFinalized(){
         currentGame.finalized_at ||
         status === "final" ||
         status === "finalized" ||
-        status === "completed"
+        status === "completed" ||
+        status === "pending review"
     );
 }
 
@@ -1240,6 +1241,13 @@ function renderGameInformation(){
     const finalized =
         isGameFinalized();
 
+    const pendingReview =
+        normalizeStatus(currentGame.status) === "pending review";
+
+    finalizedNotice.textContent = pendingReview
+        ? "SUBMITTED FOR COMMISSIONER REVIEW."
+        : "THIS GAME IS FINALIZED AND LOCKED.";
+
     finalizedNotice.classList.toggle(
         "visible",
         finalized
@@ -1248,9 +1256,11 @@ function renderGameInformation(){
     document
         .getElementById("status-final")
         .textContent =
-            finalized
-                ? "GAME FINALIZED"
-                : "FINALIZE GAME";
+            pendingReview
+                ? "SUBMITTED FOR REVIEW"
+                : finalized
+                    ? "GAME FINALIZED"
+                    : "SUBMIT FOR REVIEW";
 
     updateClockDisplays();
     updateControlAvailability();
@@ -1845,14 +1855,14 @@ async function setGameStatus(status){
 }
 
 
-async function finalizeCurrentGame(){
+async function submitCurrentGameForReview(){
     if(!currentGame){
         return;
     }
 
     if(clockRunning){
         showStatus(
-            "Pause the game clock before finalizing.",
+            "Pause the game clock before submitting.",
             "warning"
         );
         return;
@@ -1860,7 +1870,7 @@ async function finalizeCurrentGame(){
 
     if(isGameFinalized()){
         showStatus(
-            "This game is already finalized.",
+            "This game is already finalized or submitted.",
             "warning"
         );
         return;
@@ -1878,7 +1888,7 @@ async function finalizeCurrentGame(){
 
     if(home === away){
         showStatus(
-            "A basketball game cannot be finalized while the score is tied.",
+            "A basketball game cannot be submitted while the score is tied.",
             "warning"
         );
         return;
@@ -1886,8 +1896,8 @@ async function finalizeCurrentGame(){
 
     const confirmed =
         window.confirm(
-            "Finalize this game?\n\n" +
-            "The score, player statistics and standings will be locked."
+            "Submit this game for Commissioner review?\n\n" +
+            "Scoring will be locked until it is finalized or returned for correction."
         );
 
     if(!confirmed){
@@ -1902,7 +1912,7 @@ async function finalizeCurrentGame(){
         );
 
     finalButton.textContent =
-        "FINALIZING...";
+        "SUBMITTING...";
 
     updateControlAvailability();
 
@@ -1911,7 +1921,7 @@ async function finalizeCurrentGame(){
 
         const { data, error } =
             await supabaseClient.rpc(
-                "finalize_basketball_game",
+                "submit_basketball_game",
                 {
                     p_game_id:
                         currentGame.id
@@ -1929,9 +1939,9 @@ async function finalizeCurrentGame(){
 
         currentGame = {
             ...currentGame,
-            status:"Final",
-            finalized_at:
-                result?.finalized_at ||
+            status:"Pending Review",
+            submitted_at:
+                result?.submitted_at ||
                 new Date().toISOString()
         };
 
@@ -1942,18 +1952,18 @@ async function finalizeCurrentGame(){
         renderGameInformation();
 
         showStatus(
-            result?.already_finalized
-                ? "This game was already finalized."
-                : "Game finalized. Standings and totals are locked.",
+            result?.already_submitted
+                ? "This game was already submitted."
+                : "Game submitted for Commissioner or Super Admin review.",
             "success"
         );
     }
     catch(error){
         finalButton.textContent =
-            "FINALIZE GAME";
+            "SUBMIT FOR REVIEW";
 
         showStatus(
-            "Unable to finalize game: " +
+            "Unable to submit game: " +
             (
                 error?.message ||
                 "Unknown error"
@@ -2245,7 +2255,7 @@ document
     .getElementById("status-final")
     .addEventListener(
         "click",
-        finalizeCurrentGame
+        submitCurrentGameForReview
     );
 
 loadGameButton.addEventListener(
