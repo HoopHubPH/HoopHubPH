@@ -6196,6 +6196,48 @@ body{
     }
 }
 </style>
+<style id="five-player-roster-window">
+/*
+   Show one table header and exactly five player rows per team.
+   Additional players remain available through the team's own scrollbar.
+*/
+.hybrid-team-stats .table-scroll.roster-view,
+.hybrid-team-stats .table-scroll.roster-view.expanded {
+    flex: 0 0 auto !important;
+    height: 306px !important;
+    min-height: 306px !important;
+    max-height: 306px !important;
+    overflow-y: scroll !important;
+}
+
+.hybrid-team-stats .player-table thead tr,
+.hybrid-team-stats .player-table thead th {
+    height: 36px !important;
+}
+
+.hybrid-team-stats .player-table tbody tr,
+.hybrid-team-stats .player-table tbody td {
+    height: 54px !important;
+    min-height: 54px !important;
+    max-height: 54px !important;
+}
+
+.hybrid-team-stats .player-table td.col-player .player-name {
+    display: block !important;
+    font-size: 17px !important;
+    line-height: 1.15 !important;
+    font-weight: 800 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+@media (max-width: 600px) {
+    .hybrid-team-stats .player-table td.col-player .player-name {
+        font-size: 16px !important;
+    }
+}
+</style>
 </head>
 
 <body class="auth-pending">
