@@ -6655,6 +6655,92 @@ body:-webkit-full-screen > .container {
     max-height: none !important;
 }
 </style>
+<style id="fullscreen-matches-normal-layout">
+/*
+   Fullscreen intentionally reuses the normal landscape scorekeeper layout:
+   scoreboard on top, Home/Away tables on the left, scoring controls on the right.
+   These rules do not affect the normal page.
+*/
+body:fullscreen,
+body:-webkit-full-screen {
+    width: 100vw !important;
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    background: #f5f5f5 !important;
+}
+
+body:fullscreen > .container,
+body:-webkit-full-screen > .container {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: calc(100dvh - 44px) !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+body:fullscreen .hybrid-scorekeeper,
+body:-webkit-full-screen .hybrid-scorekeeper {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(330px, .52fr) !important;
+    grid-template-rows: repeat(2, minmax(260px, 1fr)) !important;
+    grid-template-areas:
+        "home controls"
+        "away controls" !important;
+    width: 100% !important;
+    height: max(560px, calc(100dvh - 250px)) !important;
+    min-height: 560px !important;
+    max-height: none !important;
+    gap: 8px !important;
+    overflow: visible !important;
+}
+
+body:fullscreen .hybrid-scorekeeper > .hybrid-action-panel,
+body:-webkit-full-screen .hybrid-scorekeeper > .hybrid-action-panel {
+    grid-area: controls !important;
+    position: relative !important;
+    width: auto !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: auto !important;
+}
+
+body:fullscreen .hybrid-scorekeeper > .hybrid-team-stats:nth-of-type(2),
+body:-webkit-full-screen .hybrid-scorekeeper > .hybrid-team-stats:nth-of-type(2) {
+    grid-area: home !important;
+}
+
+body:fullscreen .hybrid-scorekeeper > .hybrid-team-stats:nth-of-type(3),
+body:-webkit-full-screen .hybrid-scorekeeper > .hybrid-team-stats:nth-of-type(3) {
+    grid-area: away !important;
+}
+
+body:fullscreen .hybrid-scorekeeper > .hybrid-team-stats,
+body:-webkit-full-screen .hybrid-scorekeeper > .hybrid-team-stats {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+body:fullscreen .hybrid-team-stats .table-scroll.roster-view,
+body:fullscreen .hybrid-team-stats .table-scroll.roster-view.expanded,
+body:-webkit-full-screen .hybrid-team-stats .table-scroll.roster-view,
+body:-webkit-full-screen .hybrid-team-stats .table-scroll.roster-view.expanded {
+    flex: 0 0 var(--hh-roster-window) !important;
+    width: 100% !important;
+    height: var(--hh-roster-window) !important;
+    min-height: var(--hh-roster-window) !important;
+    max-height: var(--hh-roster-window) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+</style>
 </head>
 
 <body class="auth-pending">
