@@ -17073,6 +17073,10 @@ async function printTeamStats(team){
         .querySelectorAll(".view-all-row")
         .forEach(row => row.remove());
 
+    tableWrap
+        .querySelectorAll(".live-team-totals")
+        .forEach(totalBlock => totalBlock.remove());
+
     /*
     Remove duplicate element IDs from the copy.
     */
