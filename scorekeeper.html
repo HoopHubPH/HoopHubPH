@@ -7080,7 +7080,7 @@ body:-webkit-full-screen {
 <style id="quarter-score-comparison-styles">
 /* Compact quarter scoring comparison shared by the live page and print reports. */
 .scoreboard {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 42fr) minmax(0, 38fr) minmax(150px, 20fr);
     align-items: stretch;
 }
 
@@ -7134,10 +7134,10 @@ body:-webkit-full-screen {
     grid-template-columns: minmax(110px, 1.8fr) repeat(5, minmax(46px, .62fr)) minmax(58px, .8fr);
     width: 100%;
     margin: 6px 0 8px;
-    border: 1px solid #2b2b2b;
+    border: 1px solid #e2e2e2;
     border-radius: 7px;
-    background: #111;
-    color: #fff;
+    background: #fff;
+    color: #222;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0,0,0,.12);
 }
@@ -7145,8 +7145,8 @@ body:-webkit-full-screen {
 .quarter-score-cell {
     min-width: 0;
     padding: 5px 6px;
-    border-right: 1px solid #343434;
-    border-bottom: 1px solid #343434;
+    border-right: 1px solid #e2e2e2;
+    border-bottom: 1px solid #e2e2e2;
     text-align: center;
     font-size: 11px;
     font-weight: 900;
@@ -7155,10 +7155,10 @@ body:-webkit-full-screen {
 
 .quarter-score-cell:nth-child(7n) { border-right: 0; }
 .quarter-score-cell:nth-last-child(-n+7) { border-bottom: 0; }
-.quarter-score-head { background: #202020; color: #bbb; font-size: 8px; letter-spacing: .45px; }
+.quarter-score-head { background: #111; color: #fff; font-size: 8px; letter-spacing: .45px; }
 .quarter-score-team { text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.quarter-score-total { background: #20150d; color: #ff7a1a; }
-.quarter-score-active { background: #d71920; color: #fff; }
+.quarter-score-total { background: #fff1e6; color: #ff6b00; }
+.quarter-score-active { background: #ff6b00; color: #fff; }
 
 .print-report .quarter-score-strip {
     margin: 10px 0 14px;
@@ -7174,7 +7174,7 @@ body:-webkit-full-screen {
 .print-report .quarter-score-active { background: #d71920; color: #fff; }
 
 @media (max-width: 700px) {
-    .scoreboard { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .scoreboard { grid-template-columns: minmax(0, 40fr) minmax(0, 40fr) minmax(120px, 20fr); }
     .live-quarter-score-panel { padding: 4px; }
     .scoreboard-team-scores .team-control { padding: 4px; gap: 4px; }
     .scoreboard-team-scores .team-control h2 { font-size: 10px; }
