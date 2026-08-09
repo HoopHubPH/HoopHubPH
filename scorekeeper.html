@@ -7077,6 +7077,68 @@ body:-webkit-full-screen {
     }
 }
 </style>
+<style id="quarter-score-comparison-styles">
+/* Compact quarter scoring comparison shared by the live page and print reports. */
+.quarter-score-strip {
+    display: grid;
+    grid-template-columns: minmax(110px, 1.8fr) repeat(5, minmax(46px, .62fr)) minmax(58px, .8fr);
+    width: 100%;
+    margin: 6px 0 8px;
+    border: 1px solid #2b2b2b;
+    border-radius: 7px;
+    background: #111;
+    color: #fff;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+
+.quarter-score-cell {
+    min-width: 0;
+    padding: 5px 6px;
+    border-right: 1px solid #343434;
+    border-bottom: 1px solid #343434;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 900;
+    line-height: 1.05;
+}
+
+.quarter-score-cell:nth-child(7n) { border-right: 0; }
+.quarter-score-cell:nth-last-child(-n+7) { border-bottom: 0; }
+.quarter-score-head { background: #202020; color: #bbb; font-size: 8px; letter-spacing: .45px; }
+.quarter-score-team { text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.quarter-score-total { background: #20150d; color: #ff7a1a; }
+.quarter-score-active { background: #d71920; color: #fff; }
+
+.print-report .quarter-score-strip {
+    margin: 10px 0 14px;
+    border-color: #ccc;
+    border-radius: 0;
+    background: #fff;
+    color: #111;
+    box-shadow: none;
+}
+.print-report .quarter-score-cell { border-color: #d8d8d8; }
+.print-report .quarter-score-head { background: #111; color: #fff; }
+.print-report .quarter-score-total { background: #fff3e9; color: #111; }
+.print-report .quarter-score-active { background: #d71920; color: #fff; }
+
+@media (max-width: 700px) {
+    .quarter-score-strip { grid-template-columns: minmax(78px, 1.45fr) repeat(5, minmax(34px, .65fr)) minmax(44px, .8fr); }
+    .quarter-score-cell { padding: 4px 2px; font-size: 9px; }
+    .quarter-score-head { font-size: 7px; }
+}
+
+@media print {
+    .quarter-score-strip,
+    .quarter-score-head,
+    .quarter-score-total,
+    .quarter-score-active {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+</style>
 </head>
 
 <body class="auth-pending">
@@ -7201,6 +7263,8 @@ LOG OUT
 </div>
 
 </div>
+
+<div id="liveQuarterScores" aria-label="Points by quarter"></div>
 
 <div class="hybrid-scorekeeper">
 
@@ -7870,6 +7934,10 @@ let teamIdMap={};
 let scoringBreakdownTotals={
     home:null,
     away:null
+};
+let quarterScoreTotals={
+    home:{q1:0,q2:0,q3:0,q4:0,ot:0},
+    away:{q1:0,q2:0,q3:0,q4:0,ot:0}
 };
 
 let clockSeconds=600;
@@ -12219,6 +12287,88 @@ function emptyBreakdownTotals(){
 }
 
 
+function emptyQuarterScoreTotals(){
+    return {q1:0,q2:0,q3:0,q4:0,ot:0};
+}
+
+
+function getQuarterScoreKey(period){
+    const normalized=String(period||"").trim().toLowerCase();
+
+    if(normalized==="1st quarter"||normalized==="1q") return "q1";
+    if(normalized==="2nd quarter"||normalized==="2q") return "q2";
+    if(normalized==="3rd quarter"||normalized==="3q") return "q3";
+    if(normalized==="4th quarter"||normalized==="4q") return "q4";
+    if(normalized==="overtime"||normalized==="ot"||normalized.startsWith("overtime ")||/^ot\d+$/.test(normalized)) return "ot";
+
+    return null;
+}
+
+
+function getQuarterScoreTotal(side){
+    return ["q1","q2","q3","q4","ot"].reduce(
+        (total,key)=>total+Number(side?.[key]||0),
+        0
+    );
+}
+
+
+function buildQuarterScoreStrip(homeName,awayName,home,away){
+    const periods=[
+        ["q1","Q1","1st Quarter"],
+        ["q2","Q2","2nd Quarter"],
+        ["q3","Q3","3rd Quarter"],
+        ["q4","Q4","4th Quarter"],
+        ["ot","OT","Overtime"]
+    ];
+    const activeKey=getQuarterScoreKey(currentGame?.period);
+    const strip=document.createElement("div");
+    strip.className="quarter-score-strip";
+
+    const cells=[
+        ["TEAM / PERIOD","quarter-score-head quarter-score-team"],
+        ...periods.map(([,label])=>[label,"quarter-score-head"]),
+        ["TOTAL","quarter-score-head quarter-score-total"],
+        [homeName,"quarter-score-team"],
+        ...periods.map(([key,,period])=>[
+            Number(home?.[key]||0),
+            activeKey===key?"quarter-score-active":"",
+            period
+        ]),
+        [getQuarterScoreTotal(home),"quarter-score-total"],
+        [awayName,"quarter-score-team"],
+        ...periods.map(([key,,period])=>[
+            Number(away?.[key]||0),
+            activeKey===key?"quarter-score-active":"",
+            period
+        ]),
+        [getQuarterScoreTotal(away),"quarter-score-total"]
+    ];
+
+    cells.forEach(([value,className,title])=>{
+        const cell=document.createElement("div");
+        cell.className="quarter-score-cell "+(className||"");
+        cell.textContent=String(value);
+        if(title) cell.title=title;
+        strip.appendChild(cell);
+    });
+
+    return strip;
+}
+
+
+function displayQuarterScores(home,away){
+    quarterScoreTotals={home,away};
+
+    const target=document.getElementById("liveQuarterScores");
+    if(!target) return;
+
+    const homeName=currentGame?.home_team||document.getElementById("homeTeam")?.textContent||"Home Team";
+    const awayName=currentGame?.away_team||document.getElementById("awayTeam")?.textContent||"Away Team";
+    target.replaceChildren(buildQuarterScoreStrip(homeName,awayName,home,away));
+}
+
+
 function displayScoringBreakdown(home,away){
 
     scoringBreakdownTotals={home,away};
@@ -12239,9 +12389,12 @@ async function loadScoringBreakdown(){
 
     const home=emptyBreakdownTotals();
     const away=emptyBreakdownTotals();
+    const homeQuarters=emptyQuarterScoreTotals();
+    const awayQuarters=emptyQuarterScoreTotals();
 
     if(!currentGame){
         displayScoringBreakdown(home,away);
+        displayQuarterScores(homeQuarters,awayQuarters);
         return;
     }
 
@@ -12252,7 +12405,7 @@ async function loadScoringBreakdown(){
     await supabaseClient
     .from("scoring_breakdown_events")
     .select(
-        "team_id,points,is_paint,is_fast_break,is_off_turnover,is_second_chance"
+        "team_id,points,period,is_paint,is_fast_break,is_off_turnover,is_second_chance"
     )
     .eq("game_id",currentGame.id);
 
@@ -12260,6 +12413,7 @@ async function loadScoringBreakdown(){
         console.error("Scoring breakdown load error:",error);
         showStatus("Unable to load the scoring breakdown.");
         displayScoringBreakdown(home,away);
+        displayQuarterScores(homeQuarters,awayQuarters);
         return;
     }
 
@@ -12277,6 +12431,17 @@ async function loadScoringBreakdown(){
         }
 
         const points=Number(event.points||0);
+        const quarterSide=
+            event.team_id===teamIdMap.home
+            ?homeQuarters
+            :event.team_id===teamIdMap.away
+            ?awayQuarters
+            :null;
+        const quarterKey=getQuarterScoreKey(event.period);
+
+        if(quarterSide&&quarterKey){
+            quarterSide[quarterKey]+=points;
+        }
 
         if(event.is_paint){
             side.paint+=points;
@@ -12296,6 +12461,7 @@ async function loadScoringBreakdown(){
     });
 
     displayScoringBreakdown(home,away);
+    displayQuarterScores(homeQuarters,awayQuarters);
 }
 
 
@@ -15845,6 +16011,11 @@ function setActivePeriod(period){
             "active"
         );
     }
+
+    displayQuarterScores(
+        quarterScoreTotals.home,
+        quarterScoreTotals.away
+    );
 }
 
 
@@ -16548,6 +16719,13 @@ async function printGameComparison(){
     const leadStats =
         await calculateGameLeadStatistics();
 
+    const quarterStripHTML = buildQuarterScoreStrip(
+        homeName,
+        awayName,
+        quarterScoreTotals.home,
+        quarterScoreTotals.away
+    ).outerHTML;
+
     const gameDateRaw =
         currentGame.game_date ||
         currentGame.date ||
@@ -16644,6 +16822,12 @@ async function printGameComparison(){
                 <div class="comparison-score-number">${awayScore}</div>
             </div>
         </div>
+
+        <div class="comparison-report-title">
+            POINTS BY QUARTER
+        </div>
+
+        ${quarterStripHTML}
 
         <div class="comparison-report-title">
             TEAM STATISTICS COMPARISON
@@ -16946,6 +17130,13 @@ async function printTeamStats(team){
         scoringBreakdownTotals[team] ||
         emptyBreakdownTotals();
 
+    const quarterStrip = buildQuarterScoreStrip(
+        homeName,
+        awayName,
+        quarterScoreTotals.home,
+        quarterScoreTotals.away
+    );
+
     /*
     Create the official print report.
     */
@@ -17171,6 +17362,7 @@ async function printTeamStats(team){
     */
 
     report.appendChild(header);
+    report.appendChild(quarterStrip);
     report.appendChild(banner);
     report.appendChild(tableWrap);
     report.appendChild(summaries);
