@@ -6198,28 +6198,51 @@ body{
 </style>
 <style id="five-player-roster-window">
 /*
-   Show one table header and exactly five player rows per team.
+   Show one table header and exactly five LARGE player rows per team.
    Additional players remain available through the team's own scrollbar.
 */
+:root {
+    --roster-header-height: 38px;
+    --roster-player-row-height: 68px;
+    --roster-five-row-height: 378px;
+}
+
 .hybrid-team-stats .table-scroll.roster-view,
 .hybrid-team-stats .table-scroll.roster-view.expanded {
     flex: 0 0 auto !important;
-    height: 306px !important;
-    min-height: 306px !important;
-    max-height: 306px !important;
+    height: var(--roster-five-row-height) !important;
+    min-height: var(--roster-five-row-height) !important;
+    max-height: var(--roster-five-row-height) !important;
     overflow-y: scroll !important;
 }
 
 .hybrid-team-stats .player-table thead tr,
 .hybrid-team-stats .player-table thead th {
-    height: 36px !important;
+    height: var(--roster-header-height) !important;
+    min-height: var(--roster-header-height) !important;
+    max-height: var(--roster-header-height) !important;
 }
 
 .hybrid-team-stats .player-table tbody tr,
 .hybrid-team-stats .player-table tbody td {
-    height: 54px !important;
-    min-height: 54px !important;
-    max-height: 54px !important;
+    height: var(--roster-player-row-height) !important;
+    min-height: var(--roster-player-row-height) !important;
+    max-height: var(--roster-player-row-height) !important;
+}
+
+.hybrid-team-stats .player-table tbody td {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    vertical-align: middle !important;
+}
+
+.hybrid-team-stats .player-table td.col-player {
+    min-width: 230px !important;
+}
+
+.hybrid-team-stats .player-table td.col-player .player-identity-row {
+    min-height: 50px !important;
+    align-items: center !important;
 }
 
 .hybrid-team-stats .player-table td.col-player .player-name {
@@ -6230,6 +6253,12 @@ body{
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
+}
+
+.hybrid-team-stats .player-table td.col-player .sub-button {
+    min-height: 40px !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
 }
 
 @media (max-width: 600px) {
