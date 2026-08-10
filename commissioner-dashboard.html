@@ -652,8 +652,8 @@
       <a class="nav-link" href="#modules"><span class="nav-icon">ST</span> Standings <span class="coming">Next</span></a>
 
       <p class="nav-label">Game Control</p>
-      <a class="nav-link" href="#modules"><span class="nav-icon">SK</span> Scorekeepers <span class="coming">Next</span></a>
-      <a class="nav-link" href="#modules"><span class="nav-icon">RV</span> Game Review <span class="coming">Next</span></a>
+      <a class="nav-link" href="#schedulePanel"><span class="nav-icon">SK</span> Scorekeepers</a>
+<a class="nav-link" href="#gameReviewPanel"><span class="nav-icon">RV</span> Game Review</a>
       <a class="nav-link" href="#modules"><span class="nav-icon">RP</span> Reports <span class="coming">Next</span></a>
       <a id="superAdminLink" class="nav-link" href="super-admin.html" hidden><span class="nav-icon">SA</span> Super Admin</a>
     </aside>
@@ -1347,7 +1347,23 @@
 
         const { data: newGames, error: reloadError } = await supabaseClient
           .from("games")
-          .select("id, league_id, home_team_id, away_team_id, home_team, away_team, scheduled_at, venue, status, created_at")
+          .select(`
+  id,
+  league_id,
+  home_team_id,
+  away_team_id,
+  home_team,
+  away_team,
+  home_score,
+  away_score,
+  scheduled_at,
+  venue,
+  status,
+  submitted_at,
+  submitted_by,
+  finalized_at,
+  created_at
+`)
           .eq("league_id", leagueId)
           .order("scheduled_at", { ascending: true, nullsFirst: false });
         if (reloadError) throw reloadError;
