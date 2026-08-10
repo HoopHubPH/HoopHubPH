@@ -101,6 +101,54 @@ nav a:hover {
     color: #666;
 }
 
+.competition-filter {
+    max-width: 1000px;
+    margin: 0 auto 35px;
+    padding: 22px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.filter-field label {
+    display: block;
+    margin-bottom: 8px;
+    color: #444;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+}
+
+.filter-field select {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    color: #222;
+    padding: 0 12px;
+    font: inherit;
+}
+
+.filter-field select:focus {
+    border-color: #ff6b00;
+    outline: 2px solid rgba(255,107,0,.16);
+}
+
+.teams-state {
+    grid-column: 1 / -1;
+    padding: 35px 20px;
+    border: 1px dashed #ccc;
+    border-radius: 10px;
+    background: white;
+    color: #666;
+    text-align: center;
+}
+
 /* TEAM CARDS */
 
 .teams {
@@ -115,6 +163,9 @@ nav a:hover {
     border-radius: 10px;
     box-shadow: 0 5px 20px rgba(0,0,0,0.08);
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .team-logo {
@@ -158,6 +209,18 @@ nav a:hover {
     border-radius: 5px;
     text-decoration: none;
     font-weight: bold;
+    margin-top: auto;
+}
+
+.view-button:hover { background: #df5e00; }
+
+.team-image {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    background: #f5f5f5;
 }
 
 /* ORGANIZER CTA */
@@ -218,6 +281,10 @@ footer p {
     .hero h1 {
         font-size: 35px;
     }
+
+    .section { padding: 45px 20px; }
+
+    .competition-filter { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -250,12 +317,27 @@ footer p {
 
 <section class="section">
     <div class="section-title">
-        <h2>FEATURED TEAMS</h2>
-        <p>Discover teams competing in Philippine basketball.</p>
+        <h2>COMPETING TEAMS</h2>
+        <p>Select a league, season, and division to browse its approved teams.</p>
+    </div>
+
+    <div class="competition-filter" aria-label="Team competition filters">
+        <div class="filter-field">
+            <label for="leagueSelect">League</label>
+            <select id="leagueSelect"><option value="">Loading leagues...</option></select>
+        </div>
+        <div class="filter-field">
+            <label for="seasonSelect">Season</label>
+            <select id="seasonSelect" disabled><option value="">Select a league first</option></select>
+        </div>
+        <div class="filter-field">
+            <label for="divisionSelect">Division</label>
+            <select id="divisionSelect" disabled><option value="">Select a season first</option></select>
+        </div>
     </div>
 
     <div class="teams" id="teamsContainer">
-        <p>Loading teams...</p>
+        <p class="teams-state">Choose a league, season, and division to view teams.</p>
     </div>
 </section>
 
@@ -288,71 +370,215 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_KEY
 );
 
-async function loadTeams() {
+const leagueSelect = document.getElementById("leagueSelect");
+const seasonSelect = document.getElementById("seasonSelect");
+const divisionSelect = document.getElementById("divisionSelect");
+const teamsContainer = document.getElementById("teamsContainer");
+let seasons = [];
+let divisions = [];
+let teamsRequest = 0;
+
+function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>'"]/g, character => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
+    })[character]);
+}
+
+function setState(message) {
+    teamsContainer.innerHTML = `<p class="teams-state">${escapeHtml(message)}</p>`;
+}
+
+function optionList(rows, placeholder) {
+    return `<option value="">${escapeHtml(placeholder)}</option>` + rows.map(row =>
+        `<option value="${escapeHtml(row.id)}">${escapeHtml(row.name)}</option>`
+    ).join("");
+}
+
+async function loadCompetitionFilters() {
+    setState("Loading competition teams...");
+    const { data: leagues, error: leagueError } = await supabaseClient
+        .from("leagues")
+        .select("id,name,status,created_at")
+        .order("name");
+
+    if (leagueError) {
+        console.error("Error loading leagues:", leagueError);
+        leagueSelect.innerHTML = '<option value="">Unable to load leagues</option>';
+        setState("Unable to load leagues right now.");
+        return;
+    }
+
+    const visibleLeagues = (leagues || []).filter(league =>
+        !["suspended", "deleted"].includes(String(league.status || "").toLowerCase())
+    );
+    leagueSelect.innerHTML = visibleLeagues.length
+        ? optionList(visibleLeagues, "Select a league")
+        : '<option value="">No leagues available</option>';
+
+    if (!visibleLeagues.length) {
+        setState("No leagues are available yet.");
+        return;
+    }
+
+    leagueSelect.value = visibleLeagues[0].id;
+    await loadSeasons();
+}
+
+async function loadSeasons() {
+    const leagueId = leagueSelect.value;
+    seasonSelect.disabled = true;
+    divisionSelect.disabled = true;
+    divisionSelect.innerHTML = '<option value="">Select a season first</option>';
+    setState(leagueId ? "Loading seasons..." : "Select a league to continue.");
+
+    if (!leagueId) {
+        seasonSelect.innerHTML = '<option value="">Select a league first</option>';
+        return;
+    }
+
     const { data, error } = await supabaseClient
-        .from("teams")
-        .select("*")
-        .order("id", { ascending: true });
+        .from("seasons")
+        .select("id,league_id,name,status,start_date,created_at")
+        .eq("league_id", leagueId)
+        .order("start_date", { ascending: false, nullsFirst: false })
+        .order("created_at", { ascending: false });
 
     if (error) {
-        console.error("Error loading teams:", error);
-        document.getElementById("teamsContainer").innerHTML = `
-            <p>Unable to load teams.</p>
-        `;
+        console.error("Error loading seasons:", error);
+        seasonSelect.innerHTML = '<option value="">Unable to load seasons</option>';
+        setState("Unable to load seasons for this league.");
         return;
     }
 
-    const container = document.getElementById("teamsContainer");
-    container.innerHTML = "";
+    seasons = (data || []).filter(season =>
+        !["cancelled", "deleted"].includes(String(season.status || "").toLowerCase())
+    );
+    seasonSelect.innerHTML = seasons.length
+        ? optionList(seasons, "Select a season")
+        : '<option value="">No seasons available</option>';
+    seasonSelect.disabled = !seasons.length;
 
-    if (!data || data.length === 0) {
-        container.innerHTML = `<p>No teams registered yet.</p>`;
+    if (!seasons.length) {
+        setState("This league has no seasons yet.");
         return;
     }
 
-    data.forEach(team => {
-        const card = document.createElement("div");
+    seasonSelect.value = seasons[0].id;
+    await loadDivisions();
+}
+
+async function loadDivisions() {
+    const seasonId = seasonSelect.value;
+    divisionSelect.disabled = true;
+    setState(seasonId ? "Loading divisions..." : "Select a season to continue.");
+
+    if (!seasonId) {
+        divisionSelect.innerHTML = '<option value="">Select a season first</option>';
+        return;
+    }
+
+    const { data, error } = await supabaseClient
+        .from("divisions")
+        .select("id,season_id,name,status,category,classification")
+        .eq("season_id", seasonId)
+        .order("name");
+
+    if (error) {
+        console.error("Error loading divisions:", error);
+        divisionSelect.innerHTML = '<option value="">Unable to load divisions</option>';
+        setState("Unable to load divisions for this season.");
+        return;
+    }
+
+    divisions = (data || []).filter(division =>
+        !["cancelled", "deleted"].includes(String(division.status || "").toLowerCase())
+    );
+    divisionSelect.innerHTML = divisions.length
+        ? optionList(divisions, "Select a division")
+        : '<option value="">No divisions available</option>';
+    divisionSelect.disabled = !divisions.length;
+
+    if (!divisions.length) {
+        setState("This season has no divisions yet.");
+        return;
+    }
+
+    divisionSelect.value = divisions[0].id;
+    await loadTeams();
+}
+
+async function loadTeams() {
+    const requestId = ++teamsRequest;
+    const leagueId = leagueSelect.value;
+    const seasonId = seasonSelect.value;
+    const divisionId = divisionSelect.value;
+
+    if (!leagueId || !seasonId || !divisionId) {
+        setState("Select a league, season, and division to view teams.");
+        return;
+    }
+
+    setState("Loading approved teams...");
+    const { data: registrations, error: registrationError } = await supabaseClient
+        .from("league_teams")
+        .select("team_id,registration_status")
+        .eq("league_id", leagueId)
+        .eq("season_id", seasonId)
+        .eq("division_id", divisionId)
+        .ilike("registration_status", "approved");
+
+    if (requestId !== teamsRequest) return;
+    if (registrationError) {
+        console.error("Error loading team assignments:", registrationError);
+        setState("Unable to load teams for this division.");
+        return;
+    }
+
+    const teamIds = [...new Set((registrations || []).map(row => row.team_id).filter(Boolean))];
+    if (!teamIds.length) {
+        setState("No approved teams are assigned to this division yet.");
+        return;
+    }
+
+    const { data: teams, error: teamError } = await supabaseClient
+        .from("teams")
+        .select("id,name,location,logo_url")
+        .in("id", teamIds)
+        .order("name");
+
+    if (requestId !== teamsRequest) return;
+    if (teamError) {
+        console.error("Error loading teams:", teamError);
+        setState("Unable to load team details.");
+        return;
+    }
+
+    teamsContainer.innerHTML = "";
+    (teams || []).forEach(team => {
+        const card = document.createElement("article");
         card.className = "team-card";
-
-        let logoHTML;
-
-        if (team.logo_url) {
-            logoHTML = `
-                <img
-                    src="${team.logo_url}"
-                    alt="${team.name}"
-                    style="
-                        width:90px;
-                        height:90px;
-                        object-fit:contain;
-                        border-radius:50%;
-                        margin-bottom:20px;
-                    "
-                >
-            `;
-        } else {
-            logoHTML = `<div class="team-logo">🏀</div>`;
-        }
+        const logoUrl = /^https?:\/\//i.test(String(team.logo_url || "")) ? team.logo_url : "";
+        const logoHTML = logoUrl
+            ? `<img class="team-image" src="${escapeHtml(logoUrl)}" alt="${escapeHtml(team.name)} logo" loading="lazy">`
+            : '<div class="team-logo" aria-hidden="true">🏀</div>';
 
         card.innerHTML = `
             ${logoHTML}
-            <h3>${team.name}</h3>
-            <p>Basketball team registered on Hoop Hub PH.</p>
-            <div class="team-info">
-                <strong>📍 Location:</strong>
-                ${team.location || "Not provided"}
-                <br>
-                <strong>🆔 Team ID:</strong>
-                ${team.id}
-            </div>
-            <a href="team1.html?id=${encodeURIComponent(team.id)}" class="view-button">VIEW TEAM</a>
+            <h3>${escapeHtml(team.name || "Unnamed Team")}</h3>
+            <p>View this team's public roster, players, and profile.</p>
+            <div class="team-info"><strong>📍 Location:</strong> ${escapeHtml(team.location || "Not provided")}</div>
+            <a href="team1.html?id=${encodeURIComponent(team.id)}&league_id=${encodeURIComponent(leagueId)}&season_id=${encodeURIComponent(seasonId)}&division_id=${encodeURIComponent(divisionId)}" class="view-button">VIEW ROSTER</a>
         `;
-
-        container.appendChild(card);
+        teamsContainer.appendChild(card);
     });
+
+    if (!(teams || []).length) setState("No team profiles were found for this division.");
 }
 
-loadTeams();
+leagueSelect.addEventListener("change", loadSeasons);
+seasonSelect.addEventListener("change", loadDivisions);
+divisionSelect.addEventListener("change", loadTeams);
+loadCompetitionFilters();
 </script>
 
 </body>
