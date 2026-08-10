@@ -54,6 +54,11 @@
     .game-meta{margin-top:17px;padding-top:13px;border-top:1px solid #e5e7eb;color:#68707d;font-size:11px;line-height:1.6}
     .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;margin-bottom:20px}
     .section-head h2{margin:0}.section-head span{color:#68707d;font-size:11px}
+    .competition-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:24px}
+    .filter-field label{display:block;margin-bottom:7px;color:#555;font-size:12px;font-weight:bold;text-transform:uppercase}
+    .filter-field select{width:100%;padding:13px 14px;border:1px solid #d8dce2;border-radius:7px;background:#fff;color:#222;font:inherit}
+    .filter-field select:focus{outline:2px solid rgba(255,107,0,.2);border-color:#ff6b00}
+    .competition-note{margin:-10px 0 22px;color:#68707d;font-size:12px}
     footer{background:#111;color:#fff;text-align:center;padding:30px;margin-top:50px}
     footer p{color:#aaa;margin-top:10px}
     @media(max-width:768px){
@@ -63,6 +68,7 @@
       .hero{padding:52px 20px}.hero h1{font-size:32px}
       .container{margin:32px auto}.info-card{padding:24px 18px}
       .games-grid{grid-template-columns:1fr}
+      .competition-filters{grid-template-columns:1fr}
       .matchup{gap:8px}.matchup-team{font-size:13px}.final-score{font-size:22px}
     }
   </style>
@@ -97,7 +103,16 @@
     </section>
 
     <section class="info-card">
-      <h2>League Standings</h2>
+      <div class="section-head"><h2>Competition</h2><span>Choose a season and division</span></div>
+      <div class="competition-filters">
+        <div class="filter-field"><label for="publicSeason">Season</label><select id="publicSeason"><option value="">Loading seasons...</option></select></div>
+        <div class="filter-field"><label for="publicDivision">Division</label><select id="publicDivision" disabled><option value="">Choose a season first</option></select></div>
+      </div>
+      <p id="competitionNote" class="competition-note">The latest available competition will be selected automatically.</p>
+    </section>
+
+    <section class="info-card">
+      <h2>Division Standings</h2>
       <div class="table-wrap">
         <div id="standingsState" class="state-message">Loading standings...</div>
         <table id="standingsTable" class="standings-table" hidden>
@@ -193,33 +208,74 @@
         text("leagueDescription",data.description||"League information and updates will be displayed here.");
       }
 
-      async function loadStandings(){
+      let seasons=[];
+      let divisions=[];
+      let competitionRequest=0;
+
+      async function loadCompetitionOptions(){
+        const [{data:seasonRows,error:seasonError},{data:divisionRows,error:divisionError}]=await Promise.all([
+          db.from("seasons").select("id,league_id,name,status,start_date,end_date").eq("league_id",leagueId).order("start_date",{ascending:false,nullsFirst:false}),
+          db.from("divisions").select("id,season_id,name,category,classification,status").order("name")
+        ]);
+        if(seasonError) throw seasonError;
+        if(divisionError) throw divisionError;
+        seasons=seasonRows||[];
+        const seasonIds=new Set(seasons.map(row=>row.id));
+        divisions=(divisionRows||[]).filter(row=>seasonIds.has(row.season_id));
+
+        const seasonSelect=document.getElementById("publicSeason");
+        seasonSelect.innerHTML=seasons.length
+          ?seasons.map(row=>`<option value="${escapeHtml(row.id)}">${escapeHtml(row.name)}${row.status?` · ${escapeHtml(row.status)}`:""}</option>`).join("")
+          :'<option value="">No seasons available</option>';
+        seasonSelect.disabled=!seasons.length;
+        updateDivisionOptions();
+      }
+
+      function updateDivisionOptions(preferredId=""){
+        const seasonId=document.getElementById("publicSeason").value;
+        const divisionSelect=document.getElementById("publicDivision");
+        const available=divisions.filter(row=>row.season_id===seasonId);
+        divisionSelect.innerHTML=available.length
+          ?available.map(row=>`<option value="${escapeHtml(row.id)}">${escapeHtml(row.name)}</option>`).join("")
+          :'<option value="">No divisions available</option>';
+        divisionSelect.disabled=!available.length;
+        if(preferredId&&available.some(row=>row.id===preferredId)) divisionSelect.value=preferredId;
+        loadSelectedCompetition();
+      }
+
+      async function loadStandings(seasonId,divisionId,requestId){
         const state=document.getElementById("standingsState");
         const table=document.getElementById("standingsTable");
         const body=document.getElementById("standingsBody");
-
-        const {data:rows,error}=await db
-          .from("team_standings")
-          .select("*")
-          .eq("league_id",leagueId)
-          .order("win_percentage",{ascending:false})
-          .order("point_difference",{ascending:false})
-          .order("points_for",{ascending:false});
-
-        if(error) throw error;
-        if(!rows||!rows.length){
-          state.textContent="No finalized games yet. Standings will appear after the first game is finalized.";
-          return;
-        }
-
-        const teamIds=[...new Set(rows.map(row=>row.team_id))];
+        state.hidden=false; state.classList.remove("error"); state.textContent="Loading standings..."; table.hidden=true;
+        const [{data:assignments,error:assignmentError},{data:games,error:gamesError}]=await Promise.all([
+          db.from("league_teams").select("team_id,registration_status").eq("league_id",leagueId).eq("season_id",seasonId).eq("division_id",divisionId),
+          db.from("games").select("home_team_id,away_team_id,home_score,away_score,status,finalized_at").eq("league_id",leagueId).eq("season_id",seasonId).eq("division_id",divisionId).eq("status","final").not("finalized_at","is",null)
+        ]);
+        if(assignmentError) throw assignmentError;
+        if(gamesError) throw gamesError;
+        if(requestId!==competitionRequest) return;
+        const teamIds=(assignments||[]).filter(row=>String(row.registration_status||"").toLowerCase()==="approved").map(row=>row.team_id);
+        if(!teamIds.length){state.textContent="No approved teams are assigned to this division yet.";return;}
         const {data:teams,error:teamsError}=await db
           .from("teams")
           .select("id,name,logo_url")
           .in("id",teamIds);
         if(teamsError) throw teamsError;
+        if(requestId!==competitionRequest) return;
 
         const teamsById=new Map((teams||[]).map(team=>[team.id,team]));
+        const rows=teamIds.map(team_id=>({team_id,games_played:0,wins:0,losses:0,points_for:0,points_against:0,point_difference:0,win_percentage:0}));
+        const rowsByTeam=new Map(rows.map(row=>[row.team_id,row]));
+        for(const game of games||[]){
+          const home=rowsByTeam.get(game.home_team_id), away=rowsByTeam.get(game.away_team_id);
+          if(!home||!away) continue;
+          const hs=Number(game.home_score||0),as=Number(game.away_score||0);
+          home.games_played++;away.games_played++;home.points_for+=hs;home.points_against+=as;away.points_for+=as;away.points_against+=hs;
+          if(hs>as){home.wins++;away.losses++;}else if(as>hs){away.wins++;home.losses++;}
+        }
+        rows.forEach(row=>{row.point_difference=row.points_for-row.points_against;row.win_percentage=row.games_played?row.wins/row.games_played:0;});
+        rows.sort((a,b)=>b.win_percentage-a.win_percentage||b.wins-a.wins||b.point_difference-a.point_difference||b.points_for-a.points_for||String(a.team_id).localeCompare(String(b.team_id)));
         body.innerHTML=rows.map((row,index)=>{
           const team=teamsById.get(row.team_id)||{};
           const difference=Number(row.point_difference||0);
@@ -279,15 +335,18 @@
         </article>`;
       }
 
-      async function loadScheduleAndResults(){
+      async function loadScheduleAndResults(seasonId,divisionId,requestId){
         const upcomingContainer=document.getElementById("upcomingGames");
         const resultsContainer=document.getElementById("gameResults");
         const {data:games,error}=await db
           .from("games")
-          .select("id,league_id,home_team,away_team,home_score,away_score,status,scheduled_at,finalized_at,venue,created_at")
+          .select("id,league_id,season_id,division_id,home_team,away_team,home_score,away_score,status,scheduled_at,finalized_at,venue,created_at")
           .eq("league_id",leagueId)
+          .eq("season_id",seasonId)
+          .eq("division_id",divisionId)
           .order("scheduled_at",{ascending:true,nullsFirst:false});
         if(error) throw error;
+        if(requestId!==competitionRequest) return;
 
         const upcoming=(games||[]).filter(game=>!["final","cancelled"].includes(String(game.status||"").toLowerCase()));
         const results=(games||[])
@@ -302,9 +361,34 @@
           :'<div class="state-message">No finalized game results yet.</div>';
       }
 
+      async function loadSelectedCompetition(){
+        const seasonId=document.getElementById("publicSeason").value;
+        const divisionId=document.getElementById("publicDivision").value;
+        const requestId=++competitionRequest;
+        if(!seasonId||!divisionId){
+          document.getElementById("standingsState").hidden=false;
+          document.getElementById("standingsState").textContent="Choose an available season and division.";
+          document.getElementById("standingsTable").hidden=true;
+          document.getElementById("upcomingGames").innerHTML='<div class="state-message">Choose a division to view upcoming games.</div>';
+          document.getElementById("gameResults").innerHTML='<div class="state-message">Choose a division to view results.</div>';
+          return;
+        }
+        const season=seasons.find(row=>row.id===seasonId),division=divisions.find(row=>row.id===divisionId);
+        document.getElementById("competitionNote").textContent=`Showing ${season?.name||"selected season"} · ${division?.name||"selected division"}`;
+        try{await Promise.all([loadStandings(seasonId,divisionId,requestId),loadScheduleAndResults(seasonId,divisionId,requestId)]);}
+        catch(error){
+          if(requestId!==competitionRequest) return;
+          console.error("Competition view error:",error);
+          const state=document.getElementById("standingsState");state.hidden=false;state.classList.add("error");state.textContent="Unable to load this division: "+(error.message||"Unknown error");
+          document.getElementById("upcomingGames").innerHTML='<div class="state-message error">Unable to load upcoming games.</div>';
+          document.getElementById("gameResults").innerHTML='<div class="state-message error">Unable to load game results.</div>';
+        }
+      }
+
       async function initialize(){
         try{
-          await Promise.all([loadLeague(),loadStandings(),loadScheduleAndResults()]);
+          await loadLeague();
+          await loadCompetitionOptions();
         }catch(error){
           console.error("League page error:",error);
           const state=document.getElementById("standingsState");
@@ -316,6 +400,8 @@
         }
       }
 
+      document.getElementById("publicSeason").addEventListener("change",()=>updateDivisionOptions());
+      document.getElementById("publicDivision").addEventListener("change",loadSelectedCompetition);
       initialize();
     })();
   </script>
