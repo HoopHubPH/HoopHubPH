@@ -250,8 +250,7 @@
         state.hidden=false; state.classList.remove("error"); state.textContent="Loading standings..."; table.hidden=true;
         const [{data:assignments,error:assignmentError},{data:games,error:gamesError}]=await Promise.all([
           db.from("league_teams").select("team_id,registration_status").eq("league_id",leagueId).eq("season_id",seasonId).eq("division_id",divisionId),
-          db.from("games").select("home_team_id,away_team_id,home_score,away_score,status,finalized_at").eq("league_id",leagueId).eq("season_id",seasonId).eq("division_id",divisionId).eq("status","final").not("finalized_at","is",null)
-        ]);
+          db.from("games").select("home_team_id,away_team_id,home_score,away_score,status,finalized_at").eq("league_id",leagueId).eq("season_id",seasonId).eq("division_id",divisionId).ilike("status","final")
         if(assignmentError) throw assignmentError;
         if(gamesError) throw gamesError;
         if(requestId!==competitionRequest) return;
