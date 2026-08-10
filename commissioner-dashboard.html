@@ -425,6 +425,38 @@
       border-bottom: 1px solid var(--line);
     }
 
+    .standings-toolbar {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(180px, 1fr)) auto;
+      gap: 14px;
+      align-items: end;
+      background: #fafafa;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .standings-rank {
+      display: inline-flex;
+      width: 27px;
+      height: 27px;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      background: var(--ink);
+      border-radius: 7px;
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .standings-team {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stat-positive { color: #067647; font-weight: 850; }
+    .stat-negative { color: #b42318; font-weight: 850; }
+
     .form-group {
       display: flex;
       flex-direction: column;
@@ -684,6 +716,7 @@
       .league-details,
       .module-grid,
       .schedule-form,
+      .standings-toolbar,
       .season-layout,
       .team-assignment-grid {
         grid-template-columns: 1fr;
@@ -730,7 +763,7 @@
       <a class="nav-link" href="#teamsPanel"><span class="nav-icon">TM</span> Teams</a>
       <a class="nav-link" href="#rosterApprovalPanel"><span class="nav-icon">RA</span> Roster Approval</a>
       <a class="nav-link" href="#schedulePanel"><span class="nav-icon">SC</span> Schedule</a>
-      <a class="nav-link" href="#modules"><span class="nav-icon">ST</span> Standings <span class="coming">Next</span></a>
+      <a class="nav-link" href="#standingsPanel"><span class="nav-icon">ST</span> Standings</a>
 
       <p class="nav-label">Game Control</p>
       <a class="nav-link" href="#schedulePanel"><span class="nav-icon">SK</span> Scorekeepers</a>
@@ -956,6 +989,49 @@
           </div>
         </section>
 
+        <section id="standingsPanel" class="panel">
+          <header class="panel-header">
+            <div>
+              <h2>Division Standings</h2>
+              <p>Rankings calculated automatically from finalized games in the selected season and division.</p>
+            </div>
+            <button id="refreshStandingsButton" class="secondary-button" type="button">REFRESH</button>
+          </header>
+
+          <div class="standings-toolbar">
+            <div class="form-group">
+              <label for="standingsSeasonSelect">Season</label>
+              <select id="standingsSeasonSelect" class="form-input"></select>
+            </div>
+            <div class="form-group">
+              <label for="standingsDivisionSelect">Division</label>
+              <select id="standingsDivisionSelect" class="form-input"></select>
+            </div>
+            <div id="standingsMessage" class="form-message" aria-live="polite"></div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Team</th>
+                  <th>GP</th>
+                  <th>W</th>
+                  <th>L</th>
+                  <th>PF</th>
+                  <th>PA</th>
+                  <th>+/-</th>
+                  <th>Win %</th>
+                </tr>
+              </thead>
+              <tbody id="standingsTableBody">
+                <tr><td class="empty-state" colspan="9">Select a season and division to view standings.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
         <section id="modules" class="panel">
           <header class="panel-header">
             <div>
@@ -968,7 +1044,6 @@
             <article class="module-card"><strong>Team & Roster Approval</strong><span>Review team registrations, coaches, and submitted player rosters.</span></article>
             <article class="module-card"><strong>Game Scheduling</strong><span>Schedule matchups and assign scorekeepers to games.</span></article>
             <article class="module-card"><strong>Game Review</strong><span>Review submitted box scores, corrections, fouls, and suspensions.</span></article>
-            <article class="module-card"><strong>Standings</strong><span>Publish finalized results and calculate league standings.</span></article>
             <article class="module-card"><strong>Reports</strong><span>Generate league, team, game, and player reports.</span></article>
           </div>
         </section>
@@ -997,6 +1072,7 @@
     let divisions = [];
     let editingSeasonId = null;
     let editingDivisionId = null;
+    let standingsLoadToken = 0;
 
     const authScreen = document.getElementById("authScreen");
     const appShell = document.getElementById("appShell");
@@ -1212,6 +1288,7 @@
         renderScheduling(null, []);
         renderGameReviewQueue(null);
         renderSeasonWorkspace(null, []);
+        renderStandingsFilters(null);
         return;
       }
 
@@ -1252,6 +1329,7 @@
       renderScheduling(league, approved);
       renderGameReviewQueue(league);
       renderSeasonWorkspace(league, approved);
+      renderStandingsFilters(league);
       loadRosterReviews(league.id);
     }
 
@@ -1306,6 +1384,118 @@
       document.getElementById("assignmentDivisionSelect").innerHTML = matches.length
         ? '<option value="">Select a division</option>' + matches.map(item => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`).join("")
         : '<option value="">No available divisions</option>';
+    }
+
+    function renderStandingsFilters(league) {
+      const seasonSelect = document.getElementById("standingsSeasonSelect");
+      const previousSeasonId = seasonSelect.value;
+      const leagueSeasons = league
+        ? seasons.filter(item => item.league_id === league.id)
+        : [];
+
+      seasonSelect.innerHTML = leagueSeasons.length
+        ? '<option value="">Select a season</option>' + leagueSeasons.map(item =>
+            `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`
+          ).join("")
+        : '<option value="">No seasons available</option>';
+
+      if (leagueSeasons.some(item => item.id === previousSeasonId)) {
+        seasonSelect.value = previousSeasonId;
+      } else if (leagueSeasons.length === 1) {
+        seasonSelect.value = leagueSeasons[0].id;
+      }
+
+      seasonSelect.disabled = !leagueSeasons.length;
+      renderStandingsDivisions(false);
+    }
+
+    function renderStandingsDivisions(preserveSelection = true) {
+      const seasonId = document.getElementById("standingsSeasonSelect").value;
+      const divisionSelect = document.getElementById("standingsDivisionSelect");
+      const previousDivisionId = preserveSelection ? divisionSelect.value : "";
+      const seasonDivisions = seasonId
+        ? divisions.filter(item => item.season_id === seasonId)
+        : [];
+
+      divisionSelect.innerHTML = seasonId
+        ? (seasonDivisions.length
+            ? '<option value="">Select a division</option>' + seasonDivisions.map(item =>
+                `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`
+              ).join("")
+            : '<option value="">No divisions available</option>')
+        : '<option value="">Select a season first</option>';
+
+      if (seasonDivisions.some(item => item.id === previousDivisionId)) {
+        divisionSelect.value = previousDivisionId;
+      } else if (seasonDivisions.length === 1) {
+        divisionSelect.value = seasonDivisions[0].id;
+      }
+
+      divisionSelect.disabled = !seasonDivisions.length;
+      loadDivisionStandings();
+    }
+
+    async function loadDivisionStandings() {
+      const token = ++standingsLoadToken;
+      const leagueId = leagueSelect.value;
+      const seasonId = document.getElementById("standingsSeasonSelect").value;
+      const divisionId = document.getElementById("standingsDivisionSelect").value;
+      const tableBody = document.getElementById("standingsTableBody");
+      const refreshButton = document.getElementById("refreshStandingsButton");
+
+      if (!leagueId || !seasonId || !divisionId) {
+        tableBody.innerHTML = '<tr><td class="empty-state" colspan="9">Select a season and division to view standings.</td></tr>';
+        setFormMessage("standingsMessage", "");
+        refreshButton.disabled = true;
+        return;
+      }
+
+      refreshButton.disabled = true;
+      tableBody.innerHTML = '<tr><td class="empty-state" colspan="9">Loading division standings...</td></tr>';
+      setFormMessage("standingsMessage", "Loading finalized results...");
+
+      try {
+        const { data, error } = await supabaseClient.rpc("get_division_standings", {
+          p_league_id: leagueId,
+          p_season_id: seasonId,
+          p_division_id: divisionId
+        });
+        if (error) throw error;
+        if (token !== standingsLoadToken) return;
+
+        const rows = data || [];
+        const teamById = new Map(teams.map(team => [team.id, team]));
+        tableBody.innerHTML = rows.length
+          ? rows.map(row => {
+              const team = teamById.get(row.team_id) || {};
+              const difference = Number(row.point_difference || 0);
+              const differenceClass = difference > 0 ? "stat-positive" : difference < 0 ? "stat-negative" : "";
+              const differenceText = difference > 0 ? `+${difference}` : String(difference);
+              const winPercentage = (Number(row.win_percentage || 0) * 100).toFixed(1) + "%";
+              return `<tr>
+                <td><span class="standings-rank">${escapeHtml(row.ranking)}</span></td>
+                <td><div class="standings-team"><strong>${escapeHtml(team.name || "Unknown team")}</strong></div></td>
+                <td>${escapeHtml(row.games_played)}</td>
+                <td><strong>${escapeHtml(row.wins)}</strong></td>
+                <td>${escapeHtml(row.losses)}</td>
+                <td>${escapeHtml(row.points_for)}</td>
+                <td>${escapeHtml(row.points_against)}</td>
+                <td class="${differenceClass}">${escapeHtml(differenceText)}</td>
+                <td><strong>${escapeHtml(winPercentage)}</strong></td>
+              </tr>`;
+            }).join("")
+          : '<tr><td class="empty-state" colspan="9">No approved teams are assigned to this division yet.</td></tr>';
+        setFormMessage("standingsMessage", rows.length
+          ? `Updated ${new Intl.DateTimeFormat("en-PH", { hour: "numeric", minute: "2-digit", second: "2-digit" }).format(new Date())}. Finalized games only.`
+          : "No standings records are available yet.", rows.length ? "success" : "");
+      } catch (error) {
+        if (token !== standingsLoadToken) return;
+        console.error("Unable to load division standings:", error);
+        tableBody.innerHTML = '<tr><td class="empty-state" colspan="9">Unable to load standings.</td></tr>';
+        setFormMessage("standingsMessage", "Unable to load standings: " + (error.message || "Unknown error"), "error");
+      } finally {
+        if (token === standingsLoadToken) refreshButton.disabled = false;
+      }
     }
 
     function resetSeasonForm() {
@@ -1890,6 +2080,9 @@
     document.getElementById("manageSeasonSelect").addEventListener("change", renderDivisionList);
     document.getElementById("assignmentSeasonSelect").addEventListener("change", renderAssignmentDivisions);
     document.getElementById("assignTeamButton").addEventListener("click", assignTeamToDivision);
+    document.getElementById("standingsSeasonSelect").addEventListener("change", () => renderStandingsDivisions(false));
+    document.getElementById("standingsDivisionSelect").addEventListener("change", loadDivisionStandings);
+    document.getElementById("refreshStandingsButton").addEventListener("click", loadDivisionStandings);
     document.getElementById("cancelEditButton").addEventListener("click", () => resetScheduleForm());
     document.getElementById("cancelGameButton").addEventListener("click", cancelCurrentGame);
     document.getElementById("menuButton").addEventListener("click", function () {
