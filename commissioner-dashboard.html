@@ -512,6 +512,82 @@
     .form-message.success { color: var(--success); }
     .form-message.error { color: #b42318; }
 
+    .season-layout {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: minmax(280px, .85fr) minmax(0, 1.55fr);
+      gap: 16px;
+    }
+
+    .season-editor,
+    .season-browser {
+      min-width: 0;
+      padding: 16px;
+      background: #fafafa;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+
+    .season-editor h3,
+    .season-browser h3 {
+      margin-bottom: 13px;
+      font-size: 13px;
+    }
+
+    .compact-form {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+    }
+
+    .compact-form .full-width,
+    .compact-form .form-actions,
+    .compact-form .form-message {
+      grid-column: 1 / -1;
+    }
+
+    .section-divider {
+      height: 1px;
+      margin: 18px 0;
+      background: var(--line);
+    }
+
+    .season-toolbar {
+      margin-bottom: 12px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .division-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .division-card {
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .division-card strong,
+    .division-card span { display: block; }
+    .division-card strong { font-size: 11px; }
+    .division-card span { margin-top: 4px; color: var(--muted); font-size: 9px; }
+
+    .team-assignment-grid {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      border-top: 1px solid var(--line);
+    }
+
     .game-id {
       color: var(--orange-dark);
       font-weight: 900;
@@ -607,9 +683,14 @@
       .stats-grid,
       .league-details,
       .module-grid,
-      .schedule-form {
+      .schedule-form,
+      .season-layout,
+      .team-assignment-grid {
         grid-template-columns: 1fr;
       }
+
+      .compact-form,
+      .season-toolbar { grid-template-columns: 1fr; }
 
       .roster-team-toolbar { grid-template-columns: 1fr 1fr; }
       .roster-team-picker { grid-column: 1 / -1; }
@@ -645,7 +726,7 @@
       <a class="nav-link active" href="commissioner-dashboard.html">
         <span class="nav-icon">DB</span> Dashboard
       </a>
-      <a class="nav-link" href="#modules"><span class="nav-icon">SE</span> Seasons <span class="coming">Next</span></a>
+      <a class="nav-link" href="#seasonsPanel"><span class="nav-icon">SE</span> Seasons</a>
       <a class="nav-link" href="#teamsPanel"><span class="nav-icon">TM</span> Teams</a>
       <a class="nav-link" href="#rosterApprovalPanel"><span class="nav-icon">RA</span> Roster Approval</a>
       <a class="nav-link" href="#schedulePanel"><span class="nav-icon">SC</span> Schedule</a>
@@ -695,6 +776,58 @@
             <span id="leagueStatus" class="status-badge">Active</span>
           </header>
           <div id="leagueDetails" class="league-details"></div>
+        </section>
+
+        <section id="seasonsPanel" class="panel">
+          <header class="panel-header">
+            <div>
+              <h2>Seasons &amp; Divisions</h2>
+              <p>Create the competition structure, then place each approved team in the correct division.</p>
+            </div>
+          </header>
+
+          <div class="season-layout">
+            <div class="season-editor">
+              <h3 id="seasonFormTitle">Create Season</h3>
+              <form id="seasonForm" class="compact-form">
+                <div class="form-group full-width"><label for="seasonNameInput">Season Name</label><input id="seasonNameInput" class="form-input" maxlength="80" placeholder="2026 Season" required></div>
+                <div class="form-group"><label for="seasonStartInput">Start Date</label><input id="seasonStartInput" class="form-input" type="date"></div>
+                <div class="form-group"><label for="seasonEndInput">End Date</label><input id="seasonEndInput" class="form-input" type="date"></div>
+                <div class="form-group full-width"><label for="seasonStatusSelect">Status</label><select id="seasonStatusSelect" class="form-input"><option value="draft">Draft</option><option value="active">Active</option><option value="completed">Completed</option><option value="archived">Archived</option></select></div>
+                <div class="form-actions"><button id="saveSeasonButton" class="primary-button" type="submit">CREATE SEASON</button> <button id="cancelSeasonEditButton" class="secondary-button" type="button" hidden>CANCEL EDIT</button></div>
+                <div id="seasonMessage" class="form-message" aria-live="polite"></div>
+              </form>
+
+              <div class="section-divider"></div>
+              <h3 id="divisionFormTitle">Create Division</h3>
+              <form id="divisionForm" class="compact-form">
+                <div class="form-group full-width"><label for="divisionSeasonSelect">Season</label><select id="divisionSeasonSelect" class="form-input" required></select></div>
+                <div class="form-group full-width"><label for="divisionNameInput">Division Name</label><input id="divisionNameInput" class="form-input" maxlength="100" placeholder="Elementary Boys – Public" required></div>
+                <div class="form-group"><label for="divisionCategoryInput">Category</label><input id="divisionCategoryInput" class="form-input" maxlength="60" placeholder="Elementary Boys"></div>
+                <div class="form-group"><label for="divisionClassificationInput">Classification</label><input id="divisionClassificationInput" class="form-input" maxlength="60" placeholder="Public"></div>
+                <div class="form-group full-width"><label for="divisionStatusSelect">Status</label><select id="divisionStatusSelect" class="form-input"><option value="active">Active</option><option value="inactive">Inactive</option><option value="completed">Completed</option></select></div>
+                <div class="form-actions"><button id="saveDivisionButton" class="primary-button" type="submit">CREATE DIVISION</button> <button id="cancelDivisionEditButton" class="secondary-button" type="button" hidden>CANCEL EDIT</button></div>
+                <div id="divisionMessage" class="form-message" aria-live="polite"></div>
+              </form>
+            </div>
+
+            <div class="season-browser">
+              <h3>Current Structure</h3>
+              <div class="season-toolbar">
+                <div class="form-group"><label for="manageSeasonSelect">Season</label><select id="manageSeasonSelect" class="form-input"></select></div>
+                <div class="form-group"><label>&nbsp;</label><button id="editSeasonButton" class="secondary-button" type="button">EDIT SELECTED SEASON</button></div>
+              </div>
+              <div id="divisionList" class="division-list"><div class="empty-state">Loading seasons and divisions...</div></div>
+            </div>
+          </div>
+
+          <div class="team-assignment-grid">
+            <div class="form-group"><label for="assignmentTeamSelect">Approved Team</label><select id="assignmentTeamSelect" class="form-input"></select></div>
+            <div class="form-group"><label for="assignmentSeasonSelect">Season</label><select id="assignmentSeasonSelect" class="form-input"></select></div>
+            <div class="form-group"><label for="assignmentDivisionSelect">Division</label><select id="assignmentDivisionSelect" class="form-input"></select></div>
+            <div class="form-actions"><button id="assignTeamButton" class="primary-button" type="button">ASSIGN TEAM TO DIVISION</button></div>
+            <div id="assignmentMessage" class="form-message" aria-live="polite"></div>
+          </div>
         </section>
 
         <section id="teamsPanel" class="panel">
@@ -850,6 +983,10 @@
     let editingGameId = null;
     let rosterReviewRows = [];
     let rosterReviewLeagueId = null;
+    let seasons = [];
+    let divisions = [];
+    let editingSeasonId = null;
+    let editingDivisionId = null;
 
     const authScreen = document.getElementById("authScreen");
     const appShell = document.getElementById("appShell");
@@ -974,7 +1111,7 @@
       if (leagueIds.length) {
         const { data: registrations, error: registrationError } = await supabaseClient
           .from("league_teams")
-          .select("league_id, team_id, registration_status, registered_at, updated_at")
+          .select("league_id, team_id, registration_status, season_id, division_id, registered_at, updated_at")
           .in("league_id", leagueIds);
         if (registrationError) throw registrationError;
         leagueTeams = registrations || [];
@@ -997,6 +1134,27 @@
           .order("scheduled_at", { ascending: true, nullsFirst: false });
         if (gameError) throw gameError;
         scheduledGames = gameRows || [];
+
+        const { data: seasonRows, error: seasonError } = await supabaseClient
+          .from("seasons")
+          .select("id, league_id, name, start_date, end_date, status, created_at, updated_at")
+          .in("league_id", leagueIds)
+          .order("created_at", { ascending: false });
+        if (seasonError) throw seasonError;
+        seasons = seasonRows || [];
+
+        const seasonIds = seasons.map(item => item.id);
+        if (seasonIds.length) {
+          const { data: divisionRows, error: divisionError } = await supabaseClient
+            .from("divisions")
+            .select("id, season_id, name, category, classification, status, created_at, updated_at")
+            .in("season_id", seasonIds)
+            .order("name");
+          if (divisionError) throw divisionError;
+          divisions = divisionRows || [];
+        } else {
+          divisions = [];
+        }
       }
 
       const { data: scorekeeperRows, error: scorekeeperError } = await supabaseClient
@@ -1043,6 +1201,7 @@
         document.getElementById("pendingTeamCount").textContent = "0";
         renderScheduling(null, []);
         renderGameReviewQueue(null);
+        renderSeasonWorkspace(null, []);
         return;
       }
 
@@ -1082,7 +1241,180 @@
 
       renderScheduling(league, approved);
       renderGameReviewQueue(league);
+      renderSeasonWorkspace(league, approved);
       loadRosterReviews(league.id);
+    }
+
+    function setFormMessage(id, text, type = "") {
+      const element = document.getElementById(id);
+      element.className = `form-message${type ? " " + type : ""}`;
+      element.textContent = text;
+    }
+
+    function renderSeasonWorkspace(league, approvedRegistrations) {
+      const leagueSeasons = league ? seasons.filter(item => item.league_id === league.id) : [];
+      const selectedBefore = document.getElementById("manageSeasonSelect").value;
+      const options = leagueSeasons.length
+        ? leagueSeasons.map(item => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)} · ${escapeHtml(item.status)}</option>`).join("")
+        : '<option value="">No seasons created</option>';
+
+      ["manageSeasonSelect", "divisionSeasonSelect", "assignmentSeasonSelect"].forEach(id => {
+        const select = document.getElementById(id);
+        const previous = select.value;
+        select.innerHTML = options;
+        if (leagueSeasons.some(item => item.id === previous)) select.value = previous;
+      });
+      if (leagueSeasons.some(item => item.id === selectedBefore)) document.getElementById("manageSeasonSelect").value = selectedBefore;
+
+      const teamById = new Map(teams.map(team => [team.id, team]));
+      const approved = (approvedRegistrations || []).map(registration => ({ registration, team: teamById.get(registration.team_id) })).filter(item => item.team);
+      document.getElementById("assignmentTeamSelect").innerHTML = approved.length
+        ? '<option value="">Select a team</option>' + approved.map(({ registration, team }) => {
+            const division = divisions.find(item => item.id === registration.division_id);
+            return `<option value="${escapeHtml(team.id)}">${escapeHtml(team.name)}${division ? " · " + escapeHtml(division.name) : " · Unassigned"}</option>`;
+          }).join("")
+        : '<option value="">No approved teams</option>';
+
+      renderDivisionList();
+      renderAssignmentDivisions();
+      const disabled = !league;
+      document.getElementById("seasonForm").querySelectorAll("input,select,button").forEach(element => element.disabled = disabled);
+    }
+
+    function renderDivisionList() {
+      const seasonId = document.getElementById("manageSeasonSelect").value;
+      const seasonDivisions = divisions.filter(item => item.season_id === seasonId);
+      document.getElementById("divisionList").innerHTML = seasonDivisions.length
+        ? seasonDivisions.map(item => `<article class="division-card"><div><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml([item.category, item.classification, item.status].filter(Boolean).join(" · "))}</span></div><button class="table-action" type="button" onclick="startEditingDivision('${item.id}')">EDIT</button></article>`).join("")
+        : '<div class="empty-state">No divisions have been created for this season.</div>';
+      document.getElementById("editSeasonButton").disabled = !seasonId;
+    }
+
+    function renderAssignmentDivisions() {
+      const seasonId = document.getElementById("assignmentSeasonSelect").value;
+      const matches = divisions.filter(item => item.season_id === seasonId && item.status !== "completed");
+      document.getElementById("assignmentDivisionSelect").innerHTML = matches.length
+        ? '<option value="">Select a division</option>' + matches.map(item => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`).join("")
+        : '<option value="">No available divisions</option>';
+    }
+
+    function resetSeasonForm() {
+      editingSeasonId = null;
+      document.getElementById("seasonForm").reset();
+      document.getElementById("seasonFormTitle").textContent = "Create Season";
+      document.getElementById("saveSeasonButton").textContent = "CREATE SEASON";
+      document.getElementById("cancelSeasonEditButton").hidden = true;
+    }
+
+    function startEditingSeason() {
+      const season = seasons.find(item => item.id === document.getElementById("manageSeasonSelect").value);
+      if (!season) return;
+      editingSeasonId = season.id;
+      document.getElementById("seasonNameInput").value = season.name || "";
+      document.getElementById("seasonStartInput").value = season.start_date || "";
+      document.getElementById("seasonEndInput").value = season.end_date || "";
+      document.getElementById("seasonStatusSelect").value = season.status || "draft";
+      document.getElementById("seasonFormTitle").textContent = "Edit Season";
+      document.getElementById("saveSeasonButton").textContent = "SAVE SEASON";
+      document.getElementById("cancelSeasonEditButton").hidden = false;
+    }
+
+    async function saveSeason(event) {
+      event.preventDefault();
+      const button = document.getElementById("saveSeasonButton");
+      const parameters = {
+        p_name: document.getElementById("seasonNameInput").value.trim(),
+        p_start_date: document.getElementById("seasonStartInput").value || null,
+        p_end_date: document.getElementById("seasonEndInput").value || null,
+        p_status: document.getElementById("seasonStatusSelect").value
+      };
+      if (editingSeasonId) parameters.p_season_id = editingSeasonId;
+      else parameters.p_league_id = leagueSelect.value;
+      button.disabled = true;
+      setFormMessage("seasonMessage", "Saving season...");
+      try {
+        const { data, error } = await supabaseClient.rpc(editingSeasonId ? "update_league_season" : "create_league_season", parameters);
+        if (error) throw error;
+        const saved = Array.isArray(data) ? data[0] : data;
+        const index = seasons.findIndex(item => item.id === saved.id);
+        if (index >= 0) seasons[index] = saved; else seasons.unshift(saved);
+        resetSeasonForm();
+        renderWorkspace();
+        setFormMessage("seasonMessage", `Season “${saved.name}” saved successfully.`, "success");
+      } catch (error) {
+        setFormMessage("seasonMessage", "Unable to save season: " + (error.message || "Unknown error"), "error");
+      } finally { button.disabled = false; }
+    }
+
+    function resetDivisionForm() {
+      editingDivisionId = null;
+      document.getElementById("divisionForm").reset();
+      document.getElementById("divisionFormTitle").textContent = "Create Division";
+      document.getElementById("saveDivisionButton").textContent = "CREATE DIVISION";
+      document.getElementById("cancelDivisionEditButton").hidden = true;
+      renderSeasonWorkspace(assignedLeagues.find(item => item.id === leagueSelect.value), leagueTeams.filter(item => item.league_id === leagueSelect.value && item.registration_status === "approved"));
+    }
+
+    function startEditingDivision(divisionId) {
+      const division = divisions.find(item => item.id === divisionId);
+      if (!division) return;
+      editingDivisionId = division.id;
+      document.getElementById("divisionSeasonSelect").value = division.season_id;
+      document.getElementById("divisionNameInput").value = division.name || "";
+      document.getElementById("divisionCategoryInput").value = division.category || "";
+      document.getElementById("divisionClassificationInput").value = division.classification || "";
+      document.getElementById("divisionStatusSelect").value = division.status || "active";
+      document.getElementById("divisionFormTitle").textContent = "Edit Division";
+      document.getElementById("saveDivisionButton").textContent = "SAVE DIVISION";
+      document.getElementById("cancelDivisionEditButton").hidden = false;
+    }
+
+    async function saveDivision(event) {
+      event.preventDefault();
+      const button = document.getElementById("saveDivisionButton");
+      const parameters = {
+        p_name: document.getElementById("divisionNameInput").value.trim(),
+        p_category: document.getElementById("divisionCategoryInput").value.trim() || null,
+        p_classification: document.getElementById("divisionClassificationInput").value.trim() || null,
+        p_status: document.getElementById("divisionStatusSelect").value
+      };
+      if (editingDivisionId) parameters.p_division_id = editingDivisionId;
+      else parameters.p_season_id = document.getElementById("divisionSeasonSelect").value;
+      button.disabled = true;
+      setFormMessage("divisionMessage", "Saving division...");
+      try {
+        const { data, error } = await supabaseClient.rpc(editingDivisionId ? "update_season_division" : "create_season_division", parameters);
+        if (error) throw error;
+        const saved = Array.isArray(data) ? data[0] : data;
+        const index = divisions.findIndex(item => item.id === saved.id);
+        if (index >= 0) divisions[index] = saved; else divisions.push(saved);
+        resetDivisionForm();
+        renderWorkspace();
+        setFormMessage("divisionMessage", `Division “${saved.name}” saved successfully.`, "success");
+      } catch (error) {
+        setFormMessage("divisionMessage", "Unable to save division: " + (error.message || "Unknown error"), "error");
+      } finally { button.disabled = false; }
+    }
+
+    async function assignTeamToDivision() {
+      const teamId = document.getElementById("assignmentTeamSelect").value;
+      const seasonId = document.getElementById("assignmentSeasonSelect").value;
+      const divisionId = document.getElementById("assignmentDivisionSelect").value;
+      const button = document.getElementById("assignTeamButton");
+      if (!teamId || !seasonId || !divisionId) { setFormMessage("assignmentMessage", "Select a team, season, and division.", "error"); return; }
+      button.disabled = true;
+      setFormMessage("assignmentMessage", "Saving team assignment...");
+      try {
+        const { data, error } = await supabaseClient.rpc("assign_team_to_division", { p_league_id: leagueSelect.value, p_team_id: teamId, p_season_id: seasonId, p_division_id: divisionId });
+        if (error) throw error;
+        const saved = Array.isArray(data) ? data[0] : data;
+        const registration = leagueTeams.find(item => item.league_id === leagueSelect.value && item.team_id === teamId);
+        if (registration) Object.assign(registration, saved);
+        renderWorkspace();
+        setFormMessage("assignmentMessage", "Team assigned successfully.", "success");
+      } catch (error) {
+        setFormMessage("assignmentMessage", "Unable to assign team: " + (error.message || "Unknown error"), "error");
+      } finally { button.disabled = false; }
     }
 
     function renderGameReviewQueue(league) {
@@ -1460,6 +1792,14 @@
     leagueSelect.addEventListener("change", renderWorkspace);
     document.getElementById("rosterTeamSelect").addEventListener("change", renderRosterTeam);
     document.getElementById("scheduleForm").addEventListener("submit", createScheduledGame);
+    document.getElementById("seasonForm").addEventListener("submit", saveSeason);
+    document.getElementById("divisionForm").addEventListener("submit", saveDivision);
+    document.getElementById("cancelSeasonEditButton").addEventListener("click", resetSeasonForm);
+    document.getElementById("cancelDivisionEditButton").addEventListener("click", resetDivisionForm);
+    document.getElementById("editSeasonButton").addEventListener("click", startEditingSeason);
+    document.getElementById("manageSeasonSelect").addEventListener("change", renderDivisionList);
+    document.getElementById("assignmentSeasonSelect").addEventListener("change", renderAssignmentDivisions);
+    document.getElementById("assignTeamButton").addEventListener("click", assignTeamToDivision);
     document.getElementById("cancelEditButton").addEventListener("click", () => resetScheduleForm());
     document.getElementById("cancelGameButton").addEventListener("click", cancelCurrentGame);
     document.getElementById("menuButton").addEventListener("click", function () {
