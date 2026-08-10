@@ -892,6 +892,16 @@
 
           <form id="scheduleForm" class="schedule-form">
             <div class="form-group">
+              <label for="scheduleSeasonSelect">Season</label>
+              <select id="scheduleSeasonSelect" class="form-input" required></select>
+            </div>
+
+            <div class="form-group">
+              <label for="scheduleDivisionSelect">Division</label>
+              <select id="scheduleDivisionSelect" class="form-input" required></select>
+            </div>
+
+            <div class="form-group">
               <label for="homeTeamSelect">Home Team</label>
               <select id="homeTeamSelect" class="form-input" required></select>
             </div>
@@ -1129,7 +1139,7 @@
 
         const { data: gameRows, error: gameError } = await supabaseClient
           .from("games")
-            .select("id, league_id, home_team_id, away_team_id, home_team, away_team, home_score, away_score, scheduled_at, venue, status, submitted_at, submitted_by, finalized_at, created_at")
+            .select("id, league_id, season_id, division_id, home_team_id, away_team_id, home_team, away_team, home_score, away_score, scheduled_at, venue, status, submitted_at, submitted_by, finalized_at, created_at")
           .in("league_id", leagueIds)
           .order("scheduled_at", { ascending: true, nullsFirst: false });
         if (gameError) throw gameError;
@@ -1567,11 +1577,46 @@
     }
 
     function renderScheduling(league, approvedRegistrations) {
+      const seasonSelect = document.getElementById("scheduleSeasonSelect");
+      const divisionSelect = document.getElementById("scheduleDivisionSelect");
       const homeSelect = document.getElementById("homeTeamSelect");
       const awaySelect = document.getElementById("awayTeamSelect");
       const scorekeeperSelect = document.getElementById("scorekeeperSelect");
+      const previousSeasonId = seasonSelect.value;
+      const previousDivisionId = divisionSelect.value;
+      const previousHomeTeamId = homeSelect.value;
+      const previousAwayTeamId = awaySelect.value;
       const teamById = new Map(teams.map(team => [team.id, team]));
+      const leagueSeasons = league
+        ? seasons.filter(item => item.league_id === league.id && ["draft", "active"].includes(item.status))
+        : [];
+
+      seasonSelect.innerHTML = leagueSeasons.length
+        ? '<option value="">Select a season</option>' + leagueSeasons.map(item =>
+            `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`
+          ).join("")
+        : '<option value="">No available seasons</option>';
+      if (leagueSeasons.some(item => item.id === previousSeasonId)) seasonSelect.value = previousSeasonId;
+
+      const selectedSeasonId = seasonSelect.value;
+      const availableDivisions = selectedSeasonId
+        ? divisions.filter(item => item.season_id === selectedSeasonId && item.status === "active")
+        : [];
+      divisionSelect.innerHTML = selectedSeasonId
+        ? (availableDivisions.length
+            ? '<option value="">Select a division</option>' + availableDivisions.map(item =>
+                `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`
+              ).join("")
+            : '<option value="">No active divisions</option>')
+        : '<option value="">Select a season first</option>';
+      if (availableDivisions.some(item => item.id === previousDivisionId)) divisionSelect.value = previousDivisionId;
+
+      const selectedDivisionId = divisionSelect.value;
       const approvedTeams = (approvedRegistrations || [])
+        .filter(registration =>
+          registration.season_id === selectedSeasonId &&
+          registration.division_id === selectedDivisionId
+        )
         .map(registration => teamById.get(registration.team_id))
         .filter(Boolean)
         .sort((a, b) => a.name.localeCompare(b.name));
@@ -1584,8 +1629,12 @@
 
       homeSelect.innerHTML = teamOptions;
       awaySelect.innerHTML = teamOptions;
-      homeSelect.disabled = !league || approvedTeams.length < 2;
-      awaySelect.disabled = !league || approvedTeams.length < 2;
+      if (approvedTeams.some(team => team.id === previousHomeTeamId)) homeSelect.value = previousHomeTeamId;
+      if (approvedTeams.some(team => team.id === previousAwayTeamId)) awaySelect.value = previousAwayTeamId;
+      seasonSelect.disabled = !league || !leagueSeasons.length;
+      divisionSelect.disabled = !selectedSeasonId || !availableDivisions.length;
+      homeSelect.disabled = !selectedDivisionId || approvedTeams.length < 2;
+      awaySelect.disabled = !selectedDivisionId || approvedTeams.length < 2;
 
       scorekeeperSelect.innerHTML = '<option value="">Assign later</option>' +
         availableScorekeepers.map(item =>
@@ -1614,15 +1663,25 @@
 
       const message = document.getElementById("scheduleMessage");
       message.className = "form-message";
-      message.textContent = approvedTeams.length < 2
-        ? "At least two approved teams are required before scheduling a game."
-        : "";
+      message.textContent = !leagueSeasons.length
+        ? "Create an available season before scheduling a game."
+        : !selectedSeasonId
+          ? "Select a season, then choose its division."
+          : !availableDivisions.length
+            ? "This season has no active divisions."
+            : !selectedDivisionId
+              ? "Select a division to load its assigned teams."
+              : approvedTeams.length < 2
+                ? "Assign at least two approved teams to this season and division before scheduling a game."
+                : "";
     }
 
     async function createScheduledGame(event) {
       event.preventDefault();
 
       const leagueId = leagueSelect.value;
+      const seasonId = document.getElementById("scheduleSeasonSelect").value;
+      const divisionId = document.getElementById("scheduleDivisionSelect").value;
       const homeTeamId = document.getElementById("homeTeamSelect").value;
       const awayTeamId = document.getElementById("awayTeamSelect").value;
       const scheduledValue = document.getElementById("scheduledAt").value;
@@ -1633,8 +1692,8 @@
 
       message.className = "form-message error";
 
-      if (!leagueId || !homeTeamId || !awayTeamId || !scheduledValue) {
-        message.textContent = "Select a league, two teams, and a game date and time.";
+      if (!leagueId || !seasonId || !divisionId || !homeTeamId || !awayTeamId || !scheduledValue) {
+        message.textContent = "Select a league, season, division, two teams, and a game date and time.";
         return;
       }
 
@@ -1649,9 +1708,11 @@
       message.textContent = "Saving the scheduled game...";
 
       try {
-        const rpcName = editingGameId ? "manage_scheduled_game" : "create_scheduled_game";
+        const rpcName = editingGameId ? "manage_scheduled_game_v2" : "create_scheduled_game_v2";
         const rpcParameters = editingGameId ? {
           p_game_id: editingGameId,
+          p_season_id: seasonId,
+          p_division_id: divisionId,
           p_home_team_id: homeTeamId,
           p_away_team_id: awayTeamId,
           p_scheduled_at: new Date(scheduledValue).toISOString(),
@@ -1660,6 +1721,8 @@
           p_cancel: false
         } : {
           p_league_id: leagueId,
+          p_season_id: seasonId,
+          p_division_id: divisionId,
           p_home_team_id: homeTeamId,
           p_away_team_id: awayTeamId,
           p_scheduled_at: new Date(scheduledValue).toISOString(),
@@ -1682,6 +1745,8 @@
           .select(`
   id,
   league_id,
+  season_id,
+  division_id,
   home_team_id,
   away_team_id,
   home_team,
@@ -1734,6 +1799,10 @@
       if (leagueSelect.value !== game.league_id) leagueSelect.value = game.league_id;
       renderWorkspace();
       editingGameId = Number(game.id);
+      document.getElementById("scheduleSeasonSelect").value = game.season_id || "";
+      renderScheduleDivisions();
+      document.getElementById("scheduleDivisionSelect").value = game.division_id || "";
+      renderScheduleTeams();
       document.getElementById("homeTeamSelect").value = game.home_team_id || "";
       document.getElementById("awayTeamSelect").value = game.away_team_id || "";
       document.getElementById("scheduledAt").value = toDateTimeLocal(game.scheduled_at);
@@ -1759,8 +1828,10 @@
       button.disabled = true;
       button.textContent = "CANCELLING...";
       try {
-        const { error } = await supabaseClient.rpc("manage_scheduled_game", {
+        const { error } = await supabaseClient.rpc("manage_scheduled_game_v2", {
           p_game_id: editingGameId,
+          p_season_id: game.season_id,
+          p_division_id: game.division_id,
           p_home_team_id: game.home_team_id,
           p_away_team_id: game.away_team_id,
           p_scheduled_at: game.scheduled_at,
@@ -1784,6 +1855,23 @@
       }
     }
 
+    function renderScheduleDivisions() {
+      const league = assignedLeagues.find(item => item.id === leagueSelect.value);
+      const approved = leagueTeams.filter(item =>
+        item.league_id === leagueSelect.value && item.registration_status === "approved"
+      );
+      document.getElementById("scheduleDivisionSelect").value = "";
+      renderScheduling(league, approved);
+    }
+
+    function renderScheduleTeams() {
+      const league = assignedLeagues.find(item => item.id === leagueSelect.value);
+      const approved = leagueTeams.filter(item =>
+        item.league_id === leagueSelect.value && item.registration_status === "approved"
+      );
+      renderScheduling(league, approved);
+    }
+
     function closeSidebar() {
       document.getElementById("sidebar").classList.remove("open");
       document.getElementById("sidebarOverlay").classList.remove("open");
@@ -1792,6 +1880,8 @@
     leagueSelect.addEventListener("change", renderWorkspace);
     document.getElementById("rosterTeamSelect").addEventListener("change", renderRosterTeam);
     document.getElementById("scheduleForm").addEventListener("submit", createScheduledGame);
+    document.getElementById("scheduleSeasonSelect").addEventListener("change", renderScheduleDivisions);
+    document.getElementById("scheduleDivisionSelect").addEventListener("change", renderScheduleTeams);
     document.getElementById("seasonForm").addEventListener("submit", saveSeason);
     document.getElementById("divisionForm").addEventListener("submit", saveDivision);
     document.getElementById("cancelSeasonEditButton").addEventListener("click", resetSeasonForm);
