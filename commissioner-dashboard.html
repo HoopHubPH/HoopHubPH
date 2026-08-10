@@ -625,6 +625,43 @@
       font-weight: 900;
     }
 
+    .games-display-toolbar {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+      gap: 12px;
+      align-items: end;
+      border-bottom: 1px solid var(--line);
+      background: #fafafa;
+    }
+
+    .games-display-summary {
+      padding: 14px 18px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .games-summary-card {
+      padding: 12px 14px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .games-summary-card span,
+    .games-summary-card strong { display: block; }
+    .games-summary-card span { color: var(--muted); font-size: 9px; font-weight: 900; text-transform: uppercase; }
+    .games-summary-card strong { margin-top: 5px; font-size: 20px; }
+
+    .games-display-group { padding-top: 16px; }
+    .games-display-group + .games-display-group { border-top: 1px solid var(--line); }
+    .games-display-title { padding: 0 18px 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .games-display-title h3 { font-size: 13px; }
+    .games-display-title span { color: var(--muted); font-size: 9px; font-weight: 800; }
+    .score-result { white-space: nowrap; font-size: 13px; font-weight: 900; }
+
     .module-grid {
       padding: 18px;
       display: grid;
@@ -717,6 +754,8 @@
       .module-grid,
       .schedule-form,
       .standings-toolbar,
+      .games-display-toolbar,
+      .games-display-summary,
       .season-layout,
       .team-assignment-grid {
         grid-template-columns: 1fr;
@@ -727,6 +766,7 @@
 
       .roster-team-toolbar { grid-template-columns: 1fr 1fr; }
       .roster-team-picker { grid-column: 1 / -1; }
+      .games-display-toolbar .secondary-button { width: 100%; }
     }
   </style>
 </head>
@@ -763,6 +803,7 @@
       <a class="nav-link" href="#teamsPanel"><span class="nav-icon">TM</span> Teams</a>
       <a class="nav-link" href="#rosterApprovalPanel"><span class="nav-icon">RA</span> Roster Approval</a>
       <a class="nav-link" href="#schedulePanel"><span class="nav-icon">SC</span> Schedule</a>
+      <a class="nav-link" href="#gamesDisplayPanel"><span class="nav-icon">GR</span> Games & Results</a>
       <a class="nav-link" href="#standingsPanel"><span class="nav-icon">ST</span> Standings</a>
 
       <p class="nav-label">Game Control</p>
@@ -986,6 +1027,58 @@
                 <tr><td class="empty-state" colspan="6">Loading scheduled games...</td></tr>
               </tbody>
             </table>
+          </div>
+        </section>
+
+        <section id="gamesDisplayPanel" class="panel">
+          <header class="panel-header">
+            <div>
+              <h2>Division Schedule &amp; Results</h2>
+              <p>View upcoming games, finalized results, and cancellations for one season and division.</p>
+            </div>
+          </header>
+
+          <div class="games-display-toolbar">
+            <div class="form-group">
+              <label for="gamesDisplaySeasonSelect">Season</label>
+              <select id="gamesDisplaySeasonSelect" class="form-input"></select>
+            </div>
+            <div class="form-group">
+              <label for="gamesDisplayDivisionSelect">Division</label>
+              <select id="gamesDisplayDivisionSelect" class="form-input"></select>
+            </div>
+            <button id="refreshGamesDisplayButton" class="secondary-button" type="button">REFRESH</button>
+            <div id="gamesDisplayMessage" class="form-message" aria-live="polite"></div>
+          </div>
+
+          <div class="games-display-summary">
+            <div class="games-summary-card"><span>Upcoming</span><strong id="upcomingGamesCount">0</strong></div>
+            <div class="games-summary-card"><span>Final Results</span><strong id="finalGamesCount">0</strong></div>
+            <div class="games-summary-card"><span>Cancelled</span><strong id="cancelledGamesCount">0</strong></div>
+          </div>
+
+          <div class="games-display-group">
+            <div class="games-display-title"><h3>Upcoming Games</h3><span>Scheduled and active games</span></div>
+            <div class="table-wrap"><table>
+              <thead><tr><th>Game</th><th>Matchup</th><th>Date &amp; Time</th><th>Venue</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody id="upcomingGamesBody"><tr><td class="empty-state" colspan="6">Select a season and division.</td></tr></tbody>
+            </table></div>
+          </div>
+
+          <div class="games-display-group">
+            <div class="games-display-title"><h3>Final Results</h3><span>Commissioner-finalized games only</span></div>
+            <div class="table-wrap"><table>
+              <thead><tr><th>Game</th><th>Matchup</th><th>Final Score</th><th>Date &amp; Time</th><th>Venue</th><th>Action</th></tr></thead>
+              <tbody id="finalGamesBody"><tr><td class="empty-state" colspan="6">Select a season and division.</td></tr></tbody>
+            </table></div>
+          </div>
+
+          <div class="games-display-group">
+            <div class="games-display-title"><h3>Cancelled Games</h3><span>Kept for scheduling history</span></div>
+            <div class="table-wrap"><table>
+              <thead><tr><th>Game</th><th>Matchup</th><th>Original Date</th><th>Venue</th><th>Status</th><th>Action</th></tr></thead>
+              <tbody id="cancelledGamesBody"><tr><td class="empty-state" colspan="6">Select a season and division.</td></tr></tbody>
+            </table></div>
           </div>
         </section>
 
@@ -1289,6 +1382,7 @@
         renderGameReviewQueue(null);
         renderSeasonWorkspace(null, []);
         renderStandingsFilters(null);
+        renderGamesDisplayFilters(null);
         return;
       }
 
@@ -1330,6 +1424,7 @@
       renderGameReviewQueue(league);
       renderSeasonWorkspace(league, approved);
       renderStandingsFilters(league);
+      renderGamesDisplayFilters(league);
       loadRosterReviews(league.id);
     }
 
@@ -1384,6 +1479,126 @@
       document.getElementById("assignmentDivisionSelect").innerHTML = matches.length
         ? '<option value="">Select a division</option>' + matches.map(item => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`).join("")
         : '<option value="">No available divisions</option>';
+    }
+
+    function renderGamesDisplayFilters(league) {
+      const seasonSelect = document.getElementById("gamesDisplaySeasonSelect");
+      const previousSeasonId = seasonSelect.value;
+      const leagueSeasons = league
+        ? seasons.filter(item => item.league_id === league.id)
+        : [];
+
+      seasonSelect.innerHTML = leagueSeasons.length
+        ? '<option value="">Select a season</option>' + leagueSeasons.map(item =>
+            `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`
+          ).join("")
+        : '<option value="">No seasons available</option>';
+
+      if (leagueSeasons.some(item => item.id === previousSeasonId)) {
+        seasonSelect.value = previousSeasonId;
+      } else if (leagueSeasons.length === 1) {
+        seasonSelect.value = leagueSeasons[0].id;
+      }
+
+      seasonSelect.disabled = !leagueSeasons.length;
+      renderGamesDisplayDivisions(false);
+    }
+
+    function renderGamesDisplayDivisions(preserveSelection = true) {
+      const seasonId = document.getElementById("gamesDisplaySeasonSelect").value;
+      const divisionSelect = document.getElementById("gamesDisplayDivisionSelect");
+      const previousDivisionId = preserveSelection ? divisionSelect.value : "";
+      const seasonDivisions = seasonId
+        ? divisions.filter(item => item.season_id === seasonId)
+        : [];
+
+      divisionSelect.innerHTML = seasonId
+        ? (seasonDivisions.length
+            ? '<option value="">Select a division</option>' + seasonDivisions.map(item =>
+                `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`
+              ).join("")
+            : '<option value="">No divisions available</option>')
+        : '<option value="">Select a season first</option>';
+
+      if (seasonDivisions.some(item => item.id === previousDivisionId)) {
+        divisionSelect.value = previousDivisionId;
+      } else if (seasonDivisions.length === 1) {
+        divisionSelect.value = seasonDivisions[0].id;
+      }
+
+      divisionSelect.disabled = !seasonDivisions.length;
+      renderDivisionGames();
+    }
+
+    function renderDivisionGames() {
+      const leagueId = leagueSelect.value;
+      const seasonId = document.getElementById("gamesDisplaySeasonSelect").value;
+      const divisionId = document.getElementById("gamesDisplayDivisionSelect").value;
+      const message = document.getElementById("gamesDisplayMessage");
+      const upcomingBody = document.getElementById("upcomingGamesBody");
+      const finalBody = document.getElementById("finalGamesBody");
+      const cancelledBody = document.getElementById("cancelledGamesBody");
+
+      if (!leagueId || !seasonId || !divisionId) {
+        const emptyRow = '<tr><td class="empty-state" colspan="6">Select a season and division to view games.</td></tr>';
+        upcomingBody.innerHTML = emptyRow;
+        finalBody.innerHTML = emptyRow;
+        cancelledBody.innerHTML = emptyRow;
+        document.getElementById("upcomingGamesCount").textContent = "0";
+        document.getElementById("finalGamesCount").textContent = "0";
+        document.getElementById("cancelledGamesCount").textContent = "0";
+        message.textContent = seasonId ? "Select a division to load its games." : "Select a season, then choose its division.";
+        return;
+      }
+
+      const games = scheduledGames.filter(game =>
+        game.league_id === leagueId &&
+        game.season_id === seasonId &&
+        game.division_id === divisionId
+      );
+      const isCancelled = game => String(game.status || "").toLowerCase() === "cancelled";
+      const isFinal = game => Boolean(game.finalized_at) || String(game.status || "").toLowerCase() === "final";
+      const upcoming = games.filter(game => !isCancelled(game) && !isFinal(game))
+        .sort((a, b) => new Date(a.scheduled_at || a.created_at) - new Date(b.scheduled_at || b.created_at));
+      const finalGames = games.filter(game => isFinal(game) && !isCancelled(game))
+        .sort((a, b) => new Date(b.scheduled_at || b.created_at) - new Date(a.scheduled_at || a.created_at));
+      const cancelled = games.filter(isCancelled)
+        .sort((a, b) => new Date(b.scheduled_at || b.created_at) - new Date(a.scheduled_at || a.created_at));
+
+      const gameLink = game => `<a class="table-action view" href="live-game.html?id=${encodeURIComponent(game.id)}" target="_blank" rel="noopener">VIEW</a>`;
+      const matchup = game => `<strong>${escapeHtml(game.home_team || "Home Team")} vs ${escapeHtml(game.away_team || "Away Team")}</strong>`;
+
+      upcomingBody.innerHTML = upcoming.length ? upcoming.map(game => `<tr>
+        <td><span class="game-id">#${escapeHtml(game.id)}</span></td>
+        <td>${matchup(game)}</td>
+        <td>${escapeHtml(formatDateTime(game.scheduled_at || game.created_at))}</td>
+        <td>${escapeHtml(game.venue || "—")}</td>
+        <td><span class="status-badge">${escapeHtml(game.status || "Scheduled")}</span></td>
+        <td>${gameLink(game)}</td>
+      </tr>`).join("") : '<tr><td class="empty-state" colspan="6">No upcoming games in this division.</td></tr>';
+
+      finalBody.innerHTML = finalGames.length ? finalGames.map(game => `<tr>
+        <td><span class="game-id">#${escapeHtml(game.id)}</span></td>
+        <td>${matchup(game)}</td>
+        <td><span class="score-result">${Number(game.home_score || 0)}–${Number(game.away_score || 0)}</span></td>
+        <td>${escapeHtml(formatDateTime(game.scheduled_at || game.created_at))}</td>
+        <td>${escapeHtml(game.venue || "—")}</td>
+        <td>${gameLink(game)}</td>
+      </tr>`).join("") : '<tr><td class="empty-state" colspan="6">No finalized results in this division.</td></tr>';
+
+      cancelledBody.innerHTML = cancelled.length ? cancelled.map(game => `<tr>
+        <td><span class="game-id">#${escapeHtml(game.id)}</span></td>
+        <td>${matchup(game)}</td>
+        <td>${escapeHtml(formatDateTime(game.scheduled_at || game.created_at))}</td>
+        <td>${escapeHtml(game.venue || "—")}</td>
+        <td><span class="status-badge rejected">Cancelled</span></td>
+        <td>${gameLink(game)}</td>
+      </tr>`).join("") : '<tr><td class="empty-state" colspan="6">No cancelled games in this division.</td></tr>';
+
+      document.getElementById("upcomingGamesCount").textContent = upcoming.length.toLocaleString();
+      document.getElementById("finalGamesCount").textContent = finalGames.length.toLocaleString();
+      document.getElementById("cancelledGamesCount").textContent = cancelled.length.toLocaleString();
+      message.textContent = `${games.length.toLocaleString()} game${games.length === 1 ? "" : "s"} found. Updated ${new Intl.DateTimeFormat("en-PH", { hour: "numeric", minute: "2-digit", second: "2-digit" }).format(new Date())}.`;
     }
 
     function renderStandingsFilters(league) {
@@ -2083,6 +2298,9 @@
     document.getElementById("standingsSeasonSelect").addEventListener("change", () => renderStandingsDivisions(false));
     document.getElementById("standingsDivisionSelect").addEventListener("change", loadDivisionStandings);
     document.getElementById("refreshStandingsButton").addEventListener("click", loadDivisionStandings);
+    document.getElementById("gamesDisplaySeasonSelect").addEventListener("change", () => renderGamesDisplayDivisions(false));
+    document.getElementById("gamesDisplayDivisionSelect").addEventListener("change", renderDivisionGames);
+    document.getElementById("refreshGamesDisplayButton").addEventListener("click", renderDivisionGames);
     document.getElementById("cancelEditButton").addEventListener("click", () => resetScheduleForm());
     document.getElementById("cancelGameButton").addEventListener("click", cancelCurrentGame);
     document.getElementById("menuButton").addEventListener("click", function () {
