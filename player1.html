@@ -20,9 +20,10 @@
     .stat-card h3{font-size:30px;color:#ff6b00;margin-bottom:8px}.stat-card p{color:#666;font-size:12px;line-height:1.4}
     .totals-table{width:100%;min-width:760px;border-collapse:collapse}.table-wrap{overflow-x:auto;border:1px solid #eee;border-radius:8px}
     .totals-table th{padding:12px;background:#111;color:#fff;font-size:11px}.totals-table td{padding:14px 12px;text-align:center;border-bottom:1px solid #eee;font-size:13px}
+    .competition-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:22px}.control-group{display:flex;flex-direction:column;gap:7px}.control-group label{font-size:12px;font-weight:bold;color:#555;text-transform:uppercase;letter-spacing:.04em}.control-group select{width:100%;padding:12px 14px;border:1px solid #d9d9d9;border-radius:8px;background:#fff;color:#222;font:inherit}.section-status{padding:18px;border:1px dashed #ddd;border-radius:8px;text-align:center;color:#777}.game-table{width:100%;min-width:980px;border-collapse:collapse}.game-table th{padding:12px 10px;background:#111;color:#fff;font-size:11px}.game-table td{padding:13px 10px;text-align:center;border-bottom:1px solid #eee;font-size:12px}.game-table td:nth-child(2){text-align:left;font-weight:bold}.result-badge{display:inline-block;min-width:28px;padding:4px 7px;border-radius:5px;color:#fff;font-weight:bold}.result-win{background:#138a45}.result-loss{background:#c2352a}.result-tie{background:#777}.opponent-link{color:#222;text-decoration:none}.opponent-link:hover{color:#ff6b00}.season-heading{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:22px}.season-heading h2{margin:0}.season-summary{font-size:12px;color:#777;text-align:right}
     .note{margin-top:15px;color:#777;font-size:12px}.error-card{max-width:700px;margin:60px auto;padding:35px;background:#fff4f2;color:#b42318;border-radius:10px;text-align:center}
     footer{background:#111;color:#fff;text-align:center;padding:30px;margin-top:50px}footer p{color:#aaa;margin-top:10px}
-    @media(max-width:768px){header{flex-direction:column;gap:15px}nav{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}nav a{margin:0;font-size:12px}.player-hero h1{font-size:35px}.container{margin:32px auto}.info-card{padding:24px 18px}.player-photo{width:125px;height:125px}}
+    @media(max-width:768px){header{flex-direction:column;gap:15px}nav{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}nav a{margin:0;font-size:12px}.player-hero h1{font-size:35px}.container{margin:32px auto}.info-card{padding:24px 18px}.player-photo{width:125px;height:125px}.competition-controls{grid-template-columns:1fr}.season-heading{align-items:flex-start;flex-direction:column}.season-summary{text-align:left}}
   </style>
 </head>
 <body>
@@ -79,6 +80,42 @@
     </section>
 
     <section class="info-card">
+      <div class="season-heading"><h2>Season & Division Statistics</h2><div id="seasonSummary" class="season-summary">Choose a competition to view official statistics.</div></div>
+      <div class="competition-controls">
+        <div class="control-group"><label for="leagueSelect">League</label><select id="leagueSelect"><option value="">Loading leagues...</option></select></div>
+        <div class="control-group"><label for="seasonSelect">Season</label><select id="seasonSelect" disabled><option value="">Select season</option></select></div>
+        <div class="control-group"><label for="divisionSelect">Division</label><select id="divisionSelect" disabled><option value="">Select division</option></select></div>
+      </div>
+      <div id="seasonStatsStatus" class="section-status">Select a league, season, and division.</div>
+      <div id="seasonStatsContent" hidden>
+        <div class="stats">
+          <div class="stat-card"><h3 id="seasonGames">0</h3><p>Games Played</p></div>
+          <div class="stat-card"><h3 id="seasonMpg">0.0</h3><p>Minutes Per Game</p></div>
+          <div class="stat-card"><h3 id="seasonPpg">0.0</h3><p>Points Per Game</p></div>
+          <div class="stat-card"><h3 id="seasonRpg">0.0</h3><p>Rebounds Per Game</p></div>
+          <div class="stat-card"><h3 id="seasonApg">0.0</h3><p>Assists Per Game</p></div>
+          <div class="stat-card"><h3 id="seasonSpg">0.0</h3><p>Steals Per Game</p></div>
+          <div class="stat-card"><h3 id="seasonBpg">0.0</h3><p>Blocks Per Game</p></div>
+          <div class="stat-card"><h3 id="seasonFg">0.0%</h3><p>Field Goal</p></div>
+          <div class="stat-card"><h3 id="seasonThree">0.0%</h3><p>Three-Point</p></div>
+          <div class="stat-card"><h3 id="seasonFt">0.0%</h3><p>Free Throw</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="info-card">
+      <h2>Official Game-by-Game Statistics</h2>
+      <div id="gameLogStatus" class="section-status">Select a competition above to view finalized games.</div>
+      <div id="gameLogWrap" class="table-wrap" hidden>
+        <table class="game-table">
+          <thead><tr><th>DATE</th><th>OPPONENT</th><th>RESULT</th><th>MIN</th><th>PTS</th><th>REB</th><th>AST</th><th>STL</th><th>BLK</th><th>TO</th><th>PF</th><th>+/-</th></tr></thead>
+          <tbody id="gameLogBody"></tbody>
+        </table>
+      </div>
+      <p class="note">Only finalized games recorded by an authorized scorekeeper are included.</p>
+    </section>
+
+    <section class="info-card">
       <h2 id="aboutTitle">About This Player</h2>
       <p id="playerBio">Player information is loading.</p>
     </section>
@@ -93,6 +130,11 @@
       const PLAYER_PAGE_SUPABASE_KEY="sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
       const db=window.supabase.createClient(PLAYER_PAGE_SUPABASE_URL,PLAYER_PAGE_SUPABASE_KEY);
       const playerId=new URLSearchParams(window.location.search).get("id");
+      const pageParams=new URLSearchParams(window.location.search);
+      const requestedLeague=pageParams.get("league_id")||"";
+      const requestedSeason=pageParams.get("season_id")||"";
+      const requestedDivision=pageParams.get("division_id")||"";
+      let currentPlayer=null,currentTeam=null,assignments=[],loadToken=0;
       const setText=(id,value)=>{document.getElementById(id).textContent=value??"—"};
       const safeNumber=value=>Number.isFinite(Number(value))?Number(value):0;
       const decimal=value=>safeNumber(value).toFixed(1);
@@ -102,6 +144,13 @@
         const total=Math.max(0,Math.round(safeNumber(seconds)));
         return `${Math.floor(total/60)}:${String(total%60).padStart(2,"0")}`;
       }
+
+      const option=(value,label)=>{const item=document.createElement("option");item.value=value;item.textContent=label;return item};
+      const sum=(rows,key)=>rows.reduce((total,row)=>total+safeNumber(row[key]),0);
+      const pct=(made,attempted)=>attempted?`${(made/attempted*100).toFixed(1)}%`:"0.0%";
+      const statSeconds=row=>row.minutes_clock_seconds!=null?safeNumber(row.minutes_clock_seconds):safeNumber(row.minutes_played)*60;
+      const gameDate=value=>value?new Intl.DateTimeFormat("en-PH",{year:"numeric",month:"short",day:"numeric"}).format(new Date(value)):"—";
+      const escapeHtml=value=>String(value??"").replace(/[&<>'"]/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[char]));
 
       async function resolvePlayer(){
         let query=db.from("players").select("*");
@@ -125,6 +174,75 @@
         const {data:leagues,error:leagueError}=await db.from("leagues").select("id,name").in("id",leagueIds).order("name");
         if(leagueError) throw leagueError;
         return {team,leagues:leagues||[]};
+      }
+
+      async function loadCompetitionAssignments(teamId){
+        if(!teamId) return [];
+        const {data:links,error}=await db.from("league_teams").select("league_id,season_id,division_id,registration_status").eq("team_id",teamId).ilike("registration_status","approved").not("season_id","is",null).not("division_id","is",null);
+        if(error) throw error;
+        const leagueIds=[...new Set((links||[]).map(row=>row.league_id))],seasonIds=[...new Set((links||[]).map(row=>row.season_id))],divisionIds=[...new Set((links||[]).map(row=>row.division_id))];
+        const [{data:leagues,error:le},{data:seasons,error:se},{data:divisions,error:de}]=await Promise.all([
+          leagueIds.length?db.from("leagues").select("id,name").in("id",leagueIds):Promise.resolve({data:[]}),
+          seasonIds.length?db.from("seasons").select("id,league_id,name,status,created_at").in("id",seasonIds):Promise.resolve({data:[]}),
+          divisionIds.length?db.from("divisions").select("id,season_id,name,status").in("id",divisionIds):Promise.resolve({data:[]})
+        ]);
+        if(le) throw le;if(se) throw se;if(de) throw de;
+        const leagueMap=new Map((leagues||[]).map(row=>[row.id,row])),seasonMap=new Map((seasons||[]).map(row=>[row.id,row])),divisionMap=new Map((divisions||[]).map(row=>[row.id,row]));
+        return (links||[]).map(link=>({...link,league:leagueMap.get(link.league_id),season:seasonMap.get(link.season_id),division:divisionMap.get(link.division_id)})).filter(row=>row.league&&row.season&&row.division);
+      }
+
+      function fillSelect(select,rows,placeholder,label,value="id"){
+        select.replaceChildren(option("",placeholder));rows.forEach(row=>select.append(option(row[value],label(row))));select.disabled=!rows.length;
+      }
+
+      function setupCompetitionFilters(){
+        const leagueSelect=document.getElementById("leagueSelect"),seasonSelect=document.getElementById("seasonSelect"),divisionSelect=document.getElementById("divisionSelect");
+        const leagues=[...new Map(assignments.map(row=>[row.league_id,row.league])).values()].sort((a,b)=>a.name.localeCompare(b.name));
+        fillSelect(leagueSelect,leagues,"Select league",row=>row.name);
+        leagueSelect.value=leagues.some(row=>row.id===requestedLeague)?requestedLeague:(leagues[0]?.id||"");
+        const refreshSeasons=()=>{
+          const rows=[...new Map(assignments.filter(row=>row.league_id===leagueSelect.value).map(row=>[row.season_id,row.season])).values()].sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||""))||a.name.localeCompare(b.name));
+          fillSelect(seasonSelect,rows,"Select season",row=>row.name);seasonSelect.value=rows.some(row=>row.id===requestedSeason)?requestedSeason:(rows[0]?.id||"");refreshDivisions();
+        };
+        const refreshDivisions=()=>{
+          const rows=[...new Map(assignments.filter(row=>row.league_id===leagueSelect.value&&row.season_id===seasonSelect.value).map(row=>[row.division_id,row.division])).values()].sort((a,b)=>a.name.localeCompare(b.name));
+          fillSelect(divisionSelect,rows,"Select division",row=>row.name);divisionSelect.value=rows.some(row=>row.id===requestedDivision)?requestedDivision:(rows[0]?.id||"");loadSeasonPerformance();
+        };
+        leagueSelect.onchange=refreshSeasons;seasonSelect.onchange=refreshDivisions;divisionSelect.onchange=loadSeasonPerformance;
+        if(leagues.length) refreshSeasons();else showCompetitionMessage("This player is not assigned to an approved season and division.");
+      }
+
+      function showCompetitionMessage(message){
+        document.getElementById("seasonStatsStatus").hidden=false;setText("seasonStatsStatus",message);document.getElementById("seasonStatsContent").hidden=true;
+        document.getElementById("gameLogStatus").hidden=false;setText("gameLogStatus",message);document.getElementById("gameLogWrap").hidden=true;
+      }
+
+      async function loadSeasonPerformance(){
+        const leagueId=document.getElementById("leagueSelect").value,seasonId=document.getElementById("seasonSelect").value,divisionId=document.getElementById("divisionSelect").value,token=++loadToken;
+        if(!leagueId||!seasonId||!divisionId) return showCompetitionMessage("Select a league, season, and division.");
+        showCompetitionMessage("Loading official statistics...");
+        try{
+          const {data:games,error:gameError}=await db.from("games").select("id,home_team_id,away_team_id,home_team,away_team,home_score,away_score,scheduled_at,finalized_at,status").eq("league_id",leagueId).eq("season_id",seasonId).eq("division_id",divisionId).ilike("status","final").not("finalized_at","is",null).or(`home_team_id.eq.${currentTeam.id},away_team_id.eq.${currentTeam.id}`).order("finalized_at",{ascending:false});
+          if(gameError) throw gameError;if(token!==loadToken) return;
+          const gameIds=(games||[]).map(game=>game.id);let rows=[];
+          if(gameIds.length){const {data,error}=await db.from("player_game_stats").select("*").eq("player_id",currentPlayer.id).eq("team_id",currentTeam.id).in("game_id",gameIds);if(error) throw error;rows=data||[]}
+          if(token!==loadToken) return;renderSeasonPerformance(games||[],rows);
+        }catch(error){console.error("Season statistics error:",error);if(token===loadToken) showCompetitionMessage(`Unable to load season statistics: ${error.message||"Unknown error"}`)}
+      }
+
+      function renderSeasonPerformance(games,stats){
+        const byGame=new Map(stats.map(row=>[String(row.game_id),row])),played=games.filter(game=>byGame.has(String(game.id))),gp=played.length,totalSeconds=stats.reduce((total,row)=>total+statSeconds(row),0);
+        setText("seasonGames",gp);setText("seasonMpg",gp?(totalSeconds/60/gp).toFixed(1):"0.0");setText("seasonPpg",gp?(sum(stats,"points")/gp).toFixed(1):"0.0");
+        setText("seasonRpg",gp?(sum(stats,"rebounds")/gp).toFixed(1):"0.0");setText("seasonApg",gp?(sum(stats,"assists")/gp).toFixed(1):"0.0");setText("seasonSpg",gp?(sum(stats,"steals")/gp).toFixed(1):"0.0");setText("seasonBpg",gp?(sum(stats,"blocks")/gp).toFixed(1):"0.0");
+        setText("seasonFg",pct(sum(stats,"two_pt_made")+sum(stats,"three_pt_made"),sum(stats,"two_pt_attempted")+sum(stats,"three_pt_attempted")));setText("seasonThree",pct(sum(stats,"three_pt_made"),sum(stats,"three_pt_attempted")));setText("seasonFt",pct(sum(stats,"ft_made"),sum(stats,"ft_attempted")));
+        document.getElementById("seasonStatsStatus").hidden=true;document.getElementById("seasonStatsContent").hidden=false;
+        const league=document.getElementById("leagueSelect").selectedOptions[0]?.textContent,season=document.getElementById("seasonSelect").selectedOptions[0]?.textContent,division=document.getElementById("divisionSelect").selectedOptions[0]?.textContent;setText("seasonSummary",`${league} • ${season} • ${division}`);
+        const body=document.getElementById("gameLogBody");body.innerHTML="";
+        played.forEach(game=>{
+          const stat=byGame.get(String(game.id)),home=game.home_team_id===currentTeam.id,opponent=home?game.away_team:game.home_team,teamScore=safeNumber(home?game.home_score:game.away_score),opponentScore=safeNumber(home?game.away_score:game.home_score),result=teamScore>opponentScore?"W":teamScore<opponentScore?"L":"T",klass=result==="W"?"result-win":result==="L"?"result-loss":"result-tie";
+          const row=document.createElement("tr");row.innerHTML=`<td>${escapeHtml(gameDate(game.finalized_at||game.scheduled_at))}</td><td>${escapeHtml(opponent||"Opponent")}</td><td><span class="result-badge ${klass}">${result}</span> ${teamScore}-${opponentScore}</td><td>${formatMinutes(statSeconds(stat))}</td><td>${safeNumber(stat.points)}</td><td>${safeNumber(stat.rebounds)}</td><td>${safeNumber(stat.assists)}</td><td>${safeNumber(stat.steals)}</td><td>${safeNumber(stat.blocks)}</td><td>${safeNumber(stat.turnovers)}</td><td>${safeNumber(stat.fouls)}</td><td>${safeNumber(stat.plus_minus)>0?"+":""}${safeNumber(stat.plus_minus)}</td>`;body.append(row);
+        });
+        document.getElementById("gameLogStatus").hidden=played.length>0;setText("gameLogStatus","No finalized game statistics are available for this player in the selected division.");document.getElementById("gameLogWrap").hidden=!played.length;
       }
 
       function render(player,team,leagues){
@@ -158,7 +276,7 @@
       }
 
       async function initialize(){
-        try{const player=await resolvePlayer();const {team,leagues}=await loadTeamAndLeague(player.team_id);render(player,team,leagues)}
+        try{const player=await resolvePlayer();const [{team,leagues},competitionAssignments]=await Promise.all([loadTeamAndLeague(player.team_id),loadCompetitionAssignments(player.team_id)]);currentPlayer=player;currentTeam=team;assignments=competitionAssignments;render(player,team,leagues);setupCompetitionFilters()}
         catch(error){console.error("Player profile error:",error);document.getElementById("playerHero").hidden=true;document.getElementById("mainContent").innerHTML=`<div class="error-card">Unable to load player profile: ${String(error.message||"Unknown error")}</div>`}
       }
       initialize();
