@@ -36,6 +36,7 @@
     .record{font-weight:bold}
     .positive{color:#067647}.negative{color:#b42318}
     .standings-note{margin-top:14px;color:#777;font-size:12px}
+    #division-standings,#schedule-results{scroll-margin-top:24px}
     .state-message{padding:28px;text-align:center;color:#68707d}
     .state-message.error{color:#b42318;background:#fff4f2}
     .games-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
@@ -111,7 +112,7 @@
       <p id="competitionNote" class="competition-note">The latest available competition will be selected automatically.</p>
     </section>
 
-    <section class="info-card">
+    <section class="info-card" id="division-standings">
       <h2>Division Standings</h2>
       <div class="table-wrap">
         <div id="standingsState" class="state-message">Loading standings...</div>
@@ -128,7 +129,7 @@
       <p class="standings-note">Standings update automatically when a game is finalized.</p>
     </section>
 
-    <section class="info-card">
+    <section class="info-card" id="schedule-results">
       <div class="section-head">
         <h2>Upcoming Games</h2>
         <span>Schedule and live-game status</span>
