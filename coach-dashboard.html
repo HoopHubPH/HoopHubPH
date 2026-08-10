@@ -615,17 +615,27 @@
     }
 
     function friendlyAddPlayerError(error) {
-      const message = String(error?.message || "Unable to add the player.");
-      if (/jersey number .*already assigned|duplicate key|unique constraint/i.test(message)) {
-        return "That jersey number is already assigned to another player on this team.";
+      const errorText = [
+        error?.message,
+        error?.details,
+        error?.hint,
+        error?.code
+      ].filter(Boolean).join(" ");
+
+      if (/jersey|players_unique_team_jersey_idx|duplicate key|unique constraint|23505/i.test(errorText)) {
+        return "This jersey number is already used by another player on this team. Please choose a different number.";
       }
-      if (/not authorized|permission denied/i.test(message)) {
-        return "You are not authorized to add players to this selected team.";
+      if (/not authorized|permission denied|42501/i.test(errorText)) {
+        return "You do not have permission to add a player to this team.";
       }
-      if (/not active and approved/i.test(message)) {
-        return "This team must be active and approved in the selected league before players can be added.";
+      if (/not active and approved/i.test(errorText)) {
+        return "Players can only be added after this team is active and approved.";
       }
-      return message;
+      if (/first name is required/i.test(errorText)) return "Please enter the player's first name.";
+      if (/last name is required/i.test(errorText)) return "Please enter the player's last name.";
+      if (/jersey number must be between/i.test(errorText)) return "Please enter a jersey number from 0 to 99.";
+
+      return "We couldn't add this player. Please check the information and try again.";
     }
 
     async function addTeamPlayer(event) {
