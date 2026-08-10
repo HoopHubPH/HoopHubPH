@@ -175,7 +175,8 @@
       font-weight: 750;
     }
 
-    input {
+    input,
+    select {
       width: 100%;
       height: 48px;
       padding: 0 14px;
@@ -191,6 +192,43 @@
     input:focus {
       border-color: var(--orange);
       box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.13);
+    }
+
+    select:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.13);
+    }
+
+    .form-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      margin-bottom: 24px;
+      padding: 4px;
+      background: #f3f4f6;
+      border-radius: 10px;
+    }
+
+    .mode-button {
+      min-height: 40px;
+      padding: 8px 12px;
+      color: #6b7280;
+      background: transparent;
+      border: 0;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .mode-button.active {
+      color: var(--ink);
+      background: #ffffff;
+      box-shadow: 0 1px 4px rgba(17, 24, 39, 0.12);
+    }
+
+    .registration-only[hidden] {
+      display: none;
     }
 
     .password-wrap {
@@ -342,12 +380,30 @@
       </div>
 
       <div class="form-panel">
-        <h2>Welcome back</h2>
-        <p class="form-intro">Enter your HoopHub PH account details.</p>
+        <h2 id="formTitle">Welcome back</h2>
+        <p id="formIntro" class="form-intro">Enter your HoopHub PH account details.</p>
+
+        <div class="form-switch" aria-label="Account action">
+          <button id="signInModeButton" class="mode-button active" type="button">Sign In</button>
+          <button id="registerModeButton" class="mode-button" type="button">Create Account</button>
+        </div>
 
         <div id="message" class="message" role="alert" aria-live="polite"></div>
 
         <form id="loginForm" novalidate>
+          <div class="field registration-only" hidden>
+            <label for="fullName">Full name</label>
+            <input id="fullName" name="fullName" type="text" autocomplete="name" placeholder="Enter your full name">
+          </div>
+
+          <div class="field registration-only" hidden>
+            <label for="accountRole">Register as</label>
+            <select id="accountRole" name="accountRole">
+              <option value="player">Player</option>
+              <option value="coach">Coach / Team Manager</option>
+              <option value="commissioner">Commissioner</option>
+            </select>
+          </div>
           <div class="field">
             <label for="email">Email address</label>
             <input
@@ -358,6 +414,13 @@
               placeholder="name@example.com"
               required
             >
+          </div>
+
+          <div class="field registration-only" hidden>
+            <label for="confirmPassword">Confirm password</label>
+            <div class="password-wrap">
+              <input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" placeholder="Enter your password again" minlength="8">
+            </div>
           </div>
 
           <div class="field">
@@ -388,7 +451,7 @@
         </form>
 
         <p class="security-note">
-          Authorized HoopHub PH accounts only.
+          <span id="securityNoteText">Authorized HoopHub PH accounts only.</span>
         </p>
       </div>
     </section>
@@ -418,6 +481,16 @@
     const loginButton = document.getElementById("loginButton");
     const messageBox = document.getElementById("message");
     const showPasswordButton = document.getElementById("showPasswordButton");
+    const fullNameInput = document.getElementById("fullName");
+    const roleInput = document.getElementById("accountRole");
+    const confirmPasswordInput = document.getElementById("confirmPassword");
+    const signInModeButton = document.getElementById("signInModeButton");
+    const registerModeButton = document.getElementById("registerModeButton");
+    const formTitle = document.getElementById("formTitle");
+    const formIntro = document.getElementById("formIntro");
+    const securityNoteText = document.getElementById("securityNoteText");
+    const registrationOnlyFields = document.querySelectorAll(".registration-only");
+    let formMode = "signin";
 
     function showMessage(text, type = "error") {
       messageBox.textContent = text;
@@ -433,7 +506,35 @@
       loginButton.disabled = isLoading;
       emailInput.disabled = isLoading;
       passwordInput.disabled = isLoading;
-      loginButton.textContent = isLoading ? "Signing In..." : "Sign In";
+      fullNameInput.disabled = isLoading;
+      roleInput.disabled = isLoading;
+      confirmPasswordInput.disabled = isLoading;
+      signInModeButton.disabled = isLoading;
+      registerModeButton.disabled = isLoading;
+      loginButton.textContent = isLoading
+        ? (formMode === "register" ? "Creating Account..." : "Signing In...")
+        : (formMode === "register" ? "Create Account" : "Sign In");
+    }
+
+    function setFormMode(mode) {
+      formMode = mode;
+      const isRegistering = mode === "register";
+      clearMessage();
+      registrationOnlyFields.forEach((field) => { field.hidden = !isRegistering; });
+      fullNameInput.required = isRegistering;
+      roleInput.required = isRegistering;
+      confirmPasswordInput.required = isRegistering;
+      passwordInput.autocomplete = isRegistering ? "new-password" : "current-password";
+      signInModeButton.classList.toggle("active", !isRegistering);
+      registerModeButton.classList.toggle("active", isRegistering);
+      formTitle.textContent = isRegistering ? "Create your account" : "Welcome back";
+      formIntro.textContent = isRegistering
+        ? "Register for a HoopHub PH role. Approval is required before dashboard access."
+        : "Enter your HoopHub PH account details.";
+      securityNoteText.textContent = isRegistering
+        ? "Super Admin and scorekeeper accounts cannot be created here."
+        : "Authorized HoopHub PH accounts only.";
+      loginButton.textContent = isRegistering ? "Create Account" : "Sign In";
     }
 
     async function signOutAndShow(message) {
@@ -489,6 +590,67 @@
       const email = emailInput.value.trim();
       const password = passwordInput.value;
 
+      if (formMode === "register") {
+        const fullName = fullNameInput.value.trim();
+        const confirmPassword = confirmPasswordInput.value;
+
+        if (!fullName || !email || !password || !confirmPassword) {
+          showMessage("Complete all registration fields.");
+          return;
+        }
+
+        if (password.length < 8) {
+          showMessage("Your password must contain at least 8 characters.");
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          showMessage("The passwords do not match.");
+          return;
+        }
+
+        setLoading(true);
+
+        try {
+          const { data, error } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: {
+              data: { full_name: fullName, role: roleInput.value },
+              emailRedirectTo: new URL("login.html", window.location.href).href
+            }
+          });
+
+          if (error) {
+            const duplicateMessage = /already|registered|exists/i.test(error.message || "");
+            showMessage(duplicateMessage
+              ? "An account may already exist for this email. Try signing in instead."
+              : (error.message || "Unable to create the account."));
+            setLoading(false);
+            return;
+          }
+
+          if (data.session) {
+            await supabaseClient.auth.signOut();
+          }
+
+          loginForm.reset();
+          showMessage(
+            data.user && !data.session
+              ? "Registration submitted. Check your email to verify your account. After verification, wait for HoopHub PH approval before signing in."
+              : "Registration submitted. Your account is pending HoopHub PH approval.",
+            "success"
+          );
+          setLoading(false);
+          return;
+        } catch (error) {
+          console.error("Registration failed:", error);
+          showMessage("Unable to connect. Check your internet connection and try again.");
+          setLoading(false);
+          return;
+        }
+      }
+
       if (!email || !password) {
         showMessage("Enter both your email address and password.");
         return;
@@ -522,6 +684,9 @@
       showPasswordButton.textContent = showPassword ? "Hide" : "Show";
       showPasswordButton.setAttribute("aria-pressed", String(showPassword));
     });
+
+    signInModeButton.addEventListener("click", () => setFormMode("signin"));
+    registerModeButton.addEventListener("click", () => setFormMode("register"));
 
     async function checkExistingSession() {
       setLoading(true);
