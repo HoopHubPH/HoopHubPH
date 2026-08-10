@@ -70,12 +70,12 @@
       </div>
     </section>
 
-    <section class="play-panel">
+    <section id="playPanel" class="play-panel" hidden>
       <div class="play-header"><h2>Play-by-Play</h2><span><span class="live-pulse"></span>Live Feed</span></div>
       <div id="playByPlayFeed" class="play-feed"><div class="play-empty">Waiting for game events...</div></div>
     </section>
 
-    <section class="box-score-panel">
+    <section id="boxScorePanel" class="box-score-panel" hidden>
       <div class="box-score-header"><h2>Live Box Score</h2><span>Updates automatically during the game</span></div>
       <div class="box-team">
         <h3 id="homeBoxTitle" class="box-team-title"><span>HOME</span> TEAM</h3>
@@ -118,6 +118,7 @@
 
       function renderGame(game){
         currentGame=game;document.getElementById("loading").style.display="none";document.getElementById("gameCard").hidden=false;
+        document.getElementById("playPanel").hidden=false;document.getElementById("boxScorePanel").hidden=false;
         setText("homeTeam",game.home_team||"Home Team");setText("awayTeam",game.away_team||"Away Team");setText("homeScore",game.home_score??0);setText("awayScore",game.away_score??0);setText("period",game.period||"1st Quarter");
         setText("homeFouls",game.home_fouls??0);setText("awayFouls",game.away_fouls??0);setText("displayGameId",`#${game.id}`);setText("gameSchedule",formatDate(game.scheduled_at));setText("gameVenue",game.venue||"TBA");
         const status=String(game.status||"Scheduled");const badge=document.getElementById("gameStatus");badge.textContent=status.toUpperCase();badge.className="live-status "+(["live","halftime"].includes(status.toLowerCase())?"live":status.toLowerCase()==="final"?"final":"");
@@ -173,14 +174,26 @@
       function renderSelector(){
         const select=document.getElementById("gameSelect");const groups={Live:[],Upcoming:[],Final:[]};
         games.forEach(game=>{const s=String(game.status||"").toLowerCase();groups[s==="final"?"Final":["live","halftime"].includes(s)?"Live":"Upcoming"].push(game)});
-        select.innerHTML=Object.entries(groups).filter(([,items])=>items.length).map(([label,items])=>`<optgroup label="${label}">${items.map(g=>`<option value="${g.id}" ${Number(g.id)===Number(selectedId)?"selected":""}>#${g.id} — ${escapeHtml(g.home_team)} vs ${escapeHtml(g.away_team)}</option>`).join("")}</optgroup>`).join("");
+        const placeholder=!selectedId?'<option value="" selected>Choose a game to view</option>':"";
+        select.innerHTML=placeholder+Object.entries(groups).filter(([,items])=>items.length).map(([label,items])=>`<optgroup label="${label}">${items.map(g=>`<option value="${g.id}" ${Number(g.id)===Number(selectedId)?"selected":""}>#${g.id} — ${escapeHtml(g.home_team)} vs ${escapeHtml(g.away_team)}</option>`).join("")}</optgroup>`).join("");
         select.disabled=!games.length;
+      }
+
+      function renderNoLiveGame(){
+        currentGame=null;selectedId=null;clearInterval(localClockTimer);
+        document.getElementById("gameCard").hidden=true;
+        document.getElementById("playPanel").hidden=true;
+        document.getElementById("boxScorePanel").hidden=true;
+        const loading=document.getElementById("loading");
+        loading.style.display="block";
+        loading.innerHTML='<strong>No game is live right now.</strong><br><span style="display:inline-block;margin-top:8px">Scheduled and completed games are available below.</span>';
+        document.title="Live Game Center | Hoop Hub PH";
       }
 
       async function fetchGames(){
         const {data,error}=await db.from("games").select("*").order("created_at",{ascending:false}).limit(50);if(error)throw error;games=(data||[]).filter(game=>String(game.status||"").toLowerCase()!=="cancelled");
-        if(!selectedId){const preferred=games.find(g=>["live","halftime"].includes(String(g.status).toLowerCase()))||games.find(g=>String(g.status).toLowerCase()==="scheduled")||games[0];selectedId=preferred?.id||null}
-        renderSelector();renderBrowser();const game=games.find(g=>Number(g.id)===Number(selectedId));if(game){renderGame(game);subscribeToGame(game.id);await Promise.all([refreshPlayByPlay(),refreshBoxScore(),refreshTimeouts()])}else{document.getElementById("loading").textContent="No game is available."}
+        if(!selectedId){const liveGame=games.find(g=>["live","halftime"].includes(String(g.status).toLowerCase()));selectedId=liveGame?.id||null}
+        renderSelector();renderBrowser();const game=games.find(g=>Number(g.id)===Number(selectedId));if(game){renderGame(game);subscribeToGame(game.id);await Promise.all([refreshPlayByPlay(),refreshBoxScore(),refreshTimeouts()])}else{renderNoLiveGame()}
       }
 
       function subscribeToGame(id){
@@ -188,7 +201,7 @@
       }
       async function refreshSelected(){if(!selectedId)return;const {data,error}=await db.from("games").select("*").eq("id",selectedId).maybeSingle();if(!error&&data){const i=games.findIndex(g=>Number(g.id)===Number(selectedId));if(i>=0)games[i]=data;else games.unshift(data);renderGame(data);renderSelector();renderBrowser()}await Promise.all([refreshPlayByPlay(),refreshBoxScore(),refreshTimeouts()])}
 
-      document.getElementById("gameSelect").addEventListener("change",event=>{selectedId=Number(event.target.value);history.replaceState(null,"",`live-game.html?id=${selectedId}`);const game=games.find(g=>Number(g.id)===selectedId);if(game){renderGame(game);subscribeToGame(selectedId);refreshPlayByPlay();refreshBoxScore();refreshTimeouts()}});
+      document.getElementById("gameSelect").addEventListener("change",event=>{if(!event.target.value)return;selectedId=Number(event.target.value);history.replaceState(null,"",`live-game.html?id=${selectedId}`);const game=games.find(g=>Number(g.id)===selectedId);if(game){renderGame(game);subscribeToGame(selectedId);refreshPlayByPlay();refreshBoxScore();refreshTimeouts()}});
       async function initialize(){try{await fetchGames();pollTimer=setInterval(refreshSelected,3000)}catch(error){console.error("Game center error:",error);document.getElementById("loading").style.display="none";const box=document.getElementById("errorMessage");box.style.display="block";box.textContent="Unable to load games: "+(error.message||"Unknown error")}}
       initialize();
     })();
