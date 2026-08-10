@@ -856,7 +856,7 @@
 
     function displayAccount(profile, user) {
       const emailName = user.email ? user.email.split("@")[0] : "Owner";
-      const displayName = profile.full_name.trim() || emailName;
+      const displayName = String(profile.full_name || "").trim() || emailName;
 
       document.getElementById("headerAccountName").textContent = displayName;
       document.getElementById("welcomeHeading").textContent = `Welcome, ${displayName}`;
