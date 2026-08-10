@@ -616,10 +616,15 @@
 
     function friendlyAddPlayerError(error) {
       const errorText = [
+        String(error || ""),
         error?.message,
         error?.details,
         error?.hint,
-        error?.code
+        error?.code,
+        (() => {
+          try { return JSON.stringify(error); }
+          catch { return ""; }
+        })()
       ].filter(Boolean).join(" ");
 
       if (/jersey|players_unique_team_jersey_idx|duplicate key|unique constraint|23505/i.test(errorText)) {
@@ -662,6 +667,17 @@
       if (!Number.isInteger(jerseyNumber) || jerseyNumber < 0 || jerseyNumber > 99) {
         message.className = "application-message error";
         message.textContent = "Jersey number must be a whole number from 0 to 99.";
+        return;
+      }
+
+      const jerseyAlreadyUsed = players.some(player =>
+        player.team_id === assignment.team_id &&
+        Number(player.jersey_number) === jerseyNumber
+      );
+
+      if (jerseyAlreadyUsed) {
+        message.className = "application-message error";
+        message.textContent = "This jersey number is already used by another player on this team. Please choose a different number.";
         return;
       }
 
