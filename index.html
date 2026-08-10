@@ -31,6 +31,7 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+            gap: 28px;
         }
 
        .logo {
@@ -56,10 +57,17 @@
             color: #ff6b00;
         }
 
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 8px 22px;
+        }
+
         nav a {
             color: white;
             text-decoration: none;
-            margin-left: 25px;
             font-weight: bold;
             font-size: 14px;
         }
@@ -178,15 +186,19 @@
         }
 
         .card {
+            display: block;
             background: white;
             padding: 35px 25px;
             border-radius: 10px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.08);
             transition: transform 0.3s;
+            color: #222;
+            text-decoration: none;
         }
 
         .card:hover {
             transform: translateY(-8px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.13);
         }
 
         .card-icon {
@@ -235,6 +247,30 @@
             color: #ff6b00;
             text-decoration: none;
             font-weight: bold;
+        }
+
+        /* PUBLIC BASKETBALL CENTER */
+
+        .basketball-center {
+            background: #ececec;
+        }
+
+        .center-card {
+            position: relative;
+            text-align: left;
+            border-top: 4px solid #ff6b00;
+        }
+
+        .center-card .card-icon {
+            font-size: 36px;
+        }
+
+        .center-link {
+            display: inline-block;
+            margin-top: 18px;
+            color: #ff6b00;
+            font-weight: bold;
+            font-size: 13px;
         }
 
         /* CTA */
@@ -290,10 +326,16 @@
             header {
                 flex-direction: column;
                 gap: 15px;
+                padding: 15px 20px;
+            }
+
+            nav {
+                justify-content: center;
+                gap: 10px 14px;
+                width: 100%;
             }
 
             nav a {
-                margin: 0 7px;
                 font-size: 12px;
             }
 
@@ -333,9 +375,7 @@
 
         <a href="players.html">Players</a>
 
-        <a href="tournaments.html">Tournaments</a>
-
-        <a href="live-game.html">Live Game</a>
+        <a href="live-game.html">Live Games</a>
 
 <a id="loginAccess" class="dashboard-access" href="login.html">Log In</a>
 
@@ -364,12 +404,12 @@
 
             <div class="hero-buttons">
 
-                <a href="#" class="primary-btn">
+                <a href="leagues.html" class="primary-btn">
                     FIND A LEAGUE
                 </a>
 
-                <a href="#" class="secondary-btn">
-                    CREATE YOUR PROFILE
+                <a href="players.html" class="secondary-btn">
+                    EXPLORE PLAYERS
                 </a>
 
             </div>
@@ -393,7 +433,7 @@
 
         <div class="cards">
 
-            <div class="card">
+            <a class="card" href="leagues.html">
 
                 <div class="card-icon">
                     🏆
@@ -408,10 +448,10 @@
                     in your community.
                 </p>
 
-            </div>
+            </a>
 
 
-            <div class="card">
+            <a class="card" href="teams.html">
 
                 <div class="card-icon">
                     🏀
@@ -426,10 +466,10 @@
                     participating in local basketball.
                 </p>
 
-            </div>
+            </a>
 
 
-            <div class="card">
+            <a class="card" href="players.html">
 
                 <div class="card-icon">
                     👤
@@ -440,14 +480,14 @@
                 </h3>
 
                 <p>
-                    Create your basketball profile and build
-                    your player identity.
+                    Browse player profiles, season statistics
+                    and official game-by-game records.
                 </p>
 
-            </div>
+            </a>
 
 
-            <div class="card">
+            <a class="card" href="leagues.html">
 
                 <div class="card-icon">
                     📊
@@ -458,11 +498,49 @@
                 </h3>
 
                 <p>
-                    Track player performances, team records
-                    and basketball statistics.
+                    View division standings, schedules,
+                    results and basketball statistics.
                 </p>
 
-            </div>
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- PUBLIC BASKETBALL CENTER -->
+
+    <section class="section basketball-center" id="basketballCenter">
+
+        <h2>BASKETBALL CENTER</h2>
+
+        <p class="section-subtitle">
+            Follow every competition from the schedule to the final result.
+        </p>
+
+        <div class="cards">
+
+            <a class="card center-card" href="leagues.html">
+                <div class="card-icon">📅</div>
+                <h3>Schedules & Results</h3>
+                <p>Choose a league, season and division to see upcoming games and official final results.</p>
+                <span class="center-link">VIEW COMPETITIONS →</span>
+            </a>
+
+            <a class="card center-card" href="leagues.html">
+                <div class="card-icon">📊</div>
+                <h3>Division Standings</h3>
+                <p>Check rankings, wins, losses, points scored and point differential by division.</p>
+                <span class="center-link">VIEW STANDINGS →</span>
+            </a>
+
+            <a class="card center-card" href="live-game.html">
+                <div class="card-icon">🔴</div>
+                <h3>Live Game Center</h3>
+                <p>Open live and completed games to follow scores, team stats and game activity.</p>
+                <span class="center-link">OPEN LIVE GAMES →</span>
+            </a>
 
         </div>
 
@@ -494,7 +572,7 @@
                     happening in different communities.
                 </p>
 
-                <a href="#" class="league-btn">
+                <a href="leagues.html" class="league-btn">
                     EXPLORE LEAGUES →
                 </a>
 
@@ -512,7 +590,7 @@
                     leagues and tournaments.
                 </p>
 
-                <a href="#" class="league-btn">
+                <a href="leagues.html" class="league-btn">
                     VIEW LEAGUES →
                 </a>
 
@@ -530,7 +608,7 @@
                     from schools and universities.
                 </p>
 
-                <a href="#" class="league-btn">
+                <a href="leagues.html" class="league-btn">
                     DISCOVER →
                 </a>
 
@@ -554,8 +632,8 @@
             Hoop Hub PH is your basketball community.
         </p>
 
-        <a href="#">
-            JOIN HOOP HUB PH
+        <a href="login.html">
+            SIGN IN TO HOOP HUB PH
         </a>
 
     </section>
