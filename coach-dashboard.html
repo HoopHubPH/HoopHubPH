@@ -338,7 +338,21 @@
             <div class="form-group"><label for="playerFirstName">First Name</label><input id="playerFirstName" class="form-input" type="text" maxlength="80" autocomplete="given-name" required></div>
             <div class="form-group"><label for="playerLastName">Last Name</label><input id="playerLastName" class="form-input" type="text" maxlength="80" autocomplete="family-name" required></div>
             <div class="form-group"><label for="playerJerseyNumber">Jersey Number</label><input id="playerJerseyNumber" class="form-input" type="number" min="0" max="99" step="1" inputmode="numeric" required></div>
-            <div class="form-group"><label for="playerPosition">Position (Optional)</label><input id="playerPosition" class="form-input" type="text" maxlength="40" placeholder="Example: Point Guard"></div>
+            <div class="form-group">
+              <label for="playerPosition">Position (Optional)</label>
+              <select id="playerPosition" class="form-input">
+                <option value="">Select position</option>
+                <option value="Point Guard">Point Guard</option>
+                <option value="Shooting Guard">Shooting Guard</option>
+                <option value="Small Forward">Small Forward</option>
+                <option value="Power Forward">Power Forward</option>
+                <option value="Center">Center</option>
+                <option value="Point Guard/Shooting Guard">Point Guard/Shooting Guard</option>
+                <option value="Shooting Guard/Small Forward">Shooting Guard/Small Forward</option>
+                <option value="Small Forward/Power Forward">Small Forward/Power Forward</option>
+                <option value="Power Forward/Center">Power Forward/Center</option>
+              </select>
+            </div>
             <div class="form-group"><label for="playerHeight">Height (Optional)</label><input id="playerHeight" class="form-input" type="text" maxlength="40" placeholder="Example: 5'10&quot;"></div>
             <div class="form-group"><label for="playerPhotoUrl">Photo URL (Optional)</label><input id="playerPhotoUrl" class="form-input" type="url" maxlength="2048" placeholder="https://example.com/player-photo.jpg"></div>
             <div class="form-actions"><button id="addPlayerButton" class="primary-button" type="submit">Add Player</button></div>
