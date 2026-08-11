@@ -693,6 +693,25 @@
       line-height: 1.45;
     }
 
+    .report-toolbar { padding: 18px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)) auto auto; gap: 12px; align-items: end; border-bottom: 1px solid var(--line); background: #fafafa; }
+    .report-preview { padding: 22px; }
+    .report-header { display: flex; justify-content: space-between; gap: 18px; padding-bottom: 15px; border-bottom: 3px solid var(--orange); }
+    .report-header h3 { font-size: 20px; }
+    .report-header p, .report-generated { margin-top: 5px; color: var(--muted); font-size: 10px; font-weight: 700; }
+    .report-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 16px 0; }
+    .report-summary .detail-box { min-height: 70px; }
+    .report-section-title { margin: 20px 0 9px; font-size: 13px; }
+
+    @media print {
+      body * { visibility: hidden !important; }
+      #reportsPanel, #reportsPanel * { visibility: visible !important; }
+      #reportsPanel { position: absolute; inset: 0; margin: 0; border: 0; box-shadow: none; }
+      #reportsPanel .panel-header, .report-toolbar, #reportMessage { display: none !important; }
+      .report-preview { padding: 12mm; }
+      .table-wrap { overflow: visible; }
+      @page { size: landscape; margin: 10mm; }
+    }
+
     .sidebar-overlay {
       display: none;
     }
@@ -767,6 +786,8 @@
       .roster-team-toolbar { grid-template-columns: 1fr 1fr; }
       .roster-team-picker { grid-column: 1 / -1; }
       .games-display-toolbar .secondary-button { width: 100%; }
+      .report-toolbar { grid-template-columns: 1fr; }
+      .report-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
   </style>
 </head>
@@ -809,7 +830,8 @@
       <p class="nav-label">Game Control</p>
       <a class="nav-link" href="#schedulePanel"><span class="nav-icon">SK</span> Scorekeepers</a>
 <a class="nav-link" href="#gameReviewPanel"><span class="nav-icon">RV</span> Game Review</a>
-      <a class="nav-link" href="#modules"><span class="nav-icon">RP</span> Reports <span class="coming">Next</span></a>
+      <a class="nav-link" href="#reportsPanel"><span class="nav-icon">RP</span> Reports</a>
+      <a id="superAdminLink" class="nav-link" href="super-admin.html" hidden><span class="nav-icon">SA</span> Super Admin</a>
     </aside>
 
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
@@ -1124,6 +1146,18 @@
           </div>
         </section>
 
+        <section id="reportsPanel" class="panel">
+          <header class="panel-header"><div><h2>Reports</h2><p>Generate a printable record for the currently selected league.</p></div></header>
+          <div class="report-toolbar">
+            <div class="form-group"><label for="reportTypeSelect">Report Type</label><select id="reportTypeSelect" class="form-input"><option value="summary">League Summary</option><option value="teams">Registered Teams</option><option value="games">Game Schedule &amp; Results</option></select></div>
+            <div class="form-group"><label for="reportSeasonSelect">Season Filter</label><select id="reportSeasonSelect" class="form-input"><option value="">All seasons</option></select></div>
+            <button id="generateReportButton" class="primary-button" type="button">GENERATE REPORT</button>
+            <button id="printReportButton" class="secondary-button" type="button" disabled>PRINT REPORT</button>
+          </div>
+          <div id="reportMessage" class="form-message" aria-live="polite"></div>
+          <div id="reportPreview" class="report-preview"><div class="empty-state">Choose a report type, then select Generate Report.</div></div>
+        </section>
+
         <section id="modules" class="panel">
           <header class="panel-header">
             <div>
@@ -1242,14 +1276,7 @@
         document.getElementById("headerRole").textContent = profile.role === "super_admin"
           ? "Super Admin Preview"
           : "League Commissioner";
-        if (profile.role === "super_admin") {
-          const superAdminLink = document.createElement("a");
-          superAdminLink.id = "superAdminLink";
-          superAdminLink.className = "nav-link";
-          superAdminLink.href = "super-admin.html";
-          superAdminLink.innerHTML = '<span class="nav-icon">SA</span> Super Admin';
-          document.getElementById("sidebar").appendChild(superAdminLink);
-        }
+        document.getElementById("superAdminLink").hidden = profile.role !== "super_admin";
 
         await loadWorkspace();
         authScreen.hidden = true;
@@ -1389,6 +1416,7 @@
         renderSeasonWorkspace(null, []);
         renderStandingsFilters(null);
         renderGamesDisplayFilters(null);
+        renderReportFilters(null);
         return;
       }
 
@@ -1431,6 +1459,7 @@
       renderSeasonWorkspace(league, approved);
       renderStandingsFilters(league);
       renderGamesDisplayFilters(league);
+      renderReportFilters(league);
       loadRosterReviews(league.id);
     }
 
@@ -2283,6 +2312,62 @@
       renderScheduling(league, approved);
     }
 
+    function renderReportFilters(league) {
+      const select = document.getElementById("reportSeasonSelect");
+      const leagueSeasons = league ? seasons.filter(item => item.league_id === league.id) : [];
+      select.innerHTML = '<option value="">All seasons</option>' + leagueSeasons.map(item => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`).join("");
+      select.disabled = !leagueSeasons.length;
+      document.getElementById("reportPreview").innerHTML = '<div class="empty-state">Choose a report type, then select Generate Report.</div>';
+      document.getElementById("printReportButton").disabled = true;
+      setFormMessage("reportMessage", "");
+    }
+
+    function generateReport() {
+      const league = assignedLeagues.find(item => item.id === leagueSelect.value);
+      if (!league) {
+        setFormMessage("reportMessage", "No assigned league is available for reporting.", "error");
+        return;
+      }
+
+      const type = document.getElementById("reportTypeSelect").value;
+      const seasonId = document.getElementById("reportSeasonSelect").value;
+      const selectedSeason = seasons.find(item => item.id === seasonId);
+      const registrations = leagueTeams.filter(item => item.league_id === league.id);
+      const teamById = new Map(teams.map(team => [team.id, team]));
+      const reportGames = scheduledGames.filter(game => game.league_id === league.id && (!seasonId || game.season_id === seasonId));
+      const leagueSeasons = seasons.filter(item => item.league_id === league.id && (!seasonId || item.id === seasonId));
+      const leagueSeasonIds = new Set(leagueSeasons.map(item => item.id));
+      const reportDivisions = divisions.filter(item => leagueSeasonIds.has(item.season_id));
+      const approvedCount = registrations.filter(item => item.registration_status === "approved").length;
+      const finalCount = reportGames.filter(game => Boolean(game.finalized_at) || String(game.status || "").toLowerCase() === "final").length;
+      const titles = { summary: "League Summary Report", teams: "Registered Teams Report", games: "Game Schedule & Results Report" };
+      const table = (headings, rows, emptyText) => `<div class="table-wrap"><table><thead><tr>${headings.map(item => `<th>${item}</th>`).join("")}</tr></thead><tbody>${rows.length ? rows.join("") : `<tr><td class="empty-state" colspan="${headings.length}">${escapeHtml(emptyText)}</td></tr>`}</tbody></table></div>`;
+
+      const teamsTable = table(["Team", "Location", "Registration", "Updated"], registrations.map(registration => {
+        const team = teamById.get(registration.team_id) || {};
+        return `<tr><td><strong>${escapeHtml(team.name || "Unknown team")}</strong></td><td>${escapeHtml(team.location || "—")}</td><td>${escapeHtml(registration.registration_status || "—")}</td><td>${escapeHtml(formatDate(registration.updated_at || registration.registered_at))}</td></tr>`;
+      }), "No registered teams.");
+
+      const gamesTable = table(["Game", "Matchup", "Date & Time", "Venue", "Status", "Score"], reportGames.map(game => {
+        const isFinal = Boolean(game.finalized_at) || String(game.status || "").toLowerCase() === "final";
+        return `<tr><td>#${escapeHtml(game.id)}</td><td><strong>${escapeHtml(game.home_team || "Home Team")} vs ${escapeHtml(game.away_team || "Away Team")}</strong></td><td>${escapeHtml(formatDateTime(game.scheduled_at || game.created_at))}</td><td>${escapeHtml(game.venue || "—")}</td><td>${escapeHtml(game.status || "Scheduled")}</td><td>${isFinal ? `${Number(game.home_score || 0)}–${Number(game.away_score || 0)}` : "—"}</td></tr>`;
+      }), "No games found for this filter.");
+
+      const structureTable = table(["Season", "Division", "Category", "Classification", "Status"], reportDivisions.map(division => {
+        const season = seasons.find(item => item.id === division.season_id) || {};
+        return `<tr><td>${escapeHtml(season.name || "—")}</td><td><strong>${escapeHtml(division.name || "—")}</strong></td><td>${escapeHtml(division.category || "—")}</td><td>${escapeHtml(division.classification || "—")}</td><td>${escapeHtml(division.status || "—")}</td></tr>`;
+      }), "No seasons or divisions found.");
+
+      let content = "";
+      if (type === "teams") content = `<h4 class="report-section-title">Registered Teams</h4>${teamsTable}`;
+      else if (type === "games") content = `<h4 class="report-section-title">Games</h4>${gamesTable}`;
+      else content = `<h4 class="report-section-title">Season & Division Structure</h4>${structureTable}<h4 class="report-section-title">Registered Teams</h4>${teamsTable}<h4 class="report-section-title">Games</h4>${gamesTable}`;
+
+      document.getElementById("reportPreview").innerHTML = `<div class="report-header"><div><h3>${titles[type]}</h3><p>${escapeHtml(league.name)}${selectedSeason ? ` · ${escapeHtml(selectedSeason.name)}` : " · All seasons"}</p></div><div class="report-generated">Generated ${escapeHtml(formatDateTime(new Date()))}<br>By ${escapeHtml(displayName(currentProfile))}</div></div><div class="report-summary"><div class="detail-box"><span>Registered Teams</span><strong>${registrations.length}</strong></div><div class="detail-box"><span>Approved Teams</span><strong>${approvedCount}</strong></div><div class="detail-box"><span>Games</span><strong>${reportGames.length}</strong></div><div class="detail-box"><span>Final Results</span><strong>${finalCount}</strong></div></div>${content}`;
+      document.getElementById("printReportButton").disabled = false;
+      setFormMessage("reportMessage", "Report generated successfully. You can now print or save it as PDF.", "success");
+    }
+
     function closeSidebar() {
       document.getElementById("sidebar").classList.remove("open");
       document.getElementById("sidebarOverlay").classList.remove("open");
@@ -2307,6 +2392,8 @@
     document.getElementById("gamesDisplaySeasonSelect").addEventListener("change", () => renderGamesDisplayDivisions(false));
     document.getElementById("gamesDisplayDivisionSelect").addEventListener("change", renderDivisionGames);
     document.getElementById("refreshGamesDisplayButton").addEventListener("click", renderDivisionGames);
+    document.getElementById("generateReportButton").addEventListener("click", generateReport);
+    document.getElementById("printReportButton").addEventListener("click", () => window.print());
     document.getElementById("cancelEditButton").addEventListener("click", () => resetScheduleForm());
     document.getElementById("cancelGameButton").addEventListener("click", cancelCurrentGame);
     document.getElementById("menuButton").addEventListener("click", function () {
