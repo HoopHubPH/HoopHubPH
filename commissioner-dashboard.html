@@ -829,9 +829,8 @@
 
       <p class="nav-label">Game Control</p>
       <a class="nav-link" href="#schedulePanel"><span class="nav-icon">SK</span> Scorekeepers</a>
-<a class="nav-link" href="#gameReviewPanel"><span class="nav-icon">RV</span> Game Review</a>
+      <a class="nav-link" href="#gameReviewPanel"><span class="nav-icon">RV</span> Game Review</a>
       <a class="nav-link" href="#reportsPanel"><span class="nav-icon">RP</span> Reports</a>
-      <a id="superAdminLink" class="nav-link" href="super-admin.html" hidden><span class="nav-icon">SA</span> Super Admin</a>
     </aside>
 
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
@@ -1276,7 +1275,16 @@
         document.getElementById("headerRole").textContent = profile.role === "super_admin"
           ? "Super Admin Preview"
           : "League Commissioner";
-        document.getElementById("superAdminLink").hidden = profile.role !== "super_admin";
+
+        if (profile.role === "super_admin") {
+          const superAdminLink = document.createElement("a");
+          superAdminLink.id = "superAdminLink";
+          superAdminLink.className = "nav-link";
+          superAdminLink.href = "super-admin.html";
+          superAdminLink.innerHTML = '<span class="nav-icon">SA</span> Super Admin';
+          document.getElementById("sidebar").appendChild(superAdminLink);
+          superAdminLink.addEventListener("click", closeSidebar);
+        }
 
         await loadWorkspace();
         authScreen.hidden = true;
