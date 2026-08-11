@@ -347,10 +347,10 @@
                 <option value="Small Forward">Small Forward</option>
                 <option value="Power Forward">Power Forward</option>
                 <option value="Center">Center</option>
-                <option value="Point Guard / Shooting Guard">Point Guard / Shooting Guard</option>
-                <option value="Shooting Guard / Small Forward">Shooting Guard / Small Forward</option>
-                <option value="Small Forward / Power Forward">Small Forward / Power Forward</option>
-                <option value="Power Forward / Center">Power Forward / Center</option>
+                <option value="Point Guard/Shooting Guard">Point Guard/Shooting Guard</option>
+                <option value="Shooting Guard/Small Forward">Shooting Guard/Small Forward</option>
+                <option value="Small Forward/Power Forward">Small Forward/Power Forward</option>
+                <option value="Power Forward/Center">Power Forward/Center</option>
               </select>
             </div>
             <div class="form-group"><label for="playerHeight">Height (Optional)</label><input id="playerHeight" class="form-input" type="text" maxlength="40" placeholder="Example: 5'10&quot;"></div>
@@ -628,7 +628,7 @@
       players = players.filter(player => player.team_id !== teamId).concat(data || []);
     }
 
-    function friendlyAddPlayerError(error) {
+    function friendlyAddPlayerError(error, jerseyNumber) {
       const errorText = [
         String(error || ""),
         error?.message,
@@ -642,7 +642,7 @@
       ].filter(Boolean).join(" ");
 
       if (/jersey|players_unique_team_jersey_idx|duplicate key|unique constraint|23505/i.test(errorText)) {
-        return "This jersey number is already used by another player on this team. Please choose a different number.";
+        return `Jersey number ${jerseyNumber} is already assigned to another player on this team. Please choose a different number.`;
       }
       if (/not authorized|permission denied|42501/i.test(errorText)) {
         return "You do not have permission to add a player to this team.";
@@ -691,7 +691,7 @@
 
       if (jerseyAlreadyUsed) {
         message.className = "application-message error";
-        message.textContent = "This jersey number is already used by another player on this team. Please choose a different number.";
+        message.textContent = `Jersey number ${jerseyNumber} is already assigned to another player on this team. Please choose a different number.`;
         return;
       }
 
@@ -720,7 +720,7 @@
         renderWorkspace();
       } catch (error) {
         message.className = "application-message error";
-        message.textContent = friendlyAddPlayerError(error);
+        message.textContent = friendlyAddPlayerError(error, jerseyNumber);
       } finally {
         button.disabled = false;
         button.textContent = "Add Player";
