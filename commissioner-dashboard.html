@@ -1454,6 +1454,377 @@
       }
     }
 
+
+    /* ========================================================
+       VISIBLE MENU SIZE UPGRADE
+       Intentionally larger than the previous 11.5px version.
+       ======================================================== */
+    .sidebar .nav-link {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0;
+      line-height: 1;
+      padding-left: 11px;
+      padding-right: 10px;
+    }
+
+    .sidebar .nav-label {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 1.15px;
+    }
+
+    .sidebar .nav-icon {
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
+      font-size: 8.5px;
+      border-radius: 6px;
+    }
+
+    @media (max-height: 720px) {
+      .sidebar .nav-link {
+        font-size: 13px;
+      }
+
+      .sidebar .nav-label {
+        font-size: 9px;
+      }
+
+      .sidebar .nav-icon {
+        width: 22px;
+        height: 22px;
+        flex-basis: 22px;
+        font-size: 8px;
+      }
+    }
+
+    @media (max-height: 620px) {
+      .sidebar .nav-link {
+        font-size: 12px;
+      }
+
+      .sidebar .nav-label {
+        font-size: 8.5px;
+      }
+    }
+
+    /* ========================================================
+       SEASONS & DIVISIONS — FULL LAYOUT REDESIGN
+       ======================================================== */
+    #seasonsPanel.season-workspace-panel {
+      overflow: visible;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+    }
+
+    #seasonsPanel .season-workspace-header {
+      margin-bottom: 14px;
+      min-height: 76px;
+      padding: 17px 20px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    #seasonsPanel .season-workspace-header h2 {
+      font-size: 19px;
+    }
+
+    #seasonsPanel .season-workspace-header p {
+      max-width: 820px;
+      margin-top: 5px;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    #seasonsPanel .season-workspace-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      grid-template-areas:
+        "create-season structure"
+        "division division";
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    #seasonsPanel .season-workspace-card,
+    #seasonsPanel .season-team-assignment {
+      min-width: 0;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    #seasonsPanel .season-create-card {
+      grid-area: create-season;
+    }
+
+    #seasonsPanel .season-browser {
+      grid-area: structure;
+      padding: 0;
+      background: #ffffff;
+    }
+
+    #seasonsPanel .division-create-card {
+      grid-area: division;
+    }
+
+    #seasonsPanel .season-card-heading {
+      min-height: 66px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--line);
+      background: #fafafa;
+      border-radius: 12px 12px 0 0;
+    }
+
+    #seasonsPanel .season-card-kicker {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--orange-dark);
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    #seasonsPanel .season-card-heading h3 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    #seasonsPanel .season-card-number {
+      width: 32px;
+      height: 32px;
+      flex: 0 0 32px;
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      background: var(--ink);
+      border-radius: 8px;
+      font-size: 9px;
+      font-weight: 900;
+    }
+
+    /* CREATE SEASON CARD */
+    #seasonsPanel .season-form-grid {
+      padding: 16px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    #seasonsPanel .season-name-field,
+    #seasonsPanel .season-status-field,
+    #seasonsPanel .season-form-actions,
+    #seasonsPanel #seasonMessage {
+      grid-column: 1 / -1;
+    }
+
+    /* CURRENT STRUCTURE CARD */
+    #seasonsPanel .season-browser .season-toolbar {
+      margin: 0;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: end;
+      border-bottom: 1px solid var(--line);
+    }
+
+    #seasonsPanel .season-edit-action {
+      min-width: 170px;
+    }
+
+    #seasonsPanel .season-edit-action .secondary-button {
+      width: 100%;
+      min-height: 42px;
+      white-space: nowrap;
+    }
+
+    #seasonsPanel .division-list {
+      min-height: 188px;
+      max-height: 330px;
+      padding: 14px 16px 16px;
+      display: grid;
+      align-content: start;
+      gap: 9px;
+      overflow-y: auto;
+    }
+
+    #seasonsPanel .division-card {
+      min-height: 62px;
+      padding: 12px 13px;
+      border-radius: 9px;
+    }
+
+    #seasonsPanel .division-card strong {
+      font-size: 12px;
+    }
+
+    #seasonsPanel .division-card span {
+      font-size: 9px;
+    }
+
+    /* CREATE DIVISION — FULL WIDTH */
+    #seasonsPanel .division-form-grid {
+      padding: 16px;
+      display: grid;
+      grid-template-columns:
+        minmax(150px, .85fr)
+        minmax(240px, 1.55fr)
+        minmax(150px, 1fr)
+        minmax(150px, 1fr)
+        minmax(135px, .75fr);
+      gap: 11px;
+      align-items: end;
+    }
+
+    #seasonsPanel .division-form-actions,
+    #seasonsPanel #divisionMessage {
+      grid-column: 1 / -1;
+    }
+
+    #seasonsPanel .division-form-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    /* SHARED FORM PROPORTIONS */
+    #seasonsPanel .form-group {
+      min-width: 0;
+      gap: 6px;
+    }
+
+    #seasonsPanel .form-group label {
+      font-size: 9px;
+      letter-spacing: .55px;
+    }
+
+    #seasonsPanel .form-input {
+      height: 42px;
+      padding: 0 11px;
+      font-size: 11px;
+    }
+
+    #seasonsPanel .primary-button {
+      min-height: 42px;
+      padding: 0 17px;
+      font-size: 10px;
+    }
+
+    #seasonsPanel .secondary-button {
+      min-height: 38px;
+      padding: 0 12px;
+      font-size: 8.5px;
+    }
+
+    /* TEAM ASSIGNMENT — ITS OWN BOX */
+    #seasonsPanel .season-team-assignment {
+      margin-top: 14px;
+      overflow: hidden;
+    }
+
+    #seasonsPanel .assignment-heading {
+      border-radius: 12px 12px 0 0;
+    }
+
+    #seasonsPanel .team-assignment-grid {
+      padding: 16px;
+      display: grid;
+      grid-template-columns:
+        minmax(0, 1.15fr)
+        minmax(0, 1fr)
+        minmax(0, 1fr)
+        auto;
+      gap: 11px;
+      align-items: end;
+      background: #ffffff;
+      border-top: 0;
+    }
+
+    #seasonsPanel .assignment-action-box {
+      display: flex;
+      align-items: flex-end;
+    }
+
+    #seasonsPanel .assignment-action-box .primary-button {
+      min-width: 205px;
+      white-space: nowrap;
+    }
+
+    #seasonsPanel .team-assignment-grid #assignmentMessage {
+      grid-column: 1 / -1;
+    }
+
+    /* Responsive proportions */
+    @media (max-width: 1120px) {
+      #seasonsPanel .season-workspace-grid {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "create-season"
+          "structure"
+          "division";
+      }
+
+      #seasonsPanel .division-form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #seasonsPanel .division-name-field {
+        grid-column: 1 / -1;
+      }
+
+      #seasonsPanel .team-assignment-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #seasonsPanel .assignment-action-box {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 700px) {
+      #seasonsPanel .season-form-grid,
+      #seasonsPanel .division-form-grid,
+      #seasonsPanel .season-browser .season-toolbar,
+      #seasonsPanel .team-assignment-grid {
+        grid-template-columns: 1fr;
+      }
+
+      #seasonsPanel .season-name-field,
+      #seasonsPanel .season-status-field,
+      #seasonsPanel .division-name-field,
+      #seasonsPanel .season-form-actions,
+      #seasonsPanel .division-form-actions,
+      #seasonsPanel #seasonMessage,
+      #seasonsPanel #divisionMessage,
+      #seasonsPanel .assignment-action-box,
+      #seasonsPanel .team-assignment-grid #assignmentMessage {
+        grid-column: 1;
+      }
+
+      #seasonsPanel .season-edit-action {
+        min-width: 0;
+      }
+
+      #seasonsPanel .assignment-action-box .primary-button {
+        width: 100%;
+        min-width: 0;
+      }
+    }
+
   </style>
 </head>
 
@@ -1573,56 +1944,169 @@
           <div id="leagueDetails" class="league-details"></div>
         </section>
 
-        <section id="seasonsPanel" class="panel commissioner-view-section">
-          <header class="panel-header">
+        <section id="seasonsPanel" class="panel commissioner-view-section season-workspace-panel">
+          <header class="panel-header season-workspace-header">
             <div>
               <h2>Seasons &amp; Divisions</h2>
-              <p>Create the competition structure, then place each approved team in the correct division.</p>
+              <p>Create the competition structure, manage existing seasons and divisions, then place approved teams in the correct division.</p>
             </div>
           </header>
 
-          <div class="season-layout">
-            <div class="season-editor">
-              <h3 id="seasonFormTitle">Create Season</h3>
-              <form id="seasonForm" class="compact-form">
-                <div class="form-group full-width"><label for="seasonNameInput">Season Name</label><input id="seasonNameInput" class="form-input" maxlength="80" placeholder="2026 Season" required></div>
-                <div class="form-group"><label for="seasonStartInput">Start Date</label><input id="seasonStartInput" class="form-input" type="date"></div>
-                <div class="form-group"><label for="seasonEndInput">End Date</label><input id="seasonEndInput" class="form-input" type="date"></div>
-                <div class="form-group full-width"><label for="seasonStatusSelect">Status</label><select id="seasonStatusSelect" class="form-input"><option value="draft">Draft</option><option value="active">Active</option><option value="completed">Completed</option><option value="archived">Archived</option></select></div>
-                <div class="form-actions"><button id="saveSeasonButton" class="primary-button" type="submit">CREATE SEASON</button> <button id="cancelSeasonEditButton" class="secondary-button" type="button" hidden>CANCEL EDIT</button></div>
+          <div class="season-workspace-grid">
+            <!-- CREATE SEASON -->
+            <section class="season-workspace-card season-create-card">
+              <div class="season-card-heading">
+                <div>
+                  <span class="season-card-kicker">Season Setup</span>
+                  <h3 id="seasonFormTitle">Create Season</h3>
+                </div>
+                <span class="season-card-number">01</span>
+              </div>
+
+              <form id="seasonForm" class="season-form-grid">
+                <div class="form-group season-name-field">
+                  <label for="seasonNameInput">Season Name</label>
+                  <input id="seasonNameInput" class="form-input" maxlength="80" placeholder="2026 Season" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="seasonStartInput">Start Date</label>
+                  <input id="seasonStartInput" class="form-input" type="date">
+                </div>
+
+                <div class="form-group">
+                  <label for="seasonEndInput">End Date</label>
+                  <input id="seasonEndInput" class="form-input" type="date">
+                </div>
+
+                <div class="form-group season-status-field">
+                  <label for="seasonStatusSelect">Status</label>
+                  <select id="seasonStatusSelect" class="form-input">
+                    <option value="draft">Draft</option>
+                    <option value="active">Active</option>
+                    <option value="completed">Completed</option>
+                    <option value="archived">Archived</option>
+                  </select>
+                </div>
+
+                <div class="form-actions season-form-actions">
+                  <button id="saveSeasonButton" class="primary-button" type="submit">CREATE SEASON</button>
+                  <button id="cancelSeasonEditButton" class="secondary-button" type="button" hidden>CANCEL EDIT</button>
+                </div>
+
                 <div id="seasonMessage" class="form-message" aria-live="polite"></div>
               </form>
+            </section>
 
-              <div class="section-divider"></div>
-              <h3 id="divisionFormTitle">Create Division</h3>
-              <form id="divisionForm" class="compact-form">
-                <div class="form-group full-width"><label for="divisionSeasonSelect">Season</label><select id="divisionSeasonSelect" class="form-input" required></select></div>
-                <div class="form-group full-width"><label for="divisionNameInput">Division Name</label><input id="divisionNameInput" class="form-input" maxlength="100" placeholder="Elementary Boys – Public" required></div>
-                <div class="form-group"><label for="divisionCategoryInput">Category</label><input id="divisionCategoryInput" class="form-input" maxlength="60" placeholder="Elementary Boys"></div>
-                <div class="form-group"><label for="divisionClassificationInput">Classification</label><input id="divisionClassificationInput" class="form-input" maxlength="60" placeholder="Public"></div>
-                <div class="form-group full-width"><label for="divisionStatusSelect">Status</label><select id="divisionStatusSelect" class="form-input"><option value="active">Active</option><option value="inactive">Inactive</option><option value="completed">Completed</option></select></div>
-                <div class="form-actions"><button id="saveDivisionButton" class="primary-button" type="submit">CREATE DIVISION</button> <button id="cancelDivisionEditButton" class="secondary-button" type="button" hidden>CANCEL EDIT</button></div>
+            <!-- CURRENT STRUCTURE -->
+            <section class="season-workspace-card season-browser">
+              <div class="season-card-heading">
+                <div>
+                  <span class="season-card-kicker">League Structure</span>
+                  <h3>Current Structure</h3>
+                </div>
+                <span class="season-card-number">02</span>
+              </div>
+
+              <div class="season-toolbar">
+                <div class="form-group">
+                  <label for="manageSeasonSelect">Season</label>
+                  <select id="manageSeasonSelect" class="form-input"></select>
+                </div>
+                <div class="form-group season-edit-action">
+                  <label>Manage</label>
+                  <button id="editSeasonButton" class="secondary-button" type="button">EDIT SELECTED SEASON</button>
+                </div>
+              </div>
+
+              <div id="divisionList" class="division-list">
+                <div class="empty-state">Loading seasons and divisions...</div>
+              </div>
+            </section>
+
+            <!-- CREATE DIVISION -->
+            <section class="season-workspace-card division-create-card">
+              <div class="season-card-heading">
+                <div>
+                  <span class="season-card-kicker">Division Setup</span>
+                  <h3 id="divisionFormTitle">Create Division</h3>
+                </div>
+                <span class="season-card-number">03</span>
+              </div>
+
+              <form id="divisionForm" class="division-form-grid">
+                <div class="form-group division-season-field">
+                  <label for="divisionSeasonSelect">Season</label>
+                  <select id="divisionSeasonSelect" class="form-input" required></select>
+                </div>
+
+                <div class="form-group division-name-field">
+                  <label for="divisionNameInput">Division Name</label>
+                  <input id="divisionNameInput" class="form-input" maxlength="100" placeholder="Elementary Boys – Public" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="divisionCategoryInput">Category</label>
+                  <input id="divisionCategoryInput" class="form-input" maxlength="60" placeholder="Elementary Boys">
+                </div>
+
+                <div class="form-group">
+                  <label for="divisionClassificationInput">Classification</label>
+                  <input id="divisionClassificationInput" class="form-input" maxlength="60" placeholder="Public">
+                </div>
+
+                <div class="form-group">
+                  <label for="divisionStatusSelect">Status</label>
+                  <select id="divisionStatusSelect" class="form-input">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                </div>
+
+                <div class="form-actions division-form-actions">
+                  <button id="saveDivisionButton" class="primary-button" type="submit">CREATE DIVISION</button>
+                  <button id="cancelDivisionEditButton" class="secondary-button" type="button" hidden>CANCEL EDIT</button>
+                </div>
+
                 <div id="divisionMessage" class="form-message" aria-live="polite"></div>
               </form>
-            </div>
+            </section>
+          </div>
 
-            <div class="season-browser">
-              <h3>Current Structure</h3>
-              <div class="season-toolbar">
-                <div class="form-group"><label for="manageSeasonSelect">Season</label><select id="manageSeasonSelect" class="form-input"></select></div>
-                <div class="form-group"><label>&nbsp;</label><button id="editSeasonButton" class="secondary-button" type="button">EDIT SELECTED SEASON</button></div>
+          <!-- TEAM ASSIGNMENT -->
+          <section class="season-team-assignment">
+            <div class="season-card-heading assignment-heading">
+              <div>
+                <span class="season-card-kicker">Team Placement</span>
+                <h3>Assign Team to Division</h3>
               </div>
-              <div id="divisionList" class="division-list"><div class="empty-state">Loading seasons and divisions...</div></div>
+              <span class="season-card-number">04</span>
             </div>
-          </div>
 
-          <div class="team-assignment-grid">
-            <div class="form-group"><label for="assignmentTeamSelect">Approved Team</label><select id="assignmentTeamSelect" class="form-input"></select></div>
-            <div class="form-group"><label for="assignmentSeasonSelect">Season</label><select id="assignmentSeasonSelect" class="form-input"></select></div>
-            <div class="form-group"><label for="assignmentDivisionSelect">Division</label><select id="assignmentDivisionSelect" class="form-input"></select></div>
-            <div class="form-actions"><button id="assignTeamButton" class="primary-button" type="button">ASSIGN TEAM TO DIVISION</button></div>
-            <div id="assignmentMessage" class="form-message" aria-live="polite"></div>
-          </div>
+            <div class="team-assignment-grid">
+              <div class="form-group">
+                <label for="assignmentTeamSelect">Approved Team</label>
+                <select id="assignmentTeamSelect" class="form-input"></select>
+              </div>
+
+              <div class="form-group">
+                <label for="assignmentSeasonSelect">Season</label>
+                <select id="assignmentSeasonSelect" class="form-input"></select>
+              </div>
+
+              <div class="form-group">
+                <label for="assignmentDivisionSelect">Division</label>
+                <select id="assignmentDivisionSelect" class="form-input"></select>
+              </div>
+
+              <div class="assignment-action-box">
+                <button id="assignTeamButton" class="primary-button" type="button">ASSIGN TEAM TO DIVISION</button>
+              </div>
+
+              <div id="assignmentMessage" class="form-message" aria-live="polite"></div>
+            </div>
+          </section>
         </section>
 
         <section id="createTeamPanel" class="panel commissioner-view-section">
