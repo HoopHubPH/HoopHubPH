@@ -2501,6 +2501,161 @@
       }
     }
 
+
+    /* =========================
+       FIT KEY SUPER ADMIN TABLES INSIDE THEIR PANELS
+       No horizontal scrolling:
+       - Competition Structure
+       - Platform Teams
+       - Platform Players
+       ========================= */
+    .admin-entity-fit-wrap {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    .admin-entity-fit-table {
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      table-layout: fixed;
+    }
+
+    .admin-entity-fit-table th,
+    .admin-entity-fit-table td {
+      min-width: 0;
+      padding: 10px 7px;
+      overflow-wrap: anywhere;
+      word-break: normal;
+      white-space: normal;
+      line-height: 1.35;
+    }
+
+    .admin-entity-fit-table th {
+      font-size: 7.5px;
+      letter-spacing: .35px;
+    }
+
+    .admin-entity-fit-table td {
+      font-size: 9px;
+    }
+
+    .admin-entity-fit-table .admin-entity-name strong {
+      font-size: 10px;
+      line-height: 1.3;
+    }
+
+    .admin-entity-fit-table .admin-entity-name span {
+      font-size: 8px;
+      line-height: 1.35;
+    }
+
+    .admin-entity-fit-table .admin-entity-status {
+      max-width: 100%;
+      padding: 4px 6px;
+      font-size: 7px;
+      white-space: normal;
+      text-align: center;
+    }
+
+    .admin-entity-fit-table .admin-entity-mini-button {
+      min-height: 27px;
+      max-width: 100%;
+      padding: 0 6px;
+      font-size: 7px;
+      white-space: normal;
+      text-align: center;
+      line-height: 1.15;
+    }
+
+    /* Competition Structure */
+    .admin-entity-fit-tournamentStructureBody th:nth-child(1),
+    .admin-entity-fit-tournamentStructureBody td:nth-child(1) { width: 20%; }
+
+    .admin-entity-fit-tournamentStructureBody th:nth-child(2),
+    .admin-entity-fit-tournamentStructureBody td:nth-child(2) { width: 20%; }
+
+    .admin-entity-fit-tournamentStructureBody th:nth-child(3),
+    .admin-entity-fit-tournamentStructureBody td:nth-child(3) { width: 11%; }
+
+    .admin-entity-fit-tournamentStructureBody th:nth-child(4),
+    .admin-entity-fit-tournamentStructureBody td:nth-child(4) { width: 10%; }
+
+    .admin-entity-fit-tournamentStructureBody th:nth-child(5),
+    .admin-entity-fit-tournamentStructureBody td:nth-child(5) { width: 14%; }
+
+    .admin-entity-fit-tournamentStructureBody th:nth-child(6),
+    .admin-entity-fit-tournamentStructureBody td:nth-child(6) { width: 8%; }
+
+    .admin-entity-fit-tournamentStructureBody th:nth-child(7),
+    .admin-entity-fit-tournamentStructureBody td:nth-child(7) { width: 17%; }
+
+    /* Platform Teams */
+    .admin-entity-fit-adminTeamTableBody th:nth-child(1),
+    .admin-entity-fit-adminTeamTableBody td:nth-child(1) { width: 20%; }
+
+    .admin-entity-fit-adminTeamTableBody th:nth-child(2),
+    .admin-entity-fit-adminTeamTableBody td:nth-child(2) { width: 31%; }
+
+    .admin-entity-fit-adminTeamTableBody th:nth-child(3),
+    .admin-entity-fit-adminTeamTableBody td:nth-child(3) { width: 9%; }
+
+    .admin-entity-fit-adminTeamTableBody th:nth-child(4),
+    .admin-entity-fit-adminTeamTableBody td:nth-child(4) { width: 8%; }
+
+    .admin-entity-fit-adminTeamTableBody th:nth-child(5),
+    .admin-entity-fit-adminTeamTableBody td:nth-child(5) { width: 14%; }
+
+    .admin-entity-fit-adminTeamTableBody th:nth-child(6),
+    .admin-entity-fit-adminTeamTableBody td:nth-child(6) { width: 18%; }
+
+    /* Platform Players */
+    .admin-entity-fit-adminPlayerTableBody th:nth-child(1),
+    .admin-entity-fit-adminPlayerTableBody td:nth-child(1) { width: 20%; }
+
+    .admin-entity-fit-adminPlayerTableBody th:nth-child(2),
+    .admin-entity-fit-adminPlayerTableBody td:nth-child(2) { width: 16%; }
+
+    .admin-entity-fit-adminPlayerTableBody th:nth-child(3),
+    .admin-entity-fit-adminPlayerTableBody td:nth-child(3) { width: 11%; }
+
+    .admin-entity-fit-adminPlayerTableBody th:nth-child(4),
+    .admin-entity-fit-adminPlayerTableBody td:nth-child(4) { width: 7%; }
+
+    .admin-entity-fit-adminPlayerTableBody th:nth-child(5),
+    .admin-entity-fit-adminPlayerTableBody td:nth-child(5) { width: 7%; }
+
+    .admin-entity-fit-adminPlayerTableBody th:nth-child(6),
+    .admin-entity-fit-adminPlayerTableBody td:nth-child(6) { width: 7%; }
+
+    .admin-entity-fit-adminPlayerTableBody th:nth-child(7),
+    .admin-entity-fit-adminPlayerTableBody td:nth-child(7) { width: 7%; }
+
+    .admin-entity-fit-adminPlayerTableBody th:nth-child(8),
+    .admin-entity-fit-adminPlayerTableBody td:nth-child(8) { width: 25%; }
+
+    @media (max-width: 900px) {
+      .admin-entity-fit-table th,
+      .admin-entity-fit-table td {
+        padding: 8px 5px;
+      }
+
+      .admin-entity-fit-table th {
+        font-size: 7px;
+      }
+
+      .admin-entity-fit-table td {
+        font-size: 8px;
+      }
+
+      .admin-entity-fit-table .admin-entity-mini-button {
+        min-height: 25px;
+        padding: 0 4px;
+        font-size: 6.5px;
+      }
+    }
+
   </style>
 </head>
 
@@ -2812,8 +2967,8 @@
                 </div>
                 <a class="secondary-button" href="commissioner-dashboard.html#seasonsPanel" style="display:inline-flex;align-items:center;text-decoration:none;">STRUCTURE TOOLS</a>
               </header>
-              <div class="admin-entity-table-wrap">
-                <table class="admin-entity-table">
+              <div class="admin-entity-table-wrap admin-entity-fit-wrap">
+                <table class="admin-entity-table admin-entity-fit-table admin-entity-fit-tournamentStructureBody">
                   <thead>
                     <tr>
                       <th>Season</th>
@@ -2947,8 +3102,8 @@
                 <strong id="adminTeamResultCount">0 teams</strong>
               </div>
 
-              <div class="admin-entity-table-wrap">
-                <table class="admin-entity-table">
+              <div class="admin-entity-table-wrap admin-entity-fit-wrap">
+                <table class="admin-entity-table admin-entity-fit-table admin-entity-fit-adminTeamTableBody">
                   <thead>
                     <tr>
                       <th>Team</th>
@@ -3043,8 +3198,8 @@
                 <strong id="adminPlayerResultCount">0 players</strong>
               </div>
 
-              <div class="admin-entity-table-wrap">
-                <table class="admin-entity-table">
+              <div class="admin-entity-table-wrap admin-entity-fit-wrap">
+                <table class="admin-entity-table admin-entity-fit-table admin-entity-fit-adminPlayerTableBody">
                   <thead>
                     <tr>
                       <th>Player</th>
