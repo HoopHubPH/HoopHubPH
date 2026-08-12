@@ -1093,6 +1093,148 @@
       }
     }
 
+
+    /* =========================
+       LIVE SUPER ADMIN GRAPH
+       ========================= */
+    .dashboard-chart-panel {
+      margin-top: 18px;
+      overflow: hidden;
+    }
+
+    .dashboard-chart-controls {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .dashboard-chart-select {
+      height: 36px;
+      min-width: 175px;
+      padding: 0 10px;
+      color: var(--ink);
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 10px;
+      font-weight: bold;
+      outline: none;
+    }
+
+    .dashboard-chart-select:focus {
+      border-color: rgba(255, 107, 0, 0.72);
+      box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.10);
+    }
+
+    .dashboard-chart-body {
+      padding: 20px 21px 18px;
+    }
+
+    .dashboard-chart-summary {
+      margin-bottom: 17px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .dashboard-chart-summary strong {
+      font-size: 12px;
+    }
+
+    .dashboard-chart-summary span {
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.5;
+      text-align: right;
+    }
+
+    .dashboard-bars {
+      display: grid;
+      gap: 13px;
+    }
+
+    .dashboard-bar-row {
+      display: grid;
+      grid-template-columns: minmax(95px, 150px) minmax(0, 1fr) 56px;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dashboard-bar-label {
+      overflow: hidden;
+      color: #344054;
+      font-size: 11px;
+      font-weight: bold;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .dashboard-bar-track {
+      height: 14px;
+      overflow: hidden;
+      background: #f2f4f7;
+      border: 1px solid #eaecf0;
+      border-radius: 999px;
+    }
+
+    .dashboard-bar-fill {
+      width: 0;
+      height: 100%;
+      background: var(--orange);
+      border-radius: inherit;
+      transition: width 0.45s ease;
+    }
+
+    .dashboard-bar-value {
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .dashboard-chart-empty {
+      padding: 32px 12px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .dashboard-chart-note {
+      margin-top: 16px;
+      padding-top: 13px;
+      color: #8c929b;
+      border-top: 1px solid var(--line);
+      font-size: 9px;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 650px) {
+      .dashboard-chart-controls {
+        width: 100%;
+      }
+
+      .dashboard-chart-select {
+        flex: 1 1 180px;
+      }
+
+      .dashboard-chart-summary {
+        flex-direction: column;
+      }
+
+      .dashboard-chart-summary span {
+        text-align: left;
+      }
+
+      .dashboard-bar-row {
+        grid-template-columns: 88px minmax(0, 1fr) 44px;
+        gap: 8px;
+      }
+    }
+
   </style>
 </head>
 
@@ -1228,6 +1370,40 @@
             <div id="gameCount" class="stat-value">—</div>
             <p class="stat-helper">All available game records</p>
           </article>
+        </section>
+
+
+        <section class="panel dashboard-chart-panel" aria-labelledby="dashboardChartHeading">
+          <header class="panel-header">
+            <div>
+              <h2 id="dashboardChartHeading">Platform Data Overview</h2>
+              <p>Live visual summary from the HoopHub PH database.</p>
+            </div>
+
+            <div class="dashboard-chart-controls">
+              <select id="dashboardChartMode" class="dashboard-chart-select" aria-label="Select dashboard graph">
+                <option value="platform">Platform Totals</option>
+                <option value="game_status">Games by Status</option>
+                <option value="account_role">Accounts by Role</option>
+              </select>
+              <button id="refreshDashboardChartButton" class="secondary-button" type="button">REFRESH GRAPH</button>
+            </div>
+          </header>
+
+          <div class="dashboard-chart-body">
+            <div class="dashboard-chart-summary">
+              <strong id="dashboardChartTitle">Platform Totals</strong>
+              <span id="dashboardChartUpdated">Loading live data...</span>
+            </div>
+
+            <div id="dashboardChartBars" class="dashboard-bars" aria-live="polite">
+              <div class="dashboard-chart-empty">Loading platform graph...</div>
+            </div>
+
+            <p id="dashboardChartNote" class="dashboard-chart-note">
+              Values are loaded directly from Supabase using the signed-in Super Admin account.
+            </p>
+          </div>
         </section>
 
         <section class="section-grid">
@@ -1596,6 +1772,13 @@
     const activityActionFilter = document.getElementById("activityActionFilter");
     const activityDateFilter = document.getElementById("activityDateFilter");
     const refreshActivityButton = document.getElementById("refreshActivityButton");
+    const dashboardChartMode = document.getElementById("dashboardChartMode");
+    const dashboardChartBars = document.getElementById("dashboardChartBars");
+    const dashboardChartTitle = document.getElementById("dashboardChartTitle");
+    const dashboardChartUpdated = document.getElementById("dashboardChartUpdated");
+    const dashboardChartNote = document.getElementById("dashboardChartNote");
+    const refreshDashboardChartButton = document.getElementById("refreshDashboardChartButton");
+
     const dashboardView = document.getElementById("dashboardView");
     const activityView = document.getElementById("activityView");
     const announcementsView = document.getElementById("announcementsView");
@@ -2446,23 +2629,199 @@
           console.warn(`Unable to load ${tableName} count:`, error.message);
           element.textContent = "—";
           element.title = "This total will appear after its table access is configured.";
-          return;
+          return null;
         }
 
-        element.textContent = Number(count || 0).toLocaleString();
+        const safeCount = Number(count || 0);
+        element.textContent = safeCount.toLocaleString();
+        return safeCount;
       } catch (error) {
         console.warn(`Unable to load ${tableName} count:`, error);
         element.textContent = "—";
+        return null;
       }
     }
 
-    async function loadDashboardCounts() {
-      await Promise.all([
+    function graphLabel(value) {
+      return String(value || "Unspecified")
+        .replaceAll("_", " ")
+        .replace(/\b\w/g, character => character.toUpperCase());
+    }
+
+    function renderDashboardBars(items, title, note) {
+      dashboardChartTitle.textContent = title;
+      dashboardChartNote.textContent = note;
+
+      const safeItems = (items || [])
+        .map(item => ({
+          label: String(item.label || "Unknown"),
+          value: Number(item.value || 0)
+        }))
+        .filter(item => Number.isFinite(item.value) && item.value >= 0);
+
+      if (!safeItems.length) {
+        dashboardChartBars.innerHTML =
+          '<div class="dashboard-chart-empty">No data is available for this graph yet.</div>';
+        return;
+      }
+
+      const maxValue = Math.max(...safeItems.map(item => item.value), 1);
+
+      dashboardChartBars.innerHTML = safeItems.map(item => {
+        const width = item.value === 0
+          ? 0
+          : Math.max(4, (item.value / maxValue) * 100);
+
+        return `
+          <div class="dashboard-bar-row">
+            <div class="dashboard-bar-label" title="${escapeHtml(item.label)}">
+              ${escapeHtml(item.label)}
+            </div>
+            <div
+              class="dashboard-bar-track"
+              role="img"
+              aria-label="${escapeHtml(item.label)}: ${item.value.toLocaleString()}"
+            >
+              <div class="dashboard-bar-fill" style="width:${width.toFixed(2)}%"></div>
+            </div>
+            <div class="dashboard-bar-value">${item.value.toLocaleString()}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function loadPlatformTotalsGraph() {
+      const [
+        leagueCount,
+        teamCount,
+        playerCount,
+        gameCount
+      ] = await Promise.all([
         loadTableCount("leagues", "leagueCount"),
         loadTableCount("teams", "teamCount"),
         loadTableCount("players", "playerCount"),
         loadTableCount("games", "gameCount")
       ]);
+
+      const items = [
+        { label: "Leagues", value: leagueCount },
+        { label: "Teams", value: teamCount },
+        { label: "Players", value: playerCount },
+        { label: "Games", value: gameCount }
+      ].filter(item => item.value !== null);
+
+      renderDashboardBars(
+        items,
+        "Platform Totals",
+        "Live totals for leagues, teams, players, and games currently accessible to the Super Admin."
+      );
+    }
+
+    async function loadGamesByStatusGraph() {
+      const { data, error } = await supabaseClient
+        .from("games")
+        .select("status");
+
+      if (error) throw error;
+
+      const grouped = new Map();
+
+      (data || []).forEach(game => {
+        const key = String(game.status || "unspecified");
+        grouped.set(key, (grouped.get(key) || 0) + 1);
+      });
+
+      const items = [...grouped.entries()]
+        .map(([status, value]) => ({
+          label: graphLabel(status),
+          value
+        }))
+        .sort((a, b) => b.value - a.value || a.label.localeCompare(b.label));
+
+      renderDashboardBars(
+        items,
+        "Games by Status",
+        "Live game records grouped by their current database status."
+      );
+    }
+
+    async function loadAccountsByRoleGraph() {
+      const { data, error } = await supabaseClient
+        .from("profiles")
+        .select("role");
+
+      if (error) throw error;
+
+      const grouped = new Map();
+
+      (data || []).forEach(profile => {
+        const key = String(profile.role || "unspecified");
+        grouped.set(key, (grouped.get(key) || 0) + 1);
+      });
+
+      const roleOrder = [
+        "super_admin",
+        "commissioner",
+        "coach",
+        "player",
+        "scorekeeper",
+        "unspecified"
+      ];
+
+      const items = [...grouped.entries()]
+        .map(([role, value]) => ({
+          key: role,
+          label: role === "coach" ? "Coach / Manager" : graphLabel(role),
+          value
+        }))
+        .sort((a, b) => {
+          const ai = roleOrder.indexOf(a.key);
+          const bi = roleOrder.indexOf(b.key);
+          const safeA = ai === -1 ? 999 : ai;
+          const safeB = bi === -1 ? 999 : bi;
+          return safeA - safeB || b.value - a.value;
+        });
+
+      renderDashboardBars(
+        items,
+        "Accounts by Role",
+        "Live registered profiles grouped by their current HoopHub PH account role."
+      );
+    }
+
+    async function loadDashboardGraph() {
+      if (!dashboardChartMode || !dashboardChartBars) return;
+
+      refreshDashboardChartButton.disabled = true;
+      refreshDashboardChartButton.textContent = "REFRESHING...";
+      dashboardChartUpdated.textContent = "Refreshing live data...";
+
+      try {
+        const mode = dashboardChartMode.value;
+
+        if (mode === "game_status") {
+          await loadGamesByStatusGraph();
+        } else if (mode === "account_role") {
+          await loadAccountsByRoleGraph();
+        } else {
+          await loadPlatformTotalsGraph();
+        }
+
+        dashboardChartUpdated.textContent =
+          `Updated ${new Date().toLocaleString("en-PH")}`;
+      } catch (error) {
+        console.error("Unable to load dashboard graph:", error);
+        dashboardChartBars.innerHTML =
+          `<div class="dashboard-chart-empty">Unable to load this graph: ${escapeHtml(error.message || "Unknown error")}</div>`;
+        dashboardChartUpdated.textContent = "Graph could not be refreshed.";
+      } finally {
+        refreshDashboardChartButton.disabled = false;
+        refreshDashboardChartButton.textContent = "REFRESH GRAPH";
+      }
+    }
+
+    async function loadDashboardCounts() {
+      await loadDashboardGraph();
 
       document.getElementById("lastUpdated").textContent =
         `Dashboard checked ${new Date().toLocaleString("en-PH")}`;
@@ -2502,6 +2861,9 @@
 
     [activityLeagueFilter, activityUserFilter, activityActionFilter, activityDateFilter]
       .forEach(control => control.addEventListener("change", renderActivityLog));
+
+    dashboardChartMode.addEventListener("change", loadDashboardGraph);
+    refreshDashboardChartButton.addEventListener("click", loadDashboardGraph);
 
     refreshActivityButton.addEventListener("click", loadActivityLog);
 
