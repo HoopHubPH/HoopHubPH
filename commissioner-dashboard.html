@@ -662,6 +662,97 @@
     .games-display-title span { color: var(--muted); font-size: 9px; font-weight: 800; }
     .score-result { white-space: nowrap; font-size: 13px; font-weight: 900; }
 
+
+    .correction-review-callout {
+      padding: 13px 18px;
+      color: #7a3e00;
+      background: #fff8f2;
+      border-bottom: 1px solid #ffd9bd;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .correction-review-callout strong { color: var(--ink); }
+
+    .correction-review-toolbar {
+      padding: 14px 18px;
+      display: grid;
+      grid-template-columns: minmax(220px, 1.25fr) repeat(3, minmax(110px, .55fr));
+      gap: 10px;
+      align-items: stretch;
+      background: #fafafa;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .correction-review-filter label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .correction-review-filter select {
+      width: 100%;
+      height: 40px;
+      padding: 0 11px;
+      background: #fff;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .correction-summary-card {
+      padding: 10px 12px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .correction-summary-card span,
+    .correction-summary-card strong { display: block; }
+
+    .correction-summary-card span {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .correction-summary-card strong {
+      margin-top: 5px;
+      font-size: 18px;
+    }
+
+    .correction-change {
+      min-width: 210px;
+      line-height: 1.5;
+    }
+
+    .correction-change strong { display: block; }
+
+    .correction-change span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .correction-reason {
+      min-width: 220px;
+      color: #344054;
+      line-height: 1.5;
+    }
+
+    .correction-review-note {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
     .module-grid {
       padding: 18px;
       display: grid;
@@ -785,6 +876,8 @@
 
       .roster-team-toolbar { grid-template-columns: 1fr 1fr; }
       .roster-team-picker { grid-column: 1 / -1; }
+      .correction-review-toolbar { grid-template-columns: 1fr 1fr; }
+      .correction-review-filter { grid-column: 1 / -1; }
       .games-display-toolbar .secondary-button { width: 100%; }
       .report-toolbar { grid-template-columns: 1fr; }
       .report-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -830,6 +923,7 @@
       <p class="nav-label">Game Control</p>
       <a class="nav-link" href="#schedulePanel"><span class="nav-icon">SK</span> Scorekeepers</a>
       <a class="nav-link" href="#gameReviewPanel"><span class="nav-icon">RV</span> Game Review</a>
+      <a class="nav-link" href="#correctionReviewPanel"><span class="nav-icon">CR</span> Corrections</a>
       <a class="nav-link" href="#reportsPanel"><span class="nav-icon">RP</span> Reports</a>
     </aside>
 
@@ -975,6 +1069,59 @@
           </div>
           <div id="gameReviewMessage" class="form-message" aria-live="polite"></div>
         </section>
+
+
+        <section id="correctionReviewPanel" class="panel">
+          <header class="panel-header">
+            <div>
+              <h2>Coach Correction Requests</h2>
+              <p>Review correction requests submitted by coaches for finalized games in this league.</p>
+            </div>
+            <button id="refreshCorrectionReviewsButton" class="secondary-button" type="button">REFRESH REQUESTS</button>
+          </header>
+
+          <div class="correction-review-callout">
+            <strong>Review only.</strong> Approving a request confirms that the correction should be handled, but it does not directly change the finalized game or player statistics. Official records stay protected until an authorized correction is applied.
+          </div>
+
+          <div class="correction-review-toolbar">
+            <div class="correction-review-filter">
+              <label for="correctionReviewStatusFilter">Show Requests</label>
+              <select id="correctionReviewStatusFilter">
+                <option value="pending">Pending Review</option>
+                <option value="all">All Requests</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+                <option value="resolved">Resolved</option>
+                <option value="withdrawn">Withdrawn</option>
+              </select>
+            </div>
+            <div class="correction-summary-card"><span>Pending</span><strong id="correctionPendingCount">0</strong></div>
+            <div class="correction-summary-card"><span>Approved</span><strong id="correctionApprovedCount">0</strong></div>
+            <div class="correction-summary-card"><span>Rejected</span><strong id="correctionRejectedCount">0</strong></div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Submitted</th>
+                  <th>Team / Coach</th>
+                  <th>Game</th>
+                  <th>Requested Change</th>
+                  <th>Coach Reason</th>
+                  <th>Status</th>
+                  <th>Review / Actions</th>
+                </tr>
+              </thead>
+              <tbody id="correctionReviewBody">
+                <tr><td class="empty-state" colspan="7">Loading coach correction requests...</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="correctionReviewMessage" class="form-message" aria-live="polite"></div>
+        </section>
+
 
         <section id="schedulePanel" class="panel">
           <header class="panel-header">
@@ -1198,6 +1345,8 @@
     let editingSeasonId = null;
     let editingDivisionId = null;
     let standingsLoadToken = 0;
+    let correctionReviewLoadToken = 0;
+    let correctionReviewRows = [];
 
     const authScreen = document.getElementById("authScreen");
     const appShell = document.getElementById("appShell");
@@ -1400,6 +1549,227 @@
         : '<option value="">No assigned leagues</option>';
     }
 
+
+    function correctionRequestTypeLabel(value) {
+      return {
+        player_stat: "Player Stat",
+        team_score: "Team Score",
+        game_detail: "Game Detail",
+        other: "Other"
+      }[String(value || "").toLowerCase()] || "Correction";
+    }
+
+    function correctionStatLabel(value) {
+      const labels = {
+        points: "Points",
+        two_pt_made: "2PT Made",
+        two_pt_attempted: "2PT Attempted",
+        three_pt_made: "3PT Made",
+        three_pt_attempted: "3PT Attempted",
+        ft_made: "FT Made",
+        ft_attempted: "FT Attempted",
+        offensive_rebounds: "Offensive Rebounds",
+        defensive_rebounds: "Defensive Rebounds",
+        rebounds: "Total Rebounds",
+        assists: "Assists",
+        steals: "Steals",
+        blocks: "Blocks",
+        turnovers: "Turnovers",
+        fouls: "Personal Fouls",
+        minutes_played: "Minutes Played",
+        plus_minus: "Plus / Minus"
+      };
+      const key = String(value || "").trim();
+      return labels[key] || key.replace(/_/g, " ").replace(/\b\w/g, char => char.toUpperCase()) || "Requested Change";
+    }
+
+    function resetCorrectionReviewPanel(message = "Select an assigned league to view coach correction requests.") {
+      correctionReviewRows = [];
+      document.getElementById("correctionPendingCount").textContent = "0";
+      document.getElementById("correctionApprovedCount").textContent = "0";
+      document.getElementById("correctionRejectedCount").textContent = "0";
+      document.getElementById("correctionReviewBody").innerHTML = `<tr><td class="empty-state" colspan="7">${escapeHtml(message)}</td></tr>`;
+      document.getElementById("refreshCorrectionReviewsButton").disabled = true;
+      setFormMessage("correctionReviewMessage", "");
+    }
+
+    function renderCorrectionReviewRows() {
+      const body = document.getElementById("correctionReviewBody");
+      const filter = document.getElementById("correctionReviewStatusFilter").value || "pending";
+
+      const pendingCount = correctionReviewRows.filter(row => row.request_status === "pending").length;
+      const approvedCount = correctionReviewRows.filter(row => row.request_status === "approved").length;
+      const rejectedCount = correctionReviewRows.filter(row => row.request_status === "rejected").length;
+
+      document.getElementById("correctionPendingCount").textContent = pendingCount.toLocaleString();
+      document.getElementById("correctionApprovedCount").textContent = approvedCount.toLocaleString();
+      document.getElementById("correctionRejectedCount").textContent = rejectedCount.toLocaleString();
+
+      const rows = filter === "all"
+        ? correctionReviewRows
+        : correctionReviewRows.filter(row => row.request_status === filter);
+
+      if (!rows.length) {
+        const emptyText = filter === "pending"
+          ? "No pending coach correction requests for this league."
+          : "No correction requests match this filter.";
+        body.innerHTML = `<tr><td class="empty-state" colspan="7">${escapeHtml(emptyText)}</td></tr>`;
+        return;
+      }
+
+      body.innerHTML = rows.map(row => {
+        const status = String(row.request_status || "pending").toLowerCase();
+        const badgeClass = status === "pending" ? "pending" : (status === "rejected" ? "rejected" : "");
+        const requestType = correctionRequestTypeLabel(row.request_type);
+
+        let changeTitle = requestType;
+        let changeDetail = "";
+
+        if (row.request_type === "player_stat") {
+          changeTitle = `${row.player_name || "Player"} · ${correctionStatLabel(row.stat_field)}`;
+          changeDetail = `HoopHub shows: ${row.current_value ?? "—"} → Requested: ${row.requested_value ?? "—"}`;
+        } else if (row.request_type === "team_score") {
+          changeTitle = "Team Score";
+          changeDetail = `HoopHub shows: ${row.current_value ?? "—"} → Requested: ${row.requested_value ?? "—"}`;
+        } else {
+          changeTitle = row.stat_field ? `${requestType} · ${correctionStatLabel(row.stat_field)}` : requestType;
+          changeDetail = row.requested_value
+            ? `Requested: ${row.requested_value}`
+            : (row.current_value ? `Current: ${row.current_value}` : "See coach explanation.");
+        }
+
+        const reviewDetails = row.reviewed_at
+          ? `<div class="correction-review-note">Reviewed ${escapeHtml(formatDateTime(row.reviewed_at))}${row.reviewed_by_name ? ` by ${escapeHtml(row.reviewed_by_name)}` : ""}${row.review_notes ? `<br><strong>Note:</strong> ${escapeHtml(row.review_notes)}` : ""}</div>`
+          : "";
+
+        const actions = status === "pending"
+          ? `<div class="review-actions">
+               <button class="review-button approve" type="button" onclick="reviewCoachCorrectionRequest('${row.correction_request_id}','approved',this)">APPROVE</button>
+               <button class="review-button reject" type="button" onclick="reviewCoachCorrectionRequest('${row.correction_request_id}','rejected',this)">REJECT</button>
+             </div>`
+          : `<span class="correction-review-note">Review complete.</span>`;
+
+        return `
+          <tr>
+            <td><strong>${escapeHtml(formatDateTime(row.submitted_at))}</strong></td>
+            <td>
+              <strong>${escapeHtml(row.team_name || "Unknown Team")}</strong>
+              <div class="correction-review-note">Submitted by ${escapeHtml(row.submitted_by_name || "Coach")}</div>
+            </td>
+            <td>
+              <strong>Game #${escapeHtml(row.game_id)}</strong>
+              <div class="correction-review-note">${escapeHtml(row.home_team_name || "Home Team")} vs ${escapeHtml(row.away_team_name || "Away Team")}<br>${escapeHtml(formatDateTime(row.scheduled_at))}</div>
+            </td>
+            <td>
+              <div class="correction-change">
+                <strong>${escapeHtml(changeTitle)}</strong>
+                <span>${escapeHtml(changeDetail)}</span>
+              </div>
+            </td>
+            <td><div class="correction-reason">${escapeHtml(row.reason || "—")}</div></td>
+            <td><span class="status-badge ${badgeClass}">${escapeHtml(status)}</span></td>
+            <td>${actions}${reviewDetails}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    async function loadCommissionerCorrectionRequests(leagueId) {
+      const button = document.getElementById("refreshCorrectionReviewsButton");
+      const body = document.getElementById("correctionReviewBody");
+      const requestToken = ++correctionReviewLoadToken;
+
+      if (!leagueId) {
+        resetCorrectionReviewPanel();
+        return;
+      }
+
+      button.disabled = true;
+      body.innerHTML = '<tr><td class="empty-state" colspan="7">Loading coach correction requests...</td></tr>';
+      setFormMessage("correctionReviewMessage", "Loading correction requests...");
+
+      try {
+        const { data, error } = await supabaseClient.rpc("get_commissioner_correction_requests", {
+          p_league_id: leagueId
+        });
+
+        if (requestToken !== correctionReviewLoadToken) return;
+        if (error) throw error;
+
+        correctionReviewRows = data || [];
+        renderCorrectionReviewRows();
+        setFormMessage(
+          "correctionReviewMessage",
+          correctionReviewRows.length
+            ? "Correction requests loaded. Approving or rejecting a request does not directly edit official statistics."
+            : "No coach correction requests have been submitted for this league."
+        );
+      } catch (error) {
+        if (requestToken !== correctionReviewLoadToken) return;
+        console.error("Unable to load coach correction requests:", error);
+        correctionReviewRows = [];
+        body.innerHTML = `<tr><td class="empty-state" colspan="7">Unable to load correction requests: ${escapeHtml(error?.message || "Unknown error")}</td></tr>`;
+        setFormMessage("correctionReviewMessage", "Unable to load correction requests.", "error");
+      } finally {
+        if (requestToken === correctionReviewLoadToken) button.disabled = false;
+      }
+    }
+
+    async function reviewCoachCorrectionRequest(requestId, decision, button) {
+      const row = correctionReviewRows.find(item => item.correction_request_id === requestId);
+      if (!row) return alert("This correction request could not be found.");
+
+      const approving = decision === "approved";
+      const promptText = approving
+        ? "Commissioner note (optional):\n\nYou can leave this blank and press OK."
+        : "Reason for rejection (required):\n\nExplain clearly why the correction request is being rejected.";
+
+      const reviewNotes = window.prompt(promptText, "");
+      if (reviewNotes === null) return;
+
+      if (!approving && reviewNotes.trim().length < 5) {
+        return alert("Please enter a short reason for rejecting this correction request.");
+      }
+
+      const actionWord = approving ? "approve" : "reject";
+      if (!window.confirm(
+        `${actionWord.charAt(0).toUpperCase() + actionWord.slice(1)} this coach correction request?\n\n` +
+        `Game #${row.game_id} — ${row.team_name || "Team"}\n\n` +
+        `This reviews the request only. It will NOT directly change the finalized game or player statistics.`
+      )) return;
+
+      button.disabled = true;
+      const originalText = button.textContent;
+      button.textContent = approving ? "APPROVING..." : "REJECTING...";
+
+      try {
+        const { error } = await supabaseClient.rpc("review_coach_correction_request", {
+          p_request_id: requestId,
+          p_decision: decision,
+          p_review_notes: reviewNotes.trim() || null
+        });
+
+        if (error) throw error;
+
+        setFormMessage(
+          "correctionReviewMessage",
+          approving
+            ? "Correction request approved for authorized follow-up. Official statistics have not been changed yet."
+            : "Correction request rejected. The coach will see the review status and note.",
+          "success"
+        );
+
+        await loadCommissionerCorrectionRequests(leagueSelect.value);
+      } catch (error) {
+        console.error("Unable to review correction request:", error);
+        setFormMessage("correctionReviewMessage", error?.message || "Unable to review correction request.", "error");
+        alert("Unable to review correction request: " + (error?.message || "Unknown error"));
+      } finally {
+        button.disabled = false;
+        button.textContent = originalText;
+      }
+    }
+
     function renderWorkspace() {
       const selectedId = leagueSelect.value || assignedLeagues[0]?.id || "";
       const league = assignedLeagues.find(item => item.id === selectedId);
@@ -1425,6 +1795,7 @@
         renderStandingsFilters(null);
         renderGamesDisplayFilters(null);
         renderReportFilters(null);
+        resetCorrectionReviewPanel("No assigned league.");
         return;
       }
 
@@ -1469,6 +1840,7 @@
       renderGamesDisplayFilters(league);
       renderReportFilters(league);
       loadRosterReviews(league.id);
+      loadCommissionerCorrectionRequests(league.id);
     }
 
     function setFormMessage(id, text, type = "") {
@@ -2400,6 +2772,10 @@
     document.getElementById("gamesDisplaySeasonSelect").addEventListener("change", () => renderGamesDisplayDivisions(false));
     document.getElementById("gamesDisplayDivisionSelect").addEventListener("change", renderDivisionGames);
     document.getElementById("refreshGamesDisplayButton").addEventListener("click", renderDivisionGames);
+    document.getElementById("correctionReviewStatusFilter").addEventListener("change", renderCorrectionReviewRows);
+    document.getElementById("refreshCorrectionReviewsButton").addEventListener("click", function () {
+      loadCommissionerCorrectionRequests(leagueSelect.value);
+    });
     document.getElementById("generateReportButton").addEventListener("click", generateReport);
     document.getElementById("printReportButton").addEventListener("click", () => window.print());
     document.getElementById("cancelEditButton").addEventListener("click", () => resetScheduleForm());
