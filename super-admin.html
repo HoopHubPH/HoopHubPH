@@ -323,14 +323,14 @@
 
     .account-embed-shell {
       width: 100%;
-      min-height: calc(100vh - 116px);
+      min-height: 0;
       overflow: hidden;
       background: transparent;
     }
 
     .account-embed-frame {
       width: 100%;
-      height: 900px;
+      height: 620px;
       display: block;
       overflow: hidden;
       background: transparent;
@@ -1745,7 +1745,16 @@
 
     function resizeAccountManagementFrame(height) {
       if (!accountManagementFrame) return;
-      const nextHeight = Math.max(640, Number(height) || 0);
+
+      const reportedHeight = Number(height) || 0;
+      const childSafetyBuffer = 36;
+      const bottomBreathingRoom = 12;
+
+      const nextHeight = Math.max(
+        540,
+        Math.ceil(reportedHeight - childSafetyBuffer + bottomBreathingRoom)
+      );
+
       accountManagementFrame.style.height = `${nextHeight}px`;
     }
 
@@ -1760,12 +1769,13 @@
         const frameDocument = accountManagementFrame.contentDocument;
         if (!frameDocument) return;
 
-        resizeAccountManagementFrame(
-          Math.max(
-            frameDocument.body?.scrollHeight || 0,
-            frameDocument.documentElement?.scrollHeight || 0
-          )
+        const measuredHeight = Math.max(
+          frameDocument.body?.scrollHeight || 0,
+          frameDocument.documentElement?.scrollHeight || 0
         );
+
+        accountManagementFrame.style.height =
+          `${Math.max(540, Math.ceil(measuredHeight + 12))}px`;
       } catch (error) {
         console.warn("Unable to auto-size Account Management frame:", error);
       }
