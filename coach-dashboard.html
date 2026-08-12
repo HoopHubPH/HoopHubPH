@@ -270,8 +270,13 @@
     .result-badge.tie { color: #475467; background: #f2f4f7; }
     .statistics-note { padding: 12px 18px 16px; color: var(--muted); font-size: 11px; line-height: 1.5; }
 
-    .correction-callout { padding: 13px 18px; color: #7a3e00; background: #fff8f2; border-bottom: 1px solid #ffd9bd; font-size: 12px; line-height: 1.5; }
+    .correction-callout { padding: 15px 18px; color: #7a3e00; background: #fff8f2; border-bottom: 1px solid #ffd9bd; font-size: 12px; line-height: 1.5; }
     .correction-callout strong { color: var(--ink); }
+    .correction-steps { margin-top: 10px; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; }
+    .correction-step { padding: 10px 11px; color: #5f3a20; background: #fff; border: 1px solid #ffd9bd; border-radius: 8px; }
+    .correction-step b { display: block; margin-bottom: 3px; color: var(--ink); }
+    .field-help { margin-top: 2px; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .official-value-input[readonly] { background: #f2f4f7; color: #344054; font-weight: bold; cursor: default; }
     .correction-form textarea.form-input { min-height: 96px; padding: 10px 11px; resize: vertical; line-height: 1.45; }
     .correction-form .form-group[hidden] { display: none !important; }
     .correction-history-detail { color: var(--muted); font-size: 11px; line-height: 1.45; }
@@ -308,6 +313,7 @@
       .lineup-toolbar { grid-template-columns: 1fr; }
       .lineup-summary { grid-template-columns: 1fr; }
       .statistics-summary { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .correction-steps { grid-template-columns: 1fr; }
       .lineup-footer { align-items: stretch; flex-direction: column; }
       .lineup-footer .primary-button { width: 100%; }
     }
@@ -635,18 +641,26 @@
             <button id="refreshCorrectionsButton" class="secondary-button" type="button">Refresh Requests</button>
           </header>
 
-          <div class="correction-callout"><strong>Commissioner review required.</strong> Coaches can report a player stat, team score, game detail, or another issue. Official records remain unchanged until an authorized reviewer handles the request.</div>
+          <div class="correction-callout">
+            <strong>How to request a correction</strong>
+            <div class="correction-steps">
+              <div class="correction-step"><b>1. Select what is wrong</b>Choose the finalized game, correction type, and player/stat if needed.</div>
+              <div class="correction-step"><b>2. Compare the values</b>Enter what HoopHub currently shows, then enter what you believe the correct value should be.</div>
+              <div class="correction-step"><b>3. Explain why</b>Give a short reason so the commissioner knows exactly what to review.</div>
+            </div>
+            <div style="margin-top:10px"><strong>Example:</strong> HoopHub shows <b>12 points</b>, but the player should have <b>14 points</b>. Enter <b>12</b> under “What HoopHub Currently Shows” and <b>14</b> under “What It Should Be.”</div>
+          </div>
 
           <form id="correctionRequestForm" class="application-form correction-form">
             <div class="form-group form-wide">
-              <label for="correctionGameSelect">Finalized Game</label>
+              <label for="correctionGameSelect">1. Select Finalized Game</label>
               <select id="correctionGameSelect" class="form-input" required>
                 <option value="">Loading finalized games...</option>
               </select>
             </div>
 
             <div class="form-group">
-              <label for="correctionTypeSelect">Correction Type</label>
+              <label for="correctionTypeSelect">2. What Needs to Be Corrected?</label>
               <select id="correctionTypeSelect" class="form-input" required>
                 <option value="">Select correction type</option>
                 <option value="player_stat">Player Stat</option>
@@ -657,14 +671,14 @@
             </div>
 
             <div id="correctionPlayerGroup" class="form-group" hidden>
-              <label for="correctionPlayerSelect">Player</label>
+              <label for="correctionPlayerSelect">3. Which Player?</label>
               <select id="correctionPlayerSelect" class="form-input">
                 <option value="">Select player</option>
               </select>
             </div>
 
             <div id="correctionStatGroup" class="form-group" hidden>
-              <label for="correctionStatField">Statistic</label>
+              <label for="correctionStatField">4. Which Statistic?</label>
               <select id="correctionStatField" class="form-input">
                 <option value="">Select statistic</option>
                 <option value="points">Points</option>
@@ -688,18 +702,21 @@
             </div>
 
             <div class="form-group">
-              <label id="correctionCurrentValueLabel" for="correctionCurrentValue">Current Value (Optional)</label>
-              <input id="correctionCurrentValue" class="form-input" type="text" maxlength="100" placeholder="Current official value">
+              <label id="correctionCurrentValueLabel" for="correctionCurrentValue">What HoopHub Currently Shows</label>
+              <input id="correctionCurrentValue" class="form-input official-value-input" type="text" maxlength="100" placeholder="Example: 12">
+              <small id="correctionCurrentValueHelp" class="field-help">Enter the official value currently shown in HoopHub. This tells the commissioner what record you are asking to review.</small>
             </div>
 
             <div class="form-group">
-              <label id="correctionRequestedValueLabel" for="correctionRequestedValue">Requested Corrected Value</label>
-              <input id="correctionRequestedValue" class="form-input" type="text" maxlength="100" placeholder="What should the official value be?">
+              <label id="correctionRequestedValueLabel" for="correctionRequestedValue">What It Should Be</label>
+              <input id="correctionRequestedValue" class="form-input" type="text" maxlength="100" placeholder="Example: 14">
+              <small id="correctionRequestedValueHelp" class="field-help">Enter the corrected value you want the commissioner to review.</small>
             </div>
 
             <div class="form-group form-wide">
-              <label for="correctionReason">Reason / Explanation</label>
-              <textarea id="correctionReason" class="form-input" minlength="5" maxlength="1000" required placeholder="Explain what is incorrect and why it should be reviewed."></textarea>
+              <label for="correctionReason">Why Should It Be Changed?</label>
+              <textarea id="correctionReason" class="form-input" minlength="5" maxlength="1000" required placeholder="Example: The player made another 2-point basket in the 3rd quarter, so the official total should be 14 instead of 12."></textarea>
+              <small class="field-help">Be specific about what happened so the commissioner can verify the correction quickly.</small>
             </div>
 
             <div class="form-actions">
@@ -1387,11 +1404,15 @@
       const requestedInput = document.getElementById("correctionRequestedValue");
       const currentLabel = document.getElementById("correctionCurrentValueLabel");
       const requestedLabel = document.getElementById("correctionRequestedValueLabel");
+      const currentHelp = document.getElementById("correctionCurrentValueHelp");
+      const requestedHelp = document.getElementById("correctionRequestedValueHelp");
       const submitButton = document.getElementById("submitCorrectionButton");
       const game = selectedCorrectionGame();
       const assignment = selectedAssignment();
       const playerStat = type === "player_stat";
       const teamScore = type === "team_score";
+      const gameDetail = type === "game_detail";
+      const other = type === "other";
 
       if (playerGroup) playerGroup.hidden = !playerStat;
       if (statGroup) statGroup.hidden = !playerStat;
@@ -1399,12 +1420,48 @@
       if (statSelect) statSelect.required = playerStat;
       if (requestedInput) requestedInput.required = playerStat || teamScore;
 
-      if (currentLabel) currentLabel.textContent = teamScore ? "Current Official Team Score" : "Current Value (Optional)";
-      if (requestedLabel) requestedLabel.textContent = (playerStat || teamScore) ? "Requested Corrected Value" : "Requested Change (Optional)";
+      if (currentInput) {
+        currentInput.readOnly = false;
+        currentInput.placeholder = "Example: 12";
+      }
+      if (requestedInput) requestedInput.placeholder = "Example: 14";
 
-      if (teamScore && game && currentInput) {
-        const teamScoreValue = game.is_home_team ? game.home_score : game.away_score;
-        currentInput.value = String(teamScoreValue ?? 0);
+      if (playerStat) {
+        if (currentLabel) currentLabel.textContent = "5. What HoopHub Currently Shows";
+        if (requestedLabel) requestedLabel.textContent = "6. What the Player Stat Should Be";
+        if (currentHelp) currentHelp.textContent = "Enter this player's official stat for the selected game exactly as HoopHub currently shows it. Example: if HoopHub shows 12 points, enter 12.";
+        if (requestedHelp) requestedHelp.textContent = "Enter the corrected player stat you want reviewed. Example: if the player should have 14 points, enter 14.";
+      } else if (teamScore) {
+        if (currentLabel) currentLabel.textContent = "3. Current Official Team Score (Auto-Filled)";
+        if (requestedLabel) requestedLabel.textContent = "4. Correct Team Score";
+        if (currentHelp) currentHelp.textContent = "HoopHub automatically fills your team's finalized score from the selected game. You do not need to type this.";
+        if (requestedHelp) requestedHelp.textContent = "Enter what your team's final score should be after the correction.";
+        if (currentInput) {
+          currentInput.readOnly = true;
+          currentInput.placeholder = "Official score";
+          const teamScoreValue = game ? (game.is_home_team ? game.home_score : game.away_score) : "";
+          currentInput.value = game ? String(teamScoreValue ?? 0) : "";
+        }
+        if (requestedInput) requestedInput.placeholder = "Example: 78";
+      } else if (gameDetail) {
+        if (currentLabel) currentLabel.textContent = "3. Current Game Detail (Optional)";
+        if (requestedLabel) requestedLabel.textContent = "4. Correct Game Detail";
+        if (currentHelp) currentHelp.textContent = "Describe the game information HoopHub currently shows, such as the venue, date, opponent, or another game detail.";
+        if (requestedHelp) requestedHelp.textContent = "Describe what that game information should be instead.";
+        if (currentInput) currentInput.placeholder = "Example: Venue — Court A";
+        if (requestedInput) requestedInput.placeholder = "Example: Venue — Court B";
+      } else if (other) {
+        if (currentLabel) currentLabel.textContent = "3. Current Information (Optional)";
+        if (requestedLabel) requestedLabel.textContent = "4. Requested Correction (Optional)";
+        if (currentHelp) currentHelp.textContent = "If there is an existing value or information involved, enter what HoopHub currently shows.";
+        if (requestedHelp) requestedHelp.textContent = "Describe the correction you are requesting. You can also explain it fully in the reason box below.";
+        if (currentInput) currentInput.placeholder = "What HoopHub currently shows";
+        if (requestedInput) requestedInput.placeholder = "What should be corrected";
+      } else {
+        if (currentLabel) currentLabel.textContent = "What HoopHub Currently Shows";
+        if (requestedLabel) requestedLabel.textContent = "What It Should Be";
+        if (currentHelp) currentHelp.textContent = "First select a correction type. This field will then tell you exactly what information to enter.";
+        if (requestedHelp) requestedHelp.textContent = "First select a correction type. This field will then tell you exactly what corrected information to enter.";
       }
 
       if (submitButton) submitButton.disabled = !assignment || !game || !type;
@@ -1421,7 +1478,8 @@
       return `
         <div class="correction-history-detail">
           ${parts.length ? `<strong>${escapeHtml(parts.join(" · "))}</strong><br>` : ""}
-          ${escapeHtml(before)} ${request.requested_value ? "→" : ""} ${escapeHtml(after)}
+          <span>Current:</span> <strong>${escapeHtml(before)}</strong><br>
+          <span>Requested:</span> <strong>${escapeHtml(after)}</strong>
         </div>
       `;
     }
@@ -1503,7 +1561,7 @@
       if (["player_stat", "team_score"].includes(type) && !requestedValue) return alert("Enter the requested corrected value.");
       if (reason.length < 5) return alert("Please provide a clear reason for the correction request.");
 
-      if (!confirm(`Submit this correction request for Game #${game.game_id}?\n\nThe official record will not change until it is reviewed by an authorized league official.`)) return;
+      if (!confirm(`Submit this correction request for Game #${game.game_id}?\n\nCurrent official value: ${currentValue ?? "Not provided"}\nRequested correction: ${requestedValue ?? "See explanation"}\n\nThis request does NOT change the official record automatically. The commissioner must review it first.`)) return;
 
       button.disabled = true;
       button.textContent = "Submitting Request...";
@@ -2280,6 +2338,8 @@
       document.getElementById("correctionRequestedValue").value = "";
       syncCorrectionForm();
     });
+    document.getElementById("correctionPlayerSelect").addEventListener("change", syncCorrectionForm);
+    document.getElementById("correctionStatField").addEventListener("change", syncCorrectionForm);
     document.getElementById("correctionRequestForm").addEventListener("submit", submitCorrectionRequest);
     document.getElementById("refreshCorrectionsButton").addEventListener("click", function () {
       const assignment = selectedAssignment();
