@@ -702,7 +702,7 @@
     .section-grid {
       margin-top: 18px;
       display: grid;
-      grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.8fr);
+      grid-template-columns: 1fr;
       gap: 18px;
       align-items: start;
     }
@@ -1095,7 +1095,7 @@
 
 
     /* =========================
-       LIVE SUPER ADMIN GRAPH
+       LIVE DASHBOARD LINE GRAPH
        ========================= */
     .dashboard-chart-panel {
       margin-top: 18px;
@@ -1105,8 +1105,8 @@
     .dashboard-chart-controls {
       display: flex;
       align-items: center;
-      gap: 9px;
       flex-wrap: wrap;
+      gap: 9px;
     }
 
     .dashboard-chart-select {
@@ -1128,86 +1128,108 @@
       box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.10);
     }
 
-    .dashboard-chart-body {
-      padding: 20px 21px 18px;
+    .dashboard-line-wrap {
+      padding: 18px 21px 20px;
     }
 
-    .dashboard-chart-summary {
-      margin-bottom: 17px;
+    .dashboard-line-summary {
+      margin-bottom: 12px;
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      gap: 14px;
+      gap: 16px;
     }
 
-    .dashboard-chart-summary strong {
+    .dashboard-line-summary strong {
+      color: var(--ink);
       font-size: 12px;
     }
 
-    .dashboard-chart-summary span {
+    .dashboard-line-summary span {
       color: var(--muted);
       font-size: 10px;
       line-height: 1.5;
       text-align: right;
     }
 
-    .dashboard-bars {
-      display: grid;
-      gap: 13px;
-    }
-
-    .dashboard-bar-row {
-      display: grid;
-      grid-template-columns: minmax(95px, 150px) minmax(0, 1fr) 56px;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .dashboard-bar-label {
+    .dashboard-line-stage {
+      position: relative;
+      width: 100%;
+      min-height: 330px;
       overflow: hidden;
-      color: #344054;
-      font-size: 11px;
-      font-weight: bold;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      background: #ffffff;
+      border: 1px solid #eef0f3;
+      border-radius: 11px;
     }
 
-    .dashboard-bar-track {
-      height: 14px;
-      overflow: hidden;
-      background: #f2f4f7;
-      border: 1px solid #eaecf0;
-      border-radius: 999px;
+    .dashboard-line-stage svg {
+      width: 100%;
+      height: 330px;
+      display: block;
     }
 
-    .dashboard-bar-fill {
-      width: 0;
-      height: 100%;
-      background: var(--orange);
-      border-radius: inherit;
-      transition: width 0.45s ease;
+    .dashboard-line-grid {
+      stroke: #eaecf0;
+      stroke-width: 1;
     }
 
-    .dashboard-bar-value {
-      color: var(--ink);
+    .dashboard-line-axis {
+      stroke: #d0d5dd;
+      stroke-width: 1;
+    }
+
+    .dashboard-line-path {
+      fill: none;
+      stroke: var(--orange);
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .dashboard-line-point {
+      fill: #ffffff;
+      stroke: var(--orange);
+      stroke-width: 3;
+    }
+
+    .dashboard-line-point:hover {
+      fill: var(--orange-soft);
+    }
+
+    .dashboard-line-value {
+      fill: var(--ink);
       font-size: 12px;
       font-weight: bold;
-      text-align: right;
+      text-anchor: middle;
     }
 
-    .dashboard-chart-empty {
-      padding: 32px 12px;
+    .dashboard-line-x-label {
+      fill: #667085;
+      font-size: 10px;
+      font-weight: bold;
+      text-anchor: middle;
+    }
+
+    .dashboard-line-y-label {
+      fill: #98a2b3;
+      font-size: 9px;
+      text-anchor: end;
+    }
+
+    .dashboard-line-empty {
+      min-height: 330px;
+      display: grid;
+      place-items: center;
+      padding: 30px;
       color: var(--muted);
       text-align: center;
       font-size: 11px;
       line-height: 1.55;
     }
 
-    .dashboard-chart-note {
-      margin-top: 16px;
-      padding-top: 13px;
+    .dashboard-line-note {
+      margin-top: 12px;
       color: #8c929b;
-      border-top: 1px solid var(--line);
       font-size: 9px;
       line-height: 1.55;
     }
@@ -1221,17 +1243,18 @@
         flex: 1 1 180px;
       }
 
-      .dashboard-chart-summary {
+      .dashboard-line-summary {
         flex-direction: column;
       }
 
-      .dashboard-chart-summary span {
+      .dashboard-line-summary span {
         text-align: left;
       }
 
-      .dashboard-bar-row {
-        grid-template-columns: 88px minmax(0, 1fr) 44px;
-        gap: 8px;
+      .dashboard-line-stage,
+      .dashboard-line-stage svg {
+        min-height: 290px;
+        height: 290px;
       }
     }
 
@@ -1377,7 +1400,7 @@
           <header class="panel-header">
             <div>
               <h2 id="dashboardChartHeading">Platform Data Overview</h2>
-              <p>Live visual summary from the HoopHub PH database.</p>
+              <p>Live line graph synced with the HoopHub PH database.</p>
             </div>
 
             <div class="dashboard-chart-controls">
@@ -1390,17 +1413,17 @@
             </div>
           </header>
 
-          <div class="dashboard-chart-body">
-            <div class="dashboard-chart-summary">
+          <div class="dashboard-line-wrap">
+            <div class="dashboard-line-summary">
               <strong id="dashboardChartTitle">Platform Totals</strong>
               <span id="dashboardChartUpdated">Loading live data...</span>
             </div>
 
-            <div id="dashboardChartBars" class="dashboard-bars" aria-live="polite">
-              <div class="dashboard-chart-empty">Loading platform graph...</div>
+            <div id="dashboardLineStage" class="dashboard-line-stage" aria-live="polite">
+              <div class="dashboard-line-empty">Loading platform graph...</div>
             </div>
 
-            <p id="dashboardChartNote" class="dashboard-chart-note">
+            <p id="dashboardChartNote" class="dashboard-line-note">
               Values are loaded directly from Supabase using the signed-in Super Admin account.
             </p>
           </div>
@@ -1476,50 +1499,6 @@
                 <span>Return to the public HoopHub PH homepage.</span>
                 <span class="quick-arrow">→</span>
               </a>
-            </div>
-          </article>
-
-          <article id="upcoming-admin-tools" class="panel">
-            <header class="panel-header">
-              <div>
-                <h2>Next Platform Modules</h2>
-                <p>The next role-based HoopHub PH workspaces.</p>
-              </div>
-              <span class="panel-tag">Next Phase</span>
-            </header>
-
-            <div class="setup-list">
-              <div class="setup-item">
-                <span class="setup-number">1</span>
-                <div>
-                  <strong>Commissioner Workspace</strong>
-                  <p>Manage assigned leagues, seasons, schedules, and approvals.</p>
-                </div>
-              </div>
-
-              <div class="setup-item">
-                <span class="setup-number">2</span>
-                <div>
-                  <strong>Coach Registration</strong>
-                  <p>Connect approved coaches to specific teams and rosters.</p>
-                </div>
-              </div>
-
-              <div class="setup-item">
-                <span class="setup-number">3</span>
-                <div>
-                  <strong>Player Invitations</strong>
-                  <p>Let players accept team invitations and manage profiles.</p>
-                </div>
-              </div>
-
-              <div class="setup-item">
-                <span class="setup-number">4</span>
-                <div>
-                  <strong>Announcements and Reports</strong>
-                  <p>Publish platform notices and generate league reports.</p>
-                </div>
-              </div>
             </div>
           </article>
         </section>
@@ -1773,7 +1752,7 @@
     const activityDateFilter = document.getElementById("activityDateFilter");
     const refreshActivityButton = document.getElementById("refreshActivityButton");
     const dashboardChartMode = document.getElementById("dashboardChartMode");
-    const dashboardChartBars = document.getElementById("dashboardChartBars");
+    const dashboardLineStage = document.getElementById("dashboardLineStage");
     const dashboardChartTitle = document.getElementById("dashboardChartTitle");
     const dashboardChartUpdated = document.getElementById("dashboardChartUpdated");
     const dashboardChartNote = document.getElementById("dashboardChartNote");
@@ -2642,13 +2621,29 @@
       }
     }
 
-    function graphLabel(value) {
+    function dashboardGraphLabel(value) {
       return String(value || "Unspecified")
         .replaceAll("_", " ")
         .replace(/\b\w/g, character => character.toUpperCase());
     }
 
-    function renderDashboardBars(items, title, note) {
+    function dashboardGraphShortLabel(value) {
+      const label = String(value || "Unknown");
+      const replacements = {
+        "Coach / Manager": "Coach",
+        "Super Admin": "Super Admin",
+        "Scorekeeper": "Scorekeeper",
+        "Commissioner": "Commissioner",
+        "Scheduled": "Scheduled",
+        "In Progress": "In Progress",
+        "Final": "Final",
+        "Finalized": "Finalized"
+      };
+
+      return replacements[label] || (label.length > 15 ? `${label.slice(0, 13)}…` : label);
+    }
+
+    function renderDashboardLineGraph(items, title, note) {
       dashboardChartTitle.textContent = title;
       dashboardChartNote.textContent = note;
 
@@ -2660,64 +2655,112 @@
         .filter(item => Number.isFinite(item.value) && item.value >= 0);
 
       if (!safeItems.length) {
-        dashboardChartBars.innerHTML =
-          '<div class="dashboard-chart-empty">No data is available for this graph yet.</div>';
+        dashboardLineStage.innerHTML =
+          '<div class="dashboard-line-empty">No data is available for this graph yet.</div>';
         return;
       }
 
-      const maxValue = Math.max(...safeItems.map(item => item.value), 1);
+      const width = 1000;
+      const height = 330;
+      const left = 62;
+      const right = 32;
+      const top = 38;
+      const bottom = 58;
+      const plotWidth = width - left - right;
+      const plotHeight = height - top - bottom;
 
-      dashboardChartBars.innerHTML = safeItems.map(item => {
-        const width = item.value === 0
-          ? 0
-          : Math.max(4, (item.value / maxValue) * 100);
+      const rawMax = Math.max(...safeItems.map(item => item.value), 1);
+      const yMax = Math.max(1, Math.ceil(rawMax * 1.15));
+      const tickCount = 4;
+
+      const xForIndex = index => {
+        if (safeItems.length === 1) return left + plotWidth / 2;
+        return left + (plotWidth * index) / (safeItems.length - 1);
+      };
+
+      const yForValue = value =>
+        top + plotHeight - (Math.min(value, yMax) / yMax) * plotHeight;
+
+      const points = safeItems.map((item, index) => ({
+        ...item,
+        x: xForIndex(index),
+        y: yForValue(item.value)
+      }));
+
+      const pathData = points
+        .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`)
+        .join(" ");
+
+      const gridMarkup = Array.from({ length: tickCount + 1 }, (_, index) => {
+        const value = Math.round((yMax * index) / tickCount);
+        const y = yForValue(value);
 
         return `
-          <div class="dashboard-bar-row">
-            <div class="dashboard-bar-label" title="${escapeHtml(item.label)}">
-              ${escapeHtml(item.label)}
-            </div>
-            <div
-              class="dashboard-bar-track"
-              role="img"
-              aria-label="${escapeHtml(item.label)}: ${item.value.toLocaleString()}"
-            >
-              <div class="dashboard-bar-fill" style="width:${width.toFixed(2)}%"></div>
-            </div>
-            <div class="dashboard-bar-value">${item.value.toLocaleString()}</div>
-          </div>
+          <line class="dashboard-line-grid" x1="${left}" y1="${y}" x2="${width - right}" y2="${y}"></line>
+          <text class="dashboard-line-y-label" x="${left - 10}" y="${y + 3}">${value.toLocaleString()}</text>
         `;
       }).join("");
+
+      const pointsMarkup = points.map(point => `
+        <g>
+          <circle
+            class="dashboard-line-point"
+            cx="${point.x}"
+            cy="${point.y}"
+            r="6"
+          >
+            <title>${escapeHtml(point.label)}: ${point.value.toLocaleString()}</title>
+          </circle>
+          <text
+            class="dashboard-line-value"
+            x="${point.x}"
+            y="${Math.max(18, point.y - 13)}"
+          >${point.value.toLocaleString()}</text>
+          <text
+            class="dashboard-line-x-label"
+            x="${point.x}"
+            y="${height - 23}"
+          >${escapeHtml(dashboardGraphShortLabel(point.label))}</text>
+        </g>
+      `).join("");
+
+      dashboardLineStage.innerHTML = `
+        <svg
+          viewBox="0 0 ${width} ${height}"
+          role="img"
+          aria-label="${escapeHtml(title)} line graph"
+          preserveAspectRatio="none"
+        >
+          ${gridMarkup}
+          <line class="dashboard-line-axis" x1="${left}" y1="${top}" x2="${left}" y2="${height - bottom}"></line>
+          <line class="dashboard-line-axis" x1="${left}" y1="${height - bottom}" x2="${width - right}" y2="${height - bottom}"></line>
+          <path class="dashboard-line-path" d="${pathData}"></path>
+          ${pointsMarkup}
+        </svg>
+      `;
     }
 
-    async function loadPlatformTotalsGraph() {
-      const [
-        leagueCount,
-        teamCount,
-        playerCount,
-        gameCount
-      ] = await Promise.all([
+    async function loadPlatformTotalsLineGraph() {
+      const [leagueCount, teamCount, playerCount, gameCount] = await Promise.all([
         loadTableCount("leagues", "leagueCount"),
         loadTableCount("teams", "teamCount"),
         loadTableCount("players", "playerCount"),
         loadTableCount("games", "gameCount")
       ]);
 
-      const items = [
-        { label: "Leagues", value: leagueCount },
-        { label: "Teams", value: teamCount },
-        { label: "Players", value: playerCount },
-        { label: "Games", value: gameCount }
-      ].filter(item => item.value !== null);
-
-      renderDashboardBars(
-        items,
+      renderDashboardLineGraph(
+        [
+          { label: "Leagues", value: leagueCount },
+          { label: "Teams", value: teamCount },
+          { label: "Players", value: playerCount },
+          { label: "Games", value: gameCount }
+        ].filter(item => item.value !== null),
         "Platform Totals",
         "Live totals for leagues, teams, players, and games currently accessible to the Super Admin."
       );
     }
 
-    async function loadGamesByStatusGraph() {
+    async function loadGamesByStatusLineGraph() {
       const { data, error } = await supabaseClient
         .from("games")
         .select("status");
@@ -2731,21 +2774,39 @@
         grouped.set(key, (grouped.get(key) || 0) + 1);
       });
 
+      const preferredOrder = [
+        "scheduled",
+        "live",
+        "in_progress",
+        "halftime",
+        "final",
+        "finalized",
+        "cancelled",
+        "unspecified"
+      ];
+
       const items = [...grouped.entries()]
         .map(([status, value]) => ({
-          label: graphLabel(status),
+          key: status,
+          label: dashboardGraphLabel(status),
           value
         }))
-        .sort((a, b) => b.value - a.value || a.label.localeCompare(b.label));
+        .sort((a, b) => {
+          const ai = preferredOrder.indexOf(a.key);
+          const bi = preferredOrder.indexOf(b.key);
+          const safeA = ai === -1 ? 999 : ai;
+          const safeB = bi === -1 ? 999 : bi;
+          return safeA - safeB || a.label.localeCompare(b.label);
+        });
 
-      renderDashboardBars(
+      renderDashboardLineGraph(
         items,
         "Games by Status",
         "Live game records grouped by their current database status."
       );
     }
 
-    async function loadAccountsByRoleGraph() {
+    async function loadAccountsByRoleLineGraph() {
       const { data, error } = await supabaseClient
         .from("profiles")
         .select("role");
@@ -2771,7 +2832,7 @@
       const items = [...grouped.entries()]
         .map(([role, value]) => ({
           key: role,
-          label: role === "coach" ? "Coach / Manager" : graphLabel(role),
+          label: role === "coach" ? "Coach / Manager" : dashboardGraphLabel(role),
           value
         }))
         .sort((a, b) => {
@@ -2779,10 +2840,10 @@
           const bi = roleOrder.indexOf(b.key);
           const safeA = ai === -1 ? 999 : ai;
           const safeB = bi === -1 ? 999 : bi;
-          return safeA - safeB || b.value - a.value;
+          return safeA - safeB || a.label.localeCompare(b.label);
         });
 
-      renderDashboardBars(
+      renderDashboardLineGraph(
         items,
         "Accounts by Role",
         "Live registered profiles grouped by their current HoopHub PH account role."
@@ -2790,29 +2851,30 @@
     }
 
     async function loadDashboardGraph() {
-      if (!dashboardChartMode || !dashboardChartBars) return;
+      if (!dashboardChartMode || !dashboardLineStage) return;
 
       refreshDashboardChartButton.disabled = true;
       refreshDashboardChartButton.textContent = "REFRESHING...";
       dashboardChartUpdated.textContent = "Refreshing live data...";
 
       try {
-        const mode = dashboardChartMode.value;
-
-        if (mode === "game_status") {
-          await loadGamesByStatusGraph();
-        } else if (mode === "account_role") {
-          await loadAccountsByRoleGraph();
+        if (dashboardChartMode.value === "game_status") {
+          await loadGamesByStatusLineGraph();
+        } else if (dashboardChartMode.value === "account_role") {
+          await loadAccountsByRoleLineGraph();
         } else {
-          await loadPlatformTotalsGraph();
+          await loadPlatformTotalsLineGraph();
         }
 
         dashboardChartUpdated.textContent =
           `Updated ${new Date().toLocaleString("en-PH")}`;
       } catch (error) {
-        console.error("Unable to load dashboard graph:", error);
-        dashboardChartBars.innerHTML =
-          `<div class="dashboard-chart-empty">Unable to load this graph: ${escapeHtml(error.message || "Unknown error")}</div>`;
+        console.error("Unable to load dashboard line graph:", error);
+        dashboardLineStage.innerHTML = `
+          <div class="dashboard-line-empty">
+            Unable to load this graph: ${escapeHtml(error?.message || "Unknown error")}
+          </div>
+        `;
         dashboardChartUpdated.textContent = "Graph could not be refreshed.";
       } finally {
         refreshDashboardChartButton.disabled = false;
