@@ -330,7 +330,7 @@
 
     .account-embed-frame {
       width: 100%;
-      height: 620px;
+      height: 540px;
       display: block;
       overflow: hidden;
       background: transparent;
@@ -1742,44 +1742,115 @@
 
 
     const accountManagementFrame = document.getElementById("accountManagementFrame");
+    let accountFrameMutationObserver = null;
+    let accountFrameResizeTimer = null;
 
-    function resizeAccountManagementFrame(height) {
+    function measureAccountManagementContent() {
       if (!accountManagementFrame) return;
 
-      const reportedHeight = Number(height) || 0;
-      const childSafetyBuffer = 36;
-      const bottomBreathingRoom = 12;
+      try {
+        const frameDocument = accountManagementFrame.contentDocument;
+        if (!frameDocument) return;
 
-      const nextHeight = Math.max(
-        540,
-        Math.ceil(reportedHeight - childSafetyBuffer + bottomBreathingRoom)
-      );
+        /*
+         * IMPORTANT:
+         * Do NOT use body.scrollHeight or documentElement.scrollHeight here.
+         * Those values can include the iframe's own assigned height and create
+         * an endless parent/child resize loop.
+         *
+         * Instead, measure the actual visible Account Management content.
+         */
+        const content =
+          frameDocument.querySelector(".content-wrap") ||
+          frameDocument.querySelector(".main-content") ||
+          frameDocument.querySelector("#appShell");
 
-      accountManagementFrame.style.height = `${nextHeight}px`;
+        if (!content) return;
+
+        const contentRect = content.getBoundingClientRect();
+        const contentTop = contentRect.top;
+        let lowestVisibleBottom = contentRect.bottom;
+
+        const visibleChildren = content.querySelectorAll(
+          "section, .panel, .stats-grid, .page-heading, .table-wrap, .notice"
+        );
+
+        visibleChildren.forEach(element => {
+          const style = frameDocument.defaultView.getComputedStyle(element);
+
+          if (
+            style.display === "none" ||
+            style.visibility === "hidden" ||
+            element.hidden
+          ) {
+            return;
+          }
+
+          const rect = element.getBoundingClientRect();
+
+          if (rect.height > 0) {
+            lowestVisibleBottom = Math.max(lowestVisibleBottom, rect.bottom);
+          }
+        });
+
+        const actualContentHeight = Math.ceil(
+          Math.max(contentRect.height, lowestVisibleBottom - contentTop)
+        );
+
+        /*
+         * Keep only a small, normal amount of space below the content.
+         */
+        const bottomRoom = 20;
+        const nextHeight = Math.max(480, actualContentHeight + bottomRoom);
+
+        accountManagementFrame.style.height = `${nextHeight}px`;
+      } catch (error) {
+        console.warn("Unable to fit Account Management page:", error);
+      }
     }
 
-    window.addEventListener("message", function (event) {
-      if (event.origin !== window.location.origin) return;
-      if (event.data?.type !== "hoophub-account-height") return;
-      resizeAccountManagementFrame(event.data.height);
-    });
+    function scheduleAccountManagementMeasure() {
+      clearTimeout(accountFrameResizeTimer);
+      accountFrameResizeTimer = setTimeout(measureAccountManagementContent, 60);
+    }
 
     accountManagementFrame?.addEventListener("load", function () {
       try {
         const frameDocument = accountManagementFrame.contentDocument;
         if (!frameDocument) return;
 
-        const measuredHeight = Math.max(
-          frameDocument.body?.scrollHeight || 0,
-          frameDocument.documentElement?.scrollHeight || 0
-        );
+        if (accountFrameMutationObserver) {
+          accountFrameMutationObserver.disconnect();
+        }
 
-        accountManagementFrame.style.height =
-          `${Math.max(540, Math.ceil(measuredHeight + 12))}px`;
+        accountFrameMutationObserver = new MutationObserver(() => {
+          scheduleAccountManagementMeasure();
+        });
+
+        const observedContent =
+          frameDocument.querySelector(".content-wrap") ||
+          frameDocument.querySelector(".main-content") ||
+          frameDocument.body;
+
+        accountFrameMutationObserver.observe(observedContent, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ["hidden", "class", "style"]
+        });
+
+        /*
+         * Measure after auth/data rendering settles.
+         */
+        measureAccountManagementContent();
+        setTimeout(measureAccountManagementContent, 150);
+        setTimeout(measureAccountManagementContent, 500);
       } catch (error) {
-        console.warn("Unable to auto-size Account Management frame:", error);
+        console.warn("Unable to initialize Account Management sizing:", error);
       }
     });
+
+    window.addEventListener("resize", scheduleAccountManagementMeasure);
 
     const activityLogList = document.getElementById("activityLogList");
     const activityLeagueFilter = document.getElementById("activityLeagueFilter");
