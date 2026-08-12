@@ -893,6 +893,149 @@
       scroll-margin-top: 84px;
     }
 
+
+    /* =========================
+       COMMISSIONER INTERNAL WORKSPACES
+       Same single-page workspace behavior as Super Admin.
+       ========================= */
+    .commissioner-view-toggle {
+      position: fixed;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .commissioner-view-section {
+      display: none;
+    }
+
+    .commissioner-dashboard-only {
+      display: none;
+    }
+
+    #commissionerViewDashboard:checked ~ .main-content .commissioner-dashboard-only {
+      display: block;
+    }
+
+    #commissionerViewDashboard:checked ~ .main-content .stats-grid.commissioner-dashboard-only {
+      display: grid;
+    }
+
+    #commissionerViewSeasons:checked ~ .main-content #seasonsPanel,
+    #commissionerViewCreateTeam:checked ~ .main-content #createTeamPanel,
+    #commissionerViewTeams:checked ~ .main-content #teamsPanel,
+    #commissionerViewRoster:checked ~ .main-content #rosterApprovalPanel,
+    #commissionerViewSchedule:checked ~ .main-content #schedulePanel,
+    #commissionerViewGames:checked ~ .main-content #gamesDisplayPanel,
+    #commissionerViewStandings:checked ~ .main-content #standingsPanel,
+    #commissionerViewScorekeepers:checked ~ .main-content #scorekeepersPanel,
+    #commissionerViewReview:checked ~ .main-content #gameReviewPanel,
+    #commissionerViewCorrections:checked ~ .main-content #correctionReviewPanel,
+    #commissionerViewReports:checked ~ .main-content #reportsPanel {
+      display: block;
+    }
+
+    #commissionerViewDashboard:checked ~ .sidebar [data-commissioner-view="dashboard"],
+    #commissionerViewSeasons:checked ~ .sidebar [data-commissioner-view="seasons"],
+    #commissionerViewCreateTeam:checked ~ .sidebar [data-commissioner-view="create-team"],
+    #commissionerViewTeams:checked ~ .sidebar [data-commissioner-view="teams"],
+    #commissionerViewRoster:checked ~ .sidebar [data-commissioner-view="roster"],
+    #commissionerViewSchedule:checked ~ .sidebar [data-commissioner-view="schedule"],
+    #commissionerViewGames:checked ~ .sidebar [data-commissioner-view="games"],
+    #commissionerViewStandings:checked ~ .sidebar [data-commissioner-view="standings"],
+    #commissionerViewScorekeepers:checked ~ .sidebar [data-commissioner-view="scorekeepers"],
+    #commissionerViewReview:checked ~ .sidebar [data-commissioner-view="review"],
+    #commissionerViewCorrections:checked ~ .sidebar [data-commissioner-view="corrections"],
+    #commissionerViewReports:checked ~ .sidebar [data-commissioner-view="reports"] {
+      color: #ffffff;
+      background: rgba(255, 107, 0, .16);
+      box-shadow: inset 3px 0 var(--orange);
+    }
+
+    #commissionerViewDashboard:checked ~ .sidebar [data-commissioner-view="dashboard"] .nav-icon,
+    #commissionerViewSeasons:checked ~ .sidebar [data-commissioner-view="seasons"] .nav-icon,
+    #commissionerViewCreateTeam:checked ~ .sidebar [data-commissioner-view="create-team"] .nav-icon,
+    #commissionerViewTeams:checked ~ .sidebar [data-commissioner-view="teams"] .nav-icon,
+    #commissionerViewRoster:checked ~ .sidebar [data-commissioner-view="roster"] .nav-icon,
+    #commissionerViewSchedule:checked ~ .sidebar [data-commissioner-view="schedule"] .nav-icon,
+    #commissionerViewGames:checked ~ .sidebar [data-commissioner-view="games"] .nav-icon,
+    #commissionerViewStandings:checked ~ .sidebar [data-commissioner-view="standings"] .nav-icon,
+    #commissionerViewScorekeepers:checked ~ .sidebar [data-commissioner-view="scorekeepers"] .nav-icon,
+    #commissionerViewReview:checked ~ .sidebar [data-commissioner-view="review"] .nav-icon,
+    #commissionerViewCorrections:checked ~ .sidebar [data-commissioner-view="corrections"] .nav-icon,
+    #commissionerViewReports:checked ~ .sidebar [data-commissioner-view="reports"] .nav-icon {
+      background: var(--orange);
+    }
+
+    .commissioner-nav-view {
+      width: 100%;
+      border: 0;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .commissioner-page-context {
+      min-width: 0;
+    }
+
+    /* Dedicated Scorekeeper workspace */
+    .scorekeeper-summary-grid {
+      padding: 16px 18px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      background: #fafafa;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .scorekeeper-summary-card {
+      padding: 12px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .scorekeeper-summary-card span,
+    .scorekeeper-summary-card strong {
+      display: block;
+    }
+
+    .scorekeeper-summary-card span {
+      color: var(--muted);
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: .55px;
+      text-transform: uppercase;
+    }
+
+    .scorekeeper-summary-card strong {
+      margin-top: 6px;
+      font-size: 20px;
+    }
+
+    .scorekeeper-assignment-select {
+      width: 100%;
+      min-width: 150px;
+      height: 34px;
+      padding: 0 8px;
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 7px;
+      font-size: 9px;
+      font-weight: 750;
+    }
+
+    .scorekeeper-assignment-cell {
+      min-width: 210px;
+    }
+
+    @media (max-width: 680px) {
+      .scorekeeper-summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
   </style>
 </head>
 
@@ -905,6 +1048,18 @@
   </div>
 
   <div id="appShell" class="app-shell" hidden>
+    <input id="commissionerViewDashboard" class="commissioner-view-toggle" type="radio" name="commissionerWorkspace" checked>
+    <input id="commissionerViewSeasons" class="commissioner-view-toggle" type="radio" name="commissionerWorkspace">
+    <input id="commissionerViewCreateTeam" class="commissioner-view-toggle" type="radio" name="commissionerWorkspace">
+    <input id="commissionerViewTeams" class="commissioner-view-toggle" type="radio" name="commissionerWorkspace">
+    <input id="commissionerViewRoster" class="commissioner-view-toggle" type="radio" name="commissionerWorkspace">
+    <input id="commissionerViewSchedule" class="commissioner-view-toggle" type="radio" name="commissionerWorkspace">
+    <input id="commissionerViewGames" class="commissioner-view-toggle" type="radio" name="commissionerWorkspace">
+    <input id="commissionerViewStandings" class="commissioner-view-toggle" type="radio" name="commissionerWorkspace">
+    <input id="commissionerViewScorekeepers" class="commissioner-view-toggle" type="radio" name="commissionerWorkspace">
+    <input id="commissionerViewReview" class="commissioner-view-toggle" type="radio" name="commissionerWorkspace">
+    <input id="commissionerViewCorrections" class="commissioner-view-toggle" type="radio" name="commissionerWorkspace">
+    <input id="commissionerViewReports" class="commissioner-view-toggle" type="radio" name="commissionerWorkspace">
     <header class="topbar">
       <div class="topbar-left">
         <button id="menuButton" class="menu-button" type="button" aria-label="Open menu">☰</button>
@@ -921,22 +1076,44 @@
 
     <aside id="sidebar" class="sidebar">
       <p class="nav-label">League Workspace</p>
-      <a class="nav-link active" href="commissioner-dashboard.html">
+      <label class="nav-link commissioner-nav-view" for="commissionerViewDashboard" data-commissioner-view="dashboard">
         <span class="nav-icon">DB</span> Dashboard
-      </a>
-      <a class="nav-link" href="#seasonsPanel"><span class="nav-icon">SE</span> Seasons</a>
-      <a class="nav-link" href="#createTeamPanel"><span class="nav-icon">CT</span> Create Team</a>
-      <a class="nav-link" href="#teamsPanel"><span class="nav-icon">TM</span> Teams</a>
-      <a class="nav-link" href="#rosterApprovalPanel"><span class="nav-icon">RA</span> Roster Approval</a>
-      <a class="nav-link" href="#schedulePanel"><span class="nav-icon">SC</span> Schedule</a>
-      <a class="nav-link" href="#gamesDisplayPanel"><span class="nav-icon">GR</span> Games & Results</a>
-      <a class="nav-link" href="#standingsPanel"><span class="nav-icon">ST</span> Standings</a>
+      </label>
+      <label class="nav-link commissioner-nav-view" for="commissionerViewSeasons" data-commissioner-view="seasons">
+        <span class="nav-icon">SE</span> Seasons
+      </label>
+      <label class="nav-link commissioner-nav-view" for="commissionerViewCreateTeam" data-commissioner-view="create-team">
+        <span class="nav-icon">CT</span> Create Team
+      </label>
+      <label class="nav-link commissioner-nav-view" for="commissionerViewTeams" data-commissioner-view="teams">
+        <span class="nav-icon">TM</span> Teams
+      </label>
+      <label class="nav-link commissioner-nav-view" for="commissionerViewRoster" data-commissioner-view="roster">
+        <span class="nav-icon">RA</span> Roster Approval
+      </label>
+      <label class="nav-link commissioner-nav-view" for="commissionerViewSchedule" data-commissioner-view="schedule">
+        <span class="nav-icon">SC</span> Schedule
+      </label>
+      <label class="nav-link commissioner-nav-view" for="commissionerViewGames" data-commissioner-view="games">
+        <span class="nav-icon">GR</span> Games &amp; Results
+      </label>
+      <label class="nav-link commissioner-nav-view" for="commissionerViewStandings" data-commissioner-view="standings">
+        <span class="nav-icon">ST</span> Standings
+      </label>
 
       <p class="nav-label">Game Control</p>
-      <a class="nav-link" href="#schedulePanel"><span class="nav-icon">SK</span> Scorekeepers</a>
-      <a class="nav-link" href="#gameReviewPanel"><span class="nav-icon">RV</span> Game Review</a>
-      <a class="nav-link" href="#correctionReviewPanel"><span class="nav-icon">CR</span> Corrections</a>
-      <a class="nav-link" href="#reportsPanel"><span class="nav-icon">RP</span> Reports</a>
+      <label class="nav-link commissioner-nav-view" for="commissionerViewScorekeepers" data-commissioner-view="scorekeepers">
+        <span class="nav-icon">SK</span> Scorekeepers
+      </label>
+      <label class="nav-link commissioner-nav-view" for="commissionerViewReview" data-commissioner-view="review">
+        <span class="nav-icon">RV</span> Game Review
+      </label>
+      <label class="nav-link commissioner-nav-view" for="commissionerViewCorrections" data-commissioner-view="corrections">
+        <span class="nav-icon">CR</span> Corrections
+      </label>
+      <label class="nav-link commissioner-nav-view" for="commissionerViewReports" data-commissioner-view="reports">
+        <span class="nav-icon">RP</span> Reports
+      </label>
     </aside>
 
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
@@ -945,14 +1122,14 @@
       <div class="content-wrap">
         <section class="page-heading">
           <div>
-            <div class="eyebrow">League Commissioner</div>
-            <h1>Commissioner Dashboard</h1>
-            <p>Manage only the league or tournament assigned to your account.</p>
+            <div id="commissionerPageEyebrow" class="eyebrow">League Commissioner</div>
+            <h1 id="commissionerPageTitle">Commissioner Dashboard</h1>
+            <p id="commissionerPageDescription">Manage only the league or tournament assigned to your account.</p>
           </div>
           <select id="leagueSelect" class="control" aria-label="Select assigned league"></select>
         </section>
 
-        <section class="stats-grid" aria-label="League summary">
+        <section class="stats-grid commissioner-dashboard-only" aria-label="League summary">
           <article class="stat-card">
             <span>Assigned Leagues</span>
             <strong id="leagueCount">0</strong>
@@ -967,7 +1144,7 @@
           </article>
         </section>
 
-        <section class="panel">
+        <section id="commissionerOverviewPanel" class="panel commissioner-dashboard-only">
           <header class="panel-header">
             <div>
               <h2 id="leagueName">Assigned League</h2>
@@ -978,7 +1155,7 @@
           <div id="leagueDetails" class="league-details"></div>
         </section>
 
-        <section id="seasonsPanel" class="panel">
+        <section id="seasonsPanel" class="panel commissioner-view-section">
           <header class="panel-header">
             <div>
               <h2>Seasons &amp; Divisions</h2>
@@ -1030,7 +1207,7 @@
           </div>
         </section>
 
-        <section id="createTeamPanel" class="panel">
+        <section id="createTeamPanel" class="panel commissioner-view-section">
           <header class="panel-header">
             <div>
               <h2>Create Team</h2>
@@ -1082,7 +1259,7 @@
           </form>
         </section>
 
-        <section id="teamsPanel" class="panel">
+        <section id="teamsPanel" class="panel commissioner-view-section">
           <header class="panel-header">
             <div>
               <h2>Registered Teams</h2>
@@ -1107,7 +1284,7 @@
           </div>
         </section>
 
-        <section id="rosterApprovalPanel" class="panel">
+        <section id="rosterApprovalPanel" class="panel commissioner-view-section">
           <header class="panel-header"><div><h2>Roster Approval by Team</h2><p>Select one submitted team and review its players without mixing rosters.</p></div></header>
           <div class="roster-team-toolbar">
             <div class="roster-team-picker"><label for="rosterTeamSelect">Submitted Team</label><select id="rosterTeamSelect"><option value="">Loading submitted teams...</option></select></div>
@@ -1118,7 +1295,52 @@
           <div class="table-wrap"><table><thead><tr><th>Player</th><th>Jersey</th><th>Position</th><th>Status</th><th>Actions</th></tr></thead><tbody id="rosterReviewBody"><tr><td class="empty-state" colspan="5">Loading roster reviews...</td></tr></tbody></table></div>
         </section>
 
-        <section id="gameReviewPanel" class="panel">
+
+        <section id="scorekeepersPanel" class="panel commissioner-view-section">
+          <header class="panel-header">
+            <div>
+              <h2>Scorekeeper Assignments</h2>
+              <p>Assign or reassign a scorekeeper to scheduled games in the currently selected league.</p>
+            </div>
+            <button id="refreshScorekeeperAssignmentsButton" class="secondary-button" type="button">REFRESH</button>
+          </header>
+
+          <div class="scorekeeper-summary-grid">
+            <div class="scorekeeper-summary-card">
+              <span>Available Scorekeepers</span>
+              <strong id="availableScorekeeperCount">0</strong>
+            </div>
+            <div class="scorekeeper-summary-card">
+              <span>Assigned Games</span>
+              <strong id="assignedScorekeeperGameCount">0</strong>
+            </div>
+            <div class="scorekeeper-summary-card">
+              <span>Unassigned Games</span>
+              <strong id="unassignedScorekeeperGameCount">0</strong>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Game</th>
+                  <th>Matchup</th>
+                  <th>Date &amp; Time</th>
+                  <th>Status</th>
+                  <th>Scorekeeper</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="scorekeeperAssignmentBody">
+                <tr><td class="empty-state" colspan="6">Loading scorekeeper assignments...</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="scorekeeperAssignmentMessage" class="form-message" aria-live="polite"></div>
+        </section>
+
+        <section id="gameReviewPanel" class="panel commissioner-view-section">
           <header class="panel-header">
             <div>
               <h2>Games Pending Review</h2>
@@ -1135,7 +1357,7 @@
         </section>
 
 
-        <section id="correctionReviewPanel" class="panel">
+        <section id="correctionReviewPanel" class="panel commissioner-view-section">
           <header class="panel-header">
             <div>
               <h2>Coach Correction Requests</h2>
@@ -1187,7 +1409,7 @@
         </section>
 
 
-        <section id="schedulePanel" class="panel">
+        <section id="schedulePanel" class="panel commissioner-view-section">
           <header class="panel-header">
             <div>
               <h2>Game Scheduling</h2>
@@ -1261,7 +1483,7 @@
           </div>
         </section>
 
-        <section id="gamesDisplayPanel" class="panel">
+        <section id="gamesDisplayPanel" class="panel commissioner-view-section">
           <header class="panel-header">
             <div>
               <h2>Division Schedule &amp; Results</h2>
@@ -1313,7 +1535,7 @@
           </div>
         </section>
 
-        <section id="standingsPanel" class="panel">
+        <section id="standingsPanel" class="panel commissioner-view-section">
           <header class="panel-header">
             <div>
               <h2>Division Standings</h2>
@@ -1356,7 +1578,7 @@
           </div>
         </section>
 
-        <section id="reportsPanel" class="panel">
+        <section id="reportsPanel" class="panel commissioner-view-section">
           <header class="panel-header"><div><h2>Reports</h2><p>Generate a printable record for the currently selected league.</p></div></header>
           <div class="report-toolbar">
             <div class="form-group"><label for="reportTypeSelect">Report Type</label><select id="reportTypeSelect" class="form-input"><option value="summary">League Summary</option><option value="teams">Registered Teams</option><option value="games">Game Schedule &amp; Results</option></select></div>
@@ -1368,11 +1590,11 @@
           <div id="reportPreview" class="report-preview"><div class="empty-state">Choose a report type, then select Generate Report.</div></div>
         </section>
 
-        <section id="modules" class="panel">
+        <section id="modules" class="panel commissioner-dashboard-only">
           <header class="panel-header">
             <div>
-              <h2>Commissioner Modules</h2>
-              <p>These modules will be connected next, one secured workflow at a time.</p>
+              <h2>Commissioner Tools</h2>
+              <p>Use the sidebar to open each secured Commissioner workflow as its own workspace.</p>
             </div>
           </header>
           <div class="module-grid">
@@ -1418,6 +1640,135 @@
     const createTeamForm = document.getElementById("createTeamForm");
     const createTeamButton = document.getElementById("createTeamButton");
     const createTeamMessage = document.getElementById("createTeamMessage");
+
+    const commissionerViewConfig = {
+      dashboard: {
+        radioId: "commissionerViewDashboard",
+        title: "Commissioner Dashboard",
+        description: "Manage only the league or tournament assigned to your account.",
+        hash: ""
+      },
+      seasons: {
+        radioId: "commissionerViewSeasons",
+        title: "Seasons & Divisions",
+        description: "Create seasons, divisions, and assign approved teams to the competition structure.",
+        hash: "#seasonsPanel"
+      },
+      "create-team": {
+        radioId: "commissionerViewCreateTeam",
+        title: "Create Team",
+        description: "Create and immediately register an approved team in the selected league.",
+        hash: "#createTeamPanel"
+      },
+      teams: {
+        radioId: "commissionerViewTeams",
+        title: "Registered Teams",
+        description: "Review league team registrations and approve or reject access.",
+        hash: "#teamsPanel"
+      },
+      roster: {
+        radioId: "commissionerViewRoster",
+        title: "Roster Approval",
+        description: "Review submitted team rosters one team at a time.",
+        hash: "#rosterApprovalPanel"
+      },
+      schedule: {
+        radioId: "commissionerViewSchedule",
+        title: "Game Scheduling",
+        description: "Create and manage scheduled matchups for the selected league.",
+        hash: "#schedulePanel"
+      },
+      games: {
+        radioId: "commissionerViewGames",
+        title: "Games & Results",
+        description: "Review upcoming games, final results, and cancelled games by division.",
+        hash: "#gamesDisplayPanel"
+      },
+      standings: {
+        radioId: "commissionerViewStandings",
+        title: "Division Standings",
+        description: "View rankings calculated from finalized games.",
+        hash: "#standingsPanel"
+      },
+      scorekeepers: {
+        radioId: "commissionerViewScorekeepers",
+        title: "Scorekeepers",
+        description: "Assign or reassign scorekeepers to scheduled league games.",
+        hash: "#scorekeepersPanel"
+      },
+      review: {
+        radioId: "commissionerViewReview",
+        title: "Game Review",
+        description: "Review submitted scores before finalizing or returning a game for correction.",
+        hash: "#gameReviewPanel"
+      },
+      corrections: {
+        radioId: "commissionerViewCorrections",
+        title: "Coach Corrections",
+        description: "Review and apply authorized correction requests for finalized games.",
+        hash: "#correctionReviewPanel"
+      },
+      reports: {
+        radioId: "commissionerViewReports",
+        title: "Reports",
+        description: "Generate printable league, team, schedule, and result reports.",
+        hash: "#reportsPanel"
+      }
+    };
+
+    const commissionerHashToView = {
+      "#seasonsPanel": "seasons",
+      "#createTeamPanel": "create-team",
+      "#teamsPanel": "teams",
+      "#rosterApprovalPanel": "roster",
+      "#schedulePanel": "schedule",
+      "#gamesDisplayPanel": "games",
+      "#standingsPanel": "standings",
+      "#scorekeepersPanel": "scorekeepers",
+      "#gameReviewPanel": "review",
+      "#correctionReviewPanel": "corrections",
+      "#reportsPanel": "reports"
+    };
+
+    function currentCommissionerViewName() {
+      for (const [viewName, config] of Object.entries(commissionerViewConfig)) {
+        if (document.getElementById(config.radioId)?.checked) return viewName;
+      }
+      return "dashboard";
+    }
+
+    function updateCommissionerPageHeading(viewName = currentCommissionerViewName()) {
+      const config = commissionerViewConfig[viewName] || commissionerViewConfig.dashboard;
+      document.getElementById("commissionerPageTitle").textContent = config.title;
+      document.getElementById("commissionerPageDescription").textContent = config.description;
+    }
+
+    function openCommissionerView(viewName, options = {}) {
+      const {
+        updateHash = true,
+        scrollTop = true
+      } = options;
+
+      const config = commissionerViewConfig[viewName] || commissionerViewConfig.dashboard;
+      const radio = document.getElementById(config.radioId);
+
+      if (radio) radio.checked = true;
+      updateCommissionerPageHeading(viewName);
+
+      if (updateHash) {
+        const nextUrl = config.hash
+          ? `${window.location.pathname}${window.location.search}${config.hash}`
+          : `${window.location.pathname}${window.location.search}`;
+        history.replaceState(null, "", nextUrl);
+      }
+
+      if (scrollTop) {
+        document.querySelector(".main-content")?.scrollTo?.({ top: 0, behavior: "smooth" });
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      closeSidebar();
+    }
 
     function escapeHtml(value) {
       const element = document.createElement("div");
@@ -1506,6 +1857,7 @@
         authScreen.hidden = true;
         appShell.hidden = false;
         scrollToRequestedPanel();
+        updateCommissionerPageHeading();
       } catch (error) {
         console.error("Commissioner authorization failed:", error);
         await returnToLogin(true);
@@ -2003,31 +2355,241 @@
 
     function scrollToRequestedPanel() {
       const hash = window.location.hash;
-      if (!hash) return;
 
-      let target = null;
-
-      try {
-        target = document.querySelector(hash);
-      } catch (error) {
-        console.warn("Invalid Commissioner Dashboard section:", hash);
+      if (!hash) {
+        openCommissionerView("dashboard", {
+          updateHash: false,
+          scrollTop: false
+        });
         return;
       }
 
-      if (!target) return;
+      const viewName = commissionerHashToView[hash];
+      if (!viewName) return;
 
-      /*
-       * The Commissioner workspace is hidden while Supabase authorization
-       * and data loading run. Scroll only after the workspace is visible.
-       */
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          target.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-          });
-        }, 100);
+      openCommissionerView(viewName, {
+        updateHash: false,
+        scrollTop: false
       });
+    }
+
+    function scorekeeperDisplayName(scorekeeperId) {
+      const scorekeeper = availableScorekeepers.find(
+        item => String(item.scorekeeper_id) === String(scorekeeperId)
+      );
+
+      return scorekeeper?.full_name ||
+        scorekeeper?.email ||
+        "Assigned Scorekeeper";
+    }
+
+    function renderScorekeeperManagement(league) {
+      const body = document.getElementById("scorekeeperAssignmentBody");
+      const availableCount = document.getElementById("availableScorekeeperCount");
+      const assignedCount = document.getElementById("assignedScorekeeperGameCount");
+      const unassignedCount = document.getElementById("unassignedScorekeeperGameCount");
+
+      availableCount.textContent = availableScorekeepers.length.toLocaleString();
+
+      if (!league) {
+        assignedCount.textContent = "0";
+        unassignedCount.textContent = "0";
+        body.innerHTML =
+          '<tr><td class="empty-state" colspan="6">No assigned league.</td></tr>';
+        return;
+      }
+
+      const games = scheduledGames.filter(
+        game => String(game.league_id) === String(league.id)
+      );
+
+      const assignments = new Map(
+        gameScorekeeperAssignments.map(item => [
+          Number(item.game_id),
+          item.scorekeeper_id
+        ])
+      );
+
+      const assignedGames = games.filter(game => assignments.get(Number(game.id)));
+      assignedCount.textContent = assignedGames.length.toLocaleString();
+      unassignedCount.textContent =
+        Math.max(0, games.length - assignedGames.length).toLocaleString();
+
+      const optionsForGame = selectedId =>
+        '<option value="">Unassigned</option>' +
+        availableScorekeepers.map(item => {
+          const selected =
+            String(item.scorekeeper_id) === String(selectedId || "")
+              ? " selected"
+              : "";
+          return `<option value="${escapeHtml(item.scorekeeper_id)}"${selected}>${escapeHtml(item.full_name || item.email || "Scorekeeper")}</option>`;
+        }).join("");
+
+      body.innerHTML = games.length
+        ? games.map(game => {
+            const status = String(game.status || "scheduled").toLowerCase();
+            const assignmentId = assignments.get(Number(game.id)) || "";
+            const canManage = status === "scheduled";
+
+            return `
+              <tr>
+                <td><span class="game-id">#${escapeHtml(game.id)}</span></td>
+                <td><strong>${escapeHtml(game.home_team || "Home")} vs ${escapeHtml(game.away_team || "Away")}</strong></td>
+                <td>${escapeHtml(formatDateTime(game.scheduled_at || game.created_at))}</td>
+                <td><span class="status-badge">${escapeHtml(game.status || "Scheduled")}</span></td>
+                <td class="scorekeeper-assignment-cell">
+                  ${
+                    canManage
+                      ? `<select id="scorekeeperAssignment-${Number(game.id)}" class="scorekeeper-assignment-select">
+                           ${optionsForGame(assignmentId)}
+                         </select>`
+                      : escapeHtml(
+                          assignmentId
+                            ? scorekeeperDisplayName(assignmentId)
+                            : "Unassigned"
+                        )
+                  }
+                </td>
+                <td>
+                  ${
+                    canManage
+                      ? `<button class="table-action" type="button" onclick="saveScorekeeperAssignment(${Number(game.id)}, this)">SAVE</button>`
+                      : '<span class="status-badge">Locked</span>'
+                  }
+                </td>
+              </tr>
+            `;
+          }).join("")
+        : '<tr><td class="empty-state" colspan="6">No games are available in this league yet.</td></tr>';
+    }
+
+    async function refreshScorekeeperData() {
+      const button = document.getElementById("refreshScorekeeperAssignmentsButton");
+      const message = document.getElementById("scorekeeperAssignmentMessage");
+
+      button.disabled = true;
+      button.textContent = "REFRESHING...";
+      message.className = "form-message";
+      message.textContent = "Refreshing scorekeeper assignments...";
+
+      try {
+        const [
+          scorekeeperResult,
+          assignmentResult
+        ] = await Promise.all([
+          supabaseClient.rpc("list_scorekeepers_for_scheduling"),
+          supabaseClient.rpc("list_manageable_game_scorekeepers")
+        ]);
+
+        if (scorekeeperResult.error) throw scorekeeperResult.error;
+        if (assignmentResult.error) throw assignmentResult.error;
+
+        availableScorekeepers = scorekeeperResult.data || [];
+        gameScorekeeperAssignments = assignmentResult.data || [];
+
+        const league = assignedLeagues.find(
+          item => String(item.id) === String(leagueSelect.value)
+        );
+
+        renderScorekeeperManagement(league);
+        renderScheduling(
+          league,
+          league
+            ? leagueTeams.filter(
+                item =>
+                  String(item.league_id) === String(league.id) &&
+                  item.registration_status === "approved"
+              )
+            : []
+        );
+
+        message.className = "form-message success";
+        message.textContent = "Scorekeeper assignments refreshed.";
+      } catch (error) {
+        console.error("Unable to refresh scorekeeper assignments:", error);
+        message.className = "form-message error";
+        message.textContent =
+          "Unable to refresh scorekeeper assignments: " +
+          (error.message || "Unknown error");
+      } finally {
+        button.disabled = false;
+        button.textContent = "REFRESH";
+      }
+    }
+
+    async function saveScorekeeperAssignment(gameId, button) {
+      const game = scheduledGames.find(
+        item => Number(item.id) === Number(gameId)
+      );
+      if (!game) return;
+
+      const status = String(game.status || "").toLowerCase();
+      if (status !== "scheduled") {
+        alert("Only scheduled games can have their scorekeeper assignment changed.");
+        return;
+      }
+
+      const select = document.getElementById(
+        `scorekeeperAssignment-${Number(gameId)}`
+      );
+      const scorekeeperId = select?.value || null;
+      const message = document.getElementById("scorekeeperAssignmentMessage");
+
+      button.disabled = true;
+      button.textContent = "SAVING...";
+      message.className = "form-message";
+      message.textContent = `Saving scorekeeper assignment for Game #${gameId}...`;
+
+      try {
+        const { error } = await supabaseClient.rpc(
+          "manage_scheduled_game_v2",
+          {
+            p_game_id: Number(game.id),
+            p_season_id: game.season_id,
+            p_division_id: game.division_id,
+            p_home_team_id: game.home_team_id,
+            p_away_team_id: game.away_team_id,
+            p_scheduled_at: game.scheduled_at,
+            p_venue: game.venue || null,
+            p_scorekeeper_id: scorekeeperId,
+            p_cancel: false
+          }
+        );
+
+        if (error) throw error;
+
+        gameScorekeeperAssignments =
+          gameScorekeeperAssignments.filter(
+            item => Number(item.game_id) !== Number(game.id)
+          );
+
+        if (scorekeeperId) {
+          gameScorekeeperAssignments.push({
+            game_id: Number(game.id),
+            scorekeeper_id: scorekeeperId
+          });
+        }
+
+        const league = assignedLeagues.find(
+          item => String(item.id) === String(game.league_id)
+        );
+
+        renderScorekeeperManagement(league);
+
+        message.className = "form-message success";
+        message.textContent = scorekeeperId
+          ? `Game #${game.id} was assigned to ${scorekeeperDisplayName(scorekeeperId)}.`
+          : `Scorekeeper assignment was removed from Game #${game.id}.`;
+      } catch (error) {
+        console.error("Unable to save scorekeeper assignment:", error);
+        message.className = "form-message error";
+        message.textContent =
+          "Unable to save scorekeeper assignment: " +
+          (error.message || "Unknown error");
+      } finally {
+        button.disabled = false;
+        button.textContent = "SAVE";
+      }
     }
 
     function renderWorkspace() {
@@ -2052,6 +2614,7 @@
         setCreateTeamEnabled(false);
         setCreateTeamMessage("");
         renderScheduling(null, []);
+        renderScorekeeperManagement(null);
         renderGameReviewQueue(null);
         renderSeasonWorkspace(null, []);
         renderStandingsFilters(null);
@@ -2097,6 +2660,7 @@
         : '<tr><td class="empty-state" colspan="5">No teams are registered in this league yet.</td></tr>';
 
       renderScheduling(league, approved);
+      renderScorekeeperManagement(league);
       renderGameReviewQueue(league);
       renderSeasonWorkspace(league, approved);
       renderStandingsFilters(league);
@@ -2899,7 +3463,7 @@
       const message = document.getElementById("scheduleMessage");
       message.className = "form-message";
       message.textContent = `Editing scheduled Game #${game.id}.`;
-      document.getElementById("schedulePanel").scrollIntoView({ behavior: "smooth", block: "start" });
+      openCommissionerView("schedule");
     }
 
     async function cancelCurrentGame() {
@@ -3015,6 +3579,29 @@
       document.getElementById("sidebar").classList.remove("open");
       document.getElementById("sidebarOverlay").classList.remove("open");
     }
+
+    document.querySelectorAll('input[name="commissionerWorkspace"]').forEach(toggle => {
+      toggle.addEventListener("change", function () {
+        if (!this.checked) return;
+
+        const viewName = Object.entries(commissionerViewConfig)
+          .find(([, config]) => config.radioId === this.id)?.[0] || "dashboard";
+
+        updateCommissionerPageHeading(viewName);
+
+        const config = commissionerViewConfig[viewName];
+        const nextUrl = config?.hash
+          ? `${window.location.pathname}${window.location.search}${config.hash}`
+          : `${window.location.pathname}${window.location.search}`;
+
+        history.replaceState(null, "", nextUrl);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        closeSidebar();
+      });
+    });
+
+    document.getElementById("refreshScorekeeperAssignmentsButton")
+      .addEventListener("click", refreshScorekeeperData);
 
     leagueSelect.addEventListener("change", renderWorkspace);
     createTeamForm.addEventListener("submit", createTeam);
