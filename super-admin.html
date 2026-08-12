@@ -2424,22 +2424,22 @@
             <article class="stat-card">
               <div class="stat-top"><span class="stat-label">Teams</span><span class="stat-symbol">TM</span></div>
               <div id="leagueWorkspaceTeamCount" class="stat-value">0</div>
-              <p class="stat-helper">Approved / registered teams</p>
+              <p id="leagueWorkspaceTeamHelper" class="stat-helper">Approved league teams</p>
             </article>
             <article class="stat-card">
               <div class="stat-top"><span class="stat-label">Players</span><span class="stat-symbol">PL</span></div>
               <div id="leagueWorkspacePlayerCount" class="stat-value">0</div>
-              <p class="stat-helper">Players on league teams</p>
+              <p id="leagueWorkspacePlayerHelper" class="stat-helper">Players on approved league teams</p>
             </article>
             <article class="stat-card">
               <div class="stat-top"><span class="stat-label">Games</span><span class="stat-symbol">GM</span></div>
               <div id="leagueWorkspaceGameCount" class="stat-value">0</div>
-              <p class="stat-helper">Scheduled and completed games</p>
+              <p id="leagueWorkspaceGameHelper" class="stat-helper">Scheduled and completed games</p>
             </article>
             <article class="stat-card">
               <div class="stat-top"><span class="stat-label">Corrections</span><span class="stat-symbol">CR</span></div>
               <div id="leagueWorkspaceCorrectionCount" class="stat-value">0</div>
-              <p class="stat-helper">Pending coach correction requests</p>
+              <p id="leagueWorkspaceCorrectionHelper" class="stat-helper">Pending coach correction requests</p>
             </article>
           </section>
 
@@ -3301,7 +3301,8 @@
           divisions: [],
           corrections: [],
           announcements: [],
-          commissioners: []
+          commissioners: [],
+          errors: {}
         };
         renderLeagueWorkspace();
         return;
@@ -3310,7 +3311,33 @@
       refreshLeagueWorkspaceButton.disabled = true;
       refreshLeagueWorkspaceButton.textContent = "REFRESHING...";
 
+      /*
+       * Show the selected league immediately.
+       * A protected/optional module must never blank the entire workspace.
+       */
+      leagueWorkspaceData = {
+        league,
+        registrations: [],
+        teams: [],
+        players: [],
+        games: [],
+        seasons: [],
+        divisions: [],
+        corrections: [],
+        announcements: [],
+        commissioners: [],
+        errors: {}
+      };
+      renderLeagueWorkspace();
+
       try {
+        /*
+         * Correction requests are protected. Use the secured RPC that the
+         * Commissioner Dashboard already uses instead of direct table SELECT.
+         *
+         * Every query is handled independently below, so one denied module
+         * cannot prevent Teams / Players / Games from rendering.
+         */
         const [
           registrationsResult,
           gamesResult,
@@ -3323,27 +3350,30 @@
             .from("league_teams")
             .select("league_id, team_id, registration_status, season_id, division_id, registered_at, approved_at, updated_at")
             .eq("league_id", league.id),
+
           supabaseClient
             .from("games")
             .select("id, league_id, season_id, division_id, home_team_id, away_team_id, home_team, away_team, home_score, away_score, scheduled_at, venue, status, finalized_at, created_at")
             .eq("league_id", league.id)
             .order("scheduled_at", { ascending: true, nullsFirst: false }),
+
           supabaseClient
             .from("seasons")
             .select("id, league_id, name, start_date, end_date, status, created_at, updated_at")
             .eq("league_id", league.id)
             .order("created_at", { ascending: false }),
-          supabaseClient
-            .from("coach_stat_correction_requests")
-            .select("id, league_id, team_id, game_id, player_id, player_name_snapshot, request_type, stat_field, current_value, requested_value, reason, status, submitted_at, reviewed_at")
-            .eq("league_id", league.id)
-            .order("submitted_at", { ascending: false }),
+
+          supabaseClient.rpc("get_commissioner_correction_requests", {
+            p_league_id: league.id
+          }),
+
           supabaseClient
             .from("announcements")
             .select("id, title, body, scope, league_id, audience, status, publish_at, expires_at, published_at, created_at, updated_at")
             .eq("scope", "league")
             .eq("league_id", league.id)
             .order("created_at", { ascending: false }),
+
           supabaseClient
             .from("league_commissioners")
             .select("commissioner_id, active, assigned_at")
@@ -3351,36 +3381,91 @@
             .eq("active", true)
         ]);
 
-        for (const result of [
-          registrationsResult,
-          gamesResult,
-          seasonsResult,
-          correctionsResult,
-          announcementsResult,
-          commissionerResult
-        ]) {
-          if (result.error) throw result.error;
+        if (token !== leagueWorkspaceLoadToken) return;
+
+        const errors = {};
+
+        function safeRows(result, key) {
+          if (result?.error) {
+            console.warn(`League Workspace ${key} unavailable:`, result.error);
+            errors[key] = result.error.message || `Unable to load ${key}.`;
+            return [];
+          }
+          return result?.data || [];
         }
 
-        const registrations = registrationsResult.data || [];
-        const games = gamesResult.data || [];
-        const seasons = seasonsResult.data || [];
-        const corrections = correctionsResult.data || [];
-        const announcements = announcementsResult.data || [];
-        const commissionerLinks = commissionerResult.data || [];
+        const registrations = safeRows(registrationsResult, "registrations");
+        const games = safeRows(gamesResult, "games");
+        const seasons = safeRows(seasonsResult, "seasons");
+        const rawCorrections = safeRows(correctionsResult, "corrections");
+        const announcements = safeRows(announcementsResult, "announcements");
+        const commissionerLinks = safeRows(commissionerResult, "commissioners");
 
-        const teamIds = [...new Set(registrations.map(item => item.team_id).filter(Boolean))];
+        const corrections = rawCorrections.map(row => ({
+          id: row.correction_request_id ?? row.id ?? null,
+          league_id: row.league_id ?? league.id,
+          team_id: row.team_id ?? null,
+          game_id: row.game_id ?? null,
+          player_id: row.player_id ?? null,
+          player_name_snapshot:
+            row.player_name_snapshot ??
+            row.player_name ??
+            null,
+          request_type: row.request_type ?? null,
+          stat_field: row.stat_field ?? null,
+          current_value: row.current_value ?? null,
+          requested_value: row.requested_value ?? null,
+          reason: row.reason ?? null,
+          status:
+            row.request_status ??
+            row.status ??
+            "pending",
+          submitted_at: row.submitted_at ?? null,
+          reviewed_at: row.reviewed_at ?? null
+        }));
+
+        const allTeamIds = [
+          ...new Set(
+            registrations
+              .map(item => item.team_id)
+              .filter(Boolean)
+          )
+        ];
+
+        /*
+         * Match the public Teams page:
+         * only approved league registrations count as competing league teams.
+         */
+        const approvedTeamIds = [
+          ...new Set(
+            registrations
+              .filter(item =>
+                String(item.registration_status || "").toLowerCase() === "approved"
+              )
+              .map(item => item.team_id)
+              .filter(Boolean)
+          )
+        ];
+
         const seasonIds = seasons.map(item => item.id).filter(Boolean);
-        const commissionerIds = commissionerLinks.map(item => item.commissioner_id).filter(Boolean);
+        const commissionerIds = commissionerLinks
+          .map(item => item.commissioner_id)
+          .filter(Boolean);
 
-        const [teamsResult, divisionsResult, commissionerProfilesResult] = await Promise.all([
-          teamIds.length
+        const [
+          teamsResult,
+          divisionsResult,
+          commissionerProfilesResult,
+          playerResult
+        ] = await Promise.all([
+          allTeamIds.length
             ? supabaseClient
                 .from("teams")
                 .select("id, name, location, logo_url, created_at")
-                .in("id", teamIds)
+                .in("id", allTeamIds)
                 .order("name")
             : Promise.resolve({ data: [], error: null }),
+
           seasonIds.length
             ? supabaseClient
                 .from("divisions")
@@ -3388,55 +3473,69 @@
                 .in("season_id", seasonIds)
                 .order("name")
             : Promise.resolve({ data: [], error: null }),
+
           commissionerIds.length
             ? supabaseClient
                 .from("profiles")
                 .select("id, full_name, email, role, status")
                 .in("id", commissionerIds)
+            : Promise.resolve({ data: [], error: null }),
+
+          approvedTeamIds.length
+            ? supabaseClient
+                .from("players")
+                .select("id, team_id, first_name, last_name, position, jersey_number")
+                .in("team_id", approvedTeamIds)
             : Promise.resolve({ data: [], error: null })
         ]);
 
-        if (teamsResult.error) throw teamsResult.error;
-        if (divisionsResult.error) throw divisionsResult.error;
-        if (commissionerProfilesResult.error) throw commissionerProfilesResult.error;
-
-        const teams = teamsResult.data || [];
-        const divisions = divisionsResult.data || [];
-        const commissionerProfiles = commissionerProfilesResult.data || [];
-
-        const playerResult = teamIds.length
-          ? await supabaseClient
-              .from("players")
-              .select("id, team_id, first_name, last_name, position, jersey_number")
-              .in("team_id", teamIds)
-          : { data: [], error: null };
-
-        if (playerResult.error) throw playerResult.error;
         if (token !== leagueWorkspaceLoadToken) return;
+
+        const teams = safeRows(teamsResult, "teams");
+        const divisions = safeRows(divisionsResult, "divisions");
+        const commissionerProfiles = safeRows(
+          commissionerProfilesResult,
+          "commissioner_profiles"
+        );
+        const players = safeRows(playerResult, "players");
 
         leagueWorkspaceData = {
           league,
           registrations,
           teams,
-          players: playerResult.data || [],
+          players,
           games,
           seasons,
           divisions,
           corrections,
           announcements,
-          commissioners: commissionerProfiles
+          commissioners: commissionerProfiles,
+          errors
         };
 
         renderLeagueWorkspace();
+
+        const limitedModules = Object.keys(errors);
+
+        leagueWorkspaceSyncStatus.textContent = limitedModules.length
+          ? `League loaded · ${limitedModules.length} limited section${limitedModules.length === 1 ? "" : "s"}`
+          : `League data synced ${new Date().toLocaleTimeString("en-PH", {
+              hour: "numeric",
+              minute: "2-digit",
+              second: "2-digit"
+            })}`;
       } catch (error) {
         if (token !== leagueWorkspaceLoadToken) return;
-        console.error("Unable to load League Workspace:", error);
 
-        leagueWorkspaceDescription.textContent =
-          "Unable to load the selected league workspace: " + (error?.message || "Unknown error");
+        console.error("Unexpected League Workspace load failure:", error);
 
-        leagueWorkspaceTeamsBody.innerHTML =
-          '<tr><td class="league-workspace-empty" colspan="6">Unable to load league data.</td></tr>';
+        leagueWorkspaceData.errors = {
+          ...(leagueWorkspaceData.errors || {}),
+          workspace: error?.message || "Unexpected workspace error."
+        };
+
+        renderLeagueWorkspace();
+        leagueWorkspaceSyncStatus.textContent = "League loaded with limited data";
       } finally {
         if (token === leagueWorkspaceLoadToken) {
           refreshLeagueWorkspaceButton.disabled = false;
@@ -3483,14 +3582,56 @@
       leagueWorkspacePublicLink.href = `league1.html?id=${encodeURIComponent(league.id)}`;
       leagueWorkspacePublicLink.textContent = "VIEW PUBLIC LEAGUE";
 
+      const workspaceErrors = data.errors || {};
+
       document.getElementById("leagueWorkspaceTeamCount").textContent =
-        `${approvedTeams}/${data.registrations.length}`;
+        workspaceErrors.registrations
+          ? "—"
+          : approvedTeams.toLocaleString();
+
       document.getElementById("leagueWorkspacePlayerCount").textContent =
-        data.players.length.toLocaleString();
+        workspaceErrors.players
+          ? "—"
+          : data.players.length.toLocaleString();
+
       document.getElementById("leagueWorkspaceGameCount").textContent =
-        data.games.length.toLocaleString();
+        workspaceErrors.games
+          ? "—"
+          : data.games.length.toLocaleString();
+
       document.getElementById("leagueWorkspaceCorrectionCount").textContent =
-        pendingCorrections.toLocaleString();
+        workspaceErrors.corrections
+          ? "—"
+          : pendingCorrections.toLocaleString();
+
+      const teamHelper = document.getElementById("leagueWorkspaceTeamHelper");
+      const playerHelper = document.getElementById("leagueWorkspacePlayerHelper");
+      const gameHelper = document.getElementById("leagueWorkspaceGameHelper");
+      const correctionHelper = document.getElementById("leagueWorkspaceCorrectionHelper");
+
+      if (teamHelper) {
+        teamHelper.textContent = workspaceErrors.registrations
+          ? "Unable to read league team registrations"
+          : `${data.registrations.length.toLocaleString()} total registration${data.registrations.length === 1 ? "" : "s"} · approved teams shown above`;
+      }
+
+      if (playerHelper) {
+        playerHelper.textContent = workspaceErrors.players
+          ? "Unable to read players"
+          : "Players on approved league teams";
+      }
+
+      if (gameHelper) {
+        gameHelper.textContent = workspaceErrors.games
+          ? "Unable to read league games"
+          : "Scheduled and completed games";
+      }
+
+      if (correctionHelper) {
+        correctionHelper.textContent = workspaceErrors.corrections
+          ? "Correction access is restricted; other league data still loads"
+          : "Pending coach correction requests";
+      }
 
       const commissionerText = data.commissioners.length
         ? data.commissioners.map(item => item.full_name || item.email || "Commissioner").join(", ")
@@ -3517,6 +3658,13 @@
 
     function renderLeagueWorkspaceTeams() {
       const { registrations, teams, seasons, divisions } = leagueWorkspaceData;
+
+      if (leagueWorkspaceData.errors?.registrations) {
+        leagueWorkspaceTeamsBody.innerHTML =
+          `<tr><td class="league-workspace-empty" colspan="6">Unable to load league team registrations: ${escapeHtml(leagueWorkspaceData.errors.registrations)}</td></tr>`;
+        return;
+      }
+
       const teamMap = new Map(teams.map(team => [team.id, team]));
       const seasonMap = new Map(seasons.map(season => [season.id, season]));
       const divisionMap = new Map(divisions.map(division => [division.id, division]));
@@ -3725,6 +3873,13 @@
 
     function renderLeagueWorkspaceCorrections() {
       const rows = leagueWorkspaceData.corrections;
+      const correctionError = leagueWorkspaceData.errors?.corrections;
+
+      if (correctionError) {
+        leagueWorkspaceCorrectionsBody.innerHTML =
+          `<tr><td class="league-workspace-empty" colspan="6">Correction requests could not be loaded here: ${escapeHtml(correctionError)}. Teams, players, games, and other league data remain available.</td></tr>`;
+        return;
+      }
 
       leagueWorkspaceCorrectionsBody.innerHTML = rows.length
         ? rows.map(row => {
@@ -3776,7 +3931,9 @@
       const pendingTeams = data.registrations.filter(item => item.registration_status === "pending").length;
       const finals = data.games.filter(game => ["final", "finalized"].includes(String(game.status || "").toLowerCase())).length;
       const upcoming = data.games.filter(game => ["scheduled", "upcoming"].includes(String(game.status || "").toLowerCase())).length;
-      const pendingCorrections = data.corrections.filter(item => item.status === "pending").length;
+      const pendingCorrections = data.errors?.corrections
+        ? null
+        : data.corrections.filter(item => item.status === "pending").length;
       const publishedAnnouncements = data.announcements.filter(item => item.status === "published").length;
 
       leagueWorkspaceReportGrid.innerHTML = [
@@ -3784,7 +3941,7 @@
         ["Registered Players", data.players.length, "Players linked to league teams"],
         ["Finalized Games", finals, `${upcoming} upcoming scheduled game${upcoming === 1 ? "" : "s"}`],
         ["Seasons", data.seasons.length, `${data.divisions.length} division${data.divisions.length === 1 ? "" : "s"}`],
-        ["Pending Corrections", pendingCorrections, "Coach requests awaiting action"],
+        ["Pending Corrections", pendingCorrections ?? 0, data.errors?.corrections ? "Correction access unavailable in this view" : "Coach requests awaiting action"],
         ["Published Notices", publishedAnnouncements, `${data.announcements.length} total league announcement${data.announcements.length === 1 ? "" : "s"}`]
       ].map(([label, value, detail]) => `
         <div class="league-workspace-report-card">
