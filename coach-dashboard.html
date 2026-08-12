@@ -311,7 +311,7 @@
       <a class="nav-link" href="#modules"><span class="nav-icon">AT</span> Attendance <span class="coming">Next</span></a>
 
       <p class="nav-label">Team Records</p>
-      <a class="nav-link" href="#modules"><span class="nav-icon">GM</span> Games <span class="coming">Next</span></a>
+      <a class="nav-link" href="#gameSchedulePanel"><span class="nav-icon">GM</span> Game Schedule</a>
       <a class="nav-link" href="#modules"><span class="nav-icon">ST</span> Statistics <span class="coming">Next</span></a>
       <a class="nav-link" href="#modules"><span class="nav-icon">CR</span> Corrections <span class="coming">Next</span></a>
     </aside>
@@ -450,6 +450,33 @@
           </form>
         </section>
 
+        <section id="gameSchedulePanel" class="panel">
+          <header class="panel-header">
+            <div>
+              <h2>Game Schedule</h2>
+              <p>League games scheduled for the currently selected team.</p>
+            </div>
+            <button id="refreshScheduleButton" class="secondary-button" type="button">Refresh Schedule</button>
+          </header>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date & Time</th>
+                  <th>Opponent</th>
+                  <th>Home / Away</th>
+                  <th>Venue</th>
+                  <th>Status</th>
+                  <th>Score</th>
+                </tr>
+              </thead>
+              <tbody id="gameScheduleBody">
+                <tr><td class="empty-state" colspan="6">Loading game schedule...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
         <section id="modules" class="panel">
           <header class="panel-header">
             <div><h2>Coach Modules</h2><p>Official game statistics remain protected and read-only.</p></div>
@@ -480,6 +507,7 @@
     let leagues = [];
     let players = [];
     let openApplicationLeagues = [];
+    let scheduleLoadToken = 0;
 
     const authScreen = document.getElementById("authScreen");
     const appShell = document.getElementById("appShell");
@@ -765,6 +793,116 @@
             return `<option value="${escapeHtml(`${assignment.league_id}|${assignment.team_id}`)}">${escapeHtml(team?.name || "Unknown team")} — ${escapeHtml(league?.name || "Unknown league")}</option>`;
           }).join("")
         : '<option value="">No assigned teams</option>';
+    }
+
+    function formatScheduleDate(value) {
+      if (!value) return "To be announced";
+
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "To be announced";
+
+      return date.toLocaleString("en-PH", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      });
+    }
+
+    function coachGameStatus(game) {
+      if (game.finalized_at) return "Final";
+
+      const status = String(game.game_status || "").trim();
+      if (!status) return "Scheduled";
+
+      return status
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, char => char.toUpperCase());
+    }
+
+    function isFinalCoachGame(game) {
+      if (game.finalized_at) return true;
+
+      const status = String(game.game_status || "").toLowerCase();
+      return ["final", "finalized", "completed", "complete"].includes(status);
+    }
+
+    async function loadTeamSchedule(assignment) {
+      const body = document.getElementById("gameScheduleBody");
+      const refreshButton = document.getElementById("refreshScheduleButton");
+
+      if (!body) return;
+
+      const requestToken = ++scheduleLoadToken;
+
+      if (!assignment) {
+        body.innerHTML = '<tr><td class="empty-state" colspan="6">Select an assigned team to view its game schedule.</td></tr>';
+        if (refreshButton) refreshButton.disabled = true;
+        return;
+      }
+
+      if (refreshButton) refreshButton.disabled = true;
+      body.innerHTML = '<tr><td class="empty-state" colspan="6">Loading game schedule...</td></tr>';
+
+      try {
+        const { data, error } = await supabaseClient.rpc("get_coach_team_schedule", {
+          p_team_id: assignment.team_id
+        });
+
+        if (requestToken !== scheduleLoadToken) return;
+        if (error) throw error;
+
+        const games = (data || []).filter(game =>
+          !assignment.league_id || game.league_id === assignment.league_id
+        );
+
+        games.sort((a, b) => {
+          const aFinal = isFinalCoachGame(a);
+          const bFinal = isFinalCoachGame(b);
+
+          if (aFinal !== bFinal) return aFinal ? 1 : -1;
+
+          const aTime = a.scheduled_at ? new Date(a.scheduled_at).getTime() : Number.MAX_SAFE_INTEGER;
+          const bTime = b.scheduled_at ? new Date(b.scheduled_at).getTime() : Number.MAX_SAFE_INTEGER;
+
+          if (aFinal && bFinal) return bTime - aTime;
+          return aTime - bTime;
+        });
+
+        if (!games.length) {
+          body.innerHTML = '<tr><td class="empty-state" colspan="6">No games have been scheduled for this team in the selected league.</td></tr>';
+          return;
+        }
+
+        body.innerHTML = games.map(game => {
+          const finalGame = isFinalCoachGame(game);
+          const score = finalGame ? `${game.home_score ?? 0} - ${game.away_score ?? 0}` : "—";
+          const homeAway = game.is_home_team ? "Home" : "Away";
+
+          return `
+            <tr>
+              <td><strong>${escapeHtml(formatScheduleDate(game.scheduled_at))}</strong></td>
+              <td><strong>${escapeHtml(game.opponent_team_name || "Opponent TBD")}</strong></td>
+              <td>${escapeHtml(homeAway)}</td>
+              <td>${escapeHtml(game.venue || "TBA")}</td>
+              <td><span class="status-badge ${finalGame ? "" : "pending"}">${escapeHtml(coachGameStatus(game))}</span></td>
+              <td><strong>${escapeHtml(score)}</strong></td>
+            </tr>
+          `;
+        }).join("");
+      } catch (error) {
+        if (requestToken !== scheduleLoadToken) return;
+
+        console.error("Unable to load coach game schedule:", error);
+        body.innerHTML = `
+          <tr>
+            <td class="empty-state" colspan="6">Unable to load game schedule: ${escapeHtml(error?.message || "Unknown error")}</td>
+          </tr>
+        `;
+      } finally {
+        if (requestToken === scheduleLoadToken && refreshButton) refreshButton.disabled = false;
+      }
     }
 
     function selectedAssignment() {
@@ -1131,6 +1269,7 @@
         closeTeamProfileEditor();
         loadSubmissionStatus(null);
         loadPlayerInvitations(null);
+        loadTeamSchedule(null);
         return;
       }
 
@@ -1158,12 +1297,17 @@
 
       loadSubmissionStatus(assignment);
       loadPlayerInvitations(assignment);
+      loadTeamSchedule(assignment);
     }
 
     function closeSidebar() {
       document.getElementById("sidebar").classList.remove("open");
       document.getElementById("sidebarOverlay").classList.remove("open");
     }
+
+    document.getElementById("refreshScheduleButton").addEventListener("click", function () {
+      loadTeamSchedule(selectedAssignment());
+    });
 
     teamSelect.addEventListener("change", function () {
       closeTeamProfileEditor();
