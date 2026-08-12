@@ -122,6 +122,605 @@
       .verified-badge { grid-column: 1 / -1; width: max-content; }
       .stats-grid, .module-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
     }
+
+    /* =========================
+       PLAYER INTERNAL WORKSPACES
+       ========================= */
+    .player-view-section {
+      display: none;
+    }
+
+    .player-view-section.active {
+      display: block;
+    }
+
+    .player-view-grid-section.active {
+      display: grid;
+    }
+
+    .sidebar {
+      width: 246px;
+      padding: 14px 12px;
+      overflow-y: hidden;
+    }
+
+    .main-content {
+      margin-left: 246px;
+    }
+
+    .sidebar .nav-label {
+      margin: 12px 9px 6px;
+      color: #818894;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+    }
+
+    .sidebar .nav-label:first-child {
+      margin-top: 0;
+    }
+
+    .sidebar .nav-link {
+      width: 100%;
+      min-height: 38px;
+      height: 38px;
+      margin: 0 0 3px;
+      padding: 0 10px;
+      gap: 9px;
+      color: #d6d9de;
+      background: transparent;
+      border: 0;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      color: #fff;
+      background: rgba(255,255,255,.08);
+    }
+
+    .sidebar .nav-link.active {
+      box-shadow: inset 3px 0 0 var(--orange);
+    }
+
+    .sidebar .nav-icon {
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
+      color: #fff;
+      background: rgba(255,255,255,.09);
+      border-radius: 6px;
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    .sidebar .nav-link.active .nav-icon {
+      background: var(--orange);
+    }
+
+    .secondary-button {
+      min-height: 38px;
+      padding: 0 13px;
+      color: #344054;
+      background: #fff;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .primary-button {
+      min-height: 40px;
+      padding: 0 15px;
+      color: #fff;
+      background: var(--orange);
+      border: 0;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .primary-button:hover {
+      background: var(--orange-dark);
+    }
+
+    .player-overview-grid {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(4,minmax(0,1fr));
+      gap: 11px;
+    }
+
+    .player-overview-card,
+    .player-detail-box,
+    .career-summary-card,
+    .career-shooting-card,
+    .team-history-card,
+    .milestone-card {
+      min-width: 0;
+      background: #fafafa;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+    }
+
+    .player-overview-card {
+      padding: 14px;
+    }
+
+    .player-overview-card span,
+    .player-overview-card strong,
+    .player-overview-card small,
+    .player-detail-box span,
+    .player-detail-box strong,
+    .career-summary-card span,
+    .career-summary-card strong,
+    .career-shooting-card span,
+    .career-shooting-card strong,
+    .career-shooting-card small {
+      display: block;
+    }
+
+    .player-overview-card span,
+    .player-detail-box span,
+    .career-summary-card span,
+    .career-shooting-card span {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .55px;
+      text-transform: uppercase;
+    }
+
+    .player-overview-card strong {
+      margin-top: 7px;
+      font-size: 15px;
+    }
+
+    .player-overview-card small {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.4;
+    }
+
+    .player-recent-games {
+      padding: 8px 18px 16px;
+      display: grid;
+    }
+
+    .player-recent-row {
+      min-height: 58px;
+      padding: 10px 0;
+      display: grid;
+      grid-template-columns: minmax(0,1fr) repeat(4, 62px);
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .player-recent-row:last-child {
+      border-bottom: 0;
+    }
+
+    .player-recent-game strong,
+    .player-recent-game span {
+      display: block;
+    }
+
+    .player-recent-game strong {
+      font-size: 11px;
+    }
+
+    .player-recent-game span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .player-recent-stat {
+      text-align: center;
+    }
+
+    .player-recent-stat strong,
+    .player-recent-stat span {
+      display: block;
+    }
+
+    .player-recent-stat strong {
+      font-size: 14px;
+    }
+
+    .player-recent-stat span {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 8px;
+      text-transform: uppercase;
+    }
+
+    .player-profile-details {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(3,minmax(0,1fr));
+      gap: 11px;
+    }
+
+    .player-detail-box {
+      padding: 14px;
+    }
+
+    .player-detail-box strong {
+      margin-top: 7px;
+      font-size: 13px;
+    }
+
+    .career-summary-grid {
+      padding: 17px 18px;
+      display: grid;
+      grid-template-columns: repeat(6,minmax(0,1fr));
+      gap: 10px;
+      background: #fafafa;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .career-summary-card {
+      padding: 13px;
+      background: #fff;
+    }
+
+    .career-summary-card strong {
+      margin-top: 7px;
+      font-size: 20px;
+    }
+
+    .career-shooting-section {
+      padding: 17px 18px;
+      display: grid;
+      grid-template-columns: repeat(4,minmax(0,1fr));
+      gap: 10px;
+    }
+
+    .career-shooting-card {
+      padding: 14px;
+    }
+
+    .career-shooting-card strong {
+      margin-top: 8px;
+      font-size: 17px;
+    }
+
+    .career-shooting-card small {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .team-history-list {
+      padding: 17px 18px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .team-history-card {
+      padding: 14px;
+      display: grid;
+      grid-template-columns: minmax(0,1fr) repeat(4, 90px);
+      align-items: center;
+      gap: 10px;
+    }
+
+    .team-history-main strong,
+    .team-history-main span,
+    .team-history-stat strong,
+    .team-history-stat span {
+      display: block;
+    }
+
+    .team-history-main strong {
+      font-size: 13px;
+    }
+
+    .team-history-main span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .team-history-stat {
+      text-align: center;
+    }
+
+    .team-history-stat strong {
+      font-size: 15px;
+    }
+
+    .team-history-stat span {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 8px;
+      text-transform: uppercase;
+    }
+
+    .award-section-copy {
+      padding: 16px 18px 0;
+    }
+
+    .award-section-copy strong,
+    .award-section-copy span {
+      display: block;
+    }
+
+    .award-section-copy strong {
+      font-size: 13px;
+    }
+
+    .award-section-copy span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .milestone-grid {
+      padding: 15px 18px 18px;
+      display: grid;
+      grid-template-columns: repeat(3,minmax(0,1fr));
+      gap: 10px;
+    }
+
+    .milestone-card {
+      padding: 15px;
+      background: #fffaf6;
+      border-color: #ffd8bb;
+    }
+
+    .milestone-card.unlocked {
+      background: #f8fdf9;
+      border-color: #c7ead5;
+    }
+
+    .milestone-card span,
+    .milestone-card strong,
+    .milestone-card small {
+      display: block;
+    }
+
+    .milestone-card span {
+      color: var(--orange-dark);
+      font-size: 9px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .milestone-card.unlocked span {
+      color: var(--success);
+    }
+
+    .milestone-card strong {
+      margin-top: 7px;
+      font-size: 13px;
+    }
+
+    .milestone-card small {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.4;
+    }
+
+    .share-profile-body {
+      padding: 20px;
+    }
+
+    .share-profile-preview {
+      padding: 17px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #fafafa;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+
+    .share-profile-preview .player-photo {
+      width: 68px;
+      height: 68px;
+      flex: 0 0 68px;
+    }
+
+    .share-profile-preview strong,
+    .share-profile-preview span {
+      display: block;
+    }
+
+    .share-profile-preview strong {
+      font-size: 16px;
+    }
+
+    .share-profile-preview span {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .share-profile-actions {
+      margin-top: 13px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tool-message {
+      min-height: 20px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
+    .tool-message.success {
+      color: var(--success);
+    }
+
+    .tool-message.error {
+      color: #b42318;
+    }
+
+    .player-correction-note {
+      padding: 13px 18px;
+      color: #7a3e00;
+      background: #fff8f2;
+      border-bottom: 1px solid #ffd9bd;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .player-correction-form {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      gap: 13px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .form-input {
+      width: 100%;
+      min-height: 42px;
+      padding: 0 11px;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+
+    .form-input[readonly] {
+      background: #f2f4f7;
+    }
+
+    .player-correction-textarea {
+      min-height: 100px;
+      padding: 10px 11px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .form-wide,
+    .form-actions {
+      grid-column: 1 / -1;
+    }
+
+    @media (max-height: 690px) and (min-width: 901px) {
+      .sidebar {
+        padding: 9px 10px;
+      }
+
+      .sidebar .nav-label {
+        margin: 7px 8px 4px;
+        font-size: 8px;
+      }
+
+      .sidebar .nav-link {
+        min-height: 33px;
+        height: 33px;
+        margin-bottom: 2px;
+        font-size: 12px;
+      }
+
+      .sidebar .nav-icon {
+        width: 21px;
+        height: 21px;
+        flex-basis: 21px;
+        font-size: 8px;
+      }
+    }
+
+    @media (max-width: 1050px) {
+      .career-summary-grid {
+        grid-template-columns: repeat(3,minmax(0,1fr));
+      }
+
+      .career-shooting-section,
+      .player-overview-grid {
+        grid-template-columns: repeat(2,minmax(0,1fr));
+      }
+
+      .team-history-card {
+        grid-template-columns: minmax(0,1fr) repeat(2, 85px);
+      }
+
+      .team-history-stat:nth-of-type(n+4) {
+        display: none;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .main-content {
+        margin-left: 0;
+      }
+
+      .sidebar {
+        overflow-y: auto;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .player-profile-details,
+      .career-summary-grid,
+      .career-shooting-section,
+      .player-overview-grid,
+      .milestone-grid,
+      .player-correction-form {
+        grid-template-columns: 1fr;
+      }
+
+      .team-history-card {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      .team-history-main {
+        grid-column: 1 / -1;
+      }
+
+      .player-recent-row {
+        grid-template-columns: minmax(0,1fr) repeat(2, 56px);
+      }
+
+      .player-recent-stat:nth-of-type(n+4) {
+        display: none;
+      }
+
+      .share-profile-actions {
+        flex-direction: column;
+      }
+
+      .share-profile-actions button {
+        width: 100%;
+      }
+
+      .form-wide,
+      .form-actions {
+        grid-column: auto;
+      }
+    }
+
   </style>
 </head>
 
@@ -144,13 +743,16 @@
 
     <aside id="sidebar" class="sidebar">
       <p class="nav-label">Player Workspace</p>
-      <a class="nav-link active" href="player-dashboard.html"><span class="nav-icon">DB</span> Dashboard</a>
-      <a class="nav-link" href="#profilePanel"><span class="nav-icon">PF</span> Player Profile</a>
-      <a class="nav-link" href="#gameStatsPanel"><span class="nav-icon">GM</span> Game Statistics</a>
-      <a class="nav-link" href="#modules"><span class="nav-icon">TM</span> Team History <span class="coming">Next</span></a>
-      <a class="nav-link" href="#modules"><span class="nav-icon">AW</span> Awards <span class="coming">Next</span></a>
-      <a class="nav-link" href="#modules"><span class="nav-icon">CR</span> Corrections <span class="coming">Next</span></a>
-      <a id="superAdminLink" class="nav-link" href="super-admin.html" hidden><span class="nav-icon">SA</span> Super Admin</a>
+      <button class="nav-link player-nav-view active" type="button" data-player-view="dashboard"><span class="nav-icon">DB</span> Dashboard</button>
+      <button class="nav-link player-nav-view" type="button" data-player-view="profile"><span class="nav-icon">PF</span> Player Profile</button>
+      <button class="nav-link player-nav-view" type="button" data-player-view="game-stats"><span class="nav-icon">GM</span> Game Statistics</button>
+      <button class="nav-link player-nav-view" type="button" data-player-view="career"><span class="nav-icon">CS</span> Career Statistics</button>
+      <button class="nav-link player-nav-view" type="button" data-player-view="teams"><span class="nav-icon">TM</span> Team History</button>
+      <button class="nav-link player-nav-view" type="button" data-player-view="awards"><span class="nav-icon">AW</span> Awards & Milestones</button>
+
+      <p class="nav-label">Player Tools</p>
+      <button class="nav-link player-nav-view" type="button" data-player-view="share"><span class="nav-icon">SH</span> Share Profile</button>
+      <button class="nav-link player-nav-view" type="button" data-player-view="corrections"><span class="nav-icon">CR</span> Corrections</button>
     </aside>
 
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
@@ -159,49 +761,292 @@
       <div class="content-wrap">
         <section class="page-heading">
           <div>
-            <div class="eyebrow">Verified Player Account</div>
-            <h1>Player Dashboard</h1>
-            <p>View your official profile and statistics recorded from verified games.</p>
+            <div id="playerPageEyebrow" class="eyebrow">Verified Player Account</div>
+            <h1 id="playerPageTitle">Player Dashboard</h1>
+            <p id="playerPageDescription">Your verified HoopHub PH basketball profile and career overview.</p>
           </div>
           <select id="playerSelect" class="control" aria-label="Select linked player"></select>
         </section>
 
-        <section id="profilePanel" class="profile-card">
-          <div id="playerPhoto" class="player-photo">HH</div>
-          <div><div id="playerName" class="profile-name">Linked Player</div><div id="playerMeta" class="profile-meta">Loading profile...</div></div>
+        <!-- DASHBOARD -->
+        <section id="playerDashboardProfile" class="profile-card player-view-section active" data-player-section="dashboard">
+          <div id="dashboardPlayerPhoto" class="player-photo">HH</div>
+          <div>
+            <div id="dashboardPlayerName" class="profile-name">Linked Player</div>
+            <div id="dashboardPlayerMeta" class="profile-meta">Loading profile...</div>
+          </div>
           <span class="verified-badge">Verified Profile</span>
         </section>
 
-        <section class="stats-grid">
+        <section id="playerDashboardStats" class="stats-grid player-view-section player-view-grid-section active" data-player-section="dashboard">
           <article class="stat-card"><span>Games</span><strong id="gameCount">0</strong></article>
           <article class="stat-card"><span>Total Points</span><strong id="totalPoints">0</strong></article>
           <article class="stat-card"><span>Rebounds</span><strong id="totalRebounds">0</strong></article>
           <article class="stat-card"><span>Assists</span><strong id="totalAssists">0</strong></article>
         </section>
 
-        <section id="gameStatsPanel" class="panel">
+        <section id="playerDashboardOverview" class="panel player-view-section active" data-player-section="dashboard">
+          <header class="panel-header">
+            <div>
+              <h2>Player Overview</h2>
+              <p>A quick summary of your current team and verified career.</p>
+            </div>
+            <span class="readonly-note">Official Records</span>
+          </header>
+
+          <div class="player-overview-grid">
+            <div class="player-overview-card">
+              <span>Current Team</span>
+              <strong id="dashboardCurrentTeam">No Team</strong>
+              <small id="dashboardTeamLocation">—</small>
+            </div>
+            <div class="player-overview-card">
+              <span>Jersey</span>
+              <strong id="dashboardJersey">—</strong>
+              <small>Official roster number</small>
+            </div>
+            <div class="player-overview-card">
+              <span>Position</span>
+              <strong id="dashboardPosition">Not set</strong>
+              <small id="dashboardHeight">Height not set</small>
+            </div>
+            <div class="player-overview-card">
+              <span>Career PPG</span>
+              <strong id="dashboardPPG">0.0</strong>
+              <small id="dashboardCareerGames">0 verified games</small>
+            </div>
+          </div>
+        </section>
+
+        <section id="playerDashboardRecent" class="panel player-view-section active" data-player-section="dashboard">
+          <header class="panel-header">
+            <div>
+              <h2>Recent Games</h2>
+              <p>Your latest verified game-by-game performances.</p>
+            </div>
+            <button class="secondary-button" type="button" data-dashboard-player-view="game-stats">View All Games</button>
+          </header>
+          <div id="dashboardRecentGames" class="player-recent-games">
+            <div class="empty-state">No official game statistics have been recorded yet.</div>
+          </div>
+        </section>
+
+        <!-- PLAYER PROFILE -->
+        <section id="profilePanel" class="profile-card player-view-section" data-player-section="profile">
+          <div id="playerPhoto" class="player-photo">HH</div>
+          <div>
+            <div id="playerName" class="profile-name">Linked Player</div>
+            <div id="playerMeta" class="profile-meta">Loading profile...</div>
+          </div>
+          <span class="verified-badge">Verified Profile</span>
+        </section>
+
+        <section id="playerProfileDetails" class="panel player-view-section" data-player-section="profile">
+          <header class="panel-header">
+            <div>
+              <h2>Official Player Information</h2>
+              <p>Roster identity linked to this HoopHub PH account.</p>
+            </div>
+            <span class="readonly-note">Read Only</span>
+          </header>
+
+          <div class="player-profile-details">
+            <div class="player-detail-box"><span>Full Name</span><strong id="profileFullName">—</strong></div>
+            <div class="player-detail-box"><span>Current Team</span><strong id="profileTeamName">—</strong></div>
+            <div class="player-detail-box"><span>Jersey Number</span><strong id="profileJersey">—</strong></div>
+            <div class="player-detail-box"><span>Position</span><strong id="profilePosition">—</strong></div>
+            <div class="player-detail-box"><span>Height</span><strong id="profileHeight">—</strong></div>
+            <div class="player-detail-box"><span>Account Status</span><strong id="profileAccountStatus">Verified</strong></div>
+          </div>
+        </section>
+
+        <!-- GAME STATS -->
+        <section id="gameStatsPanel" class="panel player-view-section" data-player-section="game-stats">
           <header class="panel-header">
             <div><h2>Official Game-by-Game Statistics</h2><p>Statistics recorded by authorized scorekeepers.</p></div>
             <span class="readonly-note">Read Only</span>
           </header>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Game</th><th>PTS</th><th>REB</th><th>AST</th><th>STL</th><th>BLK</th><th>TO</th><th>Fouls</th><th>Minutes</th></tr></thead>
-              <tbody id="statsTableBody"><tr><td class="empty-state" colspan="9">Loading statistics...</td></tr></tbody>
+              <thead>
+                <tr>
+                  <th>Game</th><th>PTS</th><th>REB</th><th>AST</th><th>STL</th><th>BLK</th><th>TO</th><th>Fouls</th><th>Minutes</th><th>+/-</th>
+                </tr>
+              </thead>
+              <tbody id="statsTableBody"><tr><td class="empty-state" colspan="10">Loading statistics...</td></tr></tbody>
             </table>
           </div>
         </section>
 
-        <section id="modules" class="panel">
-          <header class="panel-header"><div><h2>Player Features</h2><p>Personal information may be updated later; official records remain protected.</p></div></header>
-          <div class="module-grid">
-            <article class="module-card"><strong>Personal Profile</strong><span>Add a photo, birthday, hometown, height, and preferred position.</span></article>
-            <article class="module-card"><strong>Team Invitations</strong><span>Accept or reject invitations from approved team managers.</span></article>
-            <article class="module-card"><strong>Career Statistics</strong><span>View verified totals across previous and current teams.</span></article>
-            <article class="module-card"><strong>Awards</strong><span>Display official league awards and achievements.</span></article>
-            <article class="module-card"><strong>Share Profile</strong><span>Download or share a public HoopHub PH player profile.</span></article>
-            <article class="module-card"><strong>Correction Requests</strong><span>Request personal-information corrections without editing game statistics.</span></article>
+        <!-- CAREER STATISTICS -->
+        <section id="careerStatsPanel" class="panel player-view-section" data-player-section="career">
+          <header class="panel-header">
+            <div>
+              <h2>Career Statistics</h2>
+              <p>Aggregated totals and averages from your verified HoopHub PH game records.</p>
+            </div>
+            <span class="readonly-note">Verified Stats</span>
+          </header>
+
+          <div class="career-summary-grid">
+            <div class="career-summary-card"><span>Games</span><strong id="careerGames">0</strong></div>
+            <div class="career-summary-card"><span>Points</span><strong id="careerPoints">0</strong></div>
+            <div class="career-summary-card"><span>PPG</span><strong id="careerPPG">0.0</strong></div>
+            <div class="career-summary-card"><span>Rebounds</span><strong id="careerRebounds">0</strong></div>
+            <div class="career-summary-card"><span>RPG</span><strong id="careerRPG">0.0</strong></div>
+            <div class="career-summary-card"><span>Assists</span><strong id="careerAssists">0</strong></div>
+            <div class="career-summary-card"><span>APG</span><strong id="careerAPG">0.0</strong></div>
+            <div class="career-summary-card"><span>Steals</span><strong id="careerSteals">0</strong></div>
+            <div class="career-summary-card"><span>Blocks</span><strong id="careerBlocks">0</strong></div>
+            <div class="career-summary-card"><span>Turnovers</span><strong id="careerTurnovers">0</strong></div>
+            <div class="career-summary-card"><span>Fouls</span><strong id="careerFouls">0</strong></div>
+            <div class="career-summary-card"><span>Total +/-</span><strong id="careerPlusMinus">0</strong></div>
           </div>
+
+          <div class="career-shooting-section">
+            <div class="career-shooting-card">
+              <span>2PT</span>
+              <strong id="careerTwoPoint">0 / 0</strong>
+              <small id="careerTwoPointPct">0.0%</small>
+            </div>
+            <div class="career-shooting-card">
+              <span>3PT</span>
+              <strong id="careerThreePoint">0 / 0</strong>
+              <small id="careerThreePointPct">0.0%</small>
+            </div>
+            <div class="career-shooting-card">
+              <span>FT</span>
+              <strong id="careerFreeThrow">0 / 0</strong>
+              <small id="careerFreeThrowPct">0.0%</small>
+            </div>
+            <div class="career-shooting-card">
+              <span>Minutes</span>
+              <strong id="careerMinutes">0:00</strong>
+              <small>Total verified playing time</small>
+            </div>
+          </div>
+        </section>
+
+        <!-- TEAM HISTORY -->
+        <section id="teamHistoryPanel" class="panel player-view-section" data-player-section="teams">
+          <header class="panel-header">
+            <div>
+              <h2>Team History</h2>
+              <p>Teams represented in your verified HoopHub PH game records.</p>
+            </div>
+            <span class="readonly-note">Career Record</span>
+          </header>
+
+          <div id="teamHistoryList" class="team-history-list">
+            <div class="empty-state">No team history is available yet.</div>
+          </div>
+        </section>
+
+        <!-- AWARDS -->
+        <section id="awardsPanel" class="panel player-view-section" data-player-section="awards">
+          <header class="panel-header">
+            <div>
+              <h2>Awards & Milestones</h2>
+              <p>Official awards can be added by league management; career milestones are generated from verified statistics.</p>
+            </div>
+            <span class="readonly-note">Career</span>
+          </header>
+
+          <div class="award-section-copy">
+            <strong>Career Milestones</strong>
+            <span>These are statistical milestones, not commissioner-issued league awards.</span>
+          </div>
+
+          <div id="playerMilestones" class="milestone-grid">
+            <div class="empty-state">Play verified games to unlock career milestones.</div>
+          </div>
+        </section>
+
+        <!-- SHARE PROFILE -->
+        <section id="shareProfilePanel" class="panel player-view-section" data-player-section="share">
+          <header class="panel-header">
+            <div>
+              <h2>Share Player Profile</h2>
+              <p>Open or copy the public HoopHub PH profile for the selected linked player.</p>
+            </div>
+          </header>
+
+          <div class="share-profile-body">
+            <div class="share-profile-preview">
+              <div id="sharePlayerPhoto" class="player-photo">HH</div>
+              <div>
+                <strong id="sharePlayerName">Linked Player</strong>
+                <span id="sharePlayerMeta">Verified HoopHub PH player</span>
+              </div>
+            </div>
+
+            <div class="share-profile-actions">
+              <button id="openPublicProfileButton" class="primary-button" type="button">Open Public Profile</button>
+              <button id="copyPublicProfileButton" class="secondary-button" type="button">Copy Profile Link</button>
+            </div>
+            <div id="shareProfileMessage" class="tool-message" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <!-- CORRECTIONS -->
+        <section id="correctionsPanel" class="panel player-view-section" data-player-section="corrections">
+          <header class="panel-header">
+            <div>
+              <h2>Correction Request</h2>
+              <p>Prepare a clear request for your coach when one of your official game statistics needs review.</p>
+            </div>
+            <span class="readonly-note">Stats Stay Protected</span>
+          </header>
+
+          <div class="player-correction-note">
+            Players cannot directly edit official game statistics. This tool creates a structured correction request you can send to your coach, who can submit it through the official commissioner review workflow.
+          </div>
+
+          <form id="playerCorrectionForm" class="player-correction-form">
+            <div class="form-group">
+              <label for="playerCorrectionGame">Game</label>
+              <select id="playerCorrectionGame" class="form-input" required>
+                <option value="">Select a game</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="playerCorrectionStat">Statistic</label>
+              <select id="playerCorrectionStat" class="form-input" required>
+                <option value="">Select statistic</option>
+                <option value="points">Points</option>
+                <option value="rebounds">Rebounds</option>
+                <option value="assists">Assists</option>
+                <option value="steals">Steals</option>
+                <option value="blocks">Blocks</option>
+                <option value="turnovers">Turnovers</option>
+                <option value="fouls">Personal Fouls</option>
+                <option value="minutes">Minutes Played</option>
+                <option value="plus_minus">Plus / Minus</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="playerCorrectionCurrent">Current Official Value</label>
+              <input id="playerCorrectionCurrent" class="form-input" type="text" readonly placeholder="Auto-filled">
+            </div>
+
+            <div class="form-group">
+              <label for="playerCorrectionRequested">What It Should Be</label>
+              <input id="playerCorrectionRequested" class="form-input" type="text" maxlength="40" required placeholder="Enter corrected value">
+            </div>
+
+            <div class="form-group form-wide">
+              <label for="playerCorrectionReason">Reason</label>
+              <textarea id="playerCorrectionReason" class="form-input player-correction-textarea" minlength="5" maxlength="800" required placeholder="Explain what is wrong and what should be reviewed."></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button id="copyCorrectionRequestButton" class="primary-button" type="submit">Copy Request for Coach</button>
+            </div>
+
+            <div id="playerCorrectionMessage" class="tool-message form-wide" aria-live="polite"></div>
+          </form>
         </section>
       </div>
     </main>
@@ -220,6 +1065,74 @@
     let teams = [];
     let stats = [];
     let games = [];
+    let currentPlayerView = "dashboard";
+
+    const playerViewConfig = {
+      dashboard: {
+        eyebrow: "Verified Player Account",
+        title: "Player Dashboard",
+        description: "Your verified HoopHub PH basketball profile and career overview.",
+        hash: "dashboard"
+      },
+      profile: {
+        eyebrow: "Player Workspace",
+        title: "Player Profile",
+        description: "View the official roster identity linked to your HoopHub PH account.",
+        hash: "profile"
+      },
+      "game-stats": {
+        eyebrow: "Player Records",
+        title: "Game Statistics",
+        description: "Review your official game-by-game statistics recorded by authorized scorekeepers.",
+        hash: "game-statistics"
+      },
+      career: {
+        eyebrow: "Player Records",
+        title: "Career Statistics",
+        description: "See verified career totals, averages, shooting numbers, and playing time.",
+        hash: "career-statistics"
+      },
+      teams: {
+        eyebrow: "Player Records",
+        title: "Team History",
+        description: "Review teams represented in your verified HoopHub PH game records.",
+        hash: "team-history"
+      },
+      awards: {
+        eyebrow: "Player Records",
+        title: "Awards & Milestones",
+        description: "Track statistical career milestones based on verified HoopHub PH performances.",
+        hash: "awards"
+      },
+      share: {
+        eyebrow: "Player Tools",
+        title: "Share Profile",
+        description: "Open or copy your public HoopHub PH player profile.",
+        hash: "share-profile"
+      },
+      corrections: {
+        eyebrow: "Player Tools",
+        title: "Corrections",
+        description: "Prepare a structured correction request for your coach without editing official statistics.",
+        hash: "corrections"
+      }
+    };
+
+    const playerHashMap = {
+      dashboard: "dashboard",
+      profilePanel: "profile",
+      profile: "profile",
+      gameStatsPanel: "game-stats",
+      "game-statistics": "game-stats",
+      career: "career",
+      "career-statistics": "career",
+      teams: "teams",
+      "team-history": "teams",
+      awards: "awards",
+      share: "share",
+      "share-profile": "share",
+      corrections: "corrections"
+    };
 
     const authScreen = document.getElementById("authScreen");
     const appShell = document.getElementById("appShell");
@@ -256,6 +1169,391 @@
       window.location.replace("login.html");
     }
 
+    function currentLinkedPlayer() {
+      const playerId = playerSelect.value || players[0]?.id || "";
+      return players.find(item => String(item.id) === String(playerId)) || null;
+    }
+
+    function currentLinkedPlayerStats() {
+      const player = currentLinkedPlayer();
+      return player
+        ? stats.filter(item => String(item.player_id) === String(player.id))
+        : [];
+    }
+
+    function playerViewFromHash() {
+      const raw = decodeURIComponent(String(window.location.hash || "").replace(/^#/, ""));
+      return playerHashMap[raw] || "dashboard";
+    }
+
+    function updatePlayerPageHeading(viewName) {
+      const config = playerViewConfig[viewName] || playerViewConfig.dashboard;
+      document.getElementById("playerPageEyebrow").textContent = config.eyebrow;
+      document.getElementById("playerPageTitle").textContent = config.title;
+      document.getElementById("playerPageDescription").textContent = config.description;
+    }
+
+    function openPlayerView(viewName, updateHash = true) {
+      if (!playerViewConfig[viewName]) viewName = "dashboard";
+      currentPlayerView = viewName;
+
+      document.querySelectorAll(".player-view-section").forEach(section => {
+        section.classList.toggle(
+          "active",
+          section.dataset.playerSection === viewName
+        );
+      });
+
+      document.querySelectorAll("[data-player-view]").forEach(button => {
+        button.classList.toggle(
+          "active",
+          button.dataset.playerView === viewName
+        );
+      });
+
+      updatePlayerPageHeading(viewName);
+      closeSidebar();
+
+      if (updateHash) {
+        const hash = playerViewConfig[viewName].hash;
+        history.replaceState(
+          null,
+          "",
+          `${window.location.pathname}${window.location.search}#${hash}`
+        );
+      }
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function statTotals(rows) {
+      return rows.reduce((sum, row) => {
+        sum.points += numberValue(row.points);
+        sum.rebounds += numberValue(row.rebounds);
+        sum.assists += numberValue(row.assists);
+        sum.steals += numberValue(row.steals);
+        sum.blocks += numberValue(row.blocks);
+        sum.turnovers += numberValue(row.turnovers);
+        sum.fouls += numberValue(row.fouls);
+        sum.plusMinus += numberValue(row.plus_minus);
+        sum.twoMade += numberValue(row.two_pt_made);
+        sum.twoAttempted += numberValue(row.two_pt_attempted);
+        sum.threeMade += numberValue(row.three_pt_made);
+        sum.threeAttempted += numberValue(row.three_pt_attempted);
+        sum.ftMade += numberValue(row.ft_made);
+        sum.ftAttempted += numberValue(row.ft_attempted);
+
+        const seconds = row.minutes_clock_seconds != null
+          ? numberValue(row.minutes_clock_seconds)
+          : numberValue(row.minutes_played) * 60;
+        sum.seconds += seconds;
+        return sum;
+      }, {
+        points: 0,
+        rebounds: 0,
+        assists: 0,
+        steals: 0,
+        blocks: 0,
+        turnovers: 0,
+        fouls: 0,
+        plusMinus: 0,
+        twoMade: 0,
+        twoAttempted: 0,
+        threeMade: 0,
+        threeAttempted: 0,
+        ftMade: 0,
+        ftAttempted: 0,
+        seconds: 0
+      });
+    }
+
+    function pct(made, attempted) {
+      return attempted > 0 ? `${((made / attempted) * 100).toFixed(1)}%` : "0.0%";
+    }
+
+    function gameLabelForStat(row) {
+      const game = games.find(item => String(item.id) === String(row.game_id));
+      return game
+        ? `#${game.id} — ${game.home_team || "Home"} vs ${game.away_team || "Away"}`
+        : `Game #${row.game_id}`;
+    }
+
+    function renderDashboardRecentGames(playerStats) {
+      const container = document.getElementById("dashboardRecentGames");
+      const rows = [...playerStats]
+        .sort((a, b) => numberValue(b.game_id) - numberValue(a.game_id))
+        .slice(0, 5);
+
+      container.innerHTML = rows.length
+        ? rows.map(row => `
+            <div class="player-recent-row">
+              <div class="player-recent-game">
+                <strong>${escapeHtml(gameLabelForStat(row))}</strong>
+                <span>${escapeHtml(minutesLabel(row.minutes_clock_seconds != null ? row.minutes_clock_seconds : numberValue(row.minutes_played) * 60))} played</span>
+              </div>
+              <div class="player-recent-stat"><strong>${numberValue(row.points)}</strong><span>PTS</span></div>
+              <div class="player-recent-stat"><strong>${numberValue(row.rebounds)}</strong><span>REB</span></div>
+              <div class="player-recent-stat"><strong>${numberValue(row.assists)}</strong><span>AST</span></div>
+              <div class="player-recent-stat"><strong>${numberValue(row.plus_minus)}</strong><span>+/-</span></div>
+            </div>
+          `).join("")
+        : '<div class="empty-state">No official game statistics have been recorded yet.</div>';
+    }
+
+    function renderCareerStatistics(playerStats) {
+      const totals = statTotals(playerStats);
+      const gamesPlayed = playerStats.length;
+      const avg = value => gamesPlayed ? (value / gamesPlayed).toFixed(1) : "0.0";
+
+      document.getElementById("careerGames").textContent = gamesPlayed.toLocaleString();
+      document.getElementById("careerPoints").textContent = totals.points.toLocaleString();
+      document.getElementById("careerPPG").textContent = avg(totals.points);
+      document.getElementById("careerRebounds").textContent = totals.rebounds.toLocaleString();
+      document.getElementById("careerRPG").textContent = avg(totals.rebounds);
+      document.getElementById("careerAssists").textContent = totals.assists.toLocaleString();
+      document.getElementById("careerAPG").textContent = avg(totals.assists);
+      document.getElementById("careerSteals").textContent = totals.steals.toLocaleString();
+      document.getElementById("careerBlocks").textContent = totals.blocks.toLocaleString();
+      document.getElementById("careerTurnovers").textContent = totals.turnovers.toLocaleString();
+      document.getElementById("careerFouls").textContent = totals.fouls.toLocaleString();
+      document.getElementById("careerPlusMinus").textContent =
+        `${totals.plusMinus > 0 ? "+" : ""}${totals.plusMinus}`;
+
+      document.getElementById("careerTwoPoint").textContent = `${totals.twoMade} / ${totals.twoAttempted}`;
+      document.getElementById("careerTwoPointPct").textContent = pct(totals.twoMade, totals.twoAttempted);
+      document.getElementById("careerThreePoint").textContent = `${totals.threeMade} / ${totals.threeAttempted}`;
+      document.getElementById("careerThreePointPct").textContent = pct(totals.threeMade, totals.threeAttempted);
+      document.getElementById("careerFreeThrow").textContent = `${totals.ftMade} / ${totals.ftAttempted}`;
+      document.getElementById("careerFreeThrowPct").textContent = pct(totals.ftMade, totals.ftAttempted);
+      document.getElementById("careerMinutes").textContent = minutesLabel(totals.seconds);
+
+      return totals;
+    }
+
+    function renderTeamHistory(player, playerStats) {
+      const container = document.getElementById("teamHistoryList");
+      const teamRows = new Map();
+
+      playerStats.forEach(row => {
+        const teamId = row.team_id || player?.team_id || null;
+        if (!teamId) return;
+
+        if (!teamRows.has(String(teamId))) {
+          teamRows.set(String(teamId), []);
+        }
+        teamRows.get(String(teamId)).push(row);
+      });
+
+      if (!teamRows.size && player?.team_id) {
+        teamRows.set(String(player.team_id), []);
+      }
+
+      const rows = [...teamRows.entries()].map(([teamId, rows]) => {
+        const team = teams.find(item => String(item.id) === String(teamId));
+        const totals = statTotals(rows);
+        return {
+          teamId,
+          team,
+          games: rows.length,
+          totals
+        };
+      });
+
+      container.innerHTML = rows.length
+        ? rows.map(item => `
+            <article class="team-history-card">
+              <div class="team-history-main">
+                <strong>${escapeHtml(item.team?.name || "Unknown Team")}</strong>
+                <span>${escapeHtml(item.team?.location || "Location not set")}</span>
+              </div>
+              <div class="team-history-stat"><strong>${item.games}</strong><span>Games</span></div>
+              <div class="team-history-stat"><strong>${item.totals.points}</strong><span>Points</span></div>
+              <div class="team-history-stat"><strong>${item.totals.rebounds}</strong><span>Rebounds</span></div>
+              <div class="team-history-stat"><strong>${item.totals.assists}</strong><span>Assists</span></div>
+            </article>
+          `).join("")
+        : '<div class="empty-state">No team history is available yet.</div>';
+    }
+
+    function renderMilestones(playerStats, totals) {
+      const container = document.getElementById("playerMilestones");
+      const highPoints = Math.max(0, ...playerStats.map(row => numberValue(row.points)));
+      const highRebounds = Math.max(0, ...playerStats.map(row => numberValue(row.rebounds)));
+      const highAssists = Math.max(0, ...playerStats.map(row => numberValue(row.assists)));
+
+      const milestones = [
+        {
+          title: "First Verified Game",
+          unlocked: playerStats.length >= 1,
+          detail: playerStats.length >= 1 ? "Career officially started." : "Play your first verified game."
+        },
+        {
+          title: "100 Career Points",
+          unlocked: totals.points >= 100,
+          detail: `${totals.points} / 100 career points`
+        },
+        {
+          title: "500 Career Points",
+          unlocked: totals.points >= 500,
+          detail: `${totals.points} / 500 career points`
+        },
+        {
+          title: "100 Career Rebounds",
+          unlocked: totals.rebounds >= 100,
+          detail: `${totals.rebounds} / 100 career rebounds`
+        },
+        {
+          title: "100 Career Assists",
+          unlocked: totals.assists >= 100,
+          detail: `${totals.assists} / 100 career assists`
+        },
+        {
+          title: "20-Point Game",
+          unlocked: highPoints >= 20,
+          detail: `Career high: ${highPoints} points`
+        },
+        {
+          title: "10-Rebound Game",
+          unlocked: highRebounds >= 10,
+          detail: `Career high: ${highRebounds} rebounds`
+        },
+        {
+          title: "10-Assist Game",
+          unlocked: highAssists >= 10,
+          detail: `Career high: ${highAssists} assists`
+        },
+        {
+          title: "25 Verified Games",
+          unlocked: playerStats.length >= 25,
+          detail: `${playerStats.length} / 25 verified games`
+        }
+      ];
+
+      container.innerHTML = milestones.map(item => `
+        <article class="milestone-card ${item.unlocked ? "unlocked" : ""}">
+          <span>${item.unlocked ? "Unlocked" : "In Progress"}</span>
+          <strong>${escapeHtml(item.title)}</strong>
+          <small>${escapeHtml(item.detail)}</small>
+        </article>
+      `).join("");
+    }
+
+    function renderShareProfile(player, team) {
+      const photo = document.getElementById("sharePlayerPhoto");
+      photo.innerHTML = player?.photo_url
+        ? `<img src="${escapeHtml(player.photo_url)}" alt="${escapeHtml(fullName(player))}">`
+        : escapeHtml(initials(player));
+
+      document.getElementById("sharePlayerName").textContent =
+        player ? fullName(player) : "No Player Linked";
+      document.getElementById("sharePlayerMeta").textContent =
+        player
+          ? `${team?.name || "No current team"} • Verified HoopHub PH player`
+          : "No public player profile available";
+    }
+
+    function publicProfileUrl(player) {
+      if (!player?.id) return "";
+      const url = new URL("player1.html", window.location.href);
+      url.searchParams.set("id", player.id);
+      return url.toString();
+    }
+
+    function populateCorrectionGameOptions(playerStats) {
+      const select = document.getElementById("playerCorrectionGame");
+      select.innerHTML = '<option value="">Select a game</option>' +
+        playerStats.map(row =>
+          `<option value="${escapeHtml(row.game_id)}">${escapeHtml(gameLabelForStat(row))}</option>`
+        ).join("");
+      syncPlayerCorrectionCurrentValue();
+    }
+
+    function selectedCorrectionStatRow() {
+      const playerId = currentLinkedPlayer()?.id;
+      const gameId = document.getElementById("playerCorrectionGame").value;
+      return stats.find(row =>
+        String(row.player_id) === String(playerId) &&
+        String(row.game_id) === String(gameId)
+      ) || null;
+    }
+
+    function syncPlayerCorrectionCurrentValue() {
+      const row = selectedCorrectionStatRow();
+      const field = document.getElementById("playerCorrectionStat").value;
+      const input = document.getElementById("playerCorrectionCurrent");
+
+      if (!row || !field) {
+        input.value = "";
+        return;
+      }
+
+      const valueMap = {
+        points: numberValue(row.points),
+        rebounds: numberValue(row.rebounds),
+        assists: numberValue(row.assists),
+        steals: numberValue(row.steals),
+        blocks: numberValue(row.blocks),
+        turnovers: numberValue(row.turnovers),
+        fouls: numberValue(row.fouls),
+        plus_minus: numberValue(row.plus_minus),
+        minutes: minutesLabel(
+          row.minutes_clock_seconds != null
+            ? row.minutes_clock_seconds
+            : numberValue(row.minutes_played) * 60
+        )
+      };
+
+      input.value = valueMap[field] ?? "";
+    }
+
+    async function copyPlayerCorrectionRequest(event) {
+      event.preventDefault();
+
+      const player = currentLinkedPlayer();
+      const row = selectedCorrectionStatRow();
+      const statField = document.getElementById("playerCorrectionStat").value;
+      const currentValue = document.getElementById("playerCorrectionCurrent").value.trim();
+      const requestedValue = document.getElementById("playerCorrectionRequested").value.trim();
+      const reason = document.getElementById("playerCorrectionReason").value.trim();
+      const message = document.getElementById("playerCorrectionMessage");
+
+      message.className = "tool-message form-wide";
+      message.textContent = "";
+
+      if (!player || !row || !statField || !requestedValue || reason.length < 5) {
+        message.className = "tool-message error form-wide";
+        message.textContent = "Complete the game, statistic, requested value, and reason first.";
+        return;
+      }
+
+      const team = teams.find(item => String(item.id) === String(row.team_id || player.team_id));
+      const statLabel = document.getElementById("playerCorrectionStat").selectedOptions[0]?.textContent || statField;
+
+      const text = [
+        "HOOP HUB PH — PLAYER CORRECTION REQUEST",
+        "",
+        `Player: ${fullName(player)}`,
+        `Team: ${team?.name || "Current Team"}`,
+        `Game: ${gameLabelForStat(row)}`,
+        `Statistic: ${statLabel}`,
+        `Current HoopHub value: ${currentValue || "Not available"}`,
+        `Requested value: ${requestedValue}`,
+        `Reason: ${reason}`,
+        "",
+        "Please review this and submit it through the Coach Correction Requests workspace if appropriate."
+      ].join("\n");
+
+      try {
+        await navigator.clipboard.writeText(text);
+        message.className = "tool-message success form-wide";
+        message.textContent = "Correction request copied. Send it to your coach for official submission.";
+      } catch {
+        window.prompt("Copy this correction request and send it to your coach:", text);
+        message.className = "tool-message success form-wide";
+        message.textContent = "Correction request prepared.";
+      }
+    }
+
     async function authorize() {
       try {
         const { data: userData, error: userError } = await supabaseClient.auth.getUser();
@@ -274,11 +1572,11 @@
         currentProfile = profile;
         document.getElementById("headerAccountName").textContent = profile.full_name || profile.email || "Player";
         document.getElementById("headerRole").textContent = profile.role === "super_admin" ? "Super Admin Preview" : "Player Account";
-        document.getElementById("superAdminLink").hidden = profile.role !== "super_admin";
 
         await loadWorkspace();
         authScreen.hidden = true;
         appShell.hidden = false;
+        openPlayerView(playerViewFromHash(), false);
       } catch (error) {
         console.error("Player authorization failed:", error);
         await returnToLogin(true);
@@ -300,14 +1598,17 @@
       if (playerIds.length) {
         const [playerResult, statsResult] = await Promise.all([
           supabaseClient.from("players").select("id, first_name, last_name, position, jersey_number, height, photo_url, team_id").in("id", playerIds),
-          supabaseClient.from("player_game_stats").select("player_id, game_id, points, rebounds, assists, steals, blocks, turnovers, fouls, minutes_clock_seconds, minutes_played").in("player_id", playerIds)
+          supabaseClient.from("player_game_stats").select("player_id, team_id, game_id, points, rebounds, offensive_rebounds, defensive_rebounds, assists, steals, blocks, turnovers, fouls, minutes_clock_seconds, minutes_played, plus_minus, two_pt_made, two_pt_attempted, three_pt_made, three_pt_attempted, ft_made, ft_attempted").in("player_id", playerIds)
         ]);
         if (playerResult.error) throw playerResult.error;
         if (statsResult.error) throw statsResult.error;
         players = playerResult.data || [];
         stats = statsResult.data || [];
 
-        const teamIds = [...new Set(players.map(item => item.team_id).filter(Boolean))];
+        const teamIds = [...new Set([
+          ...players.map(item => item.team_id),
+          ...stats.map(item => item.team_id)
+        ].filter(Boolean))];
         const gameIds = [...new Set(stats.map(item => item.game_id).filter(value => value != null))];
         const extraQueries = [];
         extraQueries.push(teamIds.length
@@ -336,56 +1637,115 @@
 
     function renderWorkspace() {
       const playerId = playerSelect.value || players[0]?.id || "";
-      const player = players.find(item => item.id === playerId);
-      const playerStats = stats.filter(item => item.player_id === playerId);
+      const player = players.find(item => String(item.id) === String(playerId));
+      const playerStats = stats.filter(item => String(item.player_id) === String(playerId));
 
       if (!player) {
-        document.getElementById("playerName").textContent = "No Player Linked";
-        document.getElementById("playerMeta").textContent = "Ask the Super Admin to link this account to an official player record.";
-        document.getElementById("statsTableBody").innerHTML = '<tr><td class="empty-state" colspan="9">No linked player record.</td></tr>';
+        ["playerName", "dashboardPlayerName", "sharePlayerName"].forEach(id => {
+          const element = document.getElementById(id);
+          if (element) element.textContent = "No Player Linked";
+        });
+
+        document.getElementById("playerMeta").textContent =
+          "Ask the Super Admin to link this account to an official player record.";
+        document.getElementById("dashboardPlayerMeta").textContent =
+          "No official player record is linked to this account.";
+        document.getElementById("statsTableBody").innerHTML =
+          '<tr><td class="empty-state" colspan="10">No linked player record.</td></tr>';
+        document.getElementById("teamHistoryList").innerHTML =
+          '<div class="empty-state">No team history is available.</div>';
+        populateCorrectionGameOptions([]);
         return;
       }
 
-      const team = teams.find(item => item.id === player.team_id);
-      const photo = document.getElementById("playerPhoto");
-      photo.innerHTML = player.photo_url
+      const team = teams.find(item => String(item.id) === String(player.team_id));
+
+      const profilePhoto = document.getElementById("playerPhoto");
+      const dashboardPhoto = document.getElementById("dashboardPlayerPhoto");
+
+      const photoHtml = player.photo_url
         ? `<img src="${escapeHtml(player.photo_url)}" alt="${escapeHtml(fullName(player))}">`
         : escapeHtml(initials(player));
-      document.getElementById("playerName").textContent = fullName(player);
-      document.getElementById("playerMeta").textContent = [
+
+      profilePhoto.innerHTML = photoHtml;
+      dashboardPhoto.innerHTML = photoHtml;
+
+      const meta = [
         team?.name || "No current team",
         player.position || "Position not set",
         player.jersey_number != null ? `#${player.jersey_number}` : "Jersey not set",
         player.height || "Height not set"
       ].join(" · ");
 
-      const totals = playerStats.reduce((sum, row) => ({
-        points: sum.points + numberValue(row.points),
-        rebounds: sum.rebounds + numberValue(row.rebounds),
-        assists: sum.assists + numberValue(row.assists)
-      }), { points: 0, rebounds: 0, assists: 0 });
+      document.getElementById("playerName").textContent = fullName(player);
+      document.getElementById("playerMeta").textContent = meta;
+      document.getElementById("dashboardPlayerName").textContent = fullName(player);
+      document.getElementById("dashboardPlayerMeta").textContent = meta;
 
-      document.getElementById("gameCount").textContent = playerStats.length.toLocaleString();
+      const totals = statTotals(playerStats);
+      const gamesPlayed = playerStats.length;
+
+      document.getElementById("gameCount").textContent = gamesPlayed.toLocaleString();
       document.getElementById("totalPoints").textContent = totals.points.toLocaleString();
       document.getElementById("totalRebounds").textContent = totals.rebounds.toLocaleString();
       document.getElementById("totalAssists").textContent = totals.assists.toLocaleString();
 
+      document.getElementById("dashboardCurrentTeam").textContent = team?.name || "No Team";
+      document.getElementById("dashboardTeamLocation").textContent = team?.location || "Location not set";
+      document.getElementById("dashboardJersey").textContent =
+        player.jersey_number != null ? `#${player.jersey_number}` : "—";
+      document.getElementById("dashboardPosition").textContent = player.position || "Not set";
+      document.getElementById("dashboardHeight").textContent = player.height || "Height not set";
+      document.getElementById("dashboardPPG").textContent =
+        gamesPlayed ? (totals.points / gamesPlayed).toFixed(1) : "0.0";
+      document.getElementById("dashboardCareerGames").textContent =
+        `${gamesPlayed} verified game${gamesPlayed === 1 ? "" : "s"}`;
+
+      document.getElementById("profileFullName").textContent = fullName(player);
+      document.getElementById("profileTeamName").textContent = team?.name || "No current team";
+      document.getElementById("profileJersey").textContent =
+        player.jersey_number != null ? `#${player.jersey_number}` : "Not set";
+      document.getElementById("profilePosition").textContent = player.position || "Not set";
+      document.getElementById("profileHeight").textContent = player.height || "Not set";
+      document.getElementById("profileAccountStatus").textContent =
+        currentProfile?.status === "active" ? "Verified / Active" : "Verified";
+
       const gameById = new Map(games.map(game => [String(game.id), game]));
       document.getElementById("statsTableBody").innerHTML = playerStats.length
-        ? playerStats.map(row => {
-            const game = gameById.get(String(row.game_id));
-            const gameLabel = game ? `#${game.id} — ${game.home_team || "Home"} vs ${game.away_team || "Away"}` : `Game #${row.game_id}`;
-            const seconds = row.minutes_clock_seconds != null ? row.minutes_clock_seconds : numberValue(row.minutes_played) * 60;
-            return `
-              <tr>
-                <td><strong>${escapeHtml(gameLabel)}</strong></td>
-                <td>${numberValue(row.points)}</td><td>${numberValue(row.rebounds)}</td><td>${numberValue(row.assists)}</td>
-                <td>${numberValue(row.steals)}</td><td>${numberValue(row.blocks)}</td><td>${numberValue(row.turnovers)}</td>
-                <td>${numberValue(row.fouls)}</td><td>${escapeHtml(minutesLabel(seconds))}</td>
-              </tr>
-            `;
-          }).join("")
-        : '<tr><td class="empty-state" colspan="9">No official game statistics have been recorded yet.</td></tr>';
+        ? [...playerStats]
+            .sort((a, b) => numberValue(b.game_id) - numberValue(a.game_id))
+            .map(row => {
+              const game = gameById.get(String(row.game_id));
+              const gameLabel = game
+                ? `#${game.id} — ${game.home_team || "Home"} vs ${game.away_team || "Away"}`
+                : `Game #${row.game_id}`;
+              const seconds = row.minutes_clock_seconds != null
+                ? row.minutes_clock_seconds
+                : numberValue(row.minutes_played) * 60;
+
+              return `
+                <tr>
+                  <td><strong>${escapeHtml(gameLabel)}</strong></td>
+                  <td>${numberValue(row.points)}</td>
+                  <td>${numberValue(row.rebounds)}</td>
+                  <td>${numberValue(row.assists)}</td>
+                  <td>${numberValue(row.steals)}</td>
+                  <td>${numberValue(row.blocks)}</td>
+                  <td>${numberValue(row.turnovers)}</td>
+                  <td>${numberValue(row.fouls)}</td>
+                  <td>${escapeHtml(minutesLabel(seconds))}</td>
+                  <td>${numberValue(row.plus_minus) > 0 ? "+" : ""}${numberValue(row.plus_minus)}</td>
+                </tr>
+              `;
+            }).join("")
+        : '<tr><td class="empty-state" colspan="10">No official game statistics have been recorded yet.</td></tr>';
+
+      renderDashboardRecentGames(playerStats);
+      const careerTotals = renderCareerStatistics(playerStats);
+      renderTeamHistory(player, playerStats);
+      renderMilestones(playerStats, careerTotals);
+      renderShareProfile(player, team);
+      populateCorrectionGameOptions(playerStats);
     }
 
     function closeSidebar() {
@@ -394,12 +1754,69 @@
     }
 
     playerSelect.addEventListener("change", renderWorkspace);
+
+    document.querySelectorAll("[data-player-view]").forEach(button => {
+      button.addEventListener("click", function () {
+        openPlayerView(this.dataset.playerView);
+      });
+    });
+
+    document.querySelectorAll("[data-dashboard-player-view]").forEach(button => {
+      button.addEventListener("click", function () {
+        openPlayerView(this.dataset.dashboardPlayerView);
+      });
+    });
+
+    window.addEventListener("hashchange", function () {
+      openPlayerView(playerViewFromHash(), false);
+    });
+
+    document.getElementById("playerCorrectionGame").addEventListener("change", syncPlayerCorrectionCurrentValue);
+    document.getElementById("playerCorrectionStat").addEventListener("change", syncPlayerCorrectionCurrentValue);
+    document.getElementById("playerCorrectionForm").addEventListener("submit", copyPlayerCorrectionRequest);
+
+    document.getElementById("openPublicProfileButton").addEventListener("click", function () {
+      const url = publicProfileUrl(currentLinkedPlayer());
+      const message = document.getElementById("shareProfileMessage");
+
+      if (!url) {
+        message.className = "tool-message error";
+        message.textContent = "No linked player profile is available.";
+        return;
+      }
+
+      window.open(url, "_blank", "noopener");
+      message.className = "tool-message success";
+      message.textContent = "Public player profile opened.";
+    });
+
+    document.getElementById("copyPublicProfileButton").addEventListener("click", async function () {
+      const url = publicProfileUrl(currentLinkedPlayer());
+      const message = document.getElementById("shareProfileMessage");
+
+      if (!url) {
+        message.className = "tool-message error";
+        message.textContent = "No linked player profile is available.";
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(url);
+        message.className = "tool-message success";
+        message.textContent = "Player profile link copied.";
+      } catch {
+        window.prompt("Copy this player profile link:", url);
+        message.className = "tool-message success";
+        message.textContent = "Player profile link prepared.";
+      }
+    });
+
     document.getElementById("menuButton").addEventListener("click", function () {
       document.getElementById("sidebar").classList.toggle("open");
       document.getElementById("sidebarOverlay").classList.toggle("open");
     });
     document.getElementById("sidebarOverlay").addEventListener("click", closeSidebar);
-    document.querySelectorAll(".sidebar .nav-link").forEach(link => link.addEventListener("click", closeSidebar));
+
     document.getElementById("logoutButton").addEventListener("click", async function () {
       this.disabled = true;
       this.textContent = "Logging Out...";
