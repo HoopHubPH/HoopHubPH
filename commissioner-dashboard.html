@@ -1545,7 +1545,7 @@
       grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
       grid-template-areas:
         "create-season division"
-        "structure structure";
+        "team-placement team-placement";
       gap: 14px;
       align-items: stretch;
     }
@@ -1564,7 +1564,8 @@
     }
 
     #seasonsPanel .season-browser {
-      grid-area: structure;
+      width: 100%;
+      margin-top: 14px;
       padding: 0;
       background: #ffffff;
     }
@@ -1679,14 +1680,29 @@
     #seasonsPanel .division-form-grid {
       padding: 16px;
       display: grid;
-      grid-template-columns:
-        minmax(150px, .85fr)
-        minmax(240px, 1.55fr)
-        minmax(150px, 1fr)
-        minmax(150px, 1fr)
-        minmax(135px, .75fr);
-      gap: 11px;
+      grid-template-columns: minmax(0, .88fr) minmax(0, 1.12fr);
+      gap: 11px 12px;
       align-items: end;
+    }
+
+    #seasonsPanel .division-season-field {
+      grid-column: 1;
+    }
+
+    #seasonsPanel .division-name-field {
+      grid-column: 2;
+    }
+
+    #seasonsPanel .division-form-grid > .form-group:nth-child(3) {
+      grid-column: 1;
+    }
+
+    #seasonsPanel .division-form-grid > .form-group:nth-child(4) {
+      grid-column: 2;
+    }
+
+    #seasonsPanel .division-form-grid > .form-group:nth-child(5) {
+      grid-column: 1 / -1;
     }
 
     #seasonsPanel .division-form-actions,
@@ -1732,7 +1748,8 @@
 
     /* TEAM ASSIGNMENT — ITS OWN BOX */
     #seasonsPanel .season-team-assignment {
-      margin-top: 14px;
+      grid-area: team-placement;
+      margin-top: 0;
       overflow: hidden;
     }
 
@@ -1775,7 +1792,7 @@
         grid-template-areas:
           "create-season"
           "division"
-          "structure";
+          "team-placement";
       }
 
       #seasonsPanel .division-form-grid {
@@ -1960,7 +1977,6 @@
                   <span class="season-card-kicker">Season Setup</span>
                   <h3 id="seasonFormTitle">Create Season</h3>
                 </div>
-                <span class="season-card-number">01</span>
               </div>
 
               <form id="seasonForm" class="season-form-grid">
@@ -1998,32 +2014,6 @@
               </form>
             </section>
 
-            <!-- CURRENT STRUCTURE -->
-            <section class="season-workspace-card season-browser">
-              <div class="season-card-heading">
-                <div>
-                  <span class="season-card-kicker">League Structure</span>
-                  <h3>Current Structure</h3>
-                </div>
-                <span class="season-card-number">02</span>
-              </div>
-
-              <div class="season-toolbar">
-                <div class="form-group">
-                  <label for="manageSeasonSelect">Season</label>
-                  <select id="manageSeasonSelect" class="form-input"></select>
-                </div>
-                <div class="form-group season-edit-action">
-                  <label>Manage</label>
-                  <button id="editSeasonButton" class="secondary-button" type="button">EDIT SELECTED SEASON</button>
-                </div>
-              </div>
-
-              <div id="divisionList" class="division-list">
-                <div class="empty-state">Loading seasons and divisions...</div>
-              </div>
-            </section>
-
             <!-- CREATE DIVISION -->
             <section class="season-workspace-card division-create-card">
               <div class="season-card-heading">
@@ -2031,7 +2021,6 @@
                   <span class="season-card-kicker">Division Setup</span>
                   <h3 id="divisionFormTitle">Create Division</h3>
                 </div>
-                <span class="season-card-number">03</span>
               </div>
 
               <form id="divisionForm" class="division-form-grid">
@@ -2072,16 +2061,15 @@
                 <div id="divisionMessage" class="form-message" aria-live="polite"></div>
               </form>
             </section>
-          </div>
+          
 
-          <!-- TEAM ASSIGNMENT -->
-          <section class="season-team-assignment">
+            <!-- TEAM ASSIGNMENT -->
+            <section class="season-team-assignment">
             <div class="season-card-heading assignment-heading">
               <div>
                 <span class="season-card-kicker">Team Placement</span>
                 <h3>Assign Team to Division</h3>
               </div>
-              <span class="season-card-number">04</span>
             </div>
 
             <div class="team-assignment-grid">
@@ -2107,6 +2095,32 @@
               <div id="assignmentMessage" class="form-message" aria-live="polite"></div>
             </div>
           </section>
+          </div>
+
+          <!-- CURRENT STRUCTURE -->
+          <section class="season-workspace-card season-browser">
+              <div class="season-card-heading">
+                <div>
+                  <span class="season-card-kicker">League Structure</span>
+                  <h3>Current Structure</h3>
+                </div>
+              </div>
+
+              <div class="season-toolbar">
+                <div class="form-group">
+                  <label for="manageSeasonSelect">Season</label>
+                  <select id="manageSeasonSelect" class="form-input"></select>
+                </div>
+                <div class="form-group season-edit-action">
+                  <label>Manage</label>
+                  <button id="editSeasonButton" class="secondary-button" type="button">EDIT SELECTED SEASON</button>
+                </div>
+              </div>
+
+              <div id="divisionList" class="division-list">
+                <div class="empty-state">Loading seasons and divisions...</div>
+              </div>
+            </section>
         </section>
 
         <section id="createTeamPanel" class="panel commissioner-view-section">
