@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Clock Controller | Hoop Hub PH</title>
+<title>Clock Control | Hoop Hub PH</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -479,393 +479,198 @@ button:disabled{
         grid-template-columns:1fr;
     }
 }
+
+/* =========================================================
+   SECURE CLOCK OPERATOR ACCESS
+   ========================================================= */
+body.auth-pending{overflow:hidden}
+.clock-auth-screen{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:24px;background:#111;color:#fff}
+.clock-auth-screen[hidden]{display:none}
+.clock-auth-card{width:min(430px,100%);padding:24px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:#181818;box-shadow:0 16px 50px rgba(0,0,0,.35);text-align:center}
+.clock-auth-spinner{width:30px;height:30px;margin:0 auto 14px;border:3px solid rgba(255,255,255,.2);border-top-color:#ff6b00;border-radius:50%;animation:clockSpin .75s linear infinite}
+@keyframes clockSpin{to{transform:rotate(360deg)}}
+.clock-auth-card strong{display:block;font-size:14px}
+.clock-auth-card p{margin-top:8px;color:#b7b7b7;font-size:11px;line-height:1.5}
+.header-tools{display:flex;align-items:center;justify-content:flex-end;gap:8px}
+.operator-identity{max-width:260px;text-align:right}
+.operator-identity strong,.operator-identity span{display:block}
+.operator-identity strong{font-size:10px;line-height:1.25}
+.operator-identity span{margin-top:2px;color:#aaa;font-size:8px;font-weight:800;text-transform:uppercase}
+.header-button{min-height:32px;padding:0 10px;border:1px solid rgba(255,255,255,.18);border-radius:6px;color:#fff;background:rgba(255,255,255,.08);font-size:9px;font-weight:900;cursor:pointer}
+.header-button:hover:not(:disabled){background:#ff6b00;border-color:#ff6b00}
+.game-loader{align-items:end}
+.assignment-field{min-width:280px;flex:1 1 390px}
+.assignment-field label{display:block;margin-bottom:5px;color:#555;font-size:9px;font-weight:900;letter-spacing:.6px;text-transform:uppercase}
+.assignment-field select{width:100%;min-height:38px;padding:0 10px;border:1px solid #ccc;border-radius:5px;background:#fff;color:#222;font-size:11px;font-weight:800}
+.assignment-field select:focus{outline:2px solid rgba(255,107,0,.22);border-color:#ff6b00}
+.game-loader .secondary-loader-button{min-height:38px;padding:0 12px;color:#222;background:#fff;border:1px solid #ccc}
+.game-loader .secondary-loader-button:hover:not(:disabled){color:#fff;background:#111}
+.control-state-bar{margin-top:9px;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid #e5e5e5;border-radius:6px;background:#fafafa}
+.control-state-copy strong,.control-state-copy span{display:block}
+.control-state-copy strong{font-size:9px;letter-spacing:.5px;text-transform:uppercase}
+.control-state-copy span{margin-top:3px;color:#666;font-size:9px;line-height:1.35}
+.control-state-badge{flex:0 0 auto;padding:6px 8px;border-radius:999px;color:#8a4b00;background:#fff3e0;font-size:8px;font-weight:900;text-transform:uppercase}
+.control-state-badge.active{color:#146b35;background:#e8f5e9}
+.control-state-badge.locked{color:#b42318;background:#ffebee}
+.clock-permission-note{margin-top:9px;padding:9px 10px;border-left:3px solid #ff6b00;background:#fff8f2;color:#6b4a31;font-size:9px;line-height:1.5}
+.clock-permission-note strong{color:#222}
+.game-clock-controls{grid-template-columns:repeat(6,minmax(0,1fr))}
+@media(max-width:600px){
+    header{align-items:flex-start}
+    .header-tools{gap:5px}
+    .operator-identity{display:none}
+    .assignment-field{min-width:100%;flex-basis:100%}
+    .game-loader>button{flex:1 1 auto}
+    .control-state-bar{align-items:flex-start;flex-direction:column}
+    .game-clock-controls{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
 </style>
 </head>
 
-<body>
+<body class="auth-pending">
+
+<div id="clockAuthScreen" class="clock-auth-screen">
+    <div class="clock-auth-card">
+        <div class="clock-auth-spinner" aria-hidden="true"></div>
+        <strong id="clockAuthMessage">Verifying Clock Operator access...</strong>
+        <p>Only an active assigned Clock Operator or Super Admin override can open this control screen.</p>
+    </div>
+</div>
 
 <header>
-    <a class="logo" href="index.html">
-        HOOP <span>HUB PH</span>
-    </a>
+    <a class="logo" href="index.html">HOOP <span>HUB PH</span></a>
+    <strong class="controller-title">CLOCK CONTROL</strong>
 
-    <strong class="controller-title">
-        CLOCK CONTROLLER
-    </strong>
+    <div class="header-tools">
+        <div class="operator-identity">
+            <strong id="operatorName">Clock Operator</strong>
+            <span id="operatorRole">Authorized Operator</span>
+        </div>
+        <button id="releaseControlButton" class="header-button" type="button" disabled>RELEASE</button>
+        <button id="logoutButton" class="header-button" type="button">LOG OUT</button>
+    </div>
 </header>
 
 <div class="container">
     <div class="panel">
-
         <div class="game-loader">
-            <label for="gameIdInput">
-                <strong>Game ID:</strong>
-            </label>
-
-            <input
-                id="gameIdInput"
-                type="number"
-                min="1"
-                inputmode="numeric"
-                placeholder="Enter ID"
-            >
-
-            <button
-                id="loadGameButton"
-                type="button"
-            >
-                LOAD GAME
-            </button>
+            <div class="assignment-field">
+                <label for="assignedGameSelect">My Assigned Games</label>
+                <select id="assignedGameSelect">
+                    <option value="">Loading assigned games...</option>
+                </select>
+            </div>
+            <button id="loadGameButton" type="button">OPEN GAME</button>
+            <button id="refreshAssignmentsButton" class="secondary-loader-button" type="button">REFRESH</button>
         </div>
 
-        <div id="statusMessage">
-            Enter a Game ID to begin.
-        </div>
+        <div id="statusMessage">Loading your Clock Operator assignments...</div>
 
-        <div
-            id="controllerContent"
-            class="controller-content"
-        >
+        <div id="controllerContent" class="controller-content">
             <div class="game-heading">
                 <h2 id="gameTitle">Game</h2>
-
                 <div class="connection-indicator">
-                    <span
-                        id="connectionDot"
-                        class="connection-dot"
-                    ></span>
-                    <span id="connectionText">
-                        NOT CONNECTED
-                    </span>
+                    <span id="connectionDot" class="connection-dot"></span>
+                    <span id="connectionText">NOT CONNECTED</span>
                 </div>
+            </div>
+
+            <div class="control-state-bar" aria-live="polite">
+                <div class="control-state-copy">
+                    <strong>Clock Control Session</strong>
+                    <span id="controlStateText">Claiming this game's Clock Control session...</span>
+                </div>
+                <span id="controlStateBadge" class="control-state-badge">CHECKING</span>
             </div>
 
             <div class="scoreboard">
                 <div>
-                    <div
-                        id="homeTeamName"
-                        class="team-name"
-                    >
-                        Home Team
-                    </div>
-
-                    <div class="team-label">
-                        HOME
-                    </div>
-
-                    <div
-                        id="homeScore"
-                        class="team-score"
-                    >
-                        0
-                    </div>
+                    <div id="homeTeamName" class="team-name">Home Team</div>
+                    <div class="team-label">HOME</div>
+                    <div id="homeScore" class="team-score">0</div>
                 </div>
-
-                <div class="vs">
-                    VS
-                </div>
-
+                <div class="vs">VS</div>
                 <div>
-                    <div
-                        id="awayTeamName"
-                        class="team-name"
-                    >
-                        Away Team
-                    </div>
-
-                    <div class="team-label">
-                        AWAY
-                    </div>
-
-                    <div
-                        id="awayScore"
-                        class="team-score"
-                    >
-                        0
-                    </div>
+                    <div id="awayTeamName" class="team-name">Away Team</div>
+                    <div class="team-label">AWAY</div>
+                    <div id="awayScore" class="team-score">0</div>
                 </div>
             </div>
 
             <div class="game-meta">
                 <div class="meta-card">
-                    <div class="meta-label">
-                        CURRENT PERIOD
-                    </div>
-
-                    <div
-                        id="gamePeriod"
-                        class="meta-value"
-                    >
-                        —
-                    </div>
+                    <div class="meta-label">CURRENT PERIOD</div>
+                    <div id="gamePeriod" class="meta-value">—</div>
                 </div>
-
                 <div class="meta-card">
-                    <div class="meta-label">
-                        GAME STATUS
-                    </div>
-
-                    <div
-                        id="gameStatus"
-                        class="meta-value"
-                    >
-                        —
-                    </div>
+                    <div class="meta-label">GAME STATUS</div>
+                    <div id="gameStatus" class="meta-value">—</div>
                 </div>
             </div>
 
+            <div class="clock-permission-note">
+                <strong>Clock-only access.</strong>
+                Period changes, scoring, player statistics, substitutions, fouls, timeouts,
+                game status and game submission remain with the Main Scorekeeper.
+            </div>
+
             <div class="clock-grid">
-
                 <section class="clock-panel">
-                    <div class="clock-panel-title">
-                        GAME CLOCK
-                    </div>
-
-                    <div
-                        id="gameClock"
-                        class="clock-value"
-                    >
-                        10:00.0
-                    </div>
+                    <div class="clock-panel-title">GAME CLOCK</div>
+                    <div id="gameClock" class="clock-value">10:00.0</div>
 
                     <div class="control-grid game-clock-controls">
-                        <button
-                            id="startClockButton"
-                            class="control-button primary"
-                            type="button"
-                        >
-                            START
-                        </button>
-
-                        <button
-                            id="pauseClockButton"
-                            class="control-button pause"
-                            type="button"
-                        >
-                            PAUSE
-                        </button>
-
-                        <button
-                            id="resetClockButton"
-                            class="control-button reset"
-                            type="button"
-                        >
-                            RESET
-                        </button>
-
-                        <button
-                            id="gameMinusOneButton"
-                            class="control-button"
-                            type="button"
-                        >
-                            −1
-                        </button>
-
-                        <button
-                            id="gamePlusOneButton"
-                            class="control-button"
-                            type="button"
-                        >
-                            +1
-                        </button>
-
-                        <button
-                            id="gameMinusTenthButton"
-                            class="control-button"
-                            type="button"
-                        >
-                            −0.1
-                        </button>
-
-                        <button
-                            id="gamePlusTenthButton"
-                            class="control-button"
-                            type="button"
-                        >
-                            +0.1
-                        </button>
+                        <button id="startClockButton" class="control-button primary" type="button">START</button>
+                        <button id="pauseClockButton" class="control-button pause" type="button">PAUSE</button>
+                        <button id="gameMinusOneButton" class="control-button" type="button">−1</button>
+                        <button id="gamePlusOneButton" class="control-button" type="button">+1</button>
+                        <button id="gameMinusTenthButton" class="control-button" type="button">−0.1</button>
+                        <button id="gamePlusTenthButton" class="control-button" type="button">+0.1</button>
                     </div>
                 </section>
 
                 <section class="clock-panel shot">
-                    <div class="clock-panel-title">
-                        SHOT CLOCK
-                    </div>
-
-                    <div
-                        id="shotClock"
-                        class="clock-value"
-                    >
-                        24.0
-                    </div>
+                    <div class="clock-panel-title">SHOT CLOCK</div>
+                    <div id="shotClock" class="clock-value">24.0</div>
 
                     <div class="control-grid shot-clock-controls">
-                        <button
-                            id="shot24Button"
-                            class="control-button shot-reset"
-                            type="button"
-                        >
-                            24
-                        </button>
-
-                        <button
-                            id="shot14Button"
-                            class="control-button shot-reset"
-                            type="button"
-                        >
-                            14
-                        </button>
-
-                        <button
-                            id="shotMinusOneButton"
-                            class="control-button"
-                            type="button"
-                        >
-                            −1
-                        </button>
-
-                        <button
-                            id="shotPlusOneButton"
-                            class="control-button"
-                            type="button"
-                        >
-                            +1
-                        </button>
-
-                        <button
-                            id="shotMinusTenthButton"
-                            class="control-button"
-                            type="button"
-                        >
-                            −0.1
-                        </button>
-
-                        <button
-                            id="shotPlusTenthButton"
-                            class="control-button"
-                            type="button"
-                        >
-                            +0.1
-                        </button>
+                        <button id="shot24Button" class="control-button shot-reset" type="button">24</button>
+                        <button id="shot14Button" class="control-button shot-reset" type="button">14</button>
+                        <button id="shotMinusOneButton" class="control-button" type="button">−1</button>
+                        <button id="shotPlusOneButton" class="control-button" type="button">+1</button>
+                        <button id="shotMinusTenthButton" class="control-button" type="button">−0.1</button>
+                        <button id="shotPlusTenthButton" class="control-button" type="button">+0.1</button>
                     </div>
                 </section>
-
             </div>
 
-            <section class="section">
-                <div class="section-title">
-                    PERIOD
-                </div>
-
-                <div class="period-buttons">
-                    <button
-                        id="period-1st"
-                        class="period-button"
-                        type="button"
-                        data-period="1st Quarter"
-                    >
-                        1ST QTR
-                    </button>
-
-                    <button
-                        id="period-2nd"
-                        class="period-button"
-                        type="button"
-                        data-period="2nd Quarter"
-                    >
-                        2ND QTR
-                    </button>
-
-                    <button
-                        id="period-3rd"
-                        class="period-button"
-                        type="button"
-                        data-period="3rd Quarter"
-                    >
-                        3RD QTR
-                    </button>
-
-                    <button
-                        id="period-4th"
-                        class="period-button"
-                        type="button"
-                        data-period="4th Quarter"
-                    >
-                        4TH QTR
-                    </button>
-                </div>
-            </section>
-
-            <section class="section">
-                <div class="section-title">
-                    GAME STATUS
-                </div>
-
-                <div class="status-buttons">
-                    <button
-                        id="status-live"
-                        class="status-button live"
-                        type="button"
-                    >
-                        LIVE
-                    </button>
-
-                    <button
-                        id="status-half"
-                        class="status-button halftime"
-                        type="button"
-                    >
-                        HALFTIME
-                    </button>
-
-                    <button
-                        id="status-final"
-                        class="status-button finalize"
-                        type="button"
-                    >
-                        SUBMIT FOR REVIEW
-                    </button>
-                </div>
-            </section>
-
-            <div
-                id="finalizedNotice"
-                class="finalized-notice"
-            >
-                THIS GAME IS LOCKED.
-            </div>
+            <div id="finalizedNotice" class="finalized-notice">THIS GAME IS LOCKED.</div>
         </div>
-
     </div>
 </div>
 
 <script>
-const SUPABASE_URL =
-    "https://tkrsyiwffqkgfyooewsf.supabase.co";
-
-const SUPABASE_ANON_KEY =
-    "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
-
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
-    );
+const SUPABASE_URL = "https://tkrsyiwffqkgfyooewsf.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const DEFAULT_GAME_CLOCK_SECONDS = 600;
 const DEFAULT_SHOT_CLOCK_SECONDS = 24;
+const CLOCK_SESSION_HEARTBEAT_MS = 15000;
+const CLOCK_POLL_MS = 1000;
 
+let currentUser = null;
+let currentProfile = null;
+let assignedGames = [];
 let currentGame = null;
 let gameChannel = null;
 let pollTimer = null;
-let displayTimer = null;
+let heartbeatTimer = null;
 let displayAnimationFrame = null;
 let saveInProgress = false;
-
-const clockBroadcastChannel =
-    "BroadcastChannel" in window
-        ? new BroadcastChannel("hoophub-clock-sync")
-        : null;
+let expirySavePending = false;
+let hasClockControl = false;
 
 let clockSeconds = DEFAULT_GAME_CLOCK_SECONDS;
 let shotClockSeconds = DEFAULT_SHOT_CLOCK_SECONDS;
@@ -873,129 +678,86 @@ let clockRunning = false;
 let clockEndTime = null;
 let shotClockEndTime = null;
 
-const gameIdInput =
-    document.getElementById("gameIdInput");
+const clockBroadcastChannel =
+    "BroadcastChannel" in window
+        ? new BroadcastChannel("hoophub-clock-sync")
+        : null;
 
-const loadGameButton =
-    document.getElementById("loadGameButton");
+const clockAuthScreen = document.getElementById("clockAuthScreen");
+const clockAuthMessage = document.getElementById("clockAuthMessage");
+const assignedGameSelect = document.getElementById("assignedGameSelect");
+const loadGameButton = document.getElementById("loadGameButton");
+const refreshAssignmentsButton = document.getElementById("refreshAssignmentsButton");
+const releaseControlButton = document.getElementById("releaseControlButton");
+const logoutButton = document.getElementById("logoutButton");
+const statusMessage = document.getElementById("statusMessage");
+const controllerContent = document.getElementById("controllerContent");
+const gameTitle = document.getElementById("gameTitle");
+const homeTeamName = document.getElementById("homeTeamName");
+const awayTeamName = document.getElementById("awayTeamName");
+const homeScore = document.getElementById("homeScore");
+const awayScore = document.getElementById("awayScore");
+const gamePeriod = document.getElementById("gamePeriod");
+const gameStatus = document.getElementById("gameStatus");
+const gameClock = document.getElementById("gameClock");
+const shotClock = document.getElementById("shotClock");
+const connectionDot = document.getElementById("connectionDot");
+const connectionText = document.getElementById("connectionText");
+const finalizedNotice = document.getElementById("finalizedNotice");
+const controlStateText = document.getElementById("controlStateText");
+const controlStateBadge = document.getElementById("controlStateBadge");
 
-const statusMessage =
-    document.getElementById("statusMessage");
-
-const controllerContent =
-    document.getElementById("controllerContent");
-
-const gameTitle =
-    document.getElementById("gameTitle");
-
-const homeTeamName =
-    document.getElementById("homeTeamName");
-
-const awayTeamName =
-    document.getElementById("awayTeamName");
-
-const homeScore =
-    document.getElementById("homeScore");
-
-const awayScore =
-    document.getElementById("awayScore");
-
-const gamePeriod =
-    document.getElementById("gamePeriod");
-
-const gameStatus =
-    document.getElementById("gameStatus");
-
-const gameClock =
-    document.getElementById("gameClock");
-
-const shotClock =
-    document.getElementById("shotClock");
-
-const connectionDot =
-    document.getElementById("connectionDot");
-
-const connectionText =
-    document.getElementById("connectionText");
-
-const finalizedNotice =
-    document.getElementById("finalizedNotice");
-
-
-function broadcastClockState(game){
-    if(!clockBroadcastChannel || !game){
-        return;
-    }
-
-    clockBroadcastChannel.postMessage({
-        source:"clock-control",
-        game
-    });
+function makeDeviceId(){
+    if(window.crypto?.randomUUID) return window.crypto.randomUUID();
+    return "clock-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
 }
 
+function getClockDeviceId(){
+    const storageKey = "hoophub_clock_operator_device_id";
+    let value = localStorage.getItem(storageKey);
+    if(!value){
+        value = makeDeviceId();
+        localStorage.setItem(storageKey, value);
+    }
+    return value;
+}
 
-function showStatus(
-    message,
-    type = ""
-){
+const clockDeviceId = getClockDeviceId();
+
+function unwrapRpcData(data){
+    return Array.isArray(data) ? (data[0] ?? null) : (data ?? null);
+}
+
+function showStatus(message, type = ""){
     statusMessage.textContent = message;
-
-    statusMessage.classList.remove(
-        "success",
-        "error",
-        "warning"
-    );
-
-    if(type){
-        statusMessage.classList.add(type);
-    }
+    statusMessage.classList.remove("success", "error", "warning");
+    if(type) statusMessage.classList.add(type);
 }
 
-
-function safeText(
-    value,
-    fallback = "—"
-){
-    const text =
-        String(value ?? "").trim();
-
+function safeText(value, fallback = "—"){
+    const text = String(value ?? "").trim();
     return text || fallback;
 }
 
+function displayName(profile){
+    return safeText(profile?.full_name || profile?.email, "Clock Operator");
+}
 
 function getHomeTeamName(game){
-    return safeText(
-        game.home_team ||
-        game.home_team_name,
-        "Home Team"
-    );
+    return safeText(game?.home_team || game?.home_team_name, "Home Team");
 }
-
 
 function getAwayTeamName(game){
-    return safeText(
-        game.away_team ||
-        game.away_team_name,
-        "Away Team"
-    );
+    return safeText(game?.away_team || game?.away_team_name, "Away Team");
 }
-
 
 function normalizeStatus(status){
-    return String(status || "")
-        .trim()
-        .toLowerCase();
+    return String(status || "").trim().toLowerCase();
 }
 
-
 function isGameFinalized(){
-    if(!currentGame){
-        return false;
-    }
-
-    const status =
-        normalizeStatus(currentGame.status);
-
+    if(!currentGame) return false;
+    const status = normalizeStatus(currentGame.status);
     return Boolean(
         currentGame.finalized_at ||
         status === "final" ||
@@ -1005,39 +767,57 @@ function isGameFinalized(){
     );
 }
 
-
 function setConnectionState(connected){
-    connectionDot.classList.toggle(
-        "connected",
-        Boolean(connected)
-    );
-
-    connectionText.textContent =
-        connected
-            ? "LIVE SYNC"
-            : "NOT CONNECTED";
+    connectionDot.classList.toggle("connected", Boolean(connected));
+    connectionText.textContent = connected ? "LIVE SYNC" : "SYNCING";
 }
 
+function updateControlStateDisplay(){
+    releaseControlButton.disabled = !currentGame || !hasClockControl;
+    controlStateBadge.classList.remove("active", "locked");
 
-function calculateDisplayedTimes(){
-    if(!clockRunning){
+    if(!currentGame){
+        controlStateBadge.textContent = "NO GAME";
+        controlStateText.textContent = "Choose one of your assigned games.";
         return;
     }
+
+    if(isGameFinalized()){
+        controlStateBadge.textContent = "LOCKED";
+        controlStateBadge.classList.add("locked");
+        controlStateText.textContent = "This game is finalized or submitted for review.";
+        return;
+    }
+
+    if(hasClockControl){
+        controlStateBadge.textContent = "CONTROL ACTIVE";
+        controlStateBadge.classList.add("active");
+        controlStateText.textContent =
+            `${displayName(currentProfile)} controls the game and shot clocks from this device.`;
+    } else {
+        controlStateBadge.textContent = "VIEW ONLY";
+        controlStateBadge.classList.add("locked");
+        controlStateText.textContent =
+            "Another Clock Control device currently owns this game. This screen will retry automatically.";
+    }
+}
+
+function broadcastClockState(game){
+    if(!clockBroadcastChannel || !game) return;
+    clockBroadcastChannel.postMessage({source:"clock-control", game});
+}
+
+function calculateDisplayedTimes(){
+    if(!clockRunning) return;
 
     const now = Date.now();
 
     if(clockEndTime){
-        clockSeconds = Math.max(
-            0,
-            (clockEndTime - now) / 1000
-        );
+        clockSeconds = Math.max(0, (clockEndTime - now) / 1000);
     }
 
     if(shotClockEndTime){
-        shotClockSeconds = Math.max(
-            0,
-            (shotClockEndTime - now) / 1000
-        );
+        shotClockSeconds = Math.max(0, (shotClockEndTime - now) / 1000);
     }
 
     shotClockSeconds = Math.min(
@@ -1057,270 +837,100 @@ function calculateDisplayedTimes(){
         clockEndTime = null;
         shotClockEndTime = null;
 
-        saveClockState().catch(error=>{
-            console.error(
-                "Unable to save expired clock:",
-                error
-            );
-        });
+        if(hasClockControl && !expirySavePending){
+            expirySavePending = true;
+            saveClockState()
+                .catch(error=>console.error("Unable to save expired clock:", error))
+                .finally(()=>{ expirySavePending = false; });
+        }
     }
 }
 
-
 function formatGameClock(secondsValue){
-    const safeMilliseconds =
-        Math.max(
-            0,
-            Math.ceil(
-                Number(secondsValue || 0) * 1000
-            )
-        );
-
-    const totalTenths =
-        Math.ceil(
-            safeMilliseconds / 100
-        );
-
-    const minutes =
-        Math.floor(
-            totalTenths / 600
-        );
-
-    const seconds =
-        Math.floor(
-            (totalTenths % 600) / 10
-        );
-
-    const tenths =
-        totalTenths % 10;
-
-    return (
-        String(minutes).padStart(2, "0") +
-        ":" +
-        String(seconds).padStart(2, "0") +
-        "." +
-        tenths
-    );
+    const safeMilliseconds = Math.max(0, Math.ceil(Number(secondsValue || 0) * 1000));
+    const totalTenths = Math.ceil(safeMilliseconds / 100);
+    const minutes = Math.floor(totalTenths / 600);
+    const seconds = Math.floor((totalTenths % 600) / 10);
+    const tenths = totalTenths % 10;
+    return String(minutes).padStart(2, "0") + ":" +
+           String(seconds).padStart(2, "0") + "." + tenths;
 }
-
 
 function formatShotClock(secondsValue){
-    const safeMilliseconds =
-        Math.max(
-            0,
-            Math.ceil(
-                Number(secondsValue || 0) * 1000
-            )
-        );
-
-    const totalTenths =
-        Math.ceil(
-            safeMilliseconds / 100
-        );
-
-    const seconds =
-        Math.floor(
-            totalTenths / 10
-        );
-
-    const tenths =
-        totalTenths % 10;
-
-    return (
-        String(seconds).padStart(2, "0") +
-        "." +
-        tenths
-    );
+    const safeMilliseconds = Math.max(0, Math.ceil(Number(secondsValue || 0) * 1000));
+    const totalTenths = Math.ceil(safeMilliseconds / 100);
+    const seconds = Math.floor(totalTenths / 10);
+    const tenths = totalTenths % 10;
+    return String(seconds).padStart(2, "0") + "." + tenths;
 }
-
 
 function updateClockDisplays(){
     calculateDisplayedTimes();
-
-    gameClock.textContent =
-        formatGameClock(clockSeconds);
-
-    shotClock.textContent =
-        formatShotClock(shotClockSeconds);
-
+    gameClock.textContent = formatGameClock(clockSeconds);
+    shotClock.textContent = formatShotClock(shotClockSeconds);
     updateControlAvailability();
 }
 
-
 function applyStatusAppearance(){
-    gameStatus.classList.remove(
-        "live",
-        "halftime",
-        "final"
-    );
+    gameStatus.classList.remove("live", "halftime", "final");
+    const status = normalizeStatus(currentGame?.status);
 
-    document
-        .querySelectorAll(".status-button")
-        .forEach(button=>{
-            button.classList.remove("active");
-        });
-
-    const status =
-        normalizeStatus(currentGame?.status);
-
-    if(
-        status === "live" ||
-        status === "in progress" ||
-        status === "in_progress"
-    ){
+    if(status === "live" || status === "in progress" || status === "in_progress"){
         gameStatus.classList.add("live");
-        document
-            .getElementById("status-live")
-            .classList.add("active");
-    }
-    else if(
-        status === "halftime" ||
-        status === "half"
-    ){
+    } else if(status === "halftime" || status === "half"){
         gameStatus.classList.add("halftime");
-        document
-            .getElementById("status-half")
-            .classList.add("active");
-    }
-    else if(isGameFinalized()){
+    } else if(isGameFinalized()){
         gameStatus.classList.add("final");
     }
 }
 
-
-function setActivePeriod(period){
-    document
-        .querySelectorAll(".period-button")
-        .forEach(button=>{
-            button.classList.toggle(
-                "active",
-                button.dataset.period === period
-            );
-        });
-}
-
-
 function renderGameInformation(){
-    if(!currentGame){
-        return;
-    }
+    if(!currentGame) return;
 
-    gameTitle.textContent =
-        "Game #" + currentGame.id;
-
-    homeTeamName.textContent =
-        getHomeTeamName(currentGame);
-
-    awayTeamName.textContent =
-        getAwayTeamName(currentGame);
-
-    homeScore.textContent =
-        Number(currentGame.home_score || 0);
-
-    awayScore.textContent =
-        Number(currentGame.away_score || 0);
-
-    gamePeriod.textContent =
-        safeText(
-            currentGame.period,
-            "Not Set"
-        );
-
-    gameStatus.textContent =
-        safeText(
-            currentGame.status,
-            "Not Set"
-        );
-
-    setActivePeriod(
-        currentGame.period
-    );
+    gameTitle.textContent = "Game #" + currentGame.id;
+    homeTeamName.textContent = getHomeTeamName(currentGame);
+    awayTeamName.textContent = getAwayTeamName(currentGame);
+    homeScore.textContent = Number(currentGame.home_score || 0);
+    awayScore.textContent = Number(currentGame.away_score || 0);
+    gamePeriod.textContent = safeText(currentGame.period, "Not Set");
+    gameStatus.textContent = safeText(currentGame.status, "Not Set");
 
     applyStatusAppearance();
 
-    const finalized =
-        isGameFinalized();
-
-    const pendingReview =
-        normalizeStatus(currentGame.status) === "pending review";
-
+    const pendingReview = normalizeStatus(currentGame.status) === "pending review";
     finalizedNotice.textContent = pendingReview
-        ? "SUBMITTED FOR COMMISSIONER REVIEW."
-        : "THIS GAME IS FINALIZED AND LOCKED.";
+        ? "SUBMITTED FOR COMMISSIONER REVIEW. CLOCK CONTROL IS LOCKED."
+        : "THIS GAME IS FINALIZED AND CLOCK CONTROL IS LOCKED.";
 
-    finalizedNotice.classList.toggle(
-        "visible",
-        finalized
-    );
-
-    document
-        .getElementById("status-final")
-        .textContent =
-            pendingReview
-                ? "SUBMITTED FOR REVIEW"
-                : finalized
-                    ? "GAME FINALIZED"
-                    : "SUBMIT FOR REVIEW";
+    finalizedNotice.classList.toggle("visible", isGameFinalized());
 
     updateClockDisplays();
-    updateControlAvailability();
+    updateControlStateDisplay();
 }
 
-
 function updateControlAvailability(){
-    const loaded =
-        Boolean(currentGame);
-
     const locked =
-        !loaded ||
+        !currentGame ||
         isGameFinalized() ||
-        saveInProgress;
+        saveInProgress ||
+        !hasClockControl;
 
-    const adjustmentLocked =
-        locked ||
-        clockRunning;
+    document.getElementById("startClockButton").disabled =
+        locked || clockRunning || clockSeconds <= 0;
 
-    document
-        .querySelectorAll(
-            ".period-button, " +
-            "#status-live, " +
-            "#status-half"
-        )
-        .forEach(button=>{
-            button.disabled =
-                locked ||
-                clockRunning;
-        });
-
-    document
-        .getElementById("status-final")
-        .disabled =
-            locked ||
-            clockRunning;
-
-    document
-        .getElementById("startClockButton")
-        .disabled =
-            locked ||
-            clockRunning ||
-            clockSeconds <= 0;
-
-    document
-        .getElementById("pauseClockButton")
-        .disabled =
-            locked ||
-            !clockRunning;
-
-    document
-        .getElementById("resetClockButton")
-        .disabled =
-            adjustmentLocked;
+    document.getElementById("pauseClockButton").disabled =
+        locked || !clockRunning;
 
     [
         "gameMinusOneButton",
         "gamePlusOneButton",
         "gameMinusTenthButton",
-        "gamePlusTenthButton",
+        "gamePlusTenthButton"
+    ].forEach(id=>{
+        document.getElementById(id).disabled = locked || clockRunning;
+    });
+
+    [
         "shot24Button",
         "shot14Button",
         "shotMinusOneButton",
@@ -1328,662 +938,326 @@ function updateControlAvailability(){
         "shotMinusTenthButton",
         "shotPlusTenthButton"
     ].forEach(id=>{
-        document.getElementById(id).disabled =
-            adjustmentLocked;
+        document.getElementById(id).disabled = locked;
     });
-}
 
+    updateControlStateDisplay();
+}
 
 function applyClockData(game){
     const hasMilliseconds =
-        game.clock_milliseconds !== null &&
-        game.clock_milliseconds !== undefined;
+        game?.clock_milliseconds !== null &&
+        game?.clock_milliseconds !== undefined;
 
-    clockSeconds =
-        Math.max(
-            0,
-            hasMilliseconds
-                ? Number(
-                    game.clock_milliseconds
-                ) / 1000
-                : Number(
-                    game.clock_seconds ??
-                    DEFAULT_GAME_CLOCK_SECONDS
-                )
-        );
+    clockSeconds = Math.max(
+        0,
+        hasMilliseconds
+            ? Number(game.clock_milliseconds) / 1000
+            : Number(game?.clock_seconds ?? DEFAULT_GAME_CLOCK_SECONDS)
+    );
 
-    shotClockSeconds =
-        Math.max(
-            0,
-            Number(
-                game.shot_clock_milliseconds ??
-                DEFAULT_SHOT_CLOCK_SECONDS * 1000
-            ) / 1000
-        );
+    shotClockSeconds = Math.max(
+        0,
+        Number(game?.shot_clock_milliseconds ?? DEFAULT_SHOT_CLOCK_SECONDS * 1000) / 1000
+    );
 
-    clockRunning =
-        game.clock_running === true;
+    clockRunning = game?.clock_running === true;
 
-    clockEndTime =
-        game.clock_end_time
-            ? new Date(
-                game.clock_end_time
-            ).getTime()
-            : null;
+    clockEndTime = game?.clock_end_time
+        ? new Date(game.clock_end_time).getTime()
+        : null;
 
-    shotClockEndTime =
-        game.shot_clock_end_time
-            ? new Date(
-                game.shot_clock_end_time
-            ).getTime()
-            : null;
+    shotClockEndTime = game?.shot_clock_end_time
+        ? new Date(game.shot_clock_end_time).getTime()
+        : null;
 
-    if(
-        clockRunning &&
-        !clockEndTime
-    ){
-        clockEndTime =
-            Date.now() +
-            Math.round(
-                clockSeconds * 1000
-            );
+    if(clockRunning && !clockEndTime){
+        clockEndTime = Date.now() + Math.round(clockSeconds * 1000);
     }
 
-    if(
-        clockRunning &&
-        !shotClockEndTime &&
-        shotClockSeconds > 0
-    ){
+    if(clockRunning && !shotClockEndTime && shotClockSeconds > 0){
         shotClockEndTime =
             Date.now() +
-            Math.round(
-                Math.min(
-                    shotClockSeconds,
-                    clockSeconds
-                ) * 1000
-            );
+            Math.round(Math.min(shotClockSeconds, clockSeconds) * 1000);
     }
 
     calculateDisplayedTimes();
 }
 
+async function authorizeClockOperator(){
+    try{
+        const {data:userData, error:userError} = await supabaseClient.auth.getUser();
 
-async function fetchCurrentGame(
-    silent = false
-){
-    if(!currentGame){
-        return;
+        if(userError || !userData?.user){
+            window.location.replace("login.html");
+            return;
+        }
+
+        const {data:profile, error:profileError} =
+            await supabaseClient
+                .from("profiles")
+                .select("id, email, full_name, role, status")
+                .eq("id", userData.user.id)
+                .maybeSingle();
+
+        const allowed =
+            profile &&
+            profile.status === "active" &&
+            (profile.role === "scorekeeper" || profile.role === "super_admin");
+
+        if(profileError || !allowed){
+            await supabaseClient.auth.signOut();
+            window.location.replace("login.html");
+            return;
+        }
+
+        currentUser = userData.user;
+        currentProfile = profile;
+
+        document.getElementById("operatorName").textContent = displayName(profile);
+        document.getElementById("operatorRole").textContent =
+            profile.role === "super_admin" ? "Super Admin Override" : "Clock Operator";
+
+        await loadAssignedGames();
+
+        document.body.classList.remove("auth-pending");
+        clockAuthScreen.hidden = true;
+    } catch(error){
+        console.error("Clock Operator authorization failed:", error);
+        clockAuthMessage.textContent = "Unable to verify Clock Operator access.";
+        setTimeout(()=>window.location.replace("login.html"), 1200);
     }
+}
 
-    const { data, error } =
-        await supabaseClient
-            .from("games")
-            .select("*")
-            .eq("id", currentGame.id)
-            .single();
+function assignedGameOptionLabel(game){
+    return "#" + safeText(game.game_id, "?") + " · " +
+           safeText(game.home_team, "Home") + " vs " +
+           safeText(game.away_team, "Away") + " · " +
+           safeText(game.status, "Scheduled");
+}
 
-    if(error){
+async function loadAssignedGames(){
+    refreshAssignmentsButton.disabled = true;
+    refreshAssignmentsButton.textContent = "REFRESHING...";
+
+    const previousGameId =
+        currentGame?.id
+            ? String(currentGame.id)
+            : String(assignedGameSelect.value || "");
+
+    try{
+        const {data, error} =
+            await supabaseClient.rpc("list_my_clock_operator_games");
+
+        if(error) throw error;
+
+        assignedGames = Array.isArray(data) ? data : [];
+
+        assignedGameSelect.innerHTML =
+            assignedGames.length
+                ? assignedGames.map(game=>{
+                    const selected =
+                        String(game.game_id) === previousGameId
+                            ? " selected"
+                            : "";
+
+                    return `<option value="${Number(game.game_id)}"${selected}>` +
+                           `${assignedGameOptionLabel(game)}</option>`;
+                }).join("")
+                : '<option value="">No active assigned games</option>';
+
+        loadGameButton.disabled = assignedGames.length === 0;
+
+        if(!assignedGames.length){
+            if(currentGame) await releaseClockControl(true);
+
+            unsubscribeFromGame();
+            stopHeartbeat();
+
+            currentGame = null;
+            hasClockControl = false;
+            controllerContent.style.display = "none";
+
+            showStatus(
+                currentProfile?.role === "super_admin"
+                    ? "No active non-finalized games are available."
+                    : "You do not currently have an active Clock Operator assignment.",
+                "warning"
+            );
+
+            updateControlStateDisplay();
+            return;
+        }
+
+        const selectedStillExists =
+            assignedGames.some(
+                game => String(game.game_id) === previousGameId
+            );
+
+        if(!selectedStillExists){
+            assignedGameSelect.value = String(assignedGames[0].game_id);
+        }
+
+        await loadSelectedGame();
+    } catch(error){
+        console.error("Unable to load Clock Operator assignments:", error);
+        assignedGames = [];
+        assignedGameSelect.innerHTML =
+            '<option value="">Unable to load assignments</option>';
+        loadGameButton.disabled = true;
+
+        showStatus(
+            "Unable to load Clock Operator assignments: " +
+            (error?.message || "Unknown error"),
+            "error"
+        );
+    } finally {
+        refreshAssignmentsButton.disabled = false;
+        refreshAssignmentsButton.textContent = "REFRESH";
+    }
+}
+
+async function getAuthorizedGame(gameId){
+    const {data, error} =
+        await supabaseClient.rpc(
+            "get_clock_operator_game",
+            {p_game_id:Number(gameId)}
+        );
+
+    if(error) throw error;
+
+    const game = unwrapRpcData(data);
+    if(!game) throw new Error("Game data was not returned.");
+    return game;
+}
+
+async function fetchCurrentGame(silent = false){
+    if(!currentGame) return;
+
+    try{
+        const data = await getAuthorizedGame(currentGame.id);
+        currentGame = data;
+        applyClockData(data);
+        renderGameInformation();
+    } catch(error){
         if(!silent){
             showStatus(
-                "Unable to refresh game: " +
-                error.message,
+                "Unable to refresh game: " + (error?.message || "Unknown error"),
+                "error"
+            );
+        }
+    }
+}
+
+async function claimClockControl(silent = false){
+    if(!currentGame){
+        hasClockControl = false;
+        updateControlAvailability();
+        return false;
+    }
+
+    try{
+        const {data, error} =
+            await supabaseClient.rpc(
+                "claim_clock_operator_session",
+                {
+                    p_game_id:Number(currentGame.id),
+                    p_device_id:clockDeviceId
+                }
+            );
+
+        if(error) throw error;
+
+        const row = Array.isArray(data) ? data[0] : data;
+        hasClockControl = row?.has_control === true;
+        updateControlAvailability();
+
+        if(!silent && !hasClockControl){
+            showStatus(
+                "Another Clock Control device currently owns this game. This screen is view-only until that session is released or expires.",
+                "warning"
+            );
+        }
+
+        return hasClockControl;
+    } catch(error){
+        hasClockControl = false;
+        updateControlAvailability();
+
+        if(!silent){
+            showStatus(
+                "Unable to claim Clock Control: " + (error?.message || "Unknown error"),
                 "error"
             );
         }
 
-        return;
-    }
-
-    currentGame = data;
-    applyClockData(data);
-    renderGameInformation();
-}
-
-
-async function saveClockState(){
-    if(
-        !currentGame ||
-        isGameFinalized()
-    ){
         return false;
     }
-
-    calculateDisplayedTimes();
-
-    const remainingMilliseconds =
-        Math.max(
-            0,
-            Math.round(
-                clockSeconds * 1000
-            )
-        );
-
-    const shotClockRemainingMilliseconds =
-        Math.max(
-            0,
-            Math.round(
-                shotClockSeconds * 1000
-            )
-        );
-
-    const { data, error } =
-        await supabaseClient
-            .from("games")
-            .update({
-                clock_seconds:
-                    Math.ceil(
-                        clockSeconds
-                    ),
-
-                clock_milliseconds:
-                    remainingMilliseconds,
-
-                clock_running:
-                    clockRunning,
-
-                clock_end_time:
-                    clockRunning &&
-                    clockEndTime
-                        ? new Date(
-                            clockEndTime
-                        ).toISOString()
-                        : null,
-
-                shot_clock_milliseconds:
-                    shotClockRemainingMilliseconds,
-
-                shot_clock_end_time:
-                    clockRunning &&
-                    shotClockEndTime
-                        ? new Date(
-                            shotClockEndTime
-                        ).toISOString()
-                        : null
-            })
-            .eq("id", currentGame.id)
-            .select("*")
-            .single();
-
-    if(error){
-        showStatus(
-            "Unable to save clock: " +
-            error.message,
-            "error"
-        );
-
-        return false;
-    }
-
-    currentGame = data;
-    applyClockData(data);
-    renderGameInformation();
-    broadcastClockState(data);
-
-    return true;
 }
 
-
-async function startClock(){
-    if(
-        !currentGame ||
-        clockRunning ||
-        isGameFinalized()
-    ){
-        return;
-    }
-
-    if(clockSeconds <= 0){
-        showStatus(
-            "Clock is at 00:00. Reset it first.",
-            "warning"
-        );
-        return;
-    }
-
-    const now = Date.now();
-
-    clockEndTime =
-        now +
-        Math.round(
-            clockSeconds * 1000
-        );
-
-    shotClockSeconds =
-        Math.min(
-            Math.max(
-                0,
-                shotClockSeconds
-            ),
-            clockSeconds
-        );
-
-    shotClockEndTime =
-        shotClockSeconds > 0
-            ? now +
-              Math.round(
-                  shotClockSeconds * 1000
-              )
-            : null;
-
-    clockRunning = true;
-
-    updateClockDisplays();
-
-    const saved =
-        await saveClockState();
-
-    if(saved){
-        showStatus(
-            "Game clock started.",
-            "success"
-        );
-    }
-}
-
-
-async function pauseClock(){
-    if(
-        !currentGame ||
-        !clockRunning
-    ){
-        return;
-    }
-
-    calculateDisplayedTimes();
-
-    clockRunning = false;
-    clockEndTime = null;
-    shotClockEndTime = null;
-
-    updateClockDisplays();
-
-    const saved =
-        await saveClockState();
-
-    if(saved){
-        showStatus(
-            "Game and shot clocks paused.",
-            "success"
-        );
-    }
-}
-
-
-async function resetClock(){
-    if(
-        !currentGame ||
-        clockRunning ||
-        isGameFinalized()
-    ){
-        return;
-    }
-
-    clockSeconds =
-        DEFAULT_GAME_CLOCK_SECONDS;
-
-    shotClockSeconds =
-        DEFAULT_SHOT_CLOCK_SECONDS;
-
-    clockRunning = false;
-    clockEndTime = null;
-    shotClockEndTime = null;
-
-    updateClockDisplays();
-
-    const saved =
-        await saveClockState();
-
-    if(saved){
-        showStatus(
-            "Game clock reset to 10:00.0 and shot clock reset to 24.0.",
-            "success"
-        );
-    }
-}
-
-
-async function adjustGameClock(amount){
-    if(
-        !currentGame ||
-        clockRunning ||
-        isGameFinalized()
-    ){
-        return;
-    }
-
-    clockSeconds =
-        Math.max(
-            0,
-            Math.round(
-                (clockSeconds + amount) * 10
-            ) / 10
-        );
-
-    shotClockSeconds =
-        Math.min(
-            shotClockSeconds,
-            clockSeconds
-        );
-
-    updateClockDisplays();
-
-    const saved =
-        await saveClockState();
-
-    if(saved){
-        showStatus(
-            `Game clock adjusted by ${amount > 0 ? "+" : ""}${amount.toFixed(1)} second.`,
-            "success"
-        );
-    }
-}
-
-
-async function resetShotClock(seconds){
-    if(
-        !currentGame ||
-        clockRunning ||
-        isGameFinalized()
-    ){
-        return;
-    }
-
-    shotClockSeconds =
-        Math.min(
-            Number(seconds),
-            clockSeconds
-        );
-
-    shotClockEndTime = null;
-
-    updateClockDisplays();
-
-    const saved =
-        await saveClockState();
-
-    if(saved){
-        showStatus(
-            `Shot clock reset to ${seconds}.0 seconds.`,
-            "success"
-        );
-    }
-}
-
-
-async function adjustShotClock(amount){
-    if(
-        !currentGame ||
-        clockRunning ||
-        isGameFinalized()
-    ){
-        return;
-    }
-
-    shotClockSeconds =
-        Math.min(
-            clockSeconds,
-            Math.max(
-                0,
-                Math.round(
-                    (shotClockSeconds + amount) * 10
-                ) / 10
-            )
-        );
-
-    shotClockEndTime = null;
-
-    updateClockDisplays();
-
-    const saved =
-        await saveClockState();
-
-    if(saved){
-        showStatus(
-            `Shot clock adjusted by ${amount > 0 ? "+" : ""}${amount.toFixed(1)} second.`,
-            "success"
-        );
-    }
-}
-
-
-async function setPeriod(period){
-    if(
-        !currentGame ||
-        clockRunning ||
-        isGameFinalized()
-    ){
-        return;
-    }
-
-    saveInProgress = true;
-    updateControlAvailability();
-
-    try{
-        const { data, error } =
-            await supabaseClient
-                .from("games")
-                .update({
-                    period,
-                    clock_seconds:
-                        DEFAULT_GAME_CLOCK_SECONDS,
-                    clock_milliseconds:
-                        DEFAULT_GAME_CLOCK_SECONDS * 1000,
-                    clock_running:
-                        false,
-                    clock_end_time:
-                        null,
-                    shot_clock_milliseconds:
-                        DEFAULT_SHOT_CLOCK_SECONDS * 1000,
-                    shot_clock_end_time:
-                        null
-                })
-                .eq("id", currentGame.id)
-                .select("*")
-                .single();
-
-        if(error){
-            throw error;
-        }
-
-        currentGame = data;
-        applyClockData(data);
-        renderGameInformation();
-
-        showStatus(
-            `${period} selected. Clocks reset.`,
-            "success"
-        );
-    }
-    catch(error){
-        showStatus(
-            "Unable to change period: " +
-            error.message,
-            "error"
-        );
-    }
-    finally{
-        saveInProgress = false;
-        updateControlAvailability();
-    }
-}
-
-
-async function setGameStatus(status){
-    if(
-        !currentGame ||
-        clockRunning ||
-        isGameFinalized()
-    ){
-        return;
-    }
-
-    saveInProgress = true;
-    updateControlAvailability();
-
-    try{
-        const { data, error } =
-            await supabaseClient
-                .from("games")
-                .update({ status })
-                .eq("id", currentGame.id)
-                .select("*")
-                .single();
-
-        if(error){
-            throw error;
-        }
-
-        currentGame = data;
-        renderGameInformation();
-
-        showStatus(
-            `Game status changed to ${status}.`,
-            "success"
-        );
-    }
-    catch(error){
-        showStatus(
-            "Unable to change game status: " +
-            error.message,
-            "error"
-        );
-    }
-    finally{
-        saveInProgress = false;
-        updateControlAvailability();
-    }
-}
-
-
-async function submitCurrentGameForReview(){
+async function releaseClockControl(silent = false){
     if(!currentGame){
-        return;
+        hasClockControl = false;
+        updateControlAvailability();
+        return false;
     }
 
-    if(clockRunning){
-        showStatus(
-            "Pause the game clock before submitting.",
-            "warning"
-        );
-        return;
-    }
-
-    if(isGameFinalized()){
-        showStatus(
-            "This game is already finalized or submitted.",
-            "warning"
-        );
-        return;
-    }
-
-    const home =
-        Number(
-            currentGame.home_score || 0
-        );
-
-    const away =
-        Number(
-            currentGame.away_score || 0
-        );
-
-    if(home === away){
-        showStatus(
-            "A basketball game cannot be submitted while the score is tied.",
-            "warning"
-        );
-        return;
-    }
-
-    const confirmed =
-        window.confirm(
-            "Submit this game for Commissioner review?\n\n" +
-            "Scoring will be locked until it is finalized or returned for correction."
-        );
-
-    if(!confirmed){
-        return;
-    }
-
-    saveInProgress = true;
-
-    const finalButton =
-        document.getElementById(
-            "status-final"
-        );
-
-    finalButton.textContent =
-        "SUBMITTING...";
-
-    updateControlAvailability();
+    const gameId = Number(currentGame.id);
 
     try{
-        await saveClockState();
-
-        const { data, error } =
+        const {data, error} =
             await supabaseClient.rpc(
-                "submit_basketball_game",
+                "release_clock_operator_session",
                 {
-                    p_game_id:
-                        currentGame.id
+                    p_game_id:gameId,
+                    p_device_id:clockDeviceId
                 }
             );
 
-        if(error){
-            throw error;
+        if(error) throw error;
+
+        hasClockControl = false;
+        updateControlAvailability();
+
+        if(!silent){
+            showStatus(
+                `Clock Control for Game #${gameId} was released.`,
+                "success"
+            );
         }
 
-        const result =
-            Array.isArray(data)
-                ? data[0]
-                : data;
+        return data === true;
+    } catch(error){
+        if(!silent){
+            showStatus(
+                "Unable to release Clock Control: " + (error?.message || "Unknown error"),
+                "error"
+            );
+        }
 
-        currentGame = {
-            ...currentGame,
-            status:"Pending Review",
-            submitted_at:
-                result?.submitted_at ||
-                new Date().toISOString()
-        };
-
-        clockRunning = false;
-        clockEndTime = null;
-        shotClockEndTime = null;
-
-        renderGameInformation();
-
-        showStatus(
-            result?.already_submitted
-                ? "This game was already submitted."
-                : "Game submitted for Commissioner or Super Admin review.",
-            "success"
-        );
-    }
-    catch(error){
-        finalButton.textContent =
-            "SUBMIT FOR REVIEW";
-
-        showStatus(
-            "Unable to submit game: " +
-            (
-                error?.message ||
-                "Unknown error"
-            ),
-            "error"
-        );
-    }
-    finally{
-        saveInProgress = false;
-        updateControlAvailability();
+        return false;
     }
 }
 
+function stopHeartbeat(){
+    if(heartbeatTimer){
+        clearInterval(heartbeatTimer);
+        heartbeatTimer = null;
+    }
+}
+
+function startHeartbeat(){
+    stopHeartbeat();
+    heartbeatTimer =
+        setInterval(
+            ()=>claimClockControl(true).catch(console.error),
+            CLOCK_SESSION_HEARTBEAT_MS
+        );
+}
 
 function unsubscribeFromGame(){
     if(gameChannel){
-        supabaseClient.removeChannel(
-            gameChannel
-        );
-
+        supabaseClient.removeChannel(gameChannel);
         gameChannel = null;
     }
 
@@ -1995,349 +1269,417 @@ function unsubscribeFromGame(){
     setConnectionState(false);
 }
 
-
 function subscribeToGame(){
     unsubscribeFromGame();
-
-    if(!currentGame){
-        return;
-    }
+    if(!currentGame) return;
 
     gameChannel =
         supabaseClient
-            .channel(
-                `clock-controller-game-${currentGame.id}`
-            )
+            .channel(`clock-control-game-${currentGame.id}`)
             .on(
                 "postgres_changes",
                 {
                     event:"UPDATE",
                     schema:"public",
                     table:"games",
-                    filter:
-                        `id=eq.${currentGame.id}`
+                    filter:`id=eq.${currentGame.id}`
                 },
                 payload=>{
-                    if(!payload?.new){
-                        return;
-                    }
+                    if(!payload?.new) return;
 
-                    currentGame =
-                        payload.new;
-
-                    applyClockData(
-                        payload.new
-                    );
-
+                    currentGame = payload.new;
+                    applyClockData(payload.new);
                     renderGameInformation();
                     broadcastClockState(payload.new);
                 }
             )
             .subscribe(status=>{
-                setConnectionState(
-                    status === "SUBSCRIBED"
-                );
+                setConnectionState(status === "SUBSCRIBED");
             });
 
     pollTimer =
         setInterval(
-            ()=>{
-                fetchCurrentGame(true)
-                    .catch(error=>{
-                        console.error(
-                            "Game polling error:",
-                            error
-                        );
-                    });
-            },
-            500
+            ()=>fetchCurrentGame(true).catch(console.error),
+            CLOCK_POLL_MS
         );
 }
 
+async function loadSelectedGame(){
+    const gameId = Number(assignedGameSelect.value);
 
-async function loadGame(){
-    const gameId =
-        Number(
-            gameIdInput.value
-        );
-
-    if(
-        !Number.isInteger(gameId) ||
-        gameId <= 0
-    ){
-        showStatus(
-            "Enter a valid Game ID.",
-            "error"
-        );
+    if(!Number.isInteger(gameId) || gameId <= 0){
+        showStatus("Choose an assigned game.", "warning");
         return;
     }
 
     loadGameButton.disabled = true;
-    loadGameButton.textContent =
-        "LOADING...";
+    loadGameButton.textContent = "OPENING...";
 
-    unsubscribeFromGame();
+    const previousGameId =
+        currentGame?.id ? Number(currentGame.id) : null;
 
     try{
-        const { data, error } =
-            await supabaseClient
-                .from("games")
-                .select("*")
-                .eq("id", gameId)
-                .single();
-
-        if(error){
-            throw error;
+        if(previousGameId && previousGameId !== gameId){
+            await releaseClockControl(true);
         }
 
-        currentGame = data;
+        unsubscribeFromGame();
+        stopHeartbeat();
+        hasClockControl = false;
 
+        const data = await getAuthorizedGame(gameId);
+
+        currentGame = data;
         applyClockData(data);
         renderGameInformation();
-
-        controllerContent.style.display =
-            "block";
+        controllerContent.style.display = "block";
 
         subscribeToGame();
 
+        const claimed = await claimClockControl(true);
+        startHeartbeat();
+
         showStatus(
-            `Game ${currentGame.id} loaded successfully.`,
-            "success"
+            claimed
+                ? `Game #${currentGame.id} loaded. Clock Control is active on this device.`
+                : `Game #${currentGame.id} loaded in view-only mode because another Clock Control device owns the session.`,
+            claimed ? "success" : "warning"
         );
-    }
-    catch(error){
-        console.error(
-            "Unable to load game:",
-            error
-        );
+    } catch(error){
+        console.error("Unable to open assigned game:", error);
 
         currentGame = null;
-
-        controllerContent.style.display =
-            "none";
+        hasClockControl = false;
+        controllerContent.style.display = "none";
 
         showStatus(
-            "Unable to load the game: " +
-            (
-                error?.message ||
-                "Unknown error"
-            ),
+            "Unable to open this assigned game: " +
+            (error?.message || "Unknown error"),
             "error"
         );
-    }
-    finally{
-        loadGameButton.disabled = false;
-        loadGameButton.textContent =
-            "LOAD GAME";
+    } finally {
+        loadGameButton.disabled = assignedGames.length === 0;
+        loadGameButton.textContent = "OPEN GAME";
     }
 }
 
-
-document
-    .getElementById("startClockButton")
-    .addEventListener(
-        "click",
-        startClock
-    );
-
-document
-    .getElementById("pauseClockButton")
-    .addEventListener(
-        "click",
-        pauseClock
-    );
-
-document
-    .getElementById("resetClockButton")
-    .addEventListener(
-        "click",
-        resetClock
-    );
-
-document
-    .getElementById("gameMinusOneButton")
-    .addEventListener(
-        "click",
-        ()=>adjustGameClock(-1)
-    );
-
-document
-    .getElementById("gamePlusOneButton")
-    .addEventListener(
-        "click",
-        ()=>adjustGameClock(1)
-    );
-
-document
-    .getElementById("gameMinusTenthButton")
-    .addEventListener(
-        "click",
-        ()=>adjustGameClock(-0.1)
-    );
-
-document
-    .getElementById("gamePlusTenthButton")
-    .addEventListener(
-        "click",
-        ()=>adjustGameClock(0.1)
-    );
-
-document
-    .getElementById("shot24Button")
-    .addEventListener(
-        "click",
-        ()=>resetShotClock(24)
-    );
-
-document
-    .getElementById("shot14Button")
-    .addEventListener(
-        "click",
-        ()=>resetShotClock(14)
-    );
-
-document
-    .getElementById("shotMinusOneButton")
-    .addEventListener(
-        "click",
-        ()=>adjustShotClock(-1)
-    );
-
-document
-    .getElementById("shotPlusOneButton")
-    .addEventListener(
-        "click",
-        ()=>adjustShotClock(1)
-    );
-
-document
-    .getElementById("shotMinusTenthButton")
-    .addEventListener(
-        "click",
-        ()=>adjustShotClock(-0.1)
-    );
-
-document
-    .getElementById("shotPlusTenthButton")
-    .addEventListener(
-        "click",
-        ()=>adjustShotClock(0.1)
-    );
-
-document
-    .querySelectorAll(".period-button")
-    .forEach(button=>{
-        button.addEventListener(
-            "click",
-            ()=>{
-                setPeriod(
-                    button.dataset.period
-                );
-            }
-        );
-    });
-
-document
-    .getElementById("status-live")
-    .addEventListener(
-        "click",
-        ()=>setGameStatus("Live")
-    );
-
-document
-    .getElementById("status-half")
-    .addEventListener(
-        "click",
-        ()=>setGameStatus("Halftime")
-    );
-
-document
-    .getElementById("status-final")
-    .addEventListener(
-        "click",
-        submitCurrentGameForReview
-    );
-
-loadGameButton.addEventListener(
-    "click",
-    loadGame
-);
-
-gameIdInput.addEventListener(
-    "keydown",
-    event=>{
-        if(event.key === "Enter"){
-            event.preventDefault();
-            loadGame();
-        }
+async function saveClockState(){
+    if(!currentGame || isGameFinalized() || !hasClockControl){
+        return false;
     }
-);
+
+    calculateDisplayedTimes();
+
+    const remainingMilliseconds =
+        Math.max(0, Math.round(clockSeconds * 1000));
+
+    const shotClockRemainingMilliseconds =
+        Math.min(
+            remainingMilliseconds,
+            Math.max(0, Math.round(shotClockSeconds * 1000))
+        );
+
+    saveInProgress = true;
+    updateControlAvailability();
+
+    try{
+        const {data, error} =
+            await supabaseClient.rpc(
+                "update_clock_operator_state",
+                {
+                    p_game_id:Number(currentGame.id),
+                    p_device_id:clockDeviceId,
+                    p_clock_milliseconds:remainingMilliseconds,
+                    p_clock_running:Boolean(clockRunning),
+                    p_clock_end_time:
+                        clockRunning && clockEndTime
+                            ? new Date(clockEndTime).toISOString()
+                            : null,
+                    p_shot_clock_milliseconds:shotClockRemainingMilliseconds,
+                    p_shot_clock_end_time:
+                        clockRunning &&
+                        shotClockEndTime &&
+                        shotClockRemainingMilliseconds > 0
+                            ? new Date(shotClockEndTime).toISOString()
+                            : null
+                }
+            );
+
+        if(error) throw error;
+
+        const result = unwrapRpcData(data);
+
+        if(result){
+            currentGame = result;
+            applyClockData(result);
+            renderGameInformation();
+            broadcastClockState(result);
+        }
+
+        return true;
+    } catch(error){
+        console.error("Unable to save Clock Control state:", error);
+
+        const message = error?.message || "Unknown error";
+
+        if(message.toLowerCase().includes("does not currently control")){
+            hasClockControl = false;
+        }
+
+        showStatus("Unable to save clock: " + message, "error");
+        return false;
+    } finally {
+        saveInProgress = false;
+        updateControlAvailability();
+    }
+}
+
+async function startClock(){
+    if(!currentGame || clockRunning || isGameFinalized() || !hasClockControl){
+        return;
+    }
+
+    if(clockSeconds <= 0){
+        showStatus(
+            "Game clock is at 00:00. The Main Scorekeeper must set the next period before play continues.",
+            "warning"
+        );
+        return;
+    }
+
+    const now = Date.now();
+
+    clockEndTime = now + Math.round(clockSeconds * 1000);
+
+    shotClockSeconds = Math.min(
+        Math.max(0, shotClockSeconds),
+        clockSeconds
+    );
+
+    shotClockEndTime =
+        shotClockSeconds > 0
+            ? now + Math.round(shotClockSeconds * 1000)
+            : null;
+
+    clockRunning = true;
+    updateClockDisplays();
+
+    const saved = await saveClockState();
+
+    if(saved){
+        showStatus("Game and shot clocks started.", "success");
+    }
+}
+
+async function pauseClock(){
+    if(!currentGame || !clockRunning || !hasClockControl){
+        return;
+    }
+
+    calculateDisplayedTimes();
+
+    clockRunning = false;
+    clockEndTime = null;
+    shotClockEndTime = null;
+
+    updateClockDisplays();
+
+    const saved = await saveClockState();
+
+    if(saved){
+        showStatus("Game and shot clocks paused.", "success");
+    }
+}
+
+async function adjustGameClock(amount){
+    if(!currentGame || isGameFinalized() || !hasClockControl){
+        return;
+    }
+
+    if(clockRunning){
+        showStatus(
+            "Pause the game clock before making a manual game-clock correction.",
+            "warning"
+        );
+        return;
+    }
+
+    clockSeconds =
+        Math.max(
+            0,
+            Math.round((clockSeconds + amount) * 10) / 10
+        );
+
+    shotClockSeconds =
+        Math.min(shotClockSeconds, clockSeconds);
+
+    updateClockDisplays();
+
+    const saved = await saveClockState();
+
+    if(saved){
+        showStatus(
+            `Game clock adjusted by ${amount > 0 ? "+" : ""}${amount.toFixed(1)} second.`,
+            "success"
+        );
+    }
+}
+
+async function resetShotClock(seconds){
+    if(!currentGame || isGameFinalized() || !hasClockControl){
+        return;
+    }
+
+    calculateDisplayedTimes();
+
+    shotClockSeconds =
+        Math.min(
+            Math.max(0, Number(seconds)),
+            clockSeconds
+        );
+
+    shotClockEndTime =
+        clockRunning && shotClockSeconds > 0
+            ? Date.now() + Math.round(shotClockSeconds * 1000)
+            : null;
+
+    updateClockDisplays();
+
+    const saved = await saveClockState();
+
+    if(saved){
+        showStatus(`Shot clock reset to ${seconds}.0 seconds.`, "success");
+    }
+}
+
+async function adjustShotClock(amount){
+    if(!currentGame || isGameFinalized() || !hasClockControl){
+        return;
+    }
+
+    calculateDisplayedTimes();
+
+    shotClockSeconds =
+        Math.min(
+            clockSeconds,
+            Math.max(
+                0,
+                Math.round((shotClockSeconds + amount) * 10) / 10
+            )
+        );
+
+    shotClockEndTime =
+        clockRunning && shotClockSeconds > 0
+            ? Date.now() + Math.round(shotClockSeconds * 1000)
+            : null;
+
+    updateClockDisplays();
+
+    const saved = await saveClockState();
+
+    if(saved){
+        showStatus(
+            `Shot clock adjusted by ${amount > 0 ? "+" : ""}${amount.toFixed(1)} second.`,
+            "success"
+        );
+    }
+}
+
+async function logoutClockOperator(){
+    logoutButton.disabled = true;
+    logoutButton.textContent = "LOGGING OUT...";
+
+    try{
+        await releaseClockControl(true);
+        await supabaseClient.auth.signOut();
+    } finally {
+        window.location.replace("login.html");
+    }
+}
+
+document.getElementById("startClockButton").addEventListener("click", startClock);
+document.getElementById("pauseClockButton").addEventListener("click", pauseClock);
+document.getElementById("gameMinusOneButton").addEventListener("click", ()=>adjustGameClock(-1));
+document.getElementById("gamePlusOneButton").addEventListener("click", ()=>adjustGameClock(1));
+document.getElementById("gameMinusTenthButton").addEventListener("click", ()=>adjustGameClock(-0.1));
+document.getElementById("gamePlusTenthButton").addEventListener("click", ()=>adjustGameClock(0.1));
+document.getElementById("shot24Button").addEventListener("click", ()=>resetShotClock(24));
+document.getElementById("shot14Button").addEventListener("click", ()=>resetShotClock(14));
+document.getElementById("shotMinusOneButton").addEventListener("click", ()=>adjustShotClock(-1));
+document.getElementById("shotPlusOneButton").addEventListener("click", ()=>adjustShotClock(1));
+document.getElementById("shotMinusTenthButton").addEventListener("click", ()=>adjustShotClock(-0.1));
+document.getElementById("shotPlusTenthButton").addEventListener("click", ()=>adjustShotClock(0.1));
+
+loadGameButton.addEventListener("click", loadSelectedGame);
+refreshAssignmentsButton.addEventListener("click", loadAssignedGames);
+assignedGameSelect.addEventListener("change", loadSelectedGame);
+releaseControlButton.addEventListener("click", ()=>releaseClockControl(false));
+logoutButton.addEventListener("click", logoutClockOperator);
 
 function runDisplayAnimation(){
     updateClockDisplays();
-    displayAnimationFrame =
-        requestAnimationFrame(
-            runDisplayAnimation
-        );
+    displayAnimationFrame = requestAnimationFrame(runDisplayAnimation);
 }
 
 runDisplayAnimation();
 
-window.addEventListener(
-    "focus",
-    ()=>{
+window.addEventListener("focus", ()=>{
+    if(currentGame){
         fetchCurrentGame(true).catch(console.error);
+        claimClockControl(true).catch(console.error);
     }
-);
+});
 
-document.addEventListener(
-    "visibilitychange",
-    ()=>{
-        if(!document.hidden){
-            fetchCurrentGame(true).catch(console.error);
-        }
+document.addEventListener("visibilitychange", ()=>{
+    if(!document.hidden && currentGame){
+        fetchCurrentGame(true).catch(console.error);
+        claimClockControl(true).catch(console.error);
     }
-);
+});
 
 if(clockBroadcastChannel){
-    clockBroadcastChannel.addEventListener(
-        "message",
-        event=>{
-            const game = event?.data?.game;
+    clockBroadcastChannel.addEventListener("message", event=>{
+        const game = event?.data?.game;
 
-            if(
-                !currentGame ||
-                !game ||
-                Number(game.id) !== Number(currentGame.id)
-            ){
-                return;
-            }
-
-            currentGame = game;
-            applyClockData(game);
-            renderGameInformation();
+        if(
+            !currentGame ||
+            !game ||
+            Number(game.id) !== Number(currentGame.id)
+        ){
+            return;
         }
-    );
+
+        currentGame = game;
+        applyClockData(game);
+        renderGameInformation();
+    });
 }
 
-window.addEventListener(
-    "beforeunload",
-    ()=>{
-        unsubscribeFromGame();
+window.addEventListener("beforeunload", ()=>{
+    unsubscribeFromGame();
+    stopHeartbeat();
 
-        if(displayAnimationFrame){
-            cancelAnimationFrame(
-                displayAnimationFrame
-            );
-        }
-
-        if(clockBroadcastChannel){
-            clockBroadcastChannel.close();
-        }
+    if(displayAnimationFrame){
+        cancelAnimationFrame(displayAnimationFrame);
     }
-);
+
+    if(clockBroadcastChannel){
+        clockBroadcastChannel.close();
+    }
+
+    if(currentGame && hasClockControl){
+        supabaseClient.rpc(
+            "release_clock_operator_session",
+            {
+                p_game_id:Number(currentGame.id),
+                p_device_id:clockDeviceId
+            }
+        ).catch(()=>{});
+    }
+});
 
 updateControlAvailability();
+authorizeClockOperator();
 </script>
 
 </body>
