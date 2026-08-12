@@ -2021,6 +2021,128 @@
       }
     }
 
+
+    /* =========================
+       PUBLIC LEAGUE PAGE SYNC
+       Mirrors leagues.html records inside Super Admin.
+       ========================= */
+    .league-page-sync-panel {
+      margin-top: 18px;
+      overflow: hidden;
+    }
+
+    .league-page-sync-summary {
+      padding: 13px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: #667085;
+      background: #fafafa;
+      border-bottom: 1px solid var(--line);
+      font-size: 10px;
+      font-weight: 750;
+    }
+
+    .league-page-sync-summary strong {
+      color: #171717;
+    }
+
+    .league-page-sync-note {
+      color: #8b929c;
+      font-size: 9px;
+      line-height: 1.5;
+    }
+
+    .league-page-sync-table-wrap {
+      overflow-x: auto;
+    }
+
+    .league-page-sync-table {
+      width: 100%;
+      min-width: 850px;
+      border-collapse: collapse;
+    }
+
+    .league-page-sync-table th,
+    .league-page-sync-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+      font-size: 10px;
+    }
+
+    .league-page-sync-table th {
+      color: #667085;
+      background: #fafafa;
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: .65px;
+      text-transform: uppercase;
+    }
+
+    .league-page-sync-table tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .league-page-sync-pending {
+      background: rgba(255, 107, 0, .035);
+    }
+
+    .league-page-sync-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .league-page-sync-button {
+      min-height: 30px;
+      padding: 0 9px;
+      border-radius: 7px;
+      font-size: 8px;
+      font-weight: 900;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .league-page-sync-button.approve {
+      color: #ffffff;
+      background: #067647;
+      border: 1px solid #067647;
+    }
+
+    .league-page-sync-button.edit {
+      color: #db5c00;
+      background: #fff1e7;
+      border: 1px solid #ffd1b0;
+    }
+
+    .league-page-sync-button.public {
+      color: #344054;
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+    }
+
+    .league-page-sync-button.archive {
+      color: #b42318;
+      background: #fff4f2;
+      border: 1px solid #fecdca;
+    }
+
+    .league-page-sync-empty {
+      padding: 32px 18px !important;
+      color: #667085;
+      text-align: center !important;
+      font-size: 11px !important;
+      line-height: 1.55;
+    }
+
   </style>
 </head>
 
@@ -2506,7 +2628,7 @@
                 <span class="stat-symbol">PD</span>
               </div>
               <div id="leagueManagementPendingCount" class="stat-value">0</div>
-              <p class="stat-helper">Pending league records</p>
+              <p class="stat-helper">New registrations awaiting review</p>
             </article>
 
             <article class="stat-card">
@@ -2572,6 +2694,43 @@
 
                 <div id="leagueManagementMessage" class="league-management-message" aria-live="polite"></div>
               </form>
+            </section>
+
+            <section class="panel league-page-sync-panel">
+              <header class="panel-header">
+                <div>
+                  <h2>League Page Sync</h2>
+                  <p>Mirrors the league records currently eligible to appear on the public leagues.html page.</p>
+                </div>
+                <button id="refreshLeaguePageSyncButton" class="secondary-button" type="button">SYNC NOW</button>
+              </header>
+
+              <div class="league-page-sync-summary">
+                <div>
+                  <strong id="leaguePageSyncVisibleCount">0</strong> league records synced from the same <code>public.leagues</code> source.
+                </div>
+                <div class="league-page-sync-note">
+                  Pending registrations are highlighted so the Super Admin can review them quickly.
+                </div>
+              </div>
+
+              <div class="league-page-sync-table-wrap">
+                <table class="league-page-sync-table">
+                  <thead>
+                    <tr>
+                      <th>League</th>
+                      <th>Location</th>
+                      <th>Season / Division</th>
+                      <th>Status</th>
+                      <th>Registered</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="leaguePageSyncTableBody">
+                    <tr><td class="league-page-sync-empty" colspan="6">Loading registered leagues...</td></tr>
+                  </tbody>
+                </table>
+              </div>
             </section>
 
             <section class="panel">
@@ -2980,6 +3139,10 @@
     const leagueManagementDescription = document.getElementById("leagueManagementDescription");
     const leagueManagementMessage = document.getElementById("leagueManagementMessage");
     const leagueManagementTableBody = document.getElementById("leagueManagementTableBody");
+    const leaguePageSyncTableBody = document.getElementById("leaguePageSyncTableBody");
+    const leaguePageSyncVisibleCount = document.getElementById("leaguePageSyncVisibleCount");
+    const refreshLeaguePageSyncButton = document.getElementById("refreshLeaguePageSyncButton");
+
     const leagueManagementSearch = document.getElementById("leagueManagementSearch");
     const refreshLeagueManagementButton = document.getElementById("refreshLeagueManagementButton");
     const saveLeagueButton = document.getElementById("saveLeagueButton");
@@ -3768,7 +3931,157 @@
         restricted.toLocaleString();
     }
 
+    function isLeagueVisibleOnPublicPage(league) {
+      return !["archived", "suspended", "rejected"].includes(
+        String(league?.status || "").toLowerCase()
+      );
+    }
+
+    function publicLeaguePageRows() {
+      return leagueManagementRows.filter(isLeagueVisibleOnPublicPage);
+    }
+
+    function renderLeaguePageSync() {
+      const rows = publicLeaguePageRows();
+
+      leaguePageSyncVisibleCount.textContent =
+        rows.length.toLocaleString();
+
+      if (!rows.length) {
+        leaguePageSyncTableBody.innerHTML =
+          '<tr><td class="league-page-sync-empty" colspan="6">No league records currently match the public League page visibility rules.</td></tr>';
+        return;
+      }
+
+      leaguePageSyncTableBody.innerHTML = rows.map(league => {
+        const status = String(league.status || "pending").toLowerCase();
+        const pending = status === "pending";
+        const seasonDivision = [
+          league.season || "No season label",
+          league.division || "No division label"
+        ].join(" · ");
+
+        const approveButton = pending
+          ? `<button
+               class="league-page-sync-button approve"
+               type="button"
+               data-public-league-action="approve"
+               data-league-id="${escapeHtml(league.id)}"
+             >APPROVE</button>`
+          : "";
+
+        return `
+          <tr class="${pending ? "league-page-sync-pending" : ""}">
+            <td>
+              <span class="league-management-name">${escapeHtml(league.name || "Unnamed League")}</span>
+              <div class="league-management-description">
+                ${escapeHtml(league.description || "No description")}
+              </div>
+            </td>
+            <td>${escapeHtml(league.location || "—")}</td>
+            <td>${escapeHtml(seasonDivision)}</td>
+            <td>
+              <span class="league-status-pill ${leagueStatusClass(status)}">
+                ${escapeHtml(status)}
+              </span>
+            </td>
+            <td>${escapeHtml(formatLeagueManagementDate(league.created_at))}</td>
+            <td>
+              <div class="league-page-sync-actions">
+                ${approveButton}
+                <button
+                  class="league-page-sync-button edit"
+                  type="button"
+                  data-public-league-action="edit"
+                  data-league-id="${escapeHtml(league.id)}"
+                >EDIT</button>
+                <a
+                  class="league-page-sync-button public"
+                  href="league1.html?id=${encodeURIComponent(league.id)}"
+                >VIEW PUBLIC</a>
+                <button
+                  class="league-page-sync-button archive"
+                  type="button"
+                  data-public-league-action="archive"
+                  data-league-id="${escapeHtml(league.id)}"
+                >ARCHIVE</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    async function reviewPublicLeagueRegistration(leagueId, action) {
+      const league = leagueManagementRows.find(
+        item => String(item.id) === String(leagueId)
+      );
+
+      if (!league) return;
+
+      const nextStatus = action === "approve" ? "active" : "archived";
+      const verb = action === "approve" ? "approve" : "archive";
+
+      if (action === "archive") {
+        const confirmed = window.confirm(
+          `Archive "${league.name}"?\n\nIt will no longer appear on the public League page.`
+        );
+        if (!confirmed) return;
+      }
+
+      setLeagueManagementMessage(
+        `${action === "approve" ? "Approving" : "Archiving"} ${league.name}...`
+      );
+
+      try {
+        const { data, error } = await supabaseClient
+          .from("leagues")
+          .update({
+            status: nextStatus,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", league.id)
+          .select("id, name, description, location, season, division, status, created_by, created_at, updated_at")
+          .single();
+
+        if (error) throw error;
+
+        await logLeagueManagementAction(
+          action === "approve"
+            ? "league_registration_approved"
+            : "league_registration_archived",
+          data.id,
+          {
+            league_name: data.name,
+            status: data.status,
+            source: "public_league_page_sync"
+          }
+        );
+
+        await loadLeagueManagement({
+          preserveWorkspaceSelection: true,
+          preferredLeagueId: data.id,
+          loadSelectedWorkspace:
+            document.getElementById("adminViewLeagueWorkspace")?.checked === true
+        });
+
+        await loadDashboardCounts();
+
+        setLeagueManagementMessage(
+          `${data.name} was ${verb}d successfully.`,
+          "success"
+        );
+      } catch (error) {
+        console.error("League registration review failed:", error);
+        setLeagueManagementMessage(
+          error?.message || "Unable to update this league registration.",
+          "error"
+        );
+      }
+    }
+
     function renderLeagueManagement() {
+      renderLeaguePageSync();
       const query = leagueManagementSearch.value.trim().toLowerCase();
 
       const rows = leagueManagementRows.filter(league => {
@@ -4232,6 +4545,8 @@
         game_returned_for_correction: "Game Returned for Correction",
         roster_approved: "Roster Approved",
         roster_rejected: "Roster Rejected",
+        league_registration_approved: "League Registration Approved",
+        league_registration_archived: "League Registration Archived",
         league_created: "League Created",
         league_updated: "League Updated",
         league_deleted: "League Deleted",
@@ -5433,6 +5748,30 @@
       });
 
       lastCreatedLeagueId = null;
+    });
+
+    refreshLeaguePageSyncButton.addEventListener("click", () => {
+      loadLeagueManagement({
+        preserveWorkspaceSelection: true,
+        loadSelectedWorkspace:
+          document.getElementById("adminViewLeagueWorkspace")?.checked === true
+      });
+    });
+
+    leaguePageSyncTableBody.addEventListener("click", event => {
+      const button = event.target.closest("[data-public-league-action]");
+      if (!button) return;
+
+      const leagueId = button.dataset.leagueId;
+      const action = button.dataset.publicLeagueAction;
+
+      if (action === "approve") {
+        reviewPublicLeagueRegistration(leagueId, "approve");
+      } else if (action === "archive") {
+        reviewPublicLeagueRegistration(leagueId, "archive");
+      } else if (action === "edit") {
+        editLeagueRecord(leagueId);
+      }
     });
 
     leagueManagementForm.addEventListener("submit", saveLeagueRecord);
