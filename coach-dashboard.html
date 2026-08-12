@@ -222,6 +222,25 @@
     .mini-button:disabled { opacity:.55; cursor:wait; }
     .player-actions { display:flex; gap:6px; flex-wrap:wrap; }
 
+    .lineup-toolbar { padding: 18px; display: grid; grid-template-columns: minmax(240px, 1fr) auto; gap: 12px; align-items: end; border-bottom: 1px solid var(--line); }
+    .lineup-toolbar .form-group { min-width: 0; }
+    .lineup-summary { padding: 14px 18px; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; border-bottom: 1px solid var(--line); background: #fafafa; }
+    .lineup-summary-box { padding: 12px 14px; background: #fff; border: 1px solid var(--line); border-radius: 8px; }
+    .lineup-summary-box span, .lineup-summary-box strong { display: block; }
+    .lineup-summary-box span { color: var(--muted); font-size: 10px; font-weight: bold; text-transform: uppercase; }
+    .lineup-summary-box strong { margin-top: 5px; font-size: 20px; }
+    .lineup-footer { padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-top: 1px solid var(--line); }
+    .lineup-note { color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .lineup-note strong { color: var(--ink); }
+    .lineup-attendance-select { min-width: 130px; height: 36px; padding: 0 9px; border: 1px solid #d0d5dd; border-radius: 7px; background: #fff; font: inherit; }
+    .starter-toggle { display: inline-flex; align-items: center; gap: 7px; font-weight: bold; cursor: pointer; }
+    .starter-toggle input { width: 17px; height: 17px; accent-color: var(--orange); }
+    .starter-row { background: #fff8f2; }
+    .unavailable-row { opacity: .62; }
+    .lineup-message { min-height: 20px; padding: 0 18px 16px; color: var(--muted); font-size: 12px; }
+    .lineup-message.success { color: var(--success); }
+    .lineup-message.error { color: #b42318; }
+
     .team-details { padding: 18px; display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
     .detail-box { padding: 13px; background: #fafafa; border: 1px solid var(--line); border-radius: 8px; }
     .detail-box span, .detail-box strong { display: block; }
@@ -259,6 +278,10 @@
       .stats-grid, .team-details, .module-grid { grid-template-columns: 1fr; }
       .submission-body { align-items: stretch; flex-direction: column; }
       .application-form { grid-template-columns: 1fr; }
+      .lineup-toolbar { grid-template-columns: 1fr; }
+      .lineup-summary { grid-template-columns: 1fr; }
+      .lineup-footer { align-items: stretch; flex-direction: column; }
+      .lineup-footer .primary-button { width: 100%; }
     }
     /* Unified Hoop Hub PH typography */
     body, button, input, select, textarea { font-family: Arial, Helvetica, sans-serif; }
@@ -307,8 +330,8 @@
       <a class="nav-link" href="#rosterSubmission"><span class="nav-icon">RS</span> Submit Roster</a>
       <a class="nav-link" href="#addPlayerPanel"><span class="nav-icon">AP</span> Add Player</a>
       <a class="nav-link" href="#playerInvitationsPanel"><span class="nav-icon">IV</span> Player Invites</a>
-      <a class="nav-link" href="#modules"><span class="nav-icon">LU</span> Starting Lineup <span class="coming">Next</span></a>
-      <a class="nav-link" href="#modules"><span class="nav-icon">AT</span> Attendance <span class="coming">Next</span></a>
+      <a class="nav-link" href="#lineupAttendancePanel"><span class="nav-icon">LU</span> Starting Lineup</a>
+      <a class="nav-link" href="#lineupAttendancePanel"><span class="nav-icon">AT</span> Attendance</a>
 
       <p class="nav-label">Team Records</p>
       <a class="nav-link" href="#gameSchedulePanel"><span class="nav-icon">GM</span> Game Schedule</a>
@@ -450,6 +473,55 @@
           </form>
         </section>
 
+        <section id="lineupAttendancePanel" class="panel">
+          <header class="panel-header">
+            <div>
+              <h2>Starting Lineup & Attendance</h2>
+              <p>Confirm player availability and submit the official starting five for a scheduled game.</p>
+            </div>
+            <span id="lineupStatusBadge" class="status-badge pending">Draft</span>
+          </header>
+
+          <div class="lineup-toolbar">
+            <div class="form-group">
+              <label for="lineupGameSelect">Select Game</label>
+              <select id="lineupGameSelect" class="form-input">
+                <option value="">Loading scheduled games...</option>
+              </select>
+            </div>
+            <button id="refreshLineupButton" class="secondary-button" type="button">Refresh Lineup</button>
+          </div>
+
+          <div class="lineup-summary">
+            <div class="lineup-summary-box"><span>Starting Five</span><strong id="lineupStarterCount">0 / 5</strong></div>
+            <div class="lineup-summary-box"><span>Available</span><strong id="lineupAvailableCount">0</strong></div>
+            <div class="lineup-summary-box"><span>Unavailable</span><strong id="lineupUnavailableCount">0</strong></div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th>Jersey</th>
+                  <th>Position</th>
+                  <th>Attendance</th>
+                  <th>Starter</th>
+                </tr>
+              </thead>
+              <tbody id="lineupTableBody">
+                <tr><td class="empty-state" colspan="5">Select a scheduled game to prepare the lineup.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="lineup-footer">
+            <div class="lineup-note" id="lineupHelpText"><strong>Draft saves automatically.</strong> Select exactly five available starters before submitting.</div>
+            <button id="submitLineupButton" class="primary-button" type="button" disabled>Submit Starting Lineup</button>
+          </div>
+          <div id="lineupMessage" class="lineup-message" role="status" aria-live="polite"></div>
+        </section>
+
         <section id="gameSchedulePanel" class="panel">
           <header class="panel-header">
             <div>
@@ -508,6 +580,9 @@
     let players = [];
     let openApplicationLeagues = [];
     let scheduleLoadToken = 0;
+    let lineupLoadToken = 0;
+    let coachScheduleGames = [];
+    let currentLineupRows = [];
 
     const authScreen = document.getElementById("authScreen");
     const appShell = document.getElementById("appShell");
@@ -837,8 +912,10 @@
       const requestToken = ++scheduleLoadToken;
 
       if (!assignment) {
+        coachScheduleGames = [];
         body.innerHTML = '<tr><td class="empty-state" colspan="6">Select an assigned team to view its game schedule.</td></tr>';
         if (refreshButton) refreshButton.disabled = true;
+        renderLineupGameOptions(null, []);
         return;
       }
 
@@ -870,6 +947,8 @@
           return aTime - bTime;
         });
 
+        renderLineupGameOptions(assignment, games);
+
         if (!games.length) {
           body.innerHTML = '<tr><td class="empty-state" colspan="6">No games have been scheduled for this team in the selected league.</td></tr>';
           return;
@@ -895,6 +974,8 @@
         if (requestToken !== scheduleLoadToken) return;
 
         console.error("Unable to load coach game schedule:", error);
+        coachScheduleGames = [];
+        renderLineupGameOptions(assignment, []);
         body.innerHTML = `
           <tr>
             <td class="empty-state" colspan="6">Unable to load game schedule: ${escapeHtml(error?.message || "Unknown error")}</td>
@@ -902,6 +983,292 @@
         `;
       } finally {
         if (requestToken === scheduleLoadToken && refreshButton) refreshButton.disabled = false;
+      }
+    }
+
+    function resetLineupPanel(message = "Select a scheduled game to prepare the lineup.") {
+      currentLineupRows = [];
+      const select = document.getElementById("lineupGameSelect");
+      const body = document.getElementById("lineupTableBody");
+      const badge = document.getElementById("lineupStatusBadge");
+      const submitButton = document.getElementById("submitLineupButton");
+      const refreshButton = document.getElementById("refreshLineupButton");
+      document.getElementById("lineupStarterCount").textContent = "0 / 5";
+      document.getElementById("lineupAvailableCount").textContent = "0";
+      document.getElementById("lineupUnavailableCount").textContent = "0";
+      document.getElementById("lineupMessage").className = "lineup-message";
+      document.getElementById("lineupMessage").textContent = "";
+      document.getElementById("lineupHelpText").innerHTML = "<strong>Draft saves automatically.</strong> Select exactly five available starters before submitting.";
+      if (body) body.innerHTML = `<tr><td class="empty-state" colspan="5">${escapeHtml(message)}</td></tr>`;
+      if (badge) { badge.className = "status-badge pending"; badge.textContent = "Draft"; }
+      if (submitButton) submitButton.disabled = true;
+      if (refreshButton) refreshButton.disabled = !select?.value;
+    }
+
+    function lineupGameLabel(game) {
+      const date = formatScheduleDate(game.scheduled_at);
+      const opponent = game.opponent_team_name || "Opponent TBD";
+      const status = coachGameStatus(game);
+      return `${date} — vs ${opponent} — ${status}`;
+    }
+
+    function renderLineupGameOptions(assignment, games) {
+      const select = document.getElementById("lineupGameSelect");
+      if (!select) return;
+
+      const previous = select.value;
+      coachScheduleGames = Array.isArray(games) ? games : [];
+
+      if (!assignment) {
+        select.innerHTML = '<option value="">No assigned team</option>';
+        select.disabled = true;
+        resetLineupPanel("Select an assigned team to prepare a lineup.");
+        return;
+      }
+
+      if (!coachScheduleGames.length) {
+        select.innerHTML = '<option value="">No scheduled games</option>';
+        select.disabled = true;
+        resetLineupPanel("No games are scheduled for this team in the selected league.");
+        return;
+      }
+
+      select.disabled = false;
+      select.innerHTML = coachScheduleGames.map(game =>
+        `<option value="${escapeHtml(game.game_id)}">${escapeHtml(lineupGameLabel(game))}</option>`
+      ).join("");
+
+      const previousStillExists = coachScheduleGames.some(game => String(game.game_id) === previous);
+      const preferred = previousStillExists
+        ? previous
+        : String((coachScheduleGames.find(game => !isFinalCoachGame(game)) || coachScheduleGames[0]).game_id);
+
+      select.value = preferred;
+      document.getElementById("refreshLineupButton").disabled = false;
+      loadSelectedGameLineup();
+    }
+
+    function selectedLineupGame() {
+      const gameId = String(document.getElementById("lineupGameSelect")?.value || "");
+      return coachScheduleGames.find(game => String(game.game_id) === gameId) || null;
+    }
+
+    function renderCurrentLineup() {
+      const body = document.getElementById("lineupTableBody");
+      const badge = document.getElementById("lineupStatusBadge");
+      const submitButton = document.getElementById("submitLineupButton");
+      const help = document.getElementById("lineupHelpText");
+      const game = selectedLineupGame();
+      const finalGame = !!game && isFinalCoachGame(game);
+      const submitted = currentLineupRows.some(row => row.lineup_submitted === true);
+      const starterCount = currentLineupRows.filter(row => row.is_starter && row.attendance === "available").length;
+      const availableCount = currentLineupRows.filter(row => row.attendance === "available").length;
+      const unavailableCount = currentLineupRows.filter(row => row.attendance === "unavailable").length;
+      const locked = submitted || finalGame;
+
+      document.getElementById("lineupStarterCount").textContent = `${starterCount} / 5`;
+      document.getElementById("lineupAvailableCount").textContent = availableCount.toLocaleString();
+      document.getElementById("lineupUnavailableCount").textContent = unavailableCount.toLocaleString();
+
+      if (submitted) {
+        badge.className = "status-badge";
+        badge.textContent = "Submitted";
+        help.innerHTML = `<strong>Lineup locked.</strong> Submitted ${escapeHtml(formatScheduleDate(currentLineupRows[0]?.submitted_at))}.`;
+      } else if (finalGame) {
+        badge.className = "status-badge rejected";
+        badge.textContent = "Final";
+        help.innerHTML = "<strong>Game finalized.</strong> Lineup editing is no longer available.";
+      } else {
+        badge.className = "status-badge pending";
+        badge.textContent = starterCount === 5 ? "Ready" : "Draft";
+        help.innerHTML = "<strong>Draft saves automatically.</strong> Select exactly five available starters before submitting.";
+      }
+
+      submitButton.disabled = locked || starterCount !== 5 || !currentLineupRows.length;
+      submitButton.textContent = submitted ? "Lineup Submitted" : "Submit Starting Lineup";
+
+      if (!currentLineupRows.length) {
+        body.innerHTML = '<tr><td class="empty-state" colspan="5">No player records are available for this game lineup.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = currentLineupRows.map(row => {
+        const isUnavailable = row.attendance === "unavailable";
+        const rowClass = row.is_starter ? "starter-row" : (isUnavailable ? "unavailable-row" : "");
+        const disabled = locked ? "disabled" : "";
+        const starterDisabled = locked || isUnavailable ? "disabled" : "";
+        const fullName = `${row.first_name || ""} ${row.last_name || ""}`.trim() || "Unnamed player";
+
+        return `
+          <tr class="${rowClass}">
+            <td><strong>${escapeHtml(fullName)}</strong></td>
+            <td>${escapeHtml(row.jersey_number ?? "—")}</td>
+            <td>${escapeHtml(row.player_position || "—")}</td>
+            <td>
+              <select class="lineup-attendance-select" ${disabled} onchange="changeLineupAttendance('${row.player_id}', this)">
+                <option value="available" ${row.attendance === "available" ? "selected" : ""}>Available</option>
+                <option value="unavailable" ${row.attendance === "unavailable" ? "selected" : ""}>Unavailable</option>
+              </select>
+            </td>
+            <td>
+              <label class="starter-toggle">
+                <input type="checkbox" ${row.is_starter ? "checked" : ""} ${starterDisabled} onchange="changeLineupStarter('${row.player_id}', this)">
+                <span>${row.is_starter ? "Starter" : "Bench"}</span>
+              </label>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    async function loadSelectedGameLineup() {
+      const assignment = selectedAssignment();
+      const game = selectedLineupGame();
+      const body = document.getElementById("lineupTableBody");
+      const refreshButton = document.getElementById("refreshLineupButton");
+      const message = document.getElementById("lineupMessage");
+      const token = ++lineupLoadToken;
+
+      if (!assignment || !game) {
+        resetLineupPanel("Select a scheduled game to prepare the lineup.");
+        return;
+      }
+
+      refreshButton.disabled = true;
+      document.getElementById("submitLineupButton").disabled = true;
+      body.innerHTML = '<tr><td class="empty-state" colspan="5">Loading lineup and attendance...</td></tr>';
+      message.className = "lineup-message";
+      message.textContent = "";
+
+      try {
+        const { data, error } = await supabaseClient.rpc("get_coach_game_lineup", {
+          p_game_id: Number(game.game_id),
+          p_team_id: assignment.team_id
+        });
+
+        if (token !== lineupLoadToken) return;
+        if (error) throw error;
+
+        currentLineupRows = (data || []).map(row => ({
+          ...row,
+          attendance: String(row.attendance || "available").toLowerCase(),
+          is_starter: row.is_starter === true,
+          lineup_submitted: row.lineup_submitted === true
+        }));
+
+        renderCurrentLineup();
+      } catch (error) {
+        if (token !== lineupLoadToken) return;
+        currentLineupRows = [];
+        console.error("Unable to load coach lineup:", error);
+        body.innerHTML = `<tr><td class="empty-state" colspan="5">Unable to load lineup: ${escapeHtml(error?.message || "Unknown error")}</td></tr>`;
+        message.className = "lineup-message error";
+        message.textContent = error?.message || "Unable to load lineup.";
+      } finally {
+        if (token === lineupLoadToken) refreshButton.disabled = false;
+      }
+    }
+
+    async function saveLineupPlayer(row, attendance, isStarter, control) {
+      const assignment = selectedAssignment();
+      const game = selectedLineupGame();
+      if (!assignment || !game || !row) return;
+
+      const message = document.getElementById("lineupMessage");
+      if (control) control.disabled = true;
+      message.className = "lineup-message";
+      message.textContent = "Saving lineup change...";
+
+      try {
+        const { error } = await supabaseClient.rpc("save_coach_game_lineup_player", {
+          p_game_id: Number(game.game_id),
+          p_team_id: assignment.team_id,
+          p_player_id: row.player_id,
+          p_attendance: attendance,
+          p_is_starter: isStarter
+        });
+        if (error) throw error;
+
+        row.attendance = attendance;
+        row.is_starter = isStarter;
+        message.className = "lineup-message success";
+        message.textContent = "Lineup draft saved.";
+        renderCurrentLineup();
+      } catch (error) {
+        console.error("Unable to save lineup change:", error);
+        message.className = "lineup-message error";
+        message.textContent = error?.message || "Unable to save lineup change.";
+        alert("Unable to save lineup: " + (error?.message || "Unknown error"));
+        await loadSelectedGameLineup();
+      }
+    }
+
+    async function changeLineupAttendance(playerId, select) {
+      const row = currentLineupRows.find(item => item.player_id === playerId);
+      if (!row) return;
+      const attendance = select.value === "unavailable" ? "unavailable" : "available";
+      const starter = attendance === "unavailable" ? false : row.is_starter;
+      await saveLineupPlayer(row, attendance, starter, select);
+    }
+
+    async function changeLineupStarter(playerId, checkbox) {
+      const row = currentLineupRows.find(item => item.player_id === playerId);
+      if (!row) return;
+
+      if (checkbox.checked && row.attendance !== "available") {
+        checkbox.checked = false;
+        return alert("An unavailable player cannot be selected as a starter.");
+      }
+
+      if (checkbox.checked) {
+        const otherStarters = currentLineupRows.filter(item => item.player_id !== playerId && item.is_starter).length;
+        if (otherStarters >= 5) {
+          checkbox.checked = false;
+          return alert("You can select a maximum of five starting players.");
+        }
+      }
+
+      await saveLineupPlayer(row, row.attendance, checkbox.checked, checkbox);
+    }
+
+    async function submitCurrentLineup() {
+      const assignment = selectedAssignment();
+      const game = selectedLineupGame();
+      const button = document.getElementById("submitLineupButton");
+      const message = document.getElementById("lineupMessage");
+      if (!assignment || !game) return alert("Select a scheduled game first.");
+
+      const starters = currentLineupRows.filter(row => row.is_starter && row.attendance === "available");
+      if (starters.length !== 5) return alert("Please select exactly five available starting players before submitting.");
+
+      if (!confirm(`Submit and lock the starting lineup for Game #${game.game_id}?\n\nAfter submission, the coach can no longer change attendance or starters for this game.`)) return;
+
+      button.disabled = true;
+      button.textContent = "Submitting Lineup...";
+      message.className = "lineup-message";
+      message.textContent = "Submitting and locking the official lineup...";
+
+      try {
+        const { data, error } = await supabaseClient.rpc("submit_coach_game_lineup", {
+          p_game_id: Number(game.game_id),
+          p_team_id: assignment.team_id
+        });
+        if (error) throw error;
+
+        const result = Array.isArray(data) ? data[0] : data;
+        message.className = "lineup-message success";
+        message.textContent = result
+          ? `Lineup submitted: ${result.starter_count} starters, ${result.available_count} available, ${result.unavailable_count} unavailable.`
+          : "Starting lineup submitted successfully.";
+        await loadSelectedGameLineup();
+      } catch (error) {
+        console.error("Unable to submit lineup:", error);
+        message.className = "lineup-message error";
+        message.textContent = error?.message || "Unable to submit lineup.";
+        alert("Unable to submit lineup: " + (error?.message || "Unknown error"));
+        renderCurrentLineup();
+      } finally {
+        button.textContent = "Submit Starting Lineup";
       }
     }
 
@@ -1269,6 +1636,7 @@
         closeTeamProfileEditor();
         loadSubmissionStatus(null);
         loadPlayerInvitations(null);
+        resetLineupPanel("Select an assigned team to prepare a lineup.");
         loadTeamSchedule(null);
         return;
       }
@@ -1297,6 +1665,9 @@
 
       loadSubmissionStatus(assignment);
       loadPlayerInvitations(assignment);
+      document.getElementById("lineupGameSelect").innerHTML = '<option value="">Loading scheduled games...</option>';
+      document.getElementById("lineupGameSelect").disabled = true;
+      resetLineupPanel("Loading scheduled games for this team...");
       loadTeamSchedule(assignment);
     }
 
@@ -1304,6 +1675,10 @@
       document.getElementById("sidebar").classList.remove("open");
       document.getElementById("sidebarOverlay").classList.remove("open");
     }
+
+    document.getElementById("lineupGameSelect").addEventListener("change", loadSelectedGameLineup);
+    document.getElementById("refreshLineupButton").addEventListener("click", loadSelectedGameLineup);
+    document.getElementById("submitLineupButton").addEventListener("click", submitCurrentLineup);
 
     document.getElementById("refreshScheduleButton").addEventListener("click", function () {
       loadTeamSchedule(selectedAssignment());
