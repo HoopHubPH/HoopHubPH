@@ -1224,6 +1224,236 @@
       }
     }
 
+
+    /* =========================
+       REFINED COMMISSIONER MENU
+       Larger, more readable text without changing the
+       proportional full-height menu behavior.
+       ========================= */
+    .sidebar .nav-link {
+      font-size: 11.5px;
+      font-weight: 820;
+      letter-spacing: .05px;
+    }
+
+    .sidebar .nav-label {
+      font-size: 8.5px;
+      letter-spacing: 1.05px;
+    }
+
+    .sidebar .nav-icon {
+      font-size: 7.8px;
+      font-weight: 900;
+    }
+
+    @media (max-height: 720px) {
+      .sidebar .nav-link {
+        font-size: 10.5px;
+      }
+
+      .sidebar .nav-label {
+        font-size: 7.8px;
+      }
+
+      .sidebar .nav-icon {
+        font-size: 7px;
+      }
+    }
+
+    @media (max-height: 620px) {
+      .sidebar .nav-link {
+        font-size: 9.8px;
+      }
+
+      .sidebar .nav-label {
+        font-size: 7.2px;
+      }
+    }
+
+    /* =========================
+       PROPORTIONAL SEASONS & DIVISIONS WORKSPACE
+       Same functions, better balance and spacing.
+       ========================= */
+    #seasonsPanel .panel-header {
+      min-height: 68px;
+      padding: 15px 18px;
+    }
+
+    #seasonsPanel .panel-header h2 {
+      font-size: 17px;
+    }
+
+    #seasonsPanel .panel-header p {
+      max-width: 760px;
+      font-size: 10.5px;
+      line-height: 1.5;
+    }
+
+    #seasonsPanel .season-layout {
+      padding: 16px;
+      grid-template-columns: minmax(0, 1.06fr) minmax(0, .94fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    #seasonsPanel .season-editor,
+    #seasonsPanel .season-browser {
+      width: 100%;
+      min-width: 0;
+      padding: 17px;
+      border-radius: 9px;
+    }
+
+    #seasonsPanel .season-editor {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #seasonsPanel .season-editor h3,
+    #seasonsPanel .season-browser h3 {
+      margin-bottom: 11px;
+      font-size: 14px;
+      line-height: 1.3;
+    }
+
+    #seasonsPanel .compact-form {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 11px;
+    }
+
+    #seasonsPanel .form-group {
+      gap: 5px;
+      min-width: 0;
+    }
+
+    #seasonsPanel .form-group label {
+      font-size: 8.5px;
+      letter-spacing: .5px;
+    }
+
+    #seasonsPanel .form-input {
+      height: 40px;
+      padding: 0 10px;
+      font-size: 10.5px;
+    }
+
+    #seasonsPanel .primary-button {
+      min-height: 39px;
+      padding: 0 15px;
+      font-size: 10px;
+    }
+
+    #seasonsPanel .secondary-button {
+      min-height: 39px;
+      padding: 0 12px;
+      font-size: 8.5px;
+    }
+
+    #seasonsPanel .form-actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    #seasonsPanel .section-divider {
+      margin: 14px 0;
+    }
+
+    #seasonsPanel .season-toolbar {
+      margin-bottom: 11px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 9px;
+      align-items: end;
+    }
+
+    #seasonsPanel .season-toolbar .secondary-button {
+      white-space: nowrap;
+    }
+
+    #seasonsPanel .division-list {
+      gap: 8px;
+    }
+
+    #seasonsPanel .division-card {
+      min-height: 58px;
+      padding: 11px 12px;
+      gap: 10px;
+    }
+
+    #seasonsPanel .division-card strong {
+      font-size: 11px;
+    }
+
+    #seasonsPanel .division-card span {
+      margin-top: 3px;
+      font-size: 8.5px;
+      line-height: 1.4;
+    }
+
+    #seasonsPanel .review-actions {
+      gap: 5px;
+    }
+
+    #seasonsPanel .review-button {
+      min-height: 28px;
+      padding: 0 8px;
+      font-size: 7.5px;
+    }
+
+    #seasonsPanel .team-assignment-grid {
+      padding: 15px 16px 17px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 11px;
+      align-items: end;
+      background: #ffffff;
+    }
+
+    #seasonsPanel .team-assignment-grid .form-actions,
+    #seasonsPanel .team-assignment-grid .form-message {
+      grid-column: 1 / -1;
+    }
+
+    #seasonsPanel .team-assignment-grid .primary-button {
+      width: auto;
+      min-width: 210px;
+    }
+
+    @media (max-width: 1080px) {
+      #seasonsPanel .season-layout {
+        grid-template-columns: 1fr;
+      }
+
+      #seasonsPanel .season-browser {
+        min-height: 0;
+      }
+    }
+
+    @media (max-width: 760px) {
+      #seasonsPanel .compact-form,
+      #seasonsPanel .season-toolbar,
+      #seasonsPanel .team-assignment-grid {
+        grid-template-columns: 1fr;
+      }
+
+      #seasonsPanel .compact-form .full-width,
+      #seasonsPanel .compact-form .form-actions,
+      #seasonsPanel .compact-form .form-message,
+      #seasonsPanel .team-assignment-grid .form-actions,
+      #seasonsPanel .team-assignment-grid .form-message {
+        grid-column: 1;
+      }
+
+      #seasonsPanel .team-assignment-grid .primary-button {
+        width: 100%;
+        min-width: 0;
+      }
+
+      #seasonsPanel .season-toolbar .secondary-button {
+        width: 100%;
+      }
+    }
+
   </style>
 </head>
 
