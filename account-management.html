@@ -1167,6 +1167,72 @@
       }
     }
 
+
+    /* =========================
+       SUPER ADMIN DISPLAY NAME MANAGEMENT
+       ========================= */
+    .display-name-management {
+      margin-bottom: 17px;
+      padding: 15px;
+      background: #fffaf6;
+      border: 1px solid #ffd1b0;
+      border-radius: 10px;
+    }
+
+    .display-name-management-copy {
+      margin-bottom: 12px;
+    }
+
+    .display-name-management-kicker {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--orange-dark);
+      font-size: 8px;
+      font-weight: 850;
+      letter-spacing: .85px;
+      text-transform: uppercase;
+    }
+
+    .display-name-management-copy strong {
+      display: block;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .display-name-management-copy p {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.5;
+    }
+
+    .display-name-management-controls {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .display-name-management-field {
+      min-width: 0;
+    }
+
+    .display-name-management-controls .primary-button {
+      min-height: 42px;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 620px) {
+      .display-name-management-controls {
+        grid-template-columns: 1fr;
+      }
+
+      .display-name-management-controls .primary-button {
+        width: 100%;
+      }
+    }
+
   </style>
 </head>
 
@@ -1381,6 +1447,32 @@
       </header>
 
       <div class="modal-body">
+        <section class="display-name-management">
+          <div class="display-name-management-copy">
+            <span class="display-name-management-kicker">Account Display Name</span>
+            <strong>Edit Display Name</strong>
+            <p>Change only the name shown for this user. Email, password, role, status, assignments, and permissions stay unchanged.</p>
+          </div>
+
+          <div class="display-name-management-controls">
+            <div class="display-name-management-field">
+              <label class="field-label" for="accountDisplayNameInput">Display Name</label>
+              <input
+                id="accountDisplayNameInput"
+                class="control"
+                type="text"
+                maxlength="80"
+                autocomplete="off"
+                placeholder="Enter display name"
+              >
+            </div>
+
+            <button id="saveDisplayNameButton" class="primary-button" type="button">
+              Save Display Name
+            </button>
+          </div>
+        </section>
+
         <div class="form-grid">
           <div>
             <label class="field-label" for="accountRoleSelect">Account role</label>
@@ -1405,7 +1497,7 @@
         </div>
 
         <div id="protectedAccountNote" class="protected-note">
-          Your own Super Admin role and status are protected to prevent an accidental lockout.
+          Your own Super Admin role and status are protected to prevent an accidental lockout. Display name changes are separate from role and status.
         </div>
 
         <div class="modal-actions">
@@ -1538,6 +1630,8 @@
     const modalBackdrop = document.getElementById("accountModalBackdrop");
     const roleSelect = document.getElementById("accountRoleSelect");
     const statusSelect = document.getElementById("accountStatusSelect");
+    const accountDisplayNameInput = document.getElementById("accountDisplayNameInput");
+    const saveDisplayNameButton = document.getElementById("saveDisplayNameButton");
     const saveAccountButton = document.getElementById("saveAccountButton");
     const assignmentSection = document.getElementById("assignmentSection");
     const assignmentList = document.getElementById("assignmentList");
@@ -1956,6 +2050,8 @@
 
       document.getElementById("accountModalTitle").textContent = displayName(profile);
       document.getElementById("accountModalEmail").textContent = profile.email || "No email";
+      accountDisplayNameInput.value = String(profile.full_name || "");
+      accountDisplayNameInput.placeholder = displayName(profile);
       roleSelect.value = profile.role;
       statusSelect.value = profile.status;
       roleSelect.disabled = Boolean(isOwnAccount);
@@ -2156,6 +2252,133 @@
           </div>
         </div>
       `).join("");
+    }
+
+    async function logDisplayNameChange(profile, previousName, nextName) {
+      if (!currentAdminUser?.id || !profile?.id) return;
+
+      try {
+        const { error } = await supabaseClient
+          .from("activity_logs")
+          .insert({
+            actor_id: currentAdminUser.id,
+            action: "admin_display_name_updated",
+            target_type: "profile",
+            target_id: String(profile.id),
+            details: {
+              account_email: profile.email || null,
+              previous_display_name: previousName || null,
+              new_display_name: nextName
+            }
+          });
+
+        if (error) {
+          console.warn("Display-name activity log was not recorded:", error.message);
+        }
+      } catch (error) {
+        console.warn("Display-name activity log was not recorded:", error);
+      }
+    }
+
+    async function saveSelectedDisplayName() {
+      const profile = allProfiles.find(item => item.id === selectedAccountId);
+
+      if (!profile) {
+        showToast("The selected account is no longer available.", "error");
+        return;
+      }
+
+      if (
+        currentAdminProfile?.role !== "super_admin" ||
+        currentAdminProfile?.status !== "active"
+      ) {
+        showToast(
+          "Only an active Super Admin can change account display names.",
+          "error"
+        );
+        return;
+      }
+
+      const nextName = accountDisplayNameInput.value.trim();
+      const previousName = String(profile.full_name || "").trim();
+
+      if (nextName.length < 2) {
+        showToast("Display name must be at least 2 characters.", "error");
+        accountDisplayNameInput.focus();
+        return;
+      }
+
+      if (nextName.length > 80) {
+        showToast("Display name must be 80 characters or fewer.", "error");
+        accountDisplayNameInput.focus();
+        return;
+      }
+
+      if (nextName === previousName) {
+        showToast("No display name change to save.");
+        return;
+      }
+
+      saveDisplayNameButton.disabled = true;
+      saveDisplayNameButton.textContent = "Saving...";
+
+      try {
+        const { data, error } = await supabaseClient.rpc(
+          "admin_update_user_display_name",
+          {
+            target_user_id: profile.id,
+            new_full_name: nextName
+          }
+        );
+
+        if (error) throw error;
+
+        const returnedRow = Array.isArray(data) ? data[0] : data;
+        const updatedName = String(
+          returnedRow?.updated_full_name || nextName
+        ).trim();
+
+        profile.full_name = updatedName;
+        accountDisplayNameInput.value = updatedName;
+
+        document.getElementById("accountModalTitle").textContent =
+          displayName(profile);
+
+        if (currentAdminUser?.id === profile.id) {
+          currentAdminProfile.full_name = updatedName;
+          document.getElementById("headerAccountName").textContent =
+            displayName(profile);
+        }
+
+        renderAccounts();
+        await logDisplayNameChange(profile, previousName, updatedName);
+
+        showToast(`Display name updated to ${updatedName}.`);
+        reportEmbeddedAccountHeight();
+      } catch (error) {
+        console.error("Display name update failed:", error);
+
+        const message = String(error?.message || "");
+
+        if (
+          message.includes("admin_update_user_display_name") ||
+          message.includes("schema cache") ||
+          message.includes("function")
+        ) {
+          showToast(
+            "Display-name security setup is not installed yet. Run the supplied SQL in Supabase first.",
+            "error"
+          );
+        } else {
+          showToast(
+            friendlyError(error, "Unable to update this display name."),
+            "error"
+          );
+        }
+      } finally {
+        saveDisplayNameButton.disabled = false;
+        saveDisplayNameButton.textContent = "Save Display Name";
+      }
     }
 
     async function saveSelectedAccount() {
@@ -2466,6 +2689,7 @@
       );
     });
 
+    saveDisplayNameButton.addEventListener("click", saveSelectedDisplayName);
     saveAccountButton.addEventListener("click", saveSelectedAccount);
     document.getElementById("closeModalButton").addEventListener("click", closeAccountModal);
     document.getElementById("cancelAccountButton").addEventListener("click", closeAccountModal);
