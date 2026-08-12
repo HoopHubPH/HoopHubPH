@@ -721,6 +721,231 @@
       }
     }
 
+
+    /* =========================
+       PLAYER MY GAME CENTER
+       ========================= */
+    .player-next-game-hero {
+      padding: 19px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      color: #fff;
+      background: #171717;
+      border-bottom: 1px solid #2d2d2d;
+    }
+
+    .player-next-game-main {
+      min-width: 0;
+    }
+
+    .player-game-kicker {
+      display: block;
+      color: #ff9b52;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .9px;
+      text-transform: uppercase;
+    }
+
+    .player-next-game-main h3 {
+      margin-top: 7px;
+      font-size: clamp(20px, 2.6vw, 28px);
+      line-height: 1.2;
+    }
+
+    .player-next-game-main p {
+      margin-top: 7px;
+      color: #c5c9cf;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .player-competition-label {
+      margin-top: 9px;
+      display: inline-flex;
+      max-width: 100%;
+      padding: 5px 8px;
+      color: #d9dde3;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 999px;
+      font-size: 8px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .player-next-game-countdown {
+      min-width: 132px;
+      padding-left: 20px;
+      text-align: right;
+      border-left: 1px solid rgba(255,255,255,.13);
+    }
+
+    .player-next-game-countdown strong,
+    .player-next-game-countdown span {
+      display: block;
+    }
+
+    .player-next-game-countdown strong {
+      color: var(--orange);
+      font-size: 23px;
+      line-height: 1;
+    }
+
+    .player-next-game-countdown span {
+      margin-top: 7px;
+      color: #c5c9cf;
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .player-game-center-grid {
+      padding: 16px 18px;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .player-game-center-card {
+      min-width: 0;
+      min-height: 108px;
+      padding: 13px;
+      background: #fafafa;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+    }
+
+    .player-game-center-card.ready {
+      background: #f8fdf9;
+      border-color: #c7ead5;
+    }
+
+    .player-game-center-card.alert {
+      background: #fff8f2;
+      border-color: #ffd4b5;
+    }
+
+    .player-game-center-card > span,
+    .player-game-center-card > strong,
+    .player-game-center-card > small {
+      display: block;
+    }
+
+    .player-game-center-card > span {
+      color: var(--muted);
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+    }
+
+    .player-game-center-card > strong {
+      margin-top: 9px;
+      color: var(--ink);
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    .player-game-center-card.ready > strong {
+      color: var(--success);
+    }
+
+    .player-game-center-card.alert > strong {
+      color: #b54708;
+    }
+
+    .player-game-center-card > small {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 8px;
+      line-height: 1.4;
+    }
+
+    .player-team-form {
+      min-height: 30px;
+      margin-top: 9px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .player-form-result {
+      width: 25px;
+      height: 25px;
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+      font-size: 9px;
+      font-weight: 900;
+    }
+
+    .player-form-result.win {
+      color: #067647;
+      background: #ecfdf3;
+    }
+
+    .player-form-result.loss {
+      color: #b42318;
+      background: #fef3f2;
+    }
+
+    .player-form-result.tie {
+      color: #475467;
+      background: #f2f4f7;
+    }
+
+    .player-form-empty {
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .player-game-center-message {
+      min-height: 0;
+      padding: 0 18px 15px;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.45;
+    }
+
+    .player-game-center-message.error {
+      color: #b42318;
+    }
+
+    @media (max-width: 1150px) {
+      .player-game-center-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .player-next-game-hero {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .player-next-game-countdown {
+        width: 100%;
+        padding: 12px 0 0;
+        text-align: left;
+        border-top: 1px solid rgba(255,255,255,.13);
+        border-left: 0;
+      }
+
+      .player-game-center-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 430px) {
+      .player-game-center-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
   </style>
 </head>
 
@@ -783,6 +1008,72 @@
           <article class="stat-card"><span>Total Points</span><strong id="totalPoints">0</strong></article>
           <article class="stat-card"><span>Rebounds</span><strong id="totalRebounds">0</strong></article>
           <article class="stat-card"><span>Assists</span><strong id="totalAssists">0</strong></article>
+        </section>
+
+        <section id="playerGameCenterPanel" class="panel player-view-section active" data-player-section="dashboard">
+          <header class="panel-header">
+            <div>
+              <h2>My Game Center</h2>
+              <p>Your next game, official availability, lineup role, and current team standing.</p>
+            </div>
+            <span id="playerGameCenterBadge" class="readonly-note">Read Only</span>
+          </header>
+
+          <div class="player-next-game-hero">
+            <div class="player-next-game-main">
+              <span class="player-game-kicker">Next Game</span>
+              <h3 id="playerNextGameMatchup">Checking upcoming schedule...</h3>
+              <p id="playerNextGameMeta">Loading game information.</p>
+              <span id="playerCompetitionLabel" class="player-competition-label">Competition information loading...</span>
+            </div>
+
+            <div class="player-next-game-countdown">
+              <strong id="playerNextGameCountdown">—</strong>
+              <span id="playerNextGameSide">Schedule</span>
+            </div>
+          </div>
+
+          <div class="player-game-center-grid">
+            <article class="player-game-center-card" data-player-center-card="availability">
+              <span>Availability</span>
+              <strong id="playerAvailabilityValue">Checking</strong>
+              <small id="playerAvailabilityHelp">Waiting for the official game lineup.</small>
+            </article>
+
+            <article class="player-game-center-card" data-player-center-card="lineup">
+              <span>Lineup Role</span>
+              <strong id="playerLineupRoleValue">Checking</strong>
+              <small id="playerLineupRoleHelp">Coach-submitted lineup only.</small>
+            </article>
+
+            <article class="player-game-center-card">
+              <span>Team Record</span>
+              <strong id="playerTeamRecordValue">0-0</strong>
+              <small id="playerTeamRecordHelp">Finalized games only.</small>
+            </article>
+
+            <article class="player-game-center-card">
+              <span>Division Standing</span>
+              <strong id="playerDivisionRankValue">—</strong>
+              <small id="playerDivisionRankHelp">Current division ranking.</small>
+            </article>
+
+            <article class="player-game-center-card">
+              <span>Current Streak</span>
+              <strong id="playerTeamStreakValue">—</strong>
+              <small id="playerTeamStreakHelp">Based on finalized team games.</small>
+            </article>
+
+            <article class="player-game-center-card">
+              <span>Last 5</span>
+              <div id="playerTeamFormValue" class="player-team-form">
+                <span class="player-form-empty">No results</span>
+              </div>
+              <small id="playerTeamFormHelp">Most recent finalized games.</small>
+            </article>
+          </div>
+
+          <div id="playerGameCenterMessage" class="player-game-center-message" aria-live="polite"></div>
         </section>
 
         <section id="playerDashboardOverview" class="panel player-view-section active" data-player-section="dashboard">
@@ -1066,6 +1357,7 @@
     let stats = [];
     let games = [];
     let currentPlayerView = "dashboard";
+    let playerGameCenterLoadToken = 0;
 
     const playerViewConfig = {
       dashboard: {
@@ -1554,6 +1846,292 @@
       }
     }
 
+    function formatPlayerScheduledGame(value) {
+      if (!value) return "Date and time to be announced";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "Date and time to be announced";
+
+      return date.toLocaleString("en-PH", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      });
+    }
+
+    function playerGameCountdown(value, status = "") {
+      const normalizedStatus = String(status || "").toLowerCase();
+      if (["live", "in_progress", "in progress"].includes(normalizedStatus)) {
+        return "LIVE";
+      }
+
+      if (!value) return "TBA";
+
+      const gameTime = new Date(value).getTime();
+      if (!Number.isFinite(gameTime)) return "TBA";
+
+      const diff = gameTime - Date.now();
+      if (diff <= 0) return "Today";
+
+      const days = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const minutes = Math.max(0, Math.floor((diff % 3600000) / 60000));
+
+      if (days >= 2) return `${days} days`;
+      if (days === 1) return "Tomorrow";
+      if (hours >= 1) return `${hours}h ${minutes}m`;
+      return `${Math.max(1, minutes)} min`;
+    }
+
+    function resetPlayerGameCenter(message = "Select a linked player to view game information.") {
+      document.getElementById("playerNextGameMatchup").textContent = "No upcoming game scheduled";
+      document.getElementById("playerNextGameMeta").textContent = "The next official team game will appear here.";
+      document.getElementById("playerCompetitionLabel").textContent = "Competition information unavailable";
+      document.getElementById("playerNextGameCountdown").textContent = "—";
+      document.getElementById("playerNextGameSide").textContent = "Schedule";
+      document.getElementById("playerAvailabilityValue").textContent = "—";
+      document.getElementById("playerAvailabilityHelp").textContent = "No upcoming game to check.";
+      document.getElementById("playerLineupRoleValue").textContent = "—";
+      document.getElementById("playerLineupRoleHelp").textContent = "No upcoming lineup to check.";
+      document.getElementById("playerTeamRecordValue").textContent = "0-0";
+      document.getElementById("playerTeamRecordHelp").textContent = "Finalized games only.";
+      document.getElementById("playerDivisionRankValue").textContent = "—";
+      document.getElementById("playerDivisionRankHelp").textContent = "Current division ranking.";
+      document.getElementById("playerTeamStreakValue").textContent = "—";
+      document.getElementById("playerTeamStreakHelp").textContent = "Based on finalized team games.";
+      document.getElementById("playerTeamFormValue").innerHTML =
+        '<span class="player-form-empty">No results</span>';
+      document.getElementById("playerTeamFormHelp").textContent = "Most recent finalized games.";
+      document.getElementById("playerGameCenterMessage").className = "player-game-center-message";
+      document.getElementById("playerGameCenterMessage").textContent = message;
+
+      document.querySelectorAll("[data-player-center-card]").forEach(card => {
+        card.classList.remove("ready", "alert");
+      });
+    }
+
+    function playerTeamStreak(recentResults) {
+      const results = (recentResults || [])
+        .map(item => String(item.result || "").toUpperCase())
+        .filter(result => ["W", "L", "T"].includes(result));
+
+      if (!results.length) return "—";
+
+      const first = results[0];
+      let count = 0;
+
+      for (const result of results) {
+        if (result !== first) break;
+        count += 1;
+      }
+
+      return `${first}${count}`;
+    }
+
+    function renderPlayerGameCenter(payload) {
+      const nextGame = payload?.next_game || null;
+      const lineup = payload?.lineup || null;
+      const standing = payload?.standing || null;
+      const fallbackRecord = payload?.fallback_record || {};
+      const recentResults = Array.isArray(payload?.recent_team_results)
+        ? payload.recent_team_results
+        : [];
+
+      const competitionParts = [
+        payload?.league_name,
+        payload?.season_name,
+        payload?.division_name
+      ].filter(Boolean);
+
+      document.getElementById("playerCompetitionLabel").textContent =
+        competitionParts.length
+          ? competitionParts.join(" • ")
+          : "Competition assignment not available";
+
+      if (nextGame?.id) {
+        document.getElementById("playerNextGameMatchup").textContent =
+          `vs ${nextGame.opponent_team_name || "Opponent TBD"}`;
+
+        document.getElementById("playerNextGameMeta").textContent =
+          `${formatPlayerScheduledGame(nextGame.scheduled_at)} • ${nextGame.venue || "Venue TBA"}`;
+
+        document.getElementById("playerNextGameCountdown").textContent =
+          playerGameCountdown(nextGame.scheduled_at, nextGame.status);
+
+        document.getElementById("playerNextGameSide").textContent =
+          nextGame.is_home_team ? "Home Game" : "Away Game";
+      } else {
+        document.getElementById("playerNextGameMatchup").textContent =
+          "No upcoming game scheduled";
+        document.getElementById("playerNextGameMeta").textContent =
+          "The next official team game will appear here.";
+        document.getElementById("playerNextGameCountdown").textContent = "—";
+        document.getElementById("playerNextGameSide").textContent = "Schedule";
+      }
+
+      const availabilityCard = document.querySelector(
+        '[data-player-center-card="availability"]'
+      );
+      const lineupCard = document.querySelector(
+        '[data-player-center-card="lineup"]'
+      );
+
+      availabilityCard.classList.remove("ready", "alert");
+      lineupCard.classList.remove("ready", "alert");
+
+      if (!nextGame?.id) {
+        document.getElementById("playerAvailabilityValue").textContent = "No Game";
+        document.getElementById("playerAvailabilityHelp").textContent =
+          "Availability will appear when an upcoming game is scheduled.";
+        document.getElementById("playerLineupRoleValue").textContent = "No Game";
+        document.getElementById("playerLineupRoleHelp").textContent =
+          "Starting-five status will appear after the coach prepares a lineup.";
+      } else {
+        const attendance = String(lineup?.attendance || "").toLowerCase();
+        const submitted = lineup?.lineup_submitted === true;
+        const starter = lineup?.is_starter === true;
+
+        if (attendance === "available") {
+          availabilityCard.classList.add("ready");
+          document.getElementById("playerAvailabilityValue").textContent = "Available";
+          document.getElementById("playerAvailabilityHelp").textContent =
+            "You are marked available for this game.";
+        } else if (attendance === "unavailable") {
+          availabilityCard.classList.add("alert");
+          document.getElementById("playerAvailabilityValue").textContent = "Unavailable";
+          document.getElementById("playerAvailabilityHelp").textContent =
+            "You are marked unavailable for this game.";
+        } else {
+          document.getElementById("playerAvailabilityValue").textContent = "Not Set";
+          document.getElementById("playerAvailabilityHelp").textContent =
+            "Your coach has not set your attendance yet.";
+        }
+
+        if (submitted) {
+          lineupCard.classList.add("ready");
+          document.getElementById("playerLineupRoleValue").textContent =
+            starter ? "Starting Five" : "Bench";
+          document.getElementById("playerLineupRoleHelp").textContent =
+            starter
+              ? "You are in the coach's submitted starting lineup."
+              : "The lineup is submitted and you are listed on the bench.";
+        } else {
+          document.getElementById("playerLineupRoleValue").textContent =
+            "Not Submitted";
+          document.getElementById("playerLineupRoleHelp").textContent =
+            "The coach has not submitted the official starting five yet.";
+        }
+      }
+
+      const wins = Number(
+        standing?.wins ?? fallbackRecord?.wins ?? 0
+      );
+      const losses = Number(
+        standing?.losses ?? fallbackRecord?.losses ?? 0
+      );
+      const gamesPlayed = Number(
+        standing?.games_played ?? fallbackRecord?.games_played ?? (wins + losses)
+      );
+
+      document.getElementById("playerTeamRecordValue").textContent =
+        `${wins}-${losses}`;
+      document.getElementById("playerTeamRecordHelp").textContent =
+        gamesPlayed
+          ? `${gamesPlayed} finalized game${gamesPlayed === 1 ? "" : "s"} in this competition.`
+          : "No finalized games in this competition yet.";
+
+      if (standing?.ranking != null) {
+        document.getElementById("playerDivisionRankValue").textContent =
+          `#${standing.ranking}`;
+        document.getElementById("playerDivisionRankHelp").textContent =
+          standing?.games_played
+            ? `Ranked after ${standing.games_played} finalized game${Number(standing.games_played) === 1 ? "" : "s"}.`
+            : "Current division ranking.";
+      } else {
+        document.getElementById("playerDivisionRankValue").textContent = "—";
+        document.getElementById("playerDivisionRankHelp").textContent =
+          "Division standing is not available yet.";
+      }
+
+      const streak = playerTeamStreak(recentResults);
+      document.getElementById("playerTeamStreakValue").textContent = streak;
+      document.getElementById("playerTeamStreakHelp").textContent =
+        streak === "—"
+          ? "No finalized results yet."
+          : streak.startsWith("W")
+            ? "Current winning streak."
+            : streak.startsWith("L")
+              ? "Current losing streak."
+              : "Current tied-game streak.";
+
+      const formElement = document.getElementById("playerTeamFormValue");
+      formElement.innerHTML = recentResults.length
+        ? [...recentResults]
+            .reverse()
+            .map(item => {
+              const result = String(item.result || "T").toUpperCase();
+              const cssClass =
+                result === "W" ? "win" :
+                result === "L" ? "loss" :
+                "tie";
+              return `<span class="player-form-result ${cssClass}" title="${escapeHtml(item.opponent_team_name || "Opponent")}">${escapeHtml(result)}</span>`;
+            }).join("")
+        : '<span class="player-form-empty">No results</span>';
+
+      document.getElementById("playerGameCenterBadge").textContent =
+        nextGame?.id ? "Game Ready View" : "Read Only";
+      document.getElementById("playerGameCenterMessage").className =
+        "player-game-center-message";
+      document.getElementById("playerGameCenterMessage").textContent =
+        "Availability and lineup role come from coach-submitted game preparation. Team record and standing use finalized league results.";
+    }
+
+    async function loadPlayerGameCenter(player) {
+      const token = ++playerGameCenterLoadToken;
+
+      resetPlayerGameCenter(
+        player
+          ? "Loading your next game and team standing..."
+          : "Select a linked player to view game information."
+      );
+
+      if (!player?.id) return;
+
+      try {
+        const { data, error } = await supabaseClient.rpc(
+          "get_player_dashboard_center",
+          { p_player_id: player.id }
+        );
+
+        if (token !== playerGameCenterLoadToken) return;
+        if (error) throw error;
+
+        renderPlayerGameCenter(data || {});
+      } catch (error) {
+        if (token !== playerGameCenterLoadToken) return;
+
+        console.warn("Player Game Center unavailable:", error);
+        resetPlayerGameCenter("");
+
+        const message = document.getElementById("playerGameCenterMessage");
+        message.className = "player-game-center-message error";
+
+        const errorText = String(error?.message || "");
+        if (
+          errorText.includes("get_player_dashboard_center") ||
+          errorText.includes("schema cache") ||
+          errorText.includes("function")
+        ) {
+          message.textContent =
+            "My Game Center setup is not installed yet. Run the supplied Supabase SQL once.";
+        } else {
+          message.textContent =
+            `Unable to load My Game Center: ${errorText || "Unknown error"}`;
+        }
+      }
+    }
+
     async function authorize() {
       try {
         const { data: userData, error: userError } = await supabaseClient.auth.getUser();
@@ -1655,6 +2233,7 @@
         document.getElementById("teamHistoryList").innerHTML =
           '<div class="empty-state">No team history is available.</div>';
         populateCorrectionGameOptions([]);
+        loadPlayerGameCenter(null);
         return;
       }
 
@@ -1746,6 +2325,7 @@
       renderMilestones(playerStats, careerTotals);
       renderShareProfile(player, team);
       populateCorrectionGameOptions(playerStats);
+      loadPlayerGameCenter(player);
     }
 
     function closeSidebar() {
