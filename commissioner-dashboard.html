@@ -2098,6 +2098,304 @@
       }
     }
 
+
+    /* ========================================================
+       COMMISSIONER ACTION CENTER
+       ======================================================== */
+    .commissioner-action-center .panel-header {
+      align-items: center;
+    }
+
+    .action-center-grid {
+      padding: 16px 18px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 11px;
+      background: #ffffff;
+    }
+
+    .action-center-card {
+      min-width: 0;
+      min-height: 170px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      background: #fafafa;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+
+    .action-center-card.needs-action {
+      background: #fffaf6;
+      border-color: #ffd1b0;
+    }
+
+    .action-center-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .action-center-icon {
+      width: 29px;
+      height: 29px;
+      display: grid;
+      place-items: center;
+      color: var(--orange-dark);
+      background: var(--orange-soft);
+      border-radius: 7px;
+      font-size: 8px;
+      font-weight: 900;
+    }
+
+    .action-center-count {
+      color: var(--ink);
+      font-size: 25px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .action-center-card > strong {
+      color: var(--ink);
+      font-size: 11px;
+      line-height: 1.3;
+    }
+
+    .action-center-card p {
+      margin: 6px 0 12px;
+      flex: 1;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.5;
+    }
+
+    .action-center-button {
+      min-height: 31px;
+      padding: 0 9px;
+      color: var(--ink);
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 7px;
+      font-size: 8px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .action-center-card.needs-action .action-center-button {
+      color: #ffffff;
+      background: var(--orange);
+      border-color: var(--orange);
+    }
+
+    .action-center-button:hover {
+      border-color: var(--orange);
+    }
+
+    .action-center-card.needs-action .action-center-button:hover {
+      background: var(--orange-dark);
+      border-color: var(--orange-dark);
+    }
+
+    .action-center-upcoming {
+      border-top: 1px solid var(--line);
+      background: #ffffff;
+    }
+
+    .action-center-upcoming-heading {
+      padding: 13px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #fafafa;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .action-center-upcoming-heading strong,
+    .action-center-upcoming-heading span {
+      display: block;
+    }
+
+    .action-center-upcoming-heading strong {
+      font-size: 12px;
+    }
+
+    .action-center-upcoming-heading span {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .action-upcoming-list {
+      padding: 8px 18px 15px;
+      display: grid;
+    }
+
+    .action-upcoming-row {
+      min-height: 47px;
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1.25fr) minmax(120px, .75fr) auto;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #eef0f2;
+      font-size: 9px;
+    }
+
+    .action-upcoming-row:last-child {
+      border-bottom: 0;
+    }
+
+    .action-upcoming-row strong {
+      font-size: 10px;
+    }
+
+    .action-upcoming-row span {
+      color: var(--muted);
+    }
+
+    .action-upcoming-game-id {
+      color: var(--orange-dark) !important;
+      font-weight: 900;
+    }
+
+    /* ========================================================
+       SIDEBAR PROPORTIONS MATCH SUPER ADMIN
+       Same visual rhythm, but compact enough for all
+       Commissioner functions to remain visible.
+       ======================================================== */
+    .sidebar {
+      height: calc(100vh - 66px);
+      padding: 14px 12px;
+      display: block;
+      overflow-y: hidden;
+    }
+
+    .sidebar .nav-label {
+      margin: 13px 9px 7px;
+      color: #818894;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+    }
+
+    .sidebar .nav-label:first-child {
+      margin-top: 0;
+    }
+
+    .sidebar .nav-link {
+      min-height: 38px;
+      height: 38px;
+      margin-bottom: 3px;
+      padding: 0 10px;
+      gap: 9px;
+      color: #d6d9de;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .sidebar .nav-icon {
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
+      color: #ffffff;
+      background: rgba(255, 255, 255, .09);
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    #commissionerViewDashboard:checked ~ .sidebar [data-commissioner-view="dashboard"],
+    #commissionerViewSeasons:checked ~ .sidebar [data-commissioner-view="seasons"],
+    #commissionerViewCreateTeam:checked ~ .sidebar [data-commissioner-view="create-team"],
+    #commissionerViewTeams:checked ~ .sidebar [data-commissioner-view="teams"],
+    #commissionerViewRoster:checked ~ .sidebar [data-commissioner-view="roster"],
+    #commissionerViewSchedule:checked ~ .sidebar [data-commissioner-view="schedule"],
+    #commissionerViewGames:checked ~ .sidebar [data-commissioner-view="games"],
+    #commissionerViewStandings:checked ~ .sidebar [data-commissioner-view="standings"],
+    #commissionerViewScorekeepers:checked ~ .sidebar [data-commissioner-view="scorekeepers"],
+    #commissionerViewReview:checked ~ .sidebar [data-commissioner-view="review"],
+    #commissionerViewCorrections:checked ~ .sidebar [data-commissioner-view="corrections"],
+    #commissionerViewReports:checked ~ .sidebar [data-commissioner-view="reports"] {
+      color: #ffffff;
+      background: rgba(255, 255, 255, .08);
+      box-shadow: inset 3px 0 0 var(--orange);
+    }
+
+    #commissionerViewDashboard:checked ~ .sidebar [data-commissioner-view="dashboard"] .nav-icon,
+    #commissionerViewSeasons:checked ~ .sidebar [data-commissioner-view="seasons"] .nav-icon,
+    #commissionerViewCreateTeam:checked ~ .sidebar [data-commissioner-view="create-team"] .nav-icon,
+    #commissionerViewTeams:checked ~ .sidebar [data-commissioner-view="teams"] .nav-icon,
+    #commissionerViewRoster:checked ~ .sidebar [data-commissioner-view="roster"] .nav-icon,
+    #commissionerViewSchedule:checked ~ .sidebar [data-commissioner-view="schedule"] .nav-icon,
+    #commissionerViewGames:checked ~ .sidebar [data-commissioner-view="games"] .nav-icon,
+    #commissionerViewStandings:checked ~ .sidebar [data-commissioner-view="standings"] .nav-icon,
+    #commissionerViewScorekeepers:checked ~ .sidebar [data-commissioner-view="scorekeepers"] .nav-icon,
+    #commissionerViewReview:checked ~ .sidebar [data-commissioner-view="review"] .nav-icon,
+    #commissionerViewCorrections:checked ~ .sidebar [data-commissioner-view="corrections"] .nav-icon,
+    #commissionerViewReports:checked ~ .sidebar [data-commissioner-view="reports"] .nav-icon {
+      background: var(--orange);
+    }
+
+    .sidebar .commissioner-nav-view:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, .08);
+    }
+
+    @media (max-height: 690px) {
+      .sidebar {
+        padding: 9px 10px;
+      }
+
+      .sidebar .nav-label {
+        margin: 7px 8px 4px;
+        font-size: 8px;
+      }
+
+      .sidebar .nav-link {
+        min-height: 33px;
+        height: 33px;
+        margin-bottom: 2px;
+        font-size: 12px;
+      }
+
+      .sidebar .nav-icon {
+        width: 21px;
+        height: 21px;
+        flex-basis: 21px;
+        font-size: 9px;
+      }
+    }
+
+    @media (max-width: 1050px) {
+      .action-center-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .action-center-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .action-center-upcoming-heading {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .action-center-upcoming-heading .secondary-button {
+        width: 100%;
+      }
+
+      .action-upcoming-row {
+        padding: 10px 0;
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+    }
+
   </style>
 </head>
 
@@ -2813,66 +3111,78 @@
           <div id="reportPreview" class="report-preview"><div class="empty-state">Choose a report type, then select Generate Report.</div></div>
         </section>
 
-        <section id="modules" class="panel commissioner-dashboard-only">
+        <section id="modules" class="panel commissioner-dashboard-only commissioner-action-center">
           <header class="panel-header">
             <div>
-              <h2>Commissioner Tools</h2>
-              <p>Use the sidebar to open each secured Commissioner workflow as its own workspace.</p>
+              <h2>Commissioner Action Center</h2>
+              <p>Live items that need attention in the selected league. Use this area to see what should be handled next.</p>
             </div>
+            <span id="actionCenterLeagueLabel" class="status-badge">Selected League</span>
           </header>
-          <div class="module-grid commissioner-tools-grid">
-            <article class="module-card commissioner-tool-card">
-              <div>
-                <strong>Seasons &amp; Divisions</strong>
-                <span>Create and manage seasons, divisions, and team placement.</span>
+
+          <div class="action-center-grid">
+            <article class="action-center-card" data-action-card="teams">
+              <div class="action-center-card-top">
+                <span class="action-center-icon">TM</span>
+                <span id="actionPendingTeamsCount" class="action-center-count">0</span>
               </div>
-              <div class="commissioner-tool-actions">
-                <button class="commissioner-tool-button primary" type="button" data-tool-view="seasons">OPEN SEASONS</button>
-              </div>
+              <strong>Pending Team Approvals</strong>
+              <p id="actionPendingTeamsText">No team registrations are waiting for review.</p>
+              <button class="action-center-button" type="button" data-tool-view="teams">REVIEW TEAMS</button>
             </article>
 
-            <article class="module-card commissioner-tool-card">
-              <div>
-                <strong>Team &amp; Roster Approval</strong>
-                <span>Review league team registrations and submitted team rosters.</span>
+            <article class="action-center-card" data-action-card="roster">
+              <div class="action-center-card-top">
+                <span class="action-center-icon">RA</span>
+                <span id="actionRosterTeamsCount" class="action-center-count">0</span>
               </div>
-              <div class="commissioner-tool-actions">
-                <button class="commissioner-tool-button primary" type="button" data-tool-view="teams">TEAM REGISTRATIONS</button>
-                <button class="commissioner-tool-button" type="button" data-tool-view="roster">ROSTER APPROVAL</button>
-              </div>
+              <strong>Roster Reviews Needed</strong>
+              <p id="actionRosterTeamsText">No submitted rosters are waiting for review.</p>
+              <button class="action-center-button" type="button" data-tool-view="roster">REVIEW ROSTERS</button>
             </article>
 
-            <article class="module-card commissioner-tool-card">
-              <div>
-                <strong>Game Scheduling</strong>
-                <span>Create matchups, manage the schedule, and assign scorekeepers.</span>
+            <article class="action-center-card" data-action-card="review">
+              <div class="action-center-card-top">
+                <span class="action-center-icon">RV</span>
+                <span id="actionGameReviewCount" class="action-center-count">0</span>
               </div>
-              <div class="commissioner-tool-actions">
-                <button class="commissioner-tool-button primary" type="button" data-tool-view="schedule">OPEN SCHEDULE</button>
-                <button class="commissioner-tool-button" type="button" data-tool-view="scorekeepers">SCOREKEEPERS</button>
-              </div>
+              <strong>Games Awaiting Review</strong>
+              <p id="actionGameReviewText">No submitted games are waiting for final review.</p>
+              <button class="action-center-button" type="button" data-tool-view="review">REVIEW GAMES</button>
             </article>
 
-            <article class="module-card commissioner-tool-card">
-              <div>
-                <strong>Game Review</strong>
-                <span>Review submitted game results and coach correction requests.</span>
+            <article class="action-center-card" data-action-card="scorekeepers">
+              <div class="action-center-card-top">
+                <span class="action-center-icon">SK</span>
+                <span id="actionUnassignedScorekeepersCount" class="action-center-count">0</span>
               </div>
-              <div class="commissioner-tool-actions">
-                <button class="commissioner-tool-button primary" type="button" data-tool-view="review">GAME REVIEW</button>
-                <button class="commissioner-tool-button" type="button" data-tool-view="corrections">CORRECTIONS</button>
-              </div>
+              <strong>Unassigned Scorekeepers</strong>
+              <p id="actionUnassignedScorekeepersText">All scheduled games have a scorekeeper assigned.</p>
+              <button class="action-center-button" type="button" data-tool-view="scorekeepers">ASSIGN SCOREKEEPERS</button>
             </article>
 
-            <article class="module-card commissioner-tool-card">
-              <div>
-                <strong>Reports</strong>
-                <span>Generate printable league, team, schedule, and result reports.</span>
+            <article class="action-center-card" data-action-card="corrections">
+              <div class="action-center-card-top">
+                <span class="action-center-icon">CR</span>
+                <span id="actionPendingCorrectionsCount" class="action-center-count">0</span>
               </div>
-              <div class="commissioner-tool-actions">
-                <button class="commissioner-tool-button primary" type="button" data-tool-view="reports">OPEN REPORTS</button>
-              </div>
+              <strong>Pending Corrections</strong>
+              <p id="actionPendingCorrectionsText">No coach correction requests are waiting for review.</p>
+              <button class="action-center-button" type="button" data-tool-view="corrections">REVIEW CORRECTIONS</button>
             </article>
+          </div>
+
+          <div class="action-center-upcoming">
+            <div class="action-center-upcoming-heading">
+              <div>
+                <strong>Upcoming Games</strong>
+                <span>Next scheduled games in the selected league.</span>
+              </div>
+              <button class="secondary-button" type="button" data-tool-view="schedule">OPEN SCHEDULE</button>
+            </div>
+            <div id="actionUpcomingGamesList" class="action-upcoming-list">
+              <div class="empty-state">Loading upcoming games...</div>
+            </div>
           </div>
         </section>
       </div>
@@ -2903,6 +3213,7 @@
     let standingsLoadToken = 0;
     let correctionReviewLoadToken = 0;
     let correctionReviewRows = [];
+    let correctionReviewLeagueId = null;
 
     const authScreen = document.getElementById("authScreen");
     const appShell = document.getElementById("appShell");
@@ -3275,6 +3586,7 @@
 
     function resetCorrectionReviewPanel(message = "Select an assigned league to view coach correction requests.") {
       correctionReviewRows = [];
+      correctionReviewLeagueId = null;
       document.getElementById("correctionPendingCount").textContent = "0";
       document.getElementById("correctionApprovedCount").textContent = "0";
       document.getElementById("correctionRejectedCount").textContent = "0";
@@ -3401,7 +3713,10 @@
         if (error) throw error;
 
         correctionReviewRows = data || [];
+        correctionReviewLeagueId = leagueId;
         renderCorrectionReviewRows();
+        const actionCenterLeague = assignedLeagues.find(item => String(item.id) === String(leagueId));
+        renderCommissionerActionCenter(actionCenterLeague || null);
         setFormMessage(
           "correctionReviewMessage",
           correctionReviewRows.length
@@ -3412,7 +3727,10 @@
         if (requestToken !== correctionReviewLoadToken) return;
         console.error("Unable to load coach correction requests:", error);
         correctionReviewRows = [];
+        correctionReviewLeagueId = null;
         body.innerHTML = `<tr><td class="empty-state" colspan="7">Unable to load correction requests: ${escapeHtml(error?.message || "Unknown error")}</td></tr>`;
+        const actionCenterLeague = assignedLeagues.find(item => String(item.id) === String(leagueId));
+        renderCommissionerActionCenter(actionCenterLeague || null);
         setFormMessage("correctionReviewMessage", "Unable to load correction requests.", "error");
       } finally {
         if (requestToken === correctionReviewLoadToken) button.disabled = false;
@@ -3862,6 +4180,177 @@
       }
     }
 
+    function setActionCenterCard(viewName, count, text, loaded = true) {
+      const card = document.querySelector(`[data-action-card="${viewName}"]`);
+      const countMap = {
+        teams: "actionPendingTeamsCount",
+        roster: "actionRosterTeamsCount",
+        review: "actionGameReviewCount",
+        scorekeepers: "actionUnassignedScorekeepersCount",
+        corrections: "actionPendingCorrectionsCount"
+      };
+      const textMap = {
+        teams: "actionPendingTeamsText",
+        roster: "actionRosterTeamsText",
+        review: "actionGameReviewText",
+        scorekeepers: "actionUnassignedScorekeepersText",
+        corrections: "actionPendingCorrectionsText"
+      };
+
+      const countElement = document.getElementById(countMap[viewName]);
+      const textElement = document.getElementById(textMap[viewName]);
+
+      if (countElement) countElement.textContent = loaded ? Number(count || 0).toLocaleString() : "…";
+      if (textElement) textElement.textContent = text;
+
+      if (card) {
+        card.classList.toggle("needs-action", loaded && Number(count || 0) > 0);
+      }
+    }
+
+    function renderCommissionerActionCenter(league) {
+      const leagueLabel = document.getElementById("actionCenterLeagueLabel");
+      const upcomingList = document.getElementById("actionUpcomingGamesList");
+
+      if (!league) {
+        leagueLabel.textContent = "No League";
+        setActionCenterCard("teams", 0, "No assigned league.");
+        setActionCenterCard("roster", 0, "No assigned league.");
+        setActionCenterCard("review", 0, "No assigned league.");
+        setActionCenterCard("scorekeepers", 0, "No assigned league.");
+        setActionCenterCard("corrections", 0, "No assigned league.");
+        upcomingList.innerHTML = '<div class="empty-state">No assigned league.</div>';
+        return;
+      }
+
+      leagueLabel.textContent = league.name || "Selected League";
+
+      const registrations = leagueTeams.filter(
+        item => String(item.league_id) === String(league.id)
+      );
+      const pendingTeams = registrations.filter(
+        item => String(item.registration_status || "").toLowerCase() === "pending"
+      );
+
+      setActionCenterCard(
+        "teams",
+        pendingTeams.length,
+        pendingTeams.length
+          ? `${pendingTeams.length} team registration${pendingTeams.length === 1 ? "" : "s"} waiting for commissioner action.`
+          : "No team registrations are waiting for review."
+      );
+
+      const rosterLoaded = String(rosterReviewLeagueId || "") === String(league.id);
+      const pendingRosterRows = rosterLoaded
+        ? rosterReviewRows.filter(
+            row => String(row.approval_status || "").toLowerCase() === "pending"
+          )
+        : [];
+
+      const pendingRosterTeams = new Set(
+        pendingRosterRows.map(row => String(row.team_id || "")).filter(Boolean)
+      );
+
+      setActionCenterCard(
+        "roster",
+        pendingRosterTeams.size,
+        rosterLoaded
+          ? (
+              pendingRosterTeams.size
+                ? `${pendingRosterTeams.size} submitted team roster${pendingRosterTeams.size === 1 ? "" : "s"} still contain players awaiting review.`
+                : "No submitted rosters are waiting for review."
+            )
+          : "Loading roster review status…",
+        rosterLoaded
+      );
+
+      const leagueGames = scheduledGames.filter(
+        game => String(game.league_id) === String(league.id)
+      );
+
+      const reviewGames = leagueGames.filter(
+        game => ["pending review", "pending_review", "submitted"].includes(
+          String(game.status || "").toLowerCase()
+        )
+      );
+
+      setActionCenterCard(
+        "review",
+        reviewGames.length,
+        reviewGames.length
+          ? `${reviewGames.length} submitted game${reviewGames.length === 1 ? "" : "s"} waiting to be finalized or returned.`
+          : "No submitted games are waiting for final review."
+      );
+
+      const assignments = new Set(
+        gameScorekeeperAssignments
+          .filter(item => item.scorekeeper_id)
+          .map(item => Number(item.game_id))
+      );
+
+      const scheduledWithoutScorekeeper = leagueGames.filter(game => {
+        const status = String(game.status || "").toLowerCase();
+        return ["scheduled", "upcoming"].includes(status) &&
+          !assignments.has(Number(game.id));
+      });
+
+      setActionCenterCard(
+        "scorekeepers",
+        scheduledWithoutScorekeeper.length,
+        scheduledWithoutScorekeeper.length
+          ? `${scheduledWithoutScorekeeper.length} upcoming game${scheduledWithoutScorekeeper.length === 1 ? "" : "s"} still need a scorekeeper.`
+          : "All scheduled games have a scorekeeper assigned."
+      );
+
+      const correctionsLoaded =
+        String(correctionReviewLeagueId || "") === String(league.id);
+
+      const pendingCorrections = correctionsLoaded
+        ? correctionReviewRows.filter(
+            row => String(row.request_status || "").toLowerCase() === "pending"
+          )
+        : [];
+
+      setActionCenterCard(
+        "corrections",
+        pendingCorrections.length,
+        correctionsLoaded
+          ? (
+              pendingCorrections.length
+                ? `${pendingCorrections.length} coach correction request${pendingCorrections.length === 1 ? "" : "s"} waiting for review.`
+                : "No coach correction requests are waiting for review."
+            )
+          : "Loading correction request status…",
+        correctionsLoaded
+      );
+
+      const now = new Date();
+      const upcoming = leagueGames
+        .filter(game => {
+          const status = String(game.status || "").toLowerCase();
+          const when = new Date(game.scheduled_at || game.created_at);
+          return ["scheduled", "upcoming"].includes(status) &&
+            !Number.isNaN(when.getTime()) &&
+            when >= now;
+        })
+        .sort((a, b) =>
+          new Date(a.scheduled_at || a.created_at) -
+          new Date(b.scheduled_at || b.created_at)
+        )
+        .slice(0, 5);
+
+      upcomingList.innerHTML = upcoming.length
+        ? upcoming.map(game => `
+            <div class="action-upcoming-row">
+              <span class="action-upcoming-game-id">GAME #${escapeHtml(game.id)}</span>
+              <strong>${escapeHtml(game.home_team || "Home Team")} vs ${escapeHtml(game.away_team || "Away Team")}</strong>
+              <span>${escapeHtml(formatDateTime(game.scheduled_at || game.created_at))}</span>
+              <span>${escapeHtml(game.venue || "Venue TBA")}</span>
+            </div>
+          `).join("")
+        : '<div class="empty-state">No upcoming scheduled games for this league.</div>';
+    }
+
     function renderWorkspace() {
       const selectedId = leagueSelect.value || assignedLeagues[0]?.id || "";
       const league = assignedLeagues.find(item => item.id === selectedId);
@@ -3891,6 +4380,7 @@
         renderGamesDisplayFilters(null);
         renderReportFilters(null);
         resetCorrectionReviewPanel("No assigned league.");
+        renderCommissionerActionCenter(null);
         return;
       }
 
@@ -3936,6 +4426,7 @@
       renderStandingsFilters(league);
       renderGamesDisplayFilters(league);
       renderReportFilters(league);
+      renderCommissionerActionCenter(league);
       loadRosterReviews(league.id);
       loadCommissionerCorrectionRequests(league.id);
     }
@@ -4428,11 +4919,15 @@
         rosterReviewRows = [];
         body.innerHTML = `<tr><td class="empty-state" colspan="5">Unable to load roster reviews: ${escapeHtml(error.message)}</td></tr>`;
         teamSelect.innerHTML = '<option value="">Unable to load teams</option>';
+        const activeLeague = assignedLeagues.find(item => String(item.id) === String(leagueId));
+        renderCommissionerActionCenter(activeLeague || null);
         return;
       }
 
       rosterReviewRows = data || [];
       rosterReviewLeagueId = leagueId;
+      const actionCenterLeague = assignedLeagues.find(item => String(item.id) === String(leagueId));
+      renderCommissionerActionCenter(actionCenterLeague || null);
       const submittedTeams = [...new Map(rosterReviewRows.map(row => [row.team_id, row.team_name])).entries()]
         .sort((a, b) => String(a[1]).localeCompare(String(b[1])));
 
