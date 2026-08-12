@@ -330,9 +330,9 @@
 
     .account-embed-frame {
       width: 100%;
-      height: calc(100vh - 116px);
-      min-height: 760px;
+      height: 900px;
       display: block;
+      overflow: hidden;
       background: transparent;
       border: 0;
     }
@@ -1359,6 +1359,7 @@
               src="account-management.html?embed=1"
               title="HoopHub PH Account Management"
               loading="lazy"
+              scrolling="no"
             ></iframe>
           </div>
         </div>
@@ -1557,6 +1558,37 @@
     const sidebar = document.getElementById("sidebar");
     const sidebarOverlay = document.getElementById("sidebarOverlay");
     const leagueManagementLink = document.getElementById("leagueManagementLink");
+
+
+    const accountManagementFrame = document.getElementById("accountManagementFrame");
+
+    function resizeAccountManagementFrame(height) {
+      if (!accountManagementFrame) return;
+      const nextHeight = Math.max(640, Number(height) || 0);
+      accountManagementFrame.style.height = `${nextHeight}px`;
+    }
+
+    window.addEventListener("message", function (event) {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type !== "hoophub-account-height") return;
+      resizeAccountManagementFrame(event.data.height);
+    });
+
+    accountManagementFrame?.addEventListener("load", function () {
+      try {
+        const frameDocument = accountManagementFrame.contentDocument;
+        if (!frameDocument) return;
+
+        resizeAccountManagementFrame(
+          Math.max(
+            frameDocument.body?.scrollHeight || 0,
+            frameDocument.documentElement?.scrollHeight || 0
+          )
+        );
+      } catch (error) {
+        console.warn("Unable to auto-size Account Management frame:", error);
+      }
+    });
 
     const activityLogList = document.getElementById("activityLogList");
     const activityLeagueFilter = document.getElementById("activityLeagueFilter");
