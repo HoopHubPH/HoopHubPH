@@ -333,6 +333,122 @@
     th { font-size: 11px; font-weight: bold; }
     td { font-size: 13px; }
     .status-badge, .coming { font-size: 11px; font-weight: bold; }
+
+    /* =========================
+       COACH INTERNAL WORKSPACES
+       ========================= */
+    .coach-view-section {
+      display: none;
+    }
+
+    .coach-view-section.active {
+      display: block;
+    }
+
+    .coach-view-grid-section.active {
+      display: grid;
+    }
+
+    .sidebar {
+      width: 246px;
+      padding: 14px 12px;
+      overflow-y: hidden;
+    }
+
+    .main-content {
+      margin-left: 246px;
+    }
+
+    .sidebar .nav-label {
+      margin: 12px 9px 6px;
+      color: #818894;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+    }
+
+    .sidebar .nav-label:first-child {
+      margin-top: 0;
+    }
+
+    .sidebar .nav-link {
+      width: 100%;
+      min-height: 38px;
+      height: 38px;
+      margin: 0 0 3px;
+      padding: 0 10px;
+      gap: 9px;
+      color: #d6d9de;
+      background: transparent;
+      border: 0;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      color: #ffffff;
+      background: rgba(255,255,255,.08);
+    }
+
+    .sidebar .nav-link.active {
+      box-shadow: inset 3px 0 0 var(--orange);
+    }
+
+    .sidebar .nav-icon {
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
+      color: #ffffff;
+      background: rgba(255,255,255,.09);
+      border-radius: 6px;
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    .sidebar .nav-link.active .nav-icon {
+      background: var(--orange);
+    }
+
+    @media (max-height: 690px) and (min-width: 901px) {
+      .sidebar {
+        padding: 9px 10px;
+      }
+
+      .sidebar .nav-label {
+        margin: 7px 8px 4px;
+        font-size: 8px;
+      }
+
+      .sidebar .nav-link {
+        min-height: 33px;
+        height: 33px;
+        margin-bottom: 2px;
+        font-size: 12px;
+      }
+
+      .sidebar .nav-icon {
+        width: 21px;
+        height: 21px;
+        flex-basis: 21px;
+        font-size: 8px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .main-content {
+        margin-left: 0;
+      }
+
+      .sidebar {
+        overflow-y: auto;
+      }
+    }
+
   </style>
 </head>
 
@@ -358,19 +474,19 @@
 
     <aside id="sidebar" class="sidebar">
       <p class="nav-label">Team Workspace</p>
-      <a class="nav-link active" href="coach-dashboard.html"><span class="nav-icon">DB</span> Dashboard</a>
-      <a class="nav-link" href="#teamApplicationPanel"><span class="nav-icon">TA</span> Create Team</a>
-      <a class="nav-link" href="#rosterPanel"><span class="nav-icon">RO</span> Team Roster</a>
-      <a class="nav-link" href="#rosterSubmission"><span class="nav-icon">RS</span> Submit Roster</a>
-      <a class="nav-link" href="#addPlayerPanel"><span class="nav-icon">AP</span> Add Player</a>
-      <a class="nav-link" href="#playerInvitationsPanel"><span class="nav-icon">IV</span> Player Invites</a>
-      <a class="nav-link" href="#lineupAttendancePanel"><span class="nav-icon">LU</span> Starting Lineup</a>
-      <a class="nav-link" href="#lineupAttendancePanel"><span class="nav-icon">AT</span> Attendance</a>
+      <button class="nav-link coach-nav-view active" type="button" data-coach-view="dashboard"><span class="nav-icon">DB</span> Dashboard</button>
+      <button class="nav-link coach-nav-view" type="button" data-coach-view="team-profile"><span class="nav-icon">TP</span> Team Profile</button>
+      <button class="nav-link coach-nav-view" type="button" data-coach-view="create-team"><span class="nav-icon">TA</span> Create Team</button>
+      <button class="nav-link coach-nav-view" type="button" data-coach-view="roster"><span class="nav-icon">RO</span> Team Roster</button>
+      <button class="nav-link coach-nav-view" type="button" data-coach-view="submit-roster"><span class="nav-icon">RS</span> Submit Roster</button>
+      <button class="nav-link coach-nav-view" type="button" data-coach-view="add-player"><span class="nav-icon">AP</span> Add Player</button>
+      <button class="nav-link coach-nav-view" type="button" data-coach-view="invitations"><span class="nav-icon">IV</span> Player Invites</button>
+      <button class="nav-link coach-nav-view" type="button" data-coach-view="lineup"><span class="nav-icon">LU</span> Lineup & Attendance</button>
 
       <p class="nav-label">Team Records</p>
-      <a class="nav-link" href="#gameSchedulePanel"><span class="nav-icon">GM</span> Game Schedule</a>
-      <a class="nav-link" href="#teamStatisticsPanel"><span class="nav-icon">ST</span> Statistics</a>
-      <a class="nav-link" href="#correctionRequestsPanel"><span class="nav-icon">CR</span> Corrections</a>
+      <button class="nav-link coach-nav-view" type="button" data-coach-view="schedule"><span class="nav-icon">GM</span> Game Schedule</button>
+      <button class="nav-link coach-nav-view" type="button" data-coach-view="statistics"><span class="nav-icon">ST</span> Statistics</button>
+      <button class="nav-link coach-nav-view" type="button" data-coach-view="corrections"><span class="nav-icon">CR</span> Corrections</button>
     </aside>
 
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
@@ -379,14 +495,14 @@
       <div class="content-wrap">
         <section class="page-heading">
           <div>
-            <div class="eyebrow">Coach / Team Manager</div>
-            <h1>Team Dashboard</h1>
-            <p>Manage only the team and roster assigned to your account.</p>
+            <div id="coachPageEyebrow" class="eyebrow">Coach / Team Manager</div>
+            <h1 id="coachPageTitle">Team Dashboard</h1>
+            <p id="coachPageDescription">A focused overview of the currently selected team and your coach workspace.</p>
           </div>
           <select id="teamSelect" class="control" aria-label="Select assigned team"></select>
         </section>
 
-        <section id="addPlayerPanel" class="panel">
+        <section id="addPlayerPanel" class="panel coach-view-section" data-coach-section="add-player">
           <header class="panel-header">
             <div><h2>Add Player</h2><p>Create an official player record for the currently selected team and league.</p></div>
             <span class="status-badge pending">Pending Approval</span>
@@ -418,7 +534,7 @@
           </form>
         </section>
 
-        <section id="rosterSubmission" class="panel">
+        <section id="rosterSubmission" class="panel coach-view-section" data-coach-section="submit-roster">
           <header class="panel-header">
             <div><h2>League Roster Submission</h2><p>Send the current team roster to the commissioner for review.</p></div>
             <span id="submissionStatus" class="status-badge pending">Not Submitted</span>
@@ -432,20 +548,20 @@
           </div>
         </section>
 
-        <section id="playerInvitationsPanel" class="panel">
+        <section id="playerInvitationsPanel" class="panel coach-view-section" data-coach-section="invitations">
           <header class="panel-header">
             <div><h2>Player Invitations <span style="color:#ff6b00;font-size:12px">(Optional)</span></h2><p>Players can participate without an account. Invite them only if they want to claim their profile and use the Player Dashboard.</p></div>
           </header>
           <div class="table-wrap"><table><thead><tr><th>Player</th><th>Email</th><th>Status</th><th>Expires</th><th>Actions</th></tr></thead><tbody id="playerInvitationBody"><tr><td class="empty-state" colspan="5">Loading player invitations...</td></tr></tbody></table></div>
         </section>
 
-        <section class="stats-grid">
+        <section id="coachDashboardStats" class="stats-grid coach-view-section coach-view-grid-section active" data-coach-section="dashboard">
           <article class="stat-card"><span>Assigned Teams</span><strong id="teamCount">0</strong></article>
           <article class="stat-card"><span>Roster Players</span><strong id="playerCount">0</strong></article>
           <article class="stat-card"><span>Active Assignments</span><strong id="activeAssignmentCount">0</strong></article>
         </section>
 
-        <section id="teamApplicationPanel" class="panel">
+        <section id="teamApplicationPanel" class="panel coach-view-section" data-coach-section="create-team">
           <header class="panel-header">
             <div><h2>Create Team & Apply to a League</h2><p>Create a new team application for an open Hoop Hub PH league.</p></div>
             <span class="status-badge pending">Coach Application</span>
@@ -461,7 +577,7 @@
           <div class="table-wrap"><table><thead><tr><th>Team</th><th>League</th><th>Status</th><th>Submitted</th></tr></thead><tbody id="teamApplicationBody"><tr><td class="empty-state" colspan="4">Loading your applications...</td></tr></tbody></table></div>
         </section>
 
-        <section id="teamProfilePanel" class="panel">
+        <section id="teamProfilePanel" class="panel coach-view-section" data-coach-section="team-profile">
           <header class="panel-header">
             <div><h2 id="teamName">Assigned Team</h2><p>Current team workspace and league assignment.</p></div>
             <div class="form-actions">
@@ -482,7 +598,7 @@
           </form>
         </section>
 
-        <section id="rosterPanel" class="panel">
+        <section id="rosterPanel" class="panel coach-view-section" data-coach-section="roster">
           <header class="panel-header">
             <div><h2>Current Player Roster</h2><p>Official player records connected to this team.</p></div>
           </header>
@@ -507,7 +623,7 @@
           </form>
         </section>
 
-        <section id="lineupAttendancePanel" class="panel">
+        <section id="lineupAttendancePanel" class="panel coach-view-section" data-coach-section="lineup">
           <header class="panel-header">
             <div>
               <h2>Starting Lineup & Attendance</h2>
@@ -556,7 +672,7 @@
           <div id="lineupMessage" class="lineup-message" role="status" aria-live="polite"></div>
         </section>
 
-        <section id="gameSchedulePanel" class="panel">
+        <section id="gameSchedulePanel" class="panel coach-view-section" data-coach-section="schedule">
           <header class="panel-header">
             <div>
               <h2>Game Schedule</h2>
@@ -583,7 +699,7 @@
           </div>
         </section>
 
-        <section id="teamStatisticsPanel" class="panel">
+        <section id="teamStatisticsPanel" class="panel coach-view-section" data-coach-section="statistics">
           <header class="panel-header">
             <div>
               <h2>Team Statistics</h2>
@@ -632,7 +748,7 @@
           <div id="statisticsMessage" class="statistics-note">Only finalized games are included in these statistics.</div>
         </section>
 
-        <section id="correctionRequestsPanel" class="panel">
+        <section id="correctionRequestsPanel" class="panel coach-view-section" data-coach-section="corrections">
           <header class="panel-header">
             <div>
               <h2>Correction Requests</h2>
@@ -738,17 +854,20 @@
           </div>
         </section>
 
-        <section id="modules" class="panel">
+        <section id="coachDashboardOverview" class="panel coach-view-section active" data-coach-section="dashboard">
           <header class="panel-header">
-            <div><h2>Coach Modules</h2><p>Official game statistics remain protected and read-only.</p></div>
+            <div>
+              <h2>Team Overview</h2>
+              <p>Current assignment information for the team selected above.</p>
+            </div>
+            <span id="coachDashboardRoleBadge" class="status-badge">Coach</span>
           </header>
-          <div class="module-grid">
-            <article class="module-card"><strong>Team Profile</strong><span>Edit the team identity, location, and logo.</span></article>
-            <article class="module-card"><strong>Roster Submission</strong><span>Invite players and submit the official season roster.</span></article>
-            <article class="module-card"><strong>Lineup & Attendance</strong><span>Submit starters and confirm scheduled-game attendance.</span></article>
-            <article class="module-card"><strong>Team Statistics</strong><span>View verified game-by-game team and player statistics.</span></article>
-            <article class="module-card"><strong>Correction Requests</strong><span>Request corrections without directly editing official statistics.</span></article>
-            <article class="module-card"><strong>Game Schedule</strong><span>View league games assigned to the team.</span></article>
+
+          <div class="team-details">
+            <div class="detail-box"><span>Selected Team</span><strong id="coachDashboardTeamName">No Team Selected</strong></div>
+            <div class="detail-box"><span>League</span><strong id="coachDashboardLeagueName">Not set</strong></div>
+            <div class="detail-box"><span>Season / Division</span><strong id="coachDashboardCompetition">Not set</strong></div>
+            <div class="detail-box"><span>Roster Size</span><strong id="coachDashboardRosterCount">0 players</strong></div>
           </div>
         </section>
       </div>
@@ -775,6 +894,100 @@
     let coachScheduleGames = [];
     let correctionFinalGames = [];
     let currentLineupRows = [];
+    let currentCoachView = "dashboard";
+
+    const coachViewConfig = {
+      dashboard: {
+        eyebrow: "Coach / Team Manager",
+        title: "Team Dashboard",
+        description: "A focused overview of the currently selected team and your coach workspace.",
+        hash: "dashboard"
+      },
+      "team-profile": {
+        eyebrow: "Team Workspace",
+        title: "Team Profile",
+        description: "Review and update the selected team's identity, location, and logo.",
+        hash: "team-profile"
+      },
+      "create-team": {
+        eyebrow: "Team Workspace",
+        title: "Create Team",
+        description: "Create a new team and submit its league application for commissioner review.",
+        hash: "create-team"
+      },
+      roster: {
+        eyebrow: "Team Workspace",
+        title: "Team Roster",
+        description: "Review and maintain official player records connected to the selected team.",
+        hash: "roster"
+      },
+      "submit-roster": {
+        eyebrow: "Team Workspace",
+        title: "Submit Roster",
+        description: "Submit the current team roster to the league commissioner for approval.",
+        hash: "submit-roster"
+      },
+      "add-player": {
+        eyebrow: "Team Workspace",
+        title: "Add Player",
+        description: "Create a player record for the currently selected team and league.",
+        hash: "add-player"
+      },
+      invitations: {
+        eyebrow: "Team Workspace",
+        title: "Player Invitations",
+        description: "Invite players who want to claim their profile and use the Player Dashboard.",
+        hash: "player-invites"
+      },
+      lineup: {
+        eyebrow: "Game Preparation",
+        title: "Lineup & Attendance",
+        description: "Confirm player availability and submit the official starting five for a scheduled game.",
+        hash: "lineup-attendance"
+      },
+      schedule: {
+        eyebrow: "Team Records",
+        title: "Game Schedule",
+        description: "View league games scheduled for the currently selected team.",
+        hash: "game-schedule"
+      },
+      statistics: {
+        eyebrow: "Team Records",
+        title: "Team Statistics",
+        description: "Review verified team and player statistics from finalized games.",
+        hash: "statistics"
+      },
+      corrections: {
+        eyebrow: "Team Records",
+        title: "Correction Requests",
+        description: "Request commissioner review of finalized-game records without editing official statistics directly.",
+        hash: "corrections"
+      }
+    };
+
+    const coachLegacyHashMap = {
+      teamApplicationPanel: "create-team",
+      teamProfilePanel: "team-profile",
+      rosterPanel: "roster",
+      rosterSubmission: "submit-roster",
+      addPlayerPanel: "add-player",
+      playerInvitationsPanel: "invitations",
+      lineupAttendancePanel: "lineup",
+      gameSchedulePanel: "schedule",
+      teamStatisticsPanel: "statistics",
+      correctionRequestsPanel: "corrections",
+      dashboard: "dashboard",
+      "team-profile": "team-profile",
+      "create-team": "create-team",
+      roster: "roster",
+      "submit-roster": "submit-roster",
+      "add-player": "add-player",
+      "player-invites": "invitations",
+      "lineup-attendance": "lineup",
+      "game-schedule": "schedule",
+      statistics: "statistics",
+      corrections: "corrections"
+    };
 
     const authScreen = document.getElementById("authScreen");
     const appShell = document.getElementById("appShell");
@@ -797,6 +1010,47 @@
     async function returnToLogin(signOutFirst = false) {
       if (signOutFirst) await supabaseClient.auth.signOut();
       window.location.replace("login.html");
+    }
+
+    function coachViewFromHash() {
+      const rawHash = decodeURIComponent(String(window.location.hash || "").replace(/^#/, ""));
+      return coachLegacyHashMap[rawHash] || "dashboard";
+    }
+
+    function updateCoachPageHeading(viewName) {
+      const config = coachViewConfig[viewName] || coachViewConfig.dashboard;
+      document.getElementById("coachPageEyebrow").textContent = config.eyebrow;
+      document.getElementById("coachPageTitle").textContent = config.title;
+      document.getElementById("coachPageDescription").textContent = config.description;
+    }
+
+    function openCoachView(viewName, updateHash = true) {
+      if (!coachViewConfig[viewName]) viewName = "dashboard";
+      currentCoachView = viewName;
+
+      document.querySelectorAll(".coach-view-section").forEach(section => {
+        section.classList.toggle(
+          "active",
+          section.dataset.coachSection === viewName
+        );
+      });
+
+      document.querySelectorAll("[data-coach-view]").forEach(button => {
+        button.classList.toggle(
+          "active",
+          button.dataset.coachView === viewName
+        );
+      });
+
+      updateCoachPageHeading(viewName);
+      closeSidebar();
+
+      if (updateHash) {
+        const nextHash = coachViewConfig[viewName].hash;
+        history.replaceState(null, "", `${window.location.pathname}${window.location.search}#${nextHash}`);
+      }
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     async function authorize() {
@@ -823,6 +1077,7 @@
         await Promise.all([loadWorkspace(), loadTeamApplicationData()]);
         authScreen.hidden = true;
         appShell.hidden = false;
+        openCoachView(coachViewFromHash(), false);
       } catch (error) {
         console.error("Coach authorization failed:", error);
         await returnToLogin(true);
@@ -2264,6 +2519,17 @@
 
       document.getElementById("playerCount").textContent = roster.length.toLocaleString();
 
+      document.getElementById("coachDashboardTeamName").textContent =
+        team?.name || "No Team Assigned";
+      document.getElementById("coachDashboardLeagueName").textContent =
+        league?.name || "Not set";
+      document.getElementById("coachDashboardCompetition").textContent =
+        [league?.season, league?.division].filter(Boolean).join(" / ") || "Not set";
+      document.getElementById("coachDashboardRosterCount").textContent =
+        `${roster.length.toLocaleString()} player${roster.length === 1 ? "" : "s"}`;
+      document.getElementById("coachDashboardRoleBadge").textContent =
+        assignment ? staffRoleLabel(assignment.staff_role) : "Waiting";
+
       if (!team || !assignment) {
         document.getElementById("teamName").textContent = "No Team Assigned";
         document.getElementById("staffRoleBadge").textContent = "Waiting";
@@ -2392,7 +2658,17 @@
       document.getElementById("sidebarOverlay").classList.toggle("open");
     });
     document.getElementById("sidebarOverlay").addEventListener("click", closeSidebar);
-    document.querySelectorAll(".sidebar .nav-link").forEach(link => link.addEventListener("click", closeSidebar));
+
+    document.querySelectorAll("[data-coach-view]").forEach(button => {
+      button.addEventListener("click", function () {
+        openCoachView(this.dataset.coachView);
+      });
+    });
+
+    window.addEventListener("hashchange", function () {
+      openCoachView(coachViewFromHash(), false);
+    });
+
     document.getElementById("logoutButton").addEventListener("click", async function () {
       this.disabled = true;
       this.textContent = "Logging Out...";
