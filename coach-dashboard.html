@@ -914,6 +914,250 @@
       }
     }
 
+
+    /* =========================
+       PLAYER 2x2 PHOTO UPLOAD
+       ========================= */
+    .player-photo-upload-group {
+      padding-top: 2px;
+    }
+
+    .player-photo-upload-row {
+      display: grid;
+      grid-template-columns: 108px minmax(0,1fr);
+      gap: 14px;
+      align-items: center;
+    }
+
+    .player-photo-preview {
+      width: 108px;
+      height: 108px;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      color: #8a4d1d;
+      background: #fff8f2;
+      border: 1px dashed #ffb37c;
+      border-radius: 10px;
+      background-position: center;
+      background-size: cover;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .player-photo-preview.has-photo span {
+      display: none;
+    }
+
+    .player-photo-upload-controls {
+      min-width: 0;
+      display: grid;
+      gap: 7px;
+    }
+
+    .player-photo-file-input {
+      padding: 8px 10px;
+      height: auto;
+      min-height: 42px;
+    }
+
+    .player-photo-upload-controls small {
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .player-photo-remove-button {
+      width: max-content;
+      min-height: 32px;
+      padding: 0 10px;
+      font-size: 10px;
+    }
+
+    .player-photo-crop-modal[hidden] {
+      display: none !important;
+    }
+
+    .player-photo-crop-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1400;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+    }
+
+    .player-photo-crop-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.72);
+      backdrop-filter: blur(2px);
+    }
+
+    .player-photo-crop-dialog {
+      position: relative;
+      z-index: 1;
+      width: min(680px, 100%);
+      max-height: calc(100vh - 36px);
+      overflow: auto;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 28px 80px rgba(0,0,0,.32);
+    }
+
+    .player-photo-crop-header {
+      padding: 17px 19px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      background: #fafafa;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .player-photo-crop-kicker {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--orange-dark);
+      font-size: 8px;
+      font-weight: bold;
+      letter-spacing: .9px;
+      text-transform: uppercase;
+    }
+
+    .player-photo-crop-header h2 {
+      font-size: 19px;
+    }
+
+    .player-photo-crop-header p {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .player-photo-crop-close {
+      width: 32px;
+      height: 32px;
+      flex: 0 0 32px;
+      display: grid;
+      place-items: center;
+      color: #667085;
+      background: #fff;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .player-photo-crop-body {
+      padding: 18px;
+    }
+
+    .player-photo-canvas-shell {
+      width: 100%;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      background: #111;
+      border-radius: 11px;
+    }
+
+    #playerPhotoCropCanvas {
+      width: min(100%, 560px);
+      height: auto;
+      display: block;
+      touch-action: none;
+      cursor: grab;
+    }
+
+    #playerPhotoCropCanvas.dragging {
+      cursor: grabbing;
+    }
+
+    .player-photo-crop-guide-note {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .player-photo-crop-guide-note strong {
+      color: var(--orange-dark);
+    }
+
+    .player-photo-zoom-row {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: auto minmax(0,1fr) 48px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .player-photo-zoom-row label,
+    .player-photo-zoom-row span {
+      color: #475467;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .player-photo-zoom-row input {
+      width: 100%;
+      accent-color: var(--orange);
+    }
+
+    .player-photo-crop-message {
+      min-height: 18px;
+      margin-top: 9px;
+      color: #b42318;
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
+    .player-photo-crop-actions {
+      padding: 14px 18px 18px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      border-top: 1px solid var(--line);
+    }
+
+    @media (max-width: 600px) {
+      .player-photo-upload-row {
+        grid-template-columns: 88px minmax(0,1fr);
+      }
+
+      .player-photo-preview {
+        width: 88px;
+        height: 88px;
+      }
+
+      .player-photo-crop-modal {
+        padding: 8px;
+      }
+
+      .player-photo-crop-dialog {
+        max-height: calc(100vh - 16px);
+      }
+
+      .player-photo-crop-guide-note {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .player-photo-crop-actions {
+        flex-direction: column-reverse;
+      }
+
+      .player-photo-crop-actions button {
+        width: 100%;
+      }
+    }
+
   </style>
 </head>
 
@@ -993,7 +1237,19 @@
               </select>
             </div>
             <div class="form-group"><label for="playerHeight">Height (Optional)</label><input id="playerHeight" class="form-input" type="text" maxlength="40" placeholder="Example: 5'10&quot;"></div>
-            <div class="form-group"><label for="playerPhotoUrl">Photo URL (Optional)</label><input id="playerPhotoUrl" class="form-input" type="url" maxlength="2048" placeholder="https://example.com/player-photo.jpg"></div>
+            <div class="form-group form-wide player-photo-upload-group">
+              <label for="playerPhotoFile">Player Photo — JPEG/JPG (Optional)</label>
+              <div class="player-photo-upload-row">
+                <div id="playerPhotoPreview" class="player-photo-preview" aria-label="Player photo preview">
+                  <span>2×2</span>
+                </div>
+                <div class="player-photo-upload-controls">
+                  <input id="playerPhotoFile" class="form-input player-photo-file-input" type="file" accept="image/jpeg,.jpg,.jpeg">
+                  <small>Choose a JPEG/JPG. A square 2×2 crop window will open so you can position the player's face correctly. The saved photo is standardized to 600×600 pixels.</small>
+                  <button id="removePlayerPhotoButton" class="secondary-button player-photo-remove-button" type="button" hidden>Remove Photo</button>
+                </div>
+              </div>
+            </div>
             <div class="form-actions"><button id="addPlayerButton" class="primary-button" type="submit">Add Player</button></div>
             <div id="addPlayerMessage" class="application-message" role="status" aria-live="polite"></div>
           </form>
@@ -1466,6 +1722,44 @@
         </section>
       </div>
     </main>
+
+    <div id="playerPhotoCropModal" class="player-photo-crop-modal" hidden aria-hidden="true">
+      <div class="player-photo-crop-backdrop"></div>
+      <section class="player-photo-crop-dialog" role="dialog" aria-modal="true" aria-labelledby="playerPhotoCropTitle">
+        <header class="player-photo-crop-header">
+          <div>
+            <span class="player-photo-crop-kicker">Player Photo</span>
+            <h2 id="playerPhotoCropTitle">Crop to 2×2 Photo</h2>
+            <p>Drag the image to position it inside the square guide. Use zoom if needed.</p>
+          </div>
+          <button id="closePlayerPhotoCropButton" class="player-photo-crop-close" type="button" aria-label="Close crop window">×</button>
+        </header>
+
+        <div class="player-photo-crop-body">
+          <div class="player-photo-canvas-shell">
+            <canvas id="playerPhotoCropCanvas" width="560" height="430"></canvas>
+          </div>
+
+          <div class="player-photo-crop-guide-note">
+            <strong>2×2 Square Guide</strong>
+            <span>Final image: JPEG • 600×600 px • 1:1 ratio</span>
+          </div>
+
+          <div class="player-photo-zoom-row">
+            <label for="playerPhotoZoom">Zoom</label>
+            <input id="playerPhotoZoom" type="range" min="1" max="3" step="0.01" value="1">
+            <span id="playerPhotoZoomValue">100%</span>
+          </div>
+
+          <div id="playerPhotoCropMessage" class="player-photo-crop-message" aria-live="polite"></div>
+        </div>
+
+        <footer class="player-photo-crop-actions">
+          <button id="cancelPlayerPhotoCropButton" class="secondary-button" type="button">Cancel</button>
+          <button id="usePlayerPhotoCropButton" class="primary-button" type="button">Use This Crop</button>
+        </footer>
+      </section>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1496,6 +1790,20 @@
     let coachDashboardDivisionRank = null;
     let coachDashboardDivisionRankStatus = "loading";
     let coachDivisionRankLoadToken = 0;
+
+    let croppedPlayerPhotoBlob = null;
+    let croppedPlayerPhotoPreviewUrl = "";
+    let cropSourceImage = null;
+    let cropSourceObjectUrl = "";
+    let cropZoom = 1;
+    let cropCenterX = 280;
+    let cropCenterY = 215;
+    let cropMinimumScale = 1;
+    let cropIsDragging = false;
+    let cropDragStartX = 0;
+    let cropDragStartY = 0;
+    let cropDragCenterX = 0;
+    let cropDragCenterY = 0;
 
     const coachViewConfig = {
       dashboard: {
@@ -1593,6 +1901,15 @@
     const authScreen = document.getElementById("authScreen");
     const appShell = document.getElementById("appShell");
     const teamSelect = document.getElementById("teamSelect");
+    const playerPhotoFile = document.getElementById("playerPhotoFile");
+    const playerPhotoPreview = document.getElementById("playerPhotoPreview");
+    const removePlayerPhotoButton = document.getElementById("removePlayerPhotoButton");
+    const playerPhotoCropModal = document.getElementById("playerPhotoCropModal");
+    const playerPhotoCropCanvas = document.getElementById("playerPhotoCropCanvas");
+    const playerPhotoCropContext = playerPhotoCropCanvas.getContext("2d");
+    const playerPhotoZoom = document.getElementById("playerPhotoZoom");
+    const playerPhotoZoomValue = document.getElementById("playerPhotoZoomValue");
+    const playerPhotoCropMessage = document.getElementById("playerPhotoCropMessage");
 
     function escapeHtml(value) {
       const element = document.createElement("div");
@@ -2238,6 +2555,252 @@
       return "We couldn't add this player. Please check the information and try again.";
     }
 
+    function isJpegPlayerPhoto(file) {
+      return !!file && (
+        ["image/jpeg", "image/jpg"].includes(String(file.type || "").toLowerCase()) ||
+        /\.jpe?g$/i.test(file.name || "")
+      );
+    }
+
+    function playerPhotoCropGeometry() {
+      const canvas = playerPhotoCropCanvas;
+      const size = Math.min(canvas.width, canvas.height) * 0.72;
+      return {
+        size,
+        x: (canvas.width - size) / 2,
+        y: (canvas.height - size) / 2
+      };
+    }
+
+    function constrainPlayerPhotoCrop() {
+      if (!cropSourceImage) return;
+
+      const crop = playerPhotoCropGeometry();
+      const scale = cropMinimumScale * cropZoom;
+      const renderedWidth = cropSourceImage.naturalWidth * scale;
+      const renderedHeight = cropSourceImage.naturalHeight * scale;
+
+      const minCenterX = crop.x + crop.size - renderedWidth / 2;
+      const maxCenterX = crop.x + renderedWidth / 2;
+      const minCenterY = crop.y + crop.size - renderedHeight / 2;
+      const maxCenterY = crop.y + renderedHeight / 2;
+
+      cropCenterX = Math.min(maxCenterX, Math.max(minCenterX, cropCenterX));
+      cropCenterY = Math.min(maxCenterY, Math.max(minCenterY, cropCenterY));
+    }
+
+    function renderPlayerPhotoCrop() {
+      const ctx = playerPhotoCropContext;
+      const canvas = playerPhotoCropCanvas;
+      const crop = playerPhotoCropGeometry();
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#111";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (!cropSourceImage) return;
+
+      const scale = cropMinimumScale * cropZoom;
+      const width = cropSourceImage.naturalWidth * scale;
+      const height = cropSourceImage.naturalHeight * scale;
+      const left = cropCenterX - width / 2;
+      const top = cropCenterY - height / 2;
+
+      ctx.drawImage(cropSourceImage, left, top, width, height);
+
+      ctx.fillStyle = "rgba(0,0,0,.58)";
+      ctx.fillRect(0, 0, canvas.width, crop.y);
+      ctx.fillRect(0, crop.y + crop.size, canvas.width, canvas.height - crop.y - crop.size);
+      ctx.fillRect(0, crop.y, crop.x, crop.size);
+      ctx.fillRect(crop.x + crop.size, crop.y, canvas.width - crop.x - crop.size, crop.size);
+
+      ctx.save();
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 4;
+      ctx.strokeRect(crop.x, crop.y, crop.size, crop.size);
+      ctx.strokeStyle = "#ff6b00";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(crop.x + 1, crop.y + 1, crop.size - 2, crop.size - 2);
+
+      ctx.strokeStyle = "rgba(255,255,255,.48)";
+      ctx.lineWidth = 1;
+      for (let i = 1; i <= 2; i++) {
+        const offset = crop.size * i / 3;
+        ctx.beginPath();
+        ctx.moveTo(crop.x + offset, crop.y);
+        ctx.lineTo(crop.x + offset, crop.y + crop.size);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(crop.x, crop.y + offset);
+        ctx.lineTo(crop.x + crop.size, crop.y + offset);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function closePlayerPhotoCropModal(clearFileInput = true) {
+      playerPhotoCropModal.hidden = true;
+      playerPhotoCropModal.setAttribute("aria-hidden", "true");
+      playerPhotoCropMessage.textContent = "";
+      cropIsDragging = false;
+      playerPhotoCropCanvas.classList.remove("dragging");
+
+      if (cropSourceObjectUrl) {
+        URL.revokeObjectURL(cropSourceObjectUrl);
+        cropSourceObjectUrl = "";
+      }
+
+      cropSourceImage = null;
+      if (clearFileInput) playerPhotoFile.value = "";
+    }
+
+    function openPlayerPhotoCropModal(file) {
+      if (!isJpegPlayerPhoto(file)) {
+        playerPhotoFile.value = "";
+        alert("Please choose a JPEG or JPG image only.");
+        return;
+      }
+
+      if (cropSourceObjectUrl) URL.revokeObjectURL(cropSourceObjectUrl);
+      cropSourceObjectUrl = URL.createObjectURL(file);
+
+      const image = new Image();
+      image.onload = function () {
+        cropSourceImage = image;
+        const crop = playerPhotoCropGeometry();
+
+        cropMinimumScale = Math.max(
+          crop.size / image.naturalWidth,
+          crop.size / image.naturalHeight
+        );
+
+        cropZoom = 1;
+        cropCenterX = playerPhotoCropCanvas.width / 2;
+        cropCenterY = playerPhotoCropCanvas.height / 2;
+        playerPhotoZoom.value = "1";
+        playerPhotoZoomValue.textContent = "100%";
+        constrainPlayerPhotoCrop();
+        renderPlayerPhotoCrop();
+
+        playerPhotoCropModal.hidden = false;
+        playerPhotoCropModal.setAttribute("aria-hidden", "false");
+      };
+
+      image.onerror = function () {
+        closePlayerPhotoCropModal();
+        alert("HoopHub could not read that image. Please choose another JPEG/JPG file.");
+      };
+
+      image.src = cropSourceObjectUrl;
+    }
+
+    function resetPlayerPhotoSelection() {
+      croppedPlayerPhotoBlob = null;
+
+      if (croppedPlayerPhotoPreviewUrl) {
+        URL.revokeObjectURL(croppedPlayerPhotoPreviewUrl);
+        croppedPlayerPhotoPreviewUrl = "";
+      }
+
+      playerPhotoFile.value = "";
+      playerPhotoPreview.classList.remove("has-photo");
+      playerPhotoPreview.style.backgroundImage = "";
+      removePlayerPhotoButton.hidden = true;
+    }
+
+    async function useCurrentPlayerPhotoCrop() {
+      if (!cropSourceImage) return;
+
+      const crop = playerPhotoCropGeometry();
+      const scale = cropMinimumScale * cropZoom;
+      const renderedWidth = cropSourceImage.naturalWidth * scale;
+      const renderedHeight = cropSourceImage.naturalHeight * scale;
+      const imageLeft = cropCenterX - renderedWidth / 2;
+      const imageTop = cropCenterY - renderedHeight / 2;
+
+      const sourceX = (crop.x - imageLeft) / scale;
+      const sourceY = (crop.y - imageTop) / scale;
+      const sourceSize = crop.size / scale;
+
+      const outputCanvas = document.createElement("canvas");
+      outputCanvas.width = 600;
+      outputCanvas.height = 600;
+      const outputContext = outputCanvas.getContext("2d");
+
+      outputContext.fillStyle = "#ffffff";
+      outputContext.fillRect(0, 0, 600, 600);
+      outputContext.drawImage(
+        cropSourceImage,
+        sourceX,
+        sourceY,
+        sourceSize,
+        sourceSize,
+        0,
+        0,
+        600,
+        600
+      );
+
+      const blob = await new Promise(resolve =>
+        outputCanvas.toBlob(resolve, "image/jpeg", 0.9)
+      );
+
+      if (!blob) {
+        playerPhotoCropMessage.textContent = "Unable to prepare the cropped JPEG. Please try another image.";
+        return;
+      }
+
+      croppedPlayerPhotoBlob = blob;
+
+      if (croppedPlayerPhotoPreviewUrl) {
+        URL.revokeObjectURL(croppedPlayerPhotoPreviewUrl);
+      }
+
+      croppedPlayerPhotoPreviewUrl = URL.createObjectURL(blob);
+      playerPhotoPreview.style.backgroundImage = `url("${croppedPlayerPhotoPreviewUrl}")`;
+      playerPhotoPreview.classList.add("has-photo");
+      removePlayerPhotoButton.hidden = false;
+
+      closePlayerPhotoCropModal(false);
+    }
+
+    async function uploadCroppedPlayerPhoto(assignment) {
+      if (!croppedPlayerPhotoBlob) return { publicUrl: null, filePath: null };
+
+      const filePath =
+        `${assignment.team_id}/${currentUser.id}/${crypto.randomUUID()}.jpg`;
+
+      const { error: uploadError } = await supabaseClient.storage
+        .from("player-photos")
+        .upload(filePath, croppedPlayerPhotoBlob, {
+          contentType: "image/jpeg",
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabaseClient.storage
+        .from("player-photos")
+        .getPublicUrl(filePath);
+
+      return {
+        publicUrl: data?.publicUrl || null,
+        filePath
+      };
+    }
+
+    async function removeUploadedPlayerPhoto(filePath) {
+      if (!filePath) return;
+      try {
+        await supabaseClient.storage
+          .from("player-photos")
+          .remove([filePath]);
+      } catch (error) {
+        console.warn("Unable to remove unused uploaded player photo:", error);
+      }
+    }
+
     async function addTeamPlayer(event) {
       event.preventDefault();
 
@@ -2280,7 +2843,19 @@
       button.textContent = "Adding Player...";
       message.textContent = "Creating the player record...";
 
+      let uploadedPhotoPath = null;
+
       try {
+        let playerPhotoUrl = null;
+
+        if (croppedPlayerPhotoBlob) {
+          message.textContent = "Uploading the cropped 2×2 player photo...";
+          const uploadedPhoto = await uploadCroppedPlayerPhoto(assignment);
+          playerPhotoUrl = uploadedPhoto.publicUrl;
+          uploadedPhotoPath = uploadedPhoto.filePath;
+          message.textContent = "Creating the player record...";
+        }
+
         const { error } = await supabaseClient.rpc("add_team_player", {
           p_league_id: assignment.league_id,
           p_team_id: assignment.team_id,
@@ -2289,19 +2864,31 @@
           p_position: document.getElementById("playerPosition").value.trim() || null,
           p_jersey_number: jerseyNumber,
           p_height: document.getElementById("playerHeight").value.trim() || null,
-          p_photo_url: document.getElementById("playerPhotoUrl").value.trim() || null
+          p_photo_url: playerPhotoUrl
         });
 
         if (error) throw error;
 
         await refreshTeamPlayers(assignment.team_id);
         form.reset();
+        resetPlayerPhotoSelection();
         message.className = "application-message success";
         message.textContent = "Player added successfully and marked pending for commissioner approval.";
         renderWorkspace();
       } catch (error) {
+        if (uploadedPhotoPath) await removeUploadedPlayerPhoto(uploadedPhotoPath);
+
         message.className = "application-message error";
-        message.textContent = friendlyAddPlayerError(error, jerseyNumber);
+
+        const storageText = String(error?.message || "");
+        if (
+          /player-photos|bucket|storage|row-level security|policy|not found/i.test(storageText)
+        ) {
+          message.textContent =
+            "Unable to upload the player photo. Make sure the player-photos Storage setup SQL has been run in Supabase.";
+        } else {
+          message.textContent = friendlyAddPlayerError(error, jerseyNumber);
+        }
       } finally {
         button.disabled = false;
         button.textContent = "Add Player";
@@ -3661,6 +4248,75 @@
     document.getElementById("teamProfileForm").addEventListener("submit", saveTeamProfile);
     document.getElementById("playerEditForm").addEventListener("submit", savePlayer);
     document.getElementById("cancelPlayerEditButton").addEventListener("click", closePlayerEditor);
+    playerPhotoFile.addEventListener("change", function () {
+      const file = this.files?.[0] || null;
+      if (file) openPlayerPhotoCropModal(file);
+    });
+
+    removePlayerPhotoButton.addEventListener("click", resetPlayerPhotoSelection);
+
+    document.getElementById("closePlayerPhotoCropButton").addEventListener("click", function () {
+      closePlayerPhotoCropModal(true);
+    });
+
+    document.getElementById("cancelPlayerPhotoCropButton").addEventListener("click", function () {
+      closePlayerPhotoCropModal(true);
+    });
+
+    document.getElementById("usePlayerPhotoCropButton").addEventListener("click", useCurrentPlayerPhotoCrop);
+
+    playerPhotoZoom.addEventListener("input", function () {
+      cropZoom = Number(this.value) || 1;
+      playerPhotoZoomValue.textContent = `${Math.round(cropZoom * 100)}%`;
+      constrainPlayerPhotoCrop();
+      renderPlayerPhotoCrop();
+    });
+
+    playerPhotoCropCanvas.addEventListener("pointerdown", function (event) {
+      if (!cropSourceImage) return;
+      cropIsDragging = true;
+      cropDragStartX = event.clientX;
+      cropDragStartY = event.clientY;
+      cropDragCenterX = cropCenterX;
+      cropDragCenterY = cropCenterY;
+      this.setPointerCapture(event.pointerId);
+      this.classList.add("dragging");
+    });
+
+    playerPhotoCropCanvas.addEventListener("pointermove", function (event) {
+      if (!cropIsDragging || !cropSourceImage) return;
+
+      const rect = this.getBoundingClientRect();
+      const scaleX = this.width / rect.width;
+      const scaleY = this.height / rect.height;
+
+      cropCenterX =
+        cropDragCenterX + (event.clientX - cropDragStartX) * scaleX;
+      cropCenterY =
+        cropDragCenterY + (event.clientY - cropDragStartY) * scaleY;
+
+      constrainPlayerPhotoCrop();
+      renderPlayerPhotoCrop();
+    });
+
+    function stopPlayerPhotoDrag(event) {
+      if (!cropIsDragging) return;
+      cropIsDragging = false;
+      playerPhotoCropCanvas.classList.remove("dragging");
+      try {
+        playerPhotoCropCanvas.releasePointerCapture(event.pointerId);
+      } catch {}
+    }
+
+    playerPhotoCropCanvas.addEventListener("pointerup", stopPlayerPhotoDrag);
+    playerPhotoCropCanvas.addEventListener("pointercancel", stopPlayerPhotoDrag);
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && !playerPhotoCropModal.hidden) {
+        closePlayerPhotoCropModal(true);
+      }
+    });
+
     document.getElementById("addPlayerForm").addEventListener("submit", addTeamPlayer);
     document.getElementById("teamApplicationForm").addEventListener("submit", submitTeamApplication);
     document.getElementById("submitRosterButton").addEventListener("click", async function () {
