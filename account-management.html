@@ -1025,17 +1025,17 @@
 
     /* =========================
        SUPER ADMIN EMBED MODE
-       account-management.html?embed=1
        ========================= */
+    .account-embed-mode,
     .account-embed-mode body {
       min-height: 0;
+      overflow: hidden !important;
       background: transparent;
     }
 
     .account-embed-mode .topbar,
     .account-embed-mode .sidebar,
-    .account-embed-mode .sidebar-overlay,
-    .account-embed-mode #activity-log {
+    .account-embed-mode .sidebar-overlay {
       display: none !important;
     }
 
@@ -1049,10 +1049,6 @@
       width: 100%;
       max-width: none;
       margin: 0;
-    }
-
-    .account-embed-mode .page-heading {
-      margin-top: 0;
     }
 
   </style>
@@ -1122,10 +1118,6 @@
       <a class="nav-link active" href="account-management.html">
         <span class="nav-icon">AC</span>
         Accounts
-      </a>
-      <a class="nav-link" href="#activity-log">
-        <span class="nav-icon">AL</span>
-        Activity Logs
       </a>
       <a class="nav-link" href="#">
         <span class="nav-icon">AN</span>
@@ -1246,18 +1238,6 @@
                 </tr>
               </tbody>
             </table>
-          </div>
-        </section>
-
-        <section id="activity-log" class="panel" aria-labelledby="activityHeading">
-          <header class="panel-header">
-            <div>
-              <h2 id="activityHeading">Recent Activity</h2>
-              <p>Latest account and scorekeeper-assignment actions.</p>
-            </div>
-          </header>
-          <div id="activityList" class="activity-list">
-            <div class="empty-state">Loading activity...</div>
           </div>
         </section>
       </div>
@@ -1424,7 +1404,6 @@
     let allProfiles = [];
     let allAssignments = [];
     let allGames = [];
-    let allActivity = [];
     let allLeagues = [];
     let allTeams = [];
     let allPlayers = [];
@@ -1437,8 +1416,6 @@
     const authScreen = document.getElementById("authScreen");
     const appShell = document.getElementById("appShell");
     const accountTableBody = document.getElementById("accountTableBody");
-    const activityList = document.getElementById("activityList");
-    const isEmbeddedAccountView = document.documentElement.classList.contains("account-embed-mode");
     const accountSearch = document.getElementById("accountSearch");
     const roleFilter = document.getElementById("roleFilter");
     const statusFilter = document.getElementById("statusFilter");
@@ -1566,6 +1543,7 @@
         appShell.hidden = false;
 
         await loadAllData();
+        reportEmbeddedAccountHeight();
       } catch (error) {
         console.error("Account Management authorization failed:", error);
         await returnToLogin(true);
@@ -1582,7 +1560,6 @@
           profilesResult,
           assignmentsResult,
           gamesResult,
-          activityResult,
           leaguesResult,
           teamsResult,
           playersResult,
@@ -1606,14 +1583,6 @@
               .from("games")
               .select("id, home_team, away_team")
               .order("id", { ascending: false }),
-
-            isEmbeddedAccountView
-              ? Promise.resolve({ data: [], error: null })
-              : supabaseClient
-                  .from("activity_logs")
-                  .select("id, actor_id, action, target_type, target_id, details, created_at")
-                  .order("created_at", { ascending: false })
-                  .limit(50),
 
             supabaseClient
               .from("leagues")
@@ -1654,7 +1623,6 @@
           profilesResult.error ||
           assignmentsResult.error ||
           gamesResult.error ||
-          activityResult.error ||
           leaguesResult.error ||
           teamsResult.error ||
           playersResult.error ||
@@ -1670,7 +1638,6 @@
         allProfiles = profilesResult.data || [];
         allAssignments = assignmentsResult.data || [];
         allGames = gamesResult.data || [];
-        allActivity = activityResult.data || [];
         allLeagues = leaguesResult.data || [];
         allTeams = teamsResult.data || [];
         allPlayers = playersResult.data || [];
@@ -1683,7 +1650,6 @@
         renderAccounts();
         renderGameOptions();
         renderHierarchyOptions();
-        if (!isEmbeddedAccountView) renderActivity();
 
         if (selectedAccountId && modalBackdrop.classList.contains("open")) {
           openAccountModal(selectedAccountId);
@@ -1862,88 +1828,6 @@
       return `Game #${game.id} — ${home} vs ${away}`;
     }
 
-    function activityDescription(item) {
-      const details = item.details || {};
-
-      if (item.action === "account_updated") {
-        const email = details.email || "Account";
-        const previousRole = ROLE_LABELS[details.previous_role] || details.previous_role || "Unknown";
-        const newRole = ROLE_LABELS[details.new_role] || details.new_role || "Unknown";
-        const previousStatus = STATUS_LABELS[details.previous_status] || details.previous_status || "Unknown";
-        const newStatus = STATUS_LABELS[details.new_status] || details.new_status || "Unknown";
-        return `${email}: ${previousRole} / ${previousStatus} → ${newRole} / ${newStatus}`;
-      }
-
-      if (
-        item.action === "scorekeeper_assignment_activated" ||
-        item.action === "scorekeeper_assignment_revoked"
-      ) {
-        const email = details.scorekeeper_email || "Scorekeeper";
-        const verb = item.action.endsWith("revoked") ? "removed from" : "assigned to";
-        return `${email} was ${verb} Game #${details.game_id ?? "—"}`;
-      }
-
-      if (item.action === "commissioner_assigned" || item.action === "commissioner_unassigned") {
-        const profile = allProfiles.find(entry => entry.id === details.commissioner_id);
-        const verb = item.action === "commissioner_assigned" ? "assigned to" : "removed from";
-        return `${profile ? displayName(profile) : "Commissioner"} was ${verb} ${leagueLabel(item.target_id)}`;
-      }
-
-      if (item.action === "coach_assigned" || item.action === "coach_unassigned") {
-        const profile = allProfiles.find(entry => entry.id === details.coach_id);
-        const verb = item.action === "coach_assigned" ? "assigned to" : "removed from";
-        return `${profile ? displayName(profile) : "Coach"} was ${verb} ${teamLabel(item.target_id)}`;
-      }
-
-      if (item.action === "player_account_linked" || item.action === "player_account_unlinked") {
-        const verb = item.action === "player_account_linked" ? "linked" : "unlinked";
-        return `${playerLabel(item.target_id)} account was ${verb}`;
-      }
-
-      return item.target_id ? `Target: ${item.target_id}` : "Platform action recorded";
-    }
-
-    function renderActivity() {
-      if (isEmbeddedAccountView || !activityList) return;
-      if (!allActivity.length) {
-        activityList.innerHTML = '<div class="empty-state">No management activity has been recorded yet.</div>';
-        return;
-      }
-
-      const profileById = new Map(allProfiles.map(profile => [profile.id, profile]));
-
-      activityList.innerHTML = allActivity.map(item => {
-        const actor = profileById.get(item.actor_id);
-        const actorLabel = actor ? displayName(actor) : "System";
-        const title = String(item.action || "Activity")
-          .replaceAll("_", " ")
-          .replace(/^./, character => character.toUpperCase());
-
-        const symbol = item.action === "account_updated"
-          ? "AC"
-          : item.action.includes("commissioner")
-            ? "CM"
-            : item.action.includes("coach")
-              ? "CH"
-              : item.action.includes("player")
-                ? "PL"
-                : "GM";
-
-        return `
-          <div class="activity-item">
-            <div class="activity-symbol">${escapeHtml(symbol)}</div>
-            <div>
-              <div class="activity-title">${escapeHtml(title)}</div>
-              <div class="activity-detail">
-                ${escapeHtml(activityDescription(item))} · by ${escapeHtml(actorLabel)}
-              </div>
-            </div>
-            <div class="activity-time">${escapeHtml(formatDate(item.created_at, true))}</div>
-          </div>
-        `;
-      }).join("");
-    }
-
     function openAccountModal(accountId) {
       const profile = allProfiles.find(item => item.id === accountId);
       if (!profile) {
@@ -1979,6 +1863,7 @@
       modalBackdrop.classList.add("open");
       modalBackdrop.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
+      reportEmbeddedAccountHeight();
     }
 
     function closeAccountModal() {
@@ -1986,6 +1871,7 @@
       modalBackdrop.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
       selectedAccountId = null;
+      reportEmbeddedAccountHeight();
     }
 
     function renderSelectedAssignments() {
@@ -2487,6 +2373,34 @@
       this.textContent = "Logging Out...";
       await returnToLogin(true);
     });
+
+
+    function reportEmbeddedAccountHeight() {
+      if (!document.documentElement.classList.contains("account-embed-mode")) return;
+
+      requestAnimationFrame(() => {
+        const height = Math.max(
+          document.body.scrollHeight,
+          document.documentElement.scrollHeight
+        );
+
+        window.parent.postMessage(
+          { type: "hoophub-account-height", height },
+          window.location.origin
+        );
+      });
+    }
+
+    if (document.documentElement.classList.contains("account-embed-mode")) {
+      window.addEventListener("load", reportEmbeddedAccountHeight);
+
+      if ("ResizeObserver" in window) {
+        const accountResizeObserver = new ResizeObserver(reportEmbeddedAccountHeight);
+        accountResizeObserver.observe(document.body);
+      }
+
+      window.addEventListener("resize", reportEmbeddedAccountHeight);
+    }
 
     requireSuperAdmin();
   </script>
