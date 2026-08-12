@@ -271,8 +271,12 @@
       margin: 0 auto;
     }
 
-    .admin-view[hidden] {
-      display: none !important;
+    .admin-view {
+      display: none;
+    }
+
+    .admin-view.is-active {
+      display: block;
     }
 
     .nav-view-button {
@@ -869,7 +873,7 @@
 
     <main class="main-content">
       <div class="content-wrap">
-        <div id="dashboardView" class="admin-view" data-view-name="dashboard">
+        <div id="dashboardView" class="admin-view is-active" data-view-name="dashboard">
         <section class="page-heading">
           <div>
             <h1 id="welcomeHeading">Welcome, HoopHub PH Owner</h1>
@@ -1506,11 +1510,20 @@
         announcements: announcementsView
       };
 
-      Object.entries(views).forEach(([name, element]) => {
-        if (element) element.hidden = name !== viewName;
+      const selectedView = views[viewName] || dashboardView;
+
+      Object.values(views).forEach(function (element) {
+        if (!element) return;
+        element.classList.remove("is-active");
+        element.hidden = true;
       });
 
-      document.querySelectorAll("[data-admin-view]").forEach(control => {
+      if (selectedView) {
+        selectedView.hidden = false;
+        selectedView.classList.add("is-active");
+      }
+
+      document.querySelectorAll(".nav-view-button").forEach(function (control) {
         control.classList.toggle("active", control.dataset.adminView === viewName);
       });
 
@@ -1518,7 +1531,8 @@
         loadActivityLog();
       }
 
-      window.scrollTo({ top: 0, behavior: "auto" });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
       closeSidebar();
     }
 
@@ -1671,8 +1685,12 @@
     });
 
     document.querySelectorAll("[data-admin-view]").forEach(function (control) {
-      control.addEventListener("click", function () {
-        showAdminView(control.dataset.adminView);
+      control.addEventListener("click", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const viewName = control.dataset.adminView;
+        if (!viewName) return;
+        showAdminView(viewName);
       });
     });
 
