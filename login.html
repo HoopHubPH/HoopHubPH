@@ -471,9 +471,66 @@
       super_admin: "super-admin.html",
       commissioner: "commissioner-dashboard.html",
       coach: "coach-dashboard.html",
-      player: "player-dashboard.html",
-      scorekeeper: "scorekeeper.html"
+      player: "player-dashboard.html"
     });
+
+    async function resolveScorekeeperDestination(userId) {
+      /*
+       * Both Main Scorekeeper and Clock Operator accounts keep the
+       * global profile role "scorekeeper".
+       *
+       * The per-game assignment determines which operations screen
+       * opens after login.
+       */
+
+      const [
+        mainAssignmentResult,
+        clockAssignmentResult
+      ] = await Promise.all([
+        supabaseClient
+          .from("game_scorekeepers")
+          .select("game_id")
+          .eq("scorekeeper_id", userId)
+          .eq("active", true)
+          .limit(1),
+
+        supabaseClient.rpc("list_my_clock_operator_games")
+      ]);
+
+      if (mainAssignmentResult.error) {
+        throw mainAssignmentResult.error;
+      }
+
+      if (clockAssignmentResult.error) {
+        throw clockAssignmentResult.error;
+      }
+
+      const hasMainScorekeeperAssignment =
+        (mainAssignmentResult.data || []).length > 0;
+
+      const hasClockOperatorAssignment =
+        (clockAssignmentResult.data || []).length > 0;
+
+      // Dedicated Clock Operator account:
+      // Game Clock + Shot Clock control only.
+      if (
+        hasClockOperatorAssignment &&
+        !hasMainScorekeeperAssignment
+      ) {
+        return {
+          destination: "clock-control.html",
+          label: "Clock Control"
+        };
+      }
+
+      // Main Scorekeeper account keeps the full scorekeeper page.
+      // If the same account is assigned to both responsibilities,
+      // Main Scorekeeper remains the default entry point.
+      return {
+        destination: "scorekeeper.html",
+        label: "Scorekeeper"
+      };
+    }
 
     const loginForm = document.getElementById("loginForm");
     const emailInput = document.getElementById("email");
@@ -570,7 +627,34 @@
         return;
       }
 
-      const destination = DASHBOARD_BY_ROLE[profile.role];
+      let destination;
+      let destinationLabel = "dashboard";
+
+      if (profile.role === "scorekeeper") {
+        try {
+          const scorekeeperRoute =
+            await resolveScorekeeperDestination(user.id);
+
+          destination =
+            scorekeeperRoute.destination;
+
+          destinationLabel =
+            scorekeeperRoute.label;
+        } catch (routingError) {
+          console.error(
+            "Unable to resolve scorekeeper assignment route:",
+            routingError
+          );
+
+          await signOutAndShow(
+            "Unable to verify your game assignment. Please try again."
+          );
+          return;
+        }
+      } else {
+        destination =
+          DASHBOARD_BY_ROLE[profile.role];
+      }
 
       if (!destination) {
         await signOutAndShow(
@@ -579,7 +663,11 @@
         return;
       }
 
-      showMessage("Login successful. Opening your dashboard...", "success");
+      showMessage(
+        `Login successful. Opening ${destinationLabel}...`,
+        "success"
+      );
+
       window.location.replace(destination);
     }
 
