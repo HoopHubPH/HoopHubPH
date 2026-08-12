@@ -220,6 +220,7 @@
     .mini-button.primary { color:#fff; background:var(--orange); border-color:var(--orange); }
     .mini-button.danger { color:#b42318; background:#fff4f2; border-color:#fecdca; }
     .mini-button:disabled { opacity:.55; cursor:wait; }
+    .player-actions { display:flex; gap:6px; flex-wrap:wrap; }
 
     .team-details { padding: 18px; display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
     .detail-box { padding: 13px; background: #fafafa; border: 1px solid var(--line); border-radius: 8px; }
@@ -430,10 +431,23 @@
           </header>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Player</th><th>Jersey</th><th>Position</th><th>Height</th></tr></thead>
-              <tbody id="playerTableBody"><tr><td class="empty-state" colspan="4">Loading roster...</td></tr></tbody>
+              <thead><tr><th>Player</th><th>Jersey</th><th>Position</th><th>Height</th><th>Actions</th></tr></thead>
+              <tbody id="playerTableBody"><tr><td class="empty-state" colspan="5">Loading roster...</td></tr></tbody>
             </table>
           </div>
+          <form id="playerEditForm" class="application-form" hidden>
+            <input id="editPlayerId" type="hidden">
+            <div class="form-group"><label for="editPlayerFirstName">First Name</label><input id="editPlayerFirstName" class="form-input" type="text" maxlength="60" required></div>
+            <div class="form-group"><label for="editPlayerLastName">Last Name (Optional)</label><input id="editPlayerLastName" class="form-input" type="text" maxlength="60"></div>
+            <div class="form-group"><label for="editPlayerJerseyNumber">Jersey Number (Optional)</label><input id="editPlayerJerseyNumber" class="form-input" type="number" min="0" max="99" step="1"></div>
+            <div class="form-group"><label for="editPlayerPosition">Position (Optional)</label><select id="editPlayerPosition" class="form-input">
+              <option value="">Select position</option><option value="point guard">Point Guard</option><option value="shooting guard">Shooting Guard</option><option value="small forward">Small Forward</option><option value="power forward">Power Forward</option><option value="center">Center</option><option value="point guard/shooting guard">Point Guard/Shooting Guard</option><option value="shooting guard/small forward">Shooting Guard/Small Forward</option><option value="small forward/power forward">Small Forward/Power Forward</option><option value="power forward/center">Power Forward/Center</option>
+            </select></div>
+            <div class="form-group"><label for="editPlayerHeight">Height (Optional)</label><input id="editPlayerHeight" class="form-input" type="text" maxlength="30" placeholder="Example: 5'10&quot;"></div>
+            <div class="form-group"><label for="editPlayerPhotoUrl">Photo URL (Optional)</label><input id="editPlayerPhotoUrl" class="form-input" type="url" maxlength="2000" placeholder="https://example.com/player-photo.jpg"></div>
+            <div class="form-actions"><button id="savePlayerButton" class="primary-button" type="submit">Save Player</button> <button id="cancelPlayerEditButton" class="secondary-button" type="button">Cancel</button></div>
+            <div id="playerEditMessage" class="application-message" role="status" aria-live="polite"></div>
+          </form>
         </section>
 
         <section id="modules" class="panel">
@@ -548,7 +562,7 @@
       if (teamIds.length) {
         const [teamResult, playerResult] = await Promise.all([
           supabaseClient.from("teams").select("id, name, logo_url, location, created_at").in("id", teamIds).order("name"),
-          supabaseClient.from("players").select("id, first_name, last_name, position, jersey_number, height, team_id").in("team_id", teamIds).order("first_name")
+          supabaseClient.from("players").select("id, first_name, last_name, position, jersey_number, height, photo_url, team_id").in("team_id", teamIds).order("first_name")
         ]);
         if (teamResult.error) throw teamResult.error;
         if (playerResult.error) throw playerResult.error;
@@ -633,7 +647,7 @@
     async function refreshTeamPlayers(teamId) {
       const { data, error } = await supabaseClient
         .from("players")
-        .select("id, first_name, last_name, position, jersey_number, height, team_id")
+        .select("id, first_name, last_name, position, jersey_number, height, photo_url, team_id")
         .eq("team_id", teamId)
         .order("first_name");
 
@@ -756,6 +770,93 @@
     function selectedAssignment() {
       const [leagueId, teamId] = String(teamSelect.value || "").split("|");
       return assignments.find(item => item.league_id === leagueId && item.team_id === teamId) || null;
+    }
+
+    function closePlayerEditor() {
+      const form = document.getElementById("playerEditForm");
+      form.hidden = true;
+      form.reset();
+      document.getElementById("editPlayerId").value = "";
+      const message = document.getElementById("playerEditMessage");
+      message.className = "application-message";
+      message.textContent = "";
+    }
+
+    function openPlayerEditor(playerId) {
+      const assignment = selectedAssignment();
+      const player = players.find(item => item.id === playerId && item.team_id === assignment?.team_id);
+      if (!player) return alert("This player could not be found on the selected roster.");
+      document.getElementById("editPlayerId").value = player.id;
+      document.getElementById("editPlayerFirstName").value = player.first_name || "";
+      document.getElementById("editPlayerLastName").value = player.last_name || "";
+      document.getElementById("editPlayerJerseyNumber").value = player.jersey_number ?? "";
+      document.getElementById("editPlayerPosition").value = String(player.position || "").toLowerCase();
+      document.getElementById("editPlayerHeight").value = player.height || "";
+      document.getElementById("editPlayerPhotoUrl").value = player.photo_url || "";
+      document.getElementById("playerEditForm").hidden = false;
+      document.getElementById("playerEditMessage").textContent = "Editing " + [player.first_name, player.last_name].filter(Boolean).join(" ") + ".";
+      document.getElementById("playerEditForm").scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    async function savePlayer(event) {
+      event.preventDefault();
+      const assignment = selectedAssignment();
+      const playerId = document.getElementById("editPlayerId").value;
+      const jerseyValue = document.getElementById("editPlayerJerseyNumber").value.trim();
+      const jerseyNumber = jerseyValue === "" ? null : Number(jerseyValue);
+      const button = document.getElementById("savePlayerButton");
+      const message = document.getElementById("playerEditMessage");
+      if (!assignment || !players.some(item => item.id === playerId && item.team_id === assignment.team_id)) return alert("Select the correct assigned team first.");
+      if (jerseyNumber !== null && (!Number.isInteger(jerseyNumber) || jerseyNumber < 0 || jerseyNumber > 99)) {
+        message.className = "application-message error";
+        message.textContent = "Jersey number must be a whole number from 0 to 99.";
+        return;
+      }
+      button.disabled = true;
+      button.textContent = "Saving...";
+      message.className = "application-message";
+      message.textContent = "Updating player details...";
+      const { error } = await supabaseClient.rpc("update_coach_team_player", {
+        p_player_id: playerId,
+        p_first_name: document.getElementById("editPlayerFirstName").value.trim(),
+        p_last_name: document.getElementById("editPlayerLastName").value.trim() || null,
+        p_position: document.getElementById("editPlayerPosition").value || null,
+        p_jersey_number: jerseyNumber,
+        p_height: document.getElementById("editPlayerHeight").value.trim() || null,
+        p_photo_url: document.getElementById("editPlayerPhotoUrl").value.trim() || null
+      });
+      if (error) {
+        message.className = "application-message error";
+        message.textContent = /jersey number/i.test(error.message) ? error.message : "Unable to update player: " + error.message;
+      } else {
+        await refreshTeamPlayers(assignment.team_id);
+        closePlayerEditor();
+        renderWorkspace();
+        alert("Player details updated successfully.");
+      }
+      button.disabled = false;
+      button.textContent = "Save Player";
+    }
+
+    async function removePlayer(playerId, button) {
+      const assignment = selectedAssignment();
+      const player = players.find(item => item.id === playerId && item.team_id === assignment?.team_id);
+      if (!player) return alert("This player could not be found on the selected roster.");
+      const name = [player.first_name, player.last_name].filter(Boolean).join(" ") || "this player";
+      if (!confirm(`Remove ${name} from the current roster?\n\nHistorical game statistics will remain saved. This action only detaches the player from this team.`)) return;
+      button.disabled = true;
+      button.textContent = "Removing...";
+      const { error } = await supabaseClient.rpc("remove_coach_team_player", { p_player_id: playerId });
+      if (error) {
+        alert("Unable to remove player: " + error.message);
+        button.disabled = false;
+        button.textContent = "Remove";
+        return;
+      }
+      closePlayerEditor();
+      await refreshTeamPlayers(assignment.team_id);
+      renderWorkspace();
+      alert(`${name} was removed from the current roster. Historical statistics were preserved.`);
     }
 
     function selectedTeam() {
@@ -1024,7 +1125,8 @@
         document.getElementById("teamName").textContent = "No Team Assigned";
         document.getElementById("staffRoleBadge").textContent = "Waiting";
         document.getElementById("teamDetails").innerHTML = '<div class="empty-state" style="grid-column:1/-1">Ask the Super Admin to assign a team to this account.</div>';
-        document.getElementById("playerTableBody").innerHTML = '<tr><td class="empty-state" colspan="4">No assigned team.</td></tr>';
+        document.getElementById("playerTableBody").innerHTML = '<tr><td class="empty-state" colspan="5">No assigned team.</td></tr>';
+        closePlayerEditor();
         document.getElementById("editTeamProfileButton").disabled = true;
         closeTeamProfileEditor();
         loadSubmissionStatus(null);
@@ -1049,9 +1151,10 @@
               <td>${escapeHtml(player.jersey_number ?? "—")}</td>
               <td>${escapeHtml(player.position || "—")}</td>
               <td>${escapeHtml(player.height || "—")}</td>
+              <td><div class="player-actions"><button class="mini-button primary" type="button" onclick="openPlayerEditor('${player.id}')">Edit</button><button class="mini-button danger" type="button" onclick="removePlayer('${player.id}',this)">Remove</button></div></td>
             </tr>
           `).join("")
-        : '<tr><td class="empty-state" colspan="4">No player records are connected to this team.</td></tr>';
+        : '<tr><td class="empty-state" colspan="5">No player records are connected to this team.</td></tr>';
 
       loadSubmissionStatus(assignment);
       loadPlayerInvitations(assignment);
@@ -1064,6 +1167,7 @@
 
     teamSelect.addEventListener("change", function () {
       closeTeamProfileEditor();
+      closePlayerEditor();
       renderWorkspace();
     });
     document.getElementById("editTeamProfileButton").addEventListener("click", function () {
@@ -1071,6 +1175,8 @@
     });
     document.getElementById("cancelTeamProfileButton").addEventListener("click", closeTeamProfileEditor);
     document.getElementById("teamProfileForm").addEventListener("submit", saveTeamProfile);
+    document.getElementById("playerEditForm").addEventListener("submit", savePlayer);
+    document.getElementById("cancelPlayerEditButton").addEventListener("click", closePlayerEditor);
     document.getElementById("addPlayerForm").addEventListener("submit", addTeamPlayer);
     document.getElementById("teamApplicationForm").addEventListener("submit", submitTeamApplication);
     document.getElementById("submitRosterButton").addEventListener("click", async function () {
