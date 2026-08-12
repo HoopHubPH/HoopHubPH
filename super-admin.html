@@ -2285,6 +2285,7 @@
                 <option value="">Loading leagues...</option>
               </select>
               <button id="refreshLeagueWorkspaceButton" class="secondary-button" type="button">REFRESH</button>
+              <span id="leagueWorkspaceSyncStatus" class="league-workspace-message" style="padding:0;white-space:nowrap;">Synced with Supabase</span>
             </div>
           </section>
 
@@ -2941,6 +2942,7 @@
     const refreshDashboardChartButton = document.getElementById("refreshDashboardChartButton");
 
     const leagueWorkspaceView = document.getElementById("leagueWorkspaceView");
+    const leagueWorkspaceSyncStatus = document.getElementById("leagueWorkspaceSyncStatus");
     const leagueWorkspaceSelect = document.getElementById("leagueWorkspaceSelect");
     const refreshLeagueWorkspaceButton = document.getElementById("refreshLeagueWorkspaceButton");
     const leagueWorkspaceTitle = document.getElementById("leagueWorkspaceTitle");
@@ -3018,6 +3020,9 @@
       commissioners: []
     };
     let leagueWorkspaceLoadToken = 0;
+    let leagueRealtimeChannel = null;
+    let leagueSyncTimer = null;
+    let lastCreatedLeagueId = null;
     let leagueManagementRows = [];
     let editingLeagueId = null;
     let currentSuperAdminUser = null;
@@ -3093,8 +3098,9 @@
       }
     }
 
-    function populateLeagueWorkspaceOptions(preserve = true) {
+    function populateLeagueWorkspaceOptions(preserve = true, preferredLeagueId = null) {
       const previous = preserve ? leagueWorkspaceSelect.value : "";
+      const preferred = preferredLeagueId ? String(preferredLeagueId) : "";
 
       leagueWorkspaceSelect.innerHTML = leagueManagementRows.length
         ? leagueManagementRows.map(league =>
@@ -3102,7 +3108,15 @@
           ).join("")
         : '<option value="">No leagues available</option>';
 
-      if (previous && leagueManagementRows.some(item => String(item.id) === String(previous))) {
+      if (
+        preferred &&
+        leagueManagementRows.some(item => String(item.id) === preferred)
+      ) {
+        leagueWorkspaceSelect.value = preferred;
+      } else if (
+        previous &&
+        leagueManagementRows.some(item => String(item.id) === String(previous))
+      ) {
         leagueWorkspaceSelect.value = previous;
       } else if (leagueManagementRows.length) {
         leagueWorkspaceSelect.value = leagueManagementRows[0].id;
@@ -3823,7 +3837,13 @@
       }).join("");
     }
 
-    async function loadLeagueManagement() {
+    async function loadLeagueManagement(options = {}) {
+      const {
+        preserveWorkspaceSelection = true,
+        preferredLeagueId = null,
+        loadSelectedWorkspace = false
+      } = options;
+
       leagueManagementTableBody.innerHTML =
         '<tr><td class="league-management-empty" colspan="6">Loading league records...</td></tr>';
 
@@ -3837,7 +3857,23 @@
 
         leagueManagementRows = data || [];
         renderLeagueManagement();
-        populateLeagueWorkspaceOptions(true);
+        populateLeagueWorkspaceOptions(
+          preserveWorkspaceSelection,
+          preferredLeagueId
+        );
+
+        leagueWorkspaceSyncStatus.textContent =
+          `Synced ${new Date().toLocaleTimeString("en-PH", {
+            hour: "numeric",
+            minute: "2-digit",
+            second: "2-digit"
+          })}`;
+
+        if (loadSelectedWorkspace) {
+          await loadLeagueWorkspaceLeague();
+        }
+
+        return leagueManagementRows;
       } catch (error) {
         console.error("Unable to load league management:", error);
         leagueManagementTableBody.innerHTML = `
@@ -3847,6 +3883,86 @@
             </td>
           </tr>
         `;
+        leagueWorkspaceSyncStatus.textContent = "League sync failed";
+        throw error;
+      }
+    }
+
+    async function refreshLeagueWorkspaceFromSource(preferredLeagueId = null) {
+      refreshLeagueWorkspaceButton.disabled = true;
+      refreshLeagueWorkspaceButton.textContent = "SYNCING...";
+      leagueWorkspaceSyncStatus.textContent = "Syncing leagues...";
+
+      try {
+        await loadLeagueManagement({
+          preserveWorkspaceSelection: !preferredLeagueId,
+          preferredLeagueId,
+          loadSelectedWorkspace: true
+        });
+      } catch (error) {
+        console.error("League Workspace sync failed:", error);
+      } finally {
+        refreshLeagueWorkspaceButton.disabled = false;
+        refreshLeagueWorkspaceButton.textContent = "REFRESH";
+      }
+    }
+
+    function scheduleLeagueSourceSync(preferredLeagueId = null) {
+      clearTimeout(leagueSyncTimer);
+
+      leagueSyncTimer = setTimeout(() => {
+        const workspaceIsOpen =
+          document.getElementById("adminViewLeagueWorkspace")?.checked === true;
+
+        loadLeagueManagement({
+          preserveWorkspaceSelection: !preferredLeagueId,
+          preferredLeagueId,
+          loadSelectedWorkspace: workspaceIsOpen
+        }).catch(error => {
+          console.warn("Background league synchronization failed:", error);
+        });
+      }, 120);
+    }
+
+    function startLeagueRealtimeSync() {
+      if (leagueRealtimeChannel) return;
+
+      try {
+        leagueRealtimeChannel = supabaseClient
+          .channel("super-admin-leagues-sync")
+          .on(
+            "postgres_changes",
+            {
+              event: "*",
+              schema: "public",
+              table: "leagues"
+            },
+            payload => {
+              const changedLeagueId =
+                payload?.new?.id ||
+                payload?.old?.id ||
+                null;
+
+              /*
+               * Re-query the table instead of trusting the realtime payload.
+               * The table query remains the single source of truth.
+               */
+              scheduleLeagueSourceSync(
+                payload?.eventType === "INSERT" ? changedLeagueId : null
+              );
+            }
+          )
+          .subscribe(status => {
+            if (status === "SUBSCRIBED") {
+              leagueWorkspaceSyncStatus.textContent = "Live league sync active";
+            }
+          });
+      } catch (error) {
+        /*
+         * Realtime is optional. Manual/open/create/edit/delete synchronization
+         * still works even when Supabase Realtime is not enabled for leagues.
+         */
+        console.warn("League realtime sync unavailable:", error);
       }
     }
 
@@ -3963,10 +4079,15 @@
           );
 
           resetLeagueManagementForm();
-          await loadLeagueManagement();
+          await loadLeagueManagement({
+            preserveWorkspaceSelection: false,
+            preferredLeagueId: data.id,
+            loadSelectedWorkspace:
+              document.getElementById("adminViewLeagueWorkspace")?.checked === true
+          });
           await loadDashboardCounts();
           setLeagueManagementMessage(
-            `${data.name} was updated successfully.`,
+            `${data.name} was updated successfully and synced to League Workspace.`,
             "success"
           );
         } else {
@@ -3989,11 +4110,20 @@
             { league_name: data.name, status: data.status }
           );
 
+          lastCreatedLeagueId = data.id;
           resetLeagueManagementForm();
-          await loadLeagueManagement();
+
+          await loadLeagueManagement({
+            preserveWorkspaceSelection: false,
+            preferredLeagueId: data.id,
+            loadSelectedWorkspace:
+              document.getElementById("adminViewLeagueWorkspace")?.checked === true
+          });
+
           await loadDashboardCounts();
+
           setLeagueManagementMessage(
-            `${data.name} was created successfully.`,
+            `${data.name} was created successfully and synced to League Workspace.`,
             "success"
           );
         }
@@ -4041,11 +4171,15 @@
           resetLeagueManagementForm();
         }
 
-        await loadLeagueManagement();
+        await loadLeagueManagement({
+          preserveWorkspaceSelection: false,
+          loadSelectedWorkspace:
+            document.getElementById("adminViewLeagueWorkspace")?.checked === true
+        });
         await loadDashboardCounts();
 
         setLeagueManagementMessage(
-          `${league.name} was deleted.`,
+          `${league.name} was deleted and removed from League Workspace.`,
           "success"
         );
       } catch (error) {
@@ -4824,10 +4958,14 @@
         appShell.hidden = false;
         await Promise.all([
           loadDashboardCounts(),
-          loadLeagueManagement(),
+          loadLeagueManagement({
+            preserveWorkspaceSelection: true
+          }),
           loadActivityLog(),
           loadAnnouncements()
         ]);
+
+        startLeagueRealtimeSync();
       } catch (error) {
         console.error("Authorization check failed:", error);
         await returnToLogin(true);
@@ -5268,7 +5406,7 @@
     });
 
     leagueWorkspaceSelect.addEventListener("change", loadLeagueWorkspaceLeague);
-    refreshLeagueWorkspaceButton.addEventListener("click", loadLeagueWorkspaceLeague);
+    refreshLeagueWorkspaceButton.addEventListener("click", () => refreshLeagueWorkspaceFromSource());
     leagueWorkspaceGameStatusFilter.addEventListener("change", renderLeagueWorkspaceGames);
     leagueWorkspaceStandingsSeason.addEventListener("change", () => renderLeagueWorkspaceStandingDivisions(false));
     leagueWorkspaceStandingsDivision.addEventListener("change", loadLeagueWorkspaceStandings);
@@ -5288,17 +5426,24 @@
     document.getElementById("adminViewLeagueWorkspace").addEventListener("change", async function () {
       if (!this.checked) return;
 
-      if (!leagueManagementRows.length) {
-        await loadLeagueManagement();
-      }
+      await loadLeagueManagement({
+        preserveWorkspaceSelection: true,
+        preferredLeagueId: lastCreatedLeagueId,
+        loadSelectedWorkspace: true
+      });
 
-      populateLeagueWorkspaceOptions(true);
-      await loadLeagueWorkspaceLeague();
+      lastCreatedLeagueId = null;
     });
 
     leagueManagementForm.addEventListener("submit", saveLeagueRecord);
     cancelLeagueEditButton.addEventListener("click", resetLeagueManagementForm);
-    refreshLeagueManagementButton.addEventListener("click", loadLeagueManagement);
+    refreshLeagueManagementButton.addEventListener("click", () => {
+      loadLeagueManagement({
+        preserveWorkspaceSelection: true,
+        loadSelectedWorkspace:
+          document.getElementById("adminViewLeagueWorkspace")?.checked === true
+      });
+    });
     leagueManagementSearch.addEventListener("input", renderLeagueManagement);
 
     leagueManagementTableBody.addEventListener("click", function (event) {
@@ -5313,7 +5458,11 @@
     });
 
     document.getElementById("adminViewLeagues").addEventListener("change", function () {
-      if (this.checked) loadLeagueManagement();
+      if (this.checked) {
+        loadLeagueManagement({
+          preserveWorkspaceSelection: true
+        });
+      }
     });
 
     [activityLeagueFilter, activityUserFilter, activityActionFilter, activityDateFilter]
