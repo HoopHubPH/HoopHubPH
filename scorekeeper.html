@@ -9591,6 +9591,49 @@ function stopMinutePersistence(){
 
 
 /* =========================================================
+   COACH SUBMITTED STARTING FIVE -> SCOREKEEPER
+   ========================================================= */
+
+async function initializeSubmittedStartingLineups(){
+
+    if(!currentGame){
+        return [];
+    }
+
+    try{
+
+        const {
+            data,
+            error
+        }=
+        await supabaseClient.rpc(
+            "initialize_scorekeeper_starting_lineup",
+            {
+                p_game_id:currentGame.id
+            }
+        );
+
+        if(error){
+            console.error(
+                "Unable to initialize coach-submitted starting lineup:",
+                error
+            );
+            return [];
+        }
+
+        return data||[];
+    }
+    catch(error){
+        console.error(
+            "Starting lineup initialization error:",
+            error
+        );
+        return [];
+    }
+}
+
+
+/* =========================================================
    LOAD GAME
    ========================================================= */
 
@@ -9785,6 +9828,8 @@ async function loadGame(){
     await loadPersistedClock();
 
     startExternalClockSync();
+
+    await initializeSubmittedStartingLineups();
 
     await loadTeamPlayers();
 
