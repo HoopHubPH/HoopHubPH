@@ -2656,6 +2656,235 @@
       }
     }
 
+
+    /* =========================
+       SUPER ADMIN ACTION CENTER
+       ========================= */
+    .super-admin-action-center {
+      overflow: hidden;
+    }
+
+    .super-admin-action-grid {
+      padding: 17px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 11px;
+    }
+
+    .super-admin-action-card {
+      min-width: 0;
+      min-height: 178px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      background: #fafafa;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+
+    .super-admin-action-card.needs-action {
+      background: #fffaf6;
+      border-color: #ffd1b0;
+    }
+
+    .super-admin-action-card:hover {
+      border-color: rgba(255, 107, 0, .48);
+      box-shadow: 0 8px 20px rgba(17, 24, 39, .07);
+      transform: translateY(-1px);
+    }
+
+    .super-admin-action-card-top {
+      margin-bottom: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .super-admin-action-icon {
+      width: 31px;
+      height: 31px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 31px;
+      color: var(--orange-dark);
+      background: var(--orange-soft);
+      border-radius: 8px;
+      font-size: 9px;
+      font-weight: bold;
+    }
+
+    .super-admin-action-count {
+      color: var(--ink);
+      font-size: 27px;
+      font-weight: bold;
+      line-height: 1;
+      letter-spacing: -.5px;
+    }
+
+    .super-admin-action-card > strong {
+      display: block;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .super-admin-action-card > p {
+      margin: 7px 0 13px;
+      flex: 1;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .super-admin-action-button {
+      min-height: 33px;
+      padding: 0 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #344054;
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 7px;
+      font-size: 9px;
+      font-weight: bold;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .super-admin-action-card.needs-action .super-admin-action-button {
+      color: #ffffff;
+      background: var(--orange);
+      border-color: var(--orange);
+    }
+
+    .super-admin-action-button:hover {
+      border-color: rgba(255, 107, 0, .55);
+      background: var(--orange-soft);
+    }
+
+    .super-admin-action-card.needs-action .super-admin-action-button:hover {
+      color: #ffffff;
+      background: var(--orange-dark);
+      border-color: var(--orange-dark);
+    }
+
+    .super-admin-action-upcoming {
+      border-top: 1px solid var(--line);
+    }
+
+    .super-admin-action-upcoming-heading {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      background: #fafafa;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .super-admin-action-upcoming-heading strong,
+    .super-admin-action-upcoming-heading span {
+      display: block;
+    }
+
+    .super-admin-action-upcoming-heading strong {
+      font-size: 13px;
+    }
+
+    .super-admin-action-upcoming-heading span {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .super-admin-action-link-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .super-admin-upcoming-list {
+      padding: 8px 18px 15px;
+      display: grid;
+    }
+
+    .super-admin-upcoming-row {
+      min-height: 51px;
+      display: grid;
+      grid-template-columns: 82px minmax(0, 1.3fr) minmax(150px, .8fr) minmax(120px, .7fr);
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #eef0f2;
+      font-size: 10px;
+    }
+
+    .super-admin-upcoming-row:last-child {
+      border-bottom: 0;
+    }
+
+    .super-admin-upcoming-row strong {
+      font-size: 11px;
+    }
+
+    .super-admin-upcoming-row span {
+      color: var(--muted);
+    }
+
+    .super-admin-upcoming-game-id {
+      color: var(--orange-dark) !important;
+      font-weight: bold;
+    }
+
+    @media (max-width: 1120px) {
+      .super-admin-action-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 820px) {
+      .super-admin-action-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .super-admin-upcoming-row {
+        grid-template-columns: 72px minmax(0, 1fr) minmax(140px, .8fr);
+      }
+
+      .super-admin-upcoming-row .super-admin-upcoming-venue {
+        display: none;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .super-admin-action-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .super-admin-action-upcoming-heading {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .super-admin-action-link-button {
+        width: 100%;
+      }
+
+      .super-admin-upcoming-row {
+        padding: 10px 0;
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+
+      .super-admin-upcoming-row .super-admin-upcoming-venue {
+        display: block;
+      }
+    }
+
   </style>
 </head>
 
@@ -2833,75 +3062,79 @@
         </section>
 
         <section class="section-grid">
-          <article class="panel">
+          <article id="superAdminActionCenter" class="panel super-admin-action-center">
             <header class="panel-header">
               <div>
-                <h2>Platform Management</h2>
-                <p>Open an existing HoopHub PH management page.</p>
+                <h2>Super Admin Action Center</h2>
+                <p>Platform-wide items that need owner attention right now.</p>
               </div>
-              <span class="panel-tag">Quick Access</span>
+              <button id="refreshSuperAdminActionCenterButton" class="secondary-button" type="button">REFRESH</button>
             </header>
 
-            <div class="quick-grid">
-              <label class="quick-card quick-view-button" for="adminViewLeagues">
-                <strong>Manage Leagues</strong>
-                <span>Create, review, and maintain league information.</span>
-                <span class="quick-arrow">→</span>
-              </label>
+            <div class="super-admin-action-grid">
+              <article class="super-admin-action-card" data-super-action-card="leagues">
+                <div class="super-admin-action-card-top">
+                  <span class="super-admin-action-icon">LG</span>
+                  <span id="superActionPendingLeaguesCount" class="super-admin-action-count">—</span>
+                </div>
+                <strong>Pending League Approvals</strong>
+                <p id="superActionPendingLeaguesText">Checking league registrations...</p>
+                <label class="super-admin-action-button" for="adminViewLeagues">REVIEW LEAGUES</label>
+              </article>
 
-              <label class="quick-card quick-view-button" for="adminViewTeams">
-                <strong>Manage Teams</strong>
-                <span>Open the Super Admin Team Workspace for platform-wide team records.</span>
-                <span class="quick-arrow">→</span>
-              </label>
+              <article class="super-admin-action-card" data-super-action-card="accounts">
+                <div class="super-admin-action-card-top">
+                  <span class="super-admin-action-icon">AC</span>
+                  <span id="superActionPendingAccountsCount" class="super-admin-action-count">—</span>
+                </div>
+                <strong>Pending Account Approvals</strong>
+                <p id="superActionPendingAccountsText">Checking registered accounts...</p>
+                <label class="super-admin-action-button" for="adminViewAccounts">REVIEW ACCOUNTS</label>
+              </article>
 
-              <a class="quick-card" href="commissioner-dashboard.html#createTeamPanel">
-                <strong>Create Team</strong>
-                <span>Create and register a team in an active league.</span>
-                <span class="quick-arrow">→</span>
-              </a>
+              <article class="super-admin-action-card" data-super-action-card="teams">
+                <div class="super-admin-action-card-top">
+                  <span class="super-admin-action-icon">TM</span>
+                  <span id="superActionPendingTeamsCount" class="super-admin-action-count">—</span>
+                </div>
+                <strong>Pending Team Registrations</strong>
+                <p id="superActionPendingTeamsText">Checking league team registrations...</p>
+                <label class="super-admin-action-button" for="adminViewTeams">OPEN TEAM WORKSPACE</label>
+              </article>
 
-              <label class="quick-card quick-view-button" for="adminViewPlayers">
-                <strong>Manage Players</strong>
-                <span>Open the Super Admin Player Workspace for profiles and career records.</span>
-                <span class="quick-arrow">→</span>
-              </label>
+              <article class="super-admin-action-card" data-super-action-card="games">
+                <div class="super-admin-action-card-top">
+                  <span class="super-admin-action-icon">RV</span>
+                  <span id="superActionGameReviewCount" class="super-admin-action-count">—</span>
+                </div>
+                <strong>Games Awaiting Review</strong>
+                <p id="superActionGameReviewText">Checking submitted game results...</p>
+                <a class="super-admin-action-button" href="commissioner-dashboard.html#gameReviewPanel">REVIEW GAMES</a>
+              </article>
 
-              <a class="quick-card" href="add-player.html">
-                <strong>Add Player</strong>
-                <span>Create an official player record for an approved league team.</span>
-                <span class="quick-arrow">→</span>
-              </a>
+              <article class="super-admin-action-card" data-super-action-card="announcements">
+                <div class="super-admin-action-card-top">
+                  <span class="super-admin-action-icon">AN</span>
+                  <span id="superActionDraftAnnouncementsCount" class="super-admin-action-count">—</span>
+                </div>
+                <strong>Draft Announcements</strong>
+                <p id="superActionDraftAnnouncementsText">Checking unpublished announcements...</p>
+                <label class="super-admin-action-button" for="adminViewAnnouncements">OPEN ANNOUNCEMENTS</label>
+              </article>
+            </div>
 
-              <a class="quick-card" href="scorekeeper.html">
-                <strong>Open Scorekeeper</strong>
-                <span>Access live-game clock and statistics controls.</span>
-                <span class="quick-arrow">→</span>
-              </a>
+            <div class="super-admin-action-upcoming">
+              <div class="super-admin-action-upcoming-heading">
+                <div>
+                  <strong>Upcoming Games</strong>
+                  <span>Next scheduled games across the HoopHub PH platform.</span>
+                </div>
+                <a class="secondary-button super-admin-action-link-button" href="commissioner-dashboard.html#schedulePanel">OPEN SCHEDULE</a>
+              </div>
 
-              <label class="quick-card quick-view-button" for="adminViewAccounts">
-                <strong>Manage Accounts</strong>
-                <span>Approve users, change roles, and control account status.</span>
-                <span class="quick-arrow">→</span>
-              </label>
-
-              <label class="quick-card quick-view-button" for="adminViewActivity">
-                <strong>View Activity Logs</strong>
-                <span>Audit platform actions, corrections, assignments, and finalized-game changes.</span>
-                <span class="quick-arrow">→</span>
-              </label>
-
-              <label class="quick-card quick-view-button" for="adminViewTournaments">
-                <strong>Manage Competitions</strong>
-                <span>Open the Super Admin Tournament & Competition Workspace.</span>
-                <span class="quick-arrow">→</span>
-              </label>
-
-              <a class="quick-card" href="index.html">
-                <strong>View Public Website</strong>
-                <span>Return to the public HoopHub PH homepage.</span>
-                <span class="quick-arrow">→</span>
-              </a>
+              <div id="superAdminUpcomingGamesList" class="super-admin-upcoming-list">
+                <div class="activity-empty">Loading upcoming games...</div>
+              </div>
             </div>
           </article>
         </section>
@@ -7626,8 +7859,249 @@
       }
     }
 
+    function setSuperAdminActionCard(name, count, text, loaded = true) {
+      const card = document.querySelector(`[data-super-action-card="${name}"]`);
+      const countIds = {
+        leagues: "superActionPendingLeaguesCount",
+        accounts: "superActionPendingAccountsCount",
+        teams: "superActionPendingTeamsCount",
+        games: "superActionGameReviewCount",
+        announcements: "superActionDraftAnnouncementsCount"
+      };
+      const textIds = {
+        leagues: "superActionPendingLeaguesText",
+        accounts: "superActionPendingAccountsText",
+        teams: "superActionPendingTeamsText",
+        games: "superActionGameReviewText",
+        announcements: "superActionDraftAnnouncementsText"
+      };
+
+      const countElement = document.getElementById(countIds[name]);
+      const textElement = document.getElementById(textIds[name]);
+
+      if (countElement) {
+        countElement.textContent = loaded
+          ? Number(count || 0).toLocaleString()
+          : "—";
+      }
+
+      if (textElement) textElement.textContent = text;
+
+      if (card) {
+        card.classList.toggle(
+          "needs-action",
+          loaded && Number(count || 0) > 0
+        );
+      }
+    }
+
+    async function loadSuperAdminActionCenter() {
+      const refreshButton =
+        document.getElementById("refreshSuperAdminActionCenterButton");
+      const upcomingList =
+        document.getElementById("superAdminUpcomingGamesList");
+
+      if (!refreshButton || !upcomingList) return;
+
+      refreshButton.disabled = true;
+      refreshButton.textContent = "REFRESHING...";
+
+      try {
+        const [
+          leagueResult,
+          profileResult,
+          registrationResult,
+          gameResult,
+          announcementResult
+        ] = await Promise.all([
+          supabaseClient
+            .from("leagues")
+            .select("id, name, status, created_at")
+            .order("created_at", { ascending: false }),
+
+          supabaseClient
+            .from("profiles")
+            .select("id, full_name, role, status, created_at")
+            .order("created_at", { ascending: false }),
+
+          supabaseClient
+            .from("league_teams")
+            .select("league_id, team_id, registration_status, registered_at, updated_at"),
+
+          supabaseClient
+            .from("games")
+            .select("id, league_id, home_team, away_team, scheduled_at, venue, status, finalized_at, created_at")
+            .order("scheduled_at", { ascending: true, nullsFirst: false }),
+
+          supabaseClient
+            .from("announcements")
+            .select("id, title, status, publish_at, created_at")
+            .order("created_at", { ascending: false })
+        ]);
+
+        const leagues = leagueResult.error ? [] : (leagueResult.data || []);
+        const profiles = profileResult.error ? [] : (profileResult.data || []);
+        const registrations = registrationResult.error ? [] : (registrationResult.data || []);
+        const games = gameResult.error ? [] : (gameResult.data || []);
+        const announcements = announcementResult.error ? [] : (announcementResult.data || []);
+
+        if (leagueResult.error) {
+          console.warn("Action Center leagues unavailable:", leagueResult.error);
+        }
+        if (profileResult.error) {
+          console.warn("Action Center profiles unavailable:", profileResult.error);
+        }
+        if (registrationResult.error) {
+          console.warn("Action Center team registrations unavailable:", registrationResult.error);
+        }
+        if (gameResult.error) {
+          console.warn("Action Center games unavailable:", gameResult.error);
+        }
+        if (announcementResult.error) {
+          console.warn("Action Center announcements unavailable:", announcementResult.error);
+        }
+
+        const pendingLeagues = leagues.filter(
+          item => String(item.status || "").toLowerCase() === "pending"
+        );
+
+        setSuperAdminActionCard(
+          "leagues",
+          pendingLeagues.length,
+          leagueResult.error
+            ? "League approval status could not be loaded."
+            : pendingLeagues.length
+              ? `${pendingLeagues.length} league registration${pendingLeagues.length === 1 ? "" : "s"} waiting for Super Admin review.`
+              : "No league registrations are waiting for approval.",
+          !leagueResult.error
+        );
+
+        const pendingAccounts = profiles.filter(
+          item => String(item.status || "").toLowerCase() === "pending"
+        );
+
+        setSuperAdminActionCard(
+          "accounts",
+          pendingAccounts.length,
+          profileResult.error
+            ? "Account approval status could not be loaded."
+            : pendingAccounts.length
+              ? `${pendingAccounts.length} account${pendingAccounts.length === 1 ? "" : "s"} waiting for approval or role review.`
+              : "No accounts are waiting for approval.",
+          !profileResult.error
+        );
+
+        const pendingTeams = registrations.filter(
+          item => String(item.registration_status || "").toLowerCase() === "pending"
+        );
+
+        setSuperAdminActionCard(
+          "teams",
+          pendingTeams.length,
+          registrationResult.error
+            ? "Team registration status could not be loaded."
+            : pendingTeams.length
+              ? `${pendingTeams.length} league team registration${pendingTeams.length === 1 ? "" : "s"} waiting for review.`
+              : "No team registrations are waiting for review.",
+          !registrationResult.error
+        );
+
+        const reviewStatuses = new Set([
+          "pending review",
+          "pending_review",
+          "submitted"
+        ]);
+
+        const reviewGames = games.filter(game =>
+          reviewStatuses.has(String(game.status || "").toLowerCase())
+        );
+
+        setSuperAdminActionCard(
+          "games",
+          reviewGames.length,
+          gameResult.error
+            ? "Game review status could not be loaded."
+            : reviewGames.length
+              ? `${reviewGames.length} submitted game${reviewGames.length === 1 ? "" : "s"} waiting for final review.`
+              : "No submitted games are waiting for final review.",
+          !gameResult.error
+        );
+
+        const draftAnnouncements = announcements.filter(
+          item => String(item.status || "").toLowerCase() === "draft"
+        );
+
+        setSuperAdminActionCard(
+          "announcements",
+          draftAnnouncements.length,
+          announcementResult.error
+            ? "Announcement status could not be loaded."
+            : draftAnnouncements.length
+              ? `${draftAnnouncements.length} draft announcement${draftAnnouncements.length === 1 ? "" : "s"} still unpublished.`
+              : "No draft announcements are waiting to be published.",
+          !announcementResult.error
+        );
+
+        if (gameResult.error) {
+          upcomingList.innerHTML =
+            '<div class="activity-empty">Upcoming games could not be loaded.</div>';
+        } else {
+          const now = new Date();
+          const upcoming = games
+            .filter(game => {
+              const status = String(game.status || "").toLowerCase();
+              const when = new Date(game.scheduled_at || game.created_at);
+
+              return (
+                ["scheduled", "upcoming"].includes(status) &&
+                !Number.isNaN(when.getTime()) &&
+                when >= now
+              );
+            })
+            .sort(
+              (a, b) =>
+                new Date(a.scheduled_at || a.created_at) -
+                new Date(b.scheduled_at || b.created_at)
+            )
+            .slice(0, 5);
+
+          upcomingList.innerHTML = upcoming.length
+            ? upcoming.map(game => `
+                <div class="super-admin-upcoming-row">
+                  <span class="super-admin-upcoming-game-id">#${escapeHtml(game.id)}</span>
+                  <strong>${escapeHtml(game.home_team || "Home Team")} vs ${escapeHtml(game.away_team || "Away Team")}</strong>
+                  <span>${escapeHtml(adminEntityDateTime(game.scheduled_at || game.created_at))}</span>
+                  <span class="super-admin-upcoming-venue">${escapeHtml(game.venue || "Venue TBA")}</span>
+                </div>
+              `).join("")
+            : '<div class="activity-empty">No upcoming scheduled games.</div>';
+        }
+      } catch (error) {
+        console.error("Unable to load Super Admin Action Center:", error);
+
+        [
+          ["leagues", "League approval status could not be loaded."],
+          ["accounts", "Account approval status could not be loaded."],
+          ["teams", "Team registration status could not be loaded."],
+          ["games", "Game review status could not be loaded."],
+          ["announcements", "Announcement status could not be loaded."]
+        ].forEach(([name, message]) => {
+          setSuperAdminActionCard(name, 0, message, false);
+        });
+
+        upcomingList.innerHTML =
+          '<div class="activity-empty">Unable to load Action Center data.</div>';
+      } finally {
+        refreshButton.disabled = false;
+        refreshButton.textContent = "REFRESH";
+      }
+    }
+
     async function loadDashboardCounts() {
-      await loadDashboardGraph();
+      await Promise.all([
+        loadDashboardGraph(),
+        loadSuperAdminActionCenter()
+      ]);
 
       document.getElementById("lastUpdated").textContent =
         `Dashboard checked ${new Date().toLocaleString("en-PH")}`;
@@ -7795,6 +8269,24 @@
 
     [activityLeagueFilter, activityUserFilter, activityActionFilter, activityDateFilter]
       .forEach(control => control.addEventListener("change", renderActivityLog));
+
+    document
+      .getElementById("refreshSuperAdminActionCenterButton")
+      .addEventListener("click", loadSuperAdminActionCenter);
+
+    document
+      .getElementById("superAdminActionCenter")
+      .addEventListener("click", event => {
+        const internalLabel = event.target.closest("label[for]");
+        if (!internalLabel) return;
+
+        const target = document.getElementById(internalLabel.htmlFor);
+        if (target && target.name === "adminWorkspace") {
+          target.checked = true;
+          target.dispatchEvent(new Event("change", { bubbles: true }));
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      });
 
     dashboardChartMode.addEventListener("change", loadDashboardGraph);
     refreshDashboardChartButton.addEventListener("click", loadDashboardGraph);
