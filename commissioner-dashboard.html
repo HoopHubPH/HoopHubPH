@@ -1036,6 +1036,130 @@
       }
     }
 
+
+    /* =========================
+       SCHEDULE GAME FILTERS
+       ========================= */
+    .schedule-filter-toolbar {
+      padding: 14px 18px;
+      display: grid;
+      grid-template-columns: minmax(210px, 1.45fr) repeat(4, minmax(125px, .8fr)) auto;
+      gap: 10px;
+      align-items: end;
+      background: #fafafa;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .schedule-filter-toolbar .form-group {
+      min-width: 0;
+    }
+
+    .schedule-filter-toolbar .form-input {
+      height: 38px;
+      min-width: 0;
+    }
+
+    .schedule-filter-clear {
+      height: 38px;
+      white-space: nowrap;
+    }
+
+    .schedule-filter-summary {
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+      font-size: 9px;
+    }
+
+    .schedule-filter-summary strong {
+      color: var(--ink);
+      font-size: 10px;
+    }
+
+    /* =========================
+       COMPACT COMMISSIONER MENU
+       Keep the full menu visible without its own vertical scrollbar.
+       ========================= */
+    .sidebar {
+      padding: 12px 10px;
+      overflow-y: hidden;
+    }
+
+    .sidebar .nav-label {
+      margin: 9px 8px 5px;
+      font-size: 8px;
+      letter-spacing: 1px;
+    }
+
+    .sidebar .nav-label:first-child {
+      margin-top: 0;
+    }
+
+    .sidebar .nav-link {
+      min-height: 34px;
+      margin-bottom: 2px;
+      padding: 0 9px;
+      gap: 8px;
+      font-size: 10px;
+    }
+
+    .sidebar .nav-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 5px;
+      font-size: 7px;
+      flex: 0 0 22px;
+    }
+
+    @media (max-height: 650px) {
+      .sidebar {
+        padding: 8px 9px;
+      }
+
+      .sidebar .nav-label {
+        margin: 5px 7px 3px;
+        font-size: 7px;
+      }
+
+      .sidebar .nav-link {
+        min-height: 28px;
+        margin-bottom: 1px;
+        padding: 0 8px;
+        gap: 7px;
+        font-size: 9px;
+      }
+
+      .sidebar .nav-icon {
+        width: 19px;
+        height: 19px;
+        flex-basis: 19px;
+        font-size: 6.5px;
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .schedule-filter-toolbar {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .schedule-filter-toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .schedule-filter-clear {
+        width: 100%;
+      }
+    }
+
   </style>
 </head>
 
@@ -1463,6 +1587,57 @@
 
             <div id="scheduleMessage" class="form-message" aria-live="polite"></div>
           </form>
+
+          <div class="schedule-filter-toolbar" aria-label="Schedule game filters">
+            <div class="form-group">
+              <label for="scheduleGameSearch">Find Game</label>
+              <input id="scheduleGameSearch" class="form-input" type="search" placeholder="Game ID, team, venue...">
+            </div>
+
+            <div class="form-group">
+              <label for="scheduleFilterSeason">Season</label>
+              <select id="scheduleFilterSeason" class="form-input">
+                <option value="all">All seasons</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="scheduleFilterDivision">Division</label>
+              <select id="scheduleFilterDivision" class="form-input">
+                <option value="all">All divisions</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="scheduleFilterStatus">Status</label>
+              <select id="scheduleFilterStatus" class="form-input">
+                <option value="all">All statuses</option>
+                <option value="scheduled">Scheduled</option>
+                <option value="live">Live / In Progress</option>
+                <option value="pending_review">Pending Review</option>
+                <option value="final">Final / Finalized</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="scheduleFilterDate">Date</label>
+              <select id="scheduleFilterDate" class="form-input">
+                <option value="all">All dates</option>
+                <option value="today">Today</option>
+                <option value="next7">Next 7 days</option>
+                <option value="future">Upcoming</option>
+                <option value="past">Past</option>
+              </select>
+            </div>
+
+            <button id="clearScheduleFiltersButton" class="secondary-button schedule-filter-clear" type="button">CLEAR FILTERS</button>
+          </div>
+
+          <div class="schedule-filter-summary">
+            <strong id="scheduleFilterResultCount">0 games</strong>
+            <span>Filter by game ID, team, venue, season, division, status, or date.</span>
+          </div>
 
           <div class="table-wrap">
             <table>
@@ -3223,6 +3398,178 @@
       await loadRosterReviews(leagueId);
     }
 
+    function scheduleFilterStatusMatches(gameStatus, filterValue) {
+      const status = String(gameStatus || "").toLowerCase().trim();
+
+      if (filterValue === "all") return true;
+      if (filterValue === "scheduled") return ["scheduled", "upcoming"].includes(status);
+      if (filterValue === "live") {
+        return ["live", "in progress", "in_progress", "halftime"].includes(status);
+      }
+      if (filterValue === "pending_review") {
+        return ["pending review", "pending_review", "submitted"].includes(status);
+      }
+      if (filterValue === "final") return ["final", "finalized"].includes(status);
+      if (filterValue === "cancelled") return ["cancelled", "canceled"].includes(status);
+      return status === filterValue;
+    }
+
+    function scheduleFilterDateMatches(gameDateValue, filterValue) {
+      if (filterValue === "all") return true;
+
+      const gameDate = new Date(gameDateValue);
+      if (Number.isNaN(gameDate.getTime())) return false;
+
+      const now = new Date();
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const tomorrowStart = new Date(todayStart);
+      tomorrowStart.setDate(tomorrowStart.getDate() + 1);
+
+      if (filterValue === "today") {
+        return gameDate >= todayStart && gameDate < tomorrowStart;
+      }
+
+      if (filterValue === "next7") {
+        const sevenDays = new Date(todayStart);
+        sevenDays.setDate(sevenDays.getDate() + 7);
+        return gameDate >= todayStart && gameDate < sevenDays;
+      }
+
+      if (filterValue === "future") return gameDate >= now;
+      if (filterValue === "past") return gameDate < now;
+
+      return true;
+    }
+
+    function renderScheduleFilterDivisions(preserve = true) {
+      const seasonFilter = document.getElementById("scheduleFilterSeason");
+      const divisionFilter = document.getElementById("scheduleFilterDivision");
+      const previousDivision = preserve ? divisionFilter.value : "all";
+      const seasonId = seasonFilter.value;
+
+      const available = seasonId && seasonId !== "all"
+        ? divisions.filter(item => String(item.season_id) === String(seasonId))
+        : divisions.filter(item =>
+            seasons.some(season =>
+              String(season.id) === String(item.season_id) &&
+              String(season.league_id) === String(leagueSelect.value)
+            )
+          );
+
+      divisionFilter.innerHTML =
+        '<option value="all">All divisions</option>' +
+        available.map(item =>
+          `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`
+        ).join("");
+
+      if (
+        previousDivision !== "all" &&
+        available.some(item => String(item.id) === String(previousDivision))
+      ) {
+        divisionFilter.value = previousDivision;
+      } else {
+        divisionFilter.value = "all";
+      }
+    }
+
+    function syncScheduleFilterOptions(league) {
+      const seasonFilter = document.getElementById("scheduleFilterSeason");
+      const previousSeason = seasonFilter.value || "all";
+      const leagueSeasons = league
+        ? seasons.filter(item => String(item.league_id) === String(league.id))
+        : [];
+
+      seasonFilter.innerHTML =
+        '<option value="all">All seasons</option>' +
+        leagueSeasons.map(item =>
+          `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`
+        ).join("");
+
+      if (
+        previousSeason !== "all" &&
+        leagueSeasons.some(item => String(item.id) === String(previousSeason))
+      ) {
+        seasonFilter.value = previousSeason;
+      } else {
+        seasonFilter.value = "all";
+      }
+
+      renderScheduleFilterDivisions(true);
+    }
+
+    function renderScheduleGameList(league) {
+      const body = document.getElementById("scheduleTableBody");
+      const resultCount = document.getElementById("scheduleFilterResultCount");
+
+      if (!league) {
+        body.innerHTML = '<tr><td class="empty-state" colspan="6">No assigned league is selected.</td></tr>';
+        resultCount.textContent = "0 games";
+        return;
+      }
+
+      const search = document.getElementById("scheduleGameSearch").value.trim().toLowerCase();
+      const seasonId = document.getElementById("scheduleFilterSeason").value;
+      const divisionId = document.getElementById("scheduleFilterDivision").value;
+      const statusFilter = document.getElementById("scheduleFilterStatus").value;
+      const dateFilter = document.getElementById("scheduleFilterDate").value;
+
+      const leagueGames = scheduledGames.filter(
+        game => String(game.league_id) === String(league.id)
+      );
+
+      const filteredGames = leagueGames.filter(game => {
+        const searchableText = [
+          game.id,
+          `#${game.id}`,
+          game.home_team,
+          game.away_team,
+          game.venue,
+          game.status,
+          formatDateTime(game.scheduled_at || game.created_at)
+        ].map(value => String(value ?? "").toLowerCase()).join(" ");
+
+        const searchMatch = !search || searchableText.includes(search);
+        const seasonMatch = seasonId === "all" || String(game.season_id || "") === String(seasonId);
+        const divisionMatch = divisionId === "all" || String(game.division_id || "") === String(divisionId);
+        const statusMatch = scheduleFilterStatusMatches(game.status, statusFilter);
+        const dateMatch = scheduleFilterDateMatches(game.scheduled_at || game.created_at, dateFilter);
+
+        return searchMatch && seasonMatch && divisionMatch && statusMatch && dateMatch;
+      });
+
+      resultCount.textContent =
+        `${filteredGames.length.toLocaleString()} of ${leagueGames.length.toLocaleString()} game${leagueGames.length === 1 ? "" : "s"}`;
+
+      body.innerHTML = filteredGames.length
+        ? filteredGames.map(game => `
+            <tr>
+              <td><span class="game-id">#${escapeHtml(game.id)}</span></td>
+              <td><strong>${escapeHtml(game.home_team)} vs ${escapeHtml(game.away_team)}</strong></td>
+              <td>${escapeHtml(formatDateTime(game.scheduled_at || game.created_at))}</td>
+              <td>${escapeHtml(game.venue || "—")}</td>
+              <td><span class="status-badge">${escapeHtml(game.status || "Scheduled")}</span></td>
+              <td><div class="table-actions">
+                ${String(game.status || "").toLowerCase() === "scheduled" ? `<button class="table-action" type="button" onclick="startEditingGame(${Number(game.id)})">MANAGE</button>` : ""}
+                <a class="table-action view" href="live-game.html?id=${encodeURIComponent(game.id)}" target="_blank" rel="noopener">VIEW</a>
+              </div></td>
+            </tr>
+          `).join("")
+        : '<tr><td class="empty-state" colspan="6">No games match the current filters.</td></tr>';
+    }
+
+    function clearScheduleGameFilters() {
+      document.getElementById("scheduleGameSearch").value = "";
+      document.getElementById("scheduleFilterSeason").value = "all";
+      renderScheduleFilterDivisions(false);
+      document.getElementById("scheduleFilterStatus").value = "all";
+      document.getElementById("scheduleFilterDate").value = "all";
+
+      const league = assignedLeagues.find(
+        item => String(item.id) === String(leagueSelect.value)
+      );
+      renderScheduleGameList(league);
+    }
+
     function renderScheduling(league, approvedRegistrations) {
       const seasonSelect = document.getElementById("scheduleSeasonSelect");
       const divisionSelect = document.getElementById("scheduleDivisionSelect");
@@ -3288,25 +3635,8 @@
           `<option value="${escapeHtml(item.scorekeeper_id)}">${escapeHtml(item.full_name || item.email || "Scorekeeper")}</option>`
         ).join("");
 
-      const games = league
-        ? scheduledGames.filter(game => game.league_id === league.id)
-        : [];
-
-      document.getElementById("scheduleTableBody").innerHTML = games.length
-        ? games.map(game => `
-            <tr>
-              <td><span class="game-id">#${escapeHtml(game.id)}</span></td>
-              <td><strong>${escapeHtml(game.home_team)} vs ${escapeHtml(game.away_team)}</strong></td>
-              <td>${escapeHtml(formatDateTime(game.scheduled_at || game.created_at))}</td>
-              <td>${escapeHtml(game.venue || "—")}</td>
-              <td><span class="status-badge">${escapeHtml(game.status || "Scheduled")}</span></td>
-              <td><div class="table-actions">
-                ${String(game.status || "").toLowerCase() === "scheduled" ? `<button class="table-action" type="button" onclick="startEditingGame(${Number(game.id)})">MANAGE</button>` : ""}
-                <a class="table-action view" href="live-game.html?id=${encodeURIComponent(game.id)}" target="_blank" rel="noopener">VIEW</a>
-              </div></td>
-            </tr>
-          `).join("")
-        : '<tr><td class="empty-state" colspan="6">No games scheduled for this league yet.</td></tr>';
+      syncScheduleFilterOptions(league);
+      renderScheduleGameList(league);
 
       const message = document.getElementById("scheduleMessage");
       message.className = "form-message";
@@ -3607,6 +3937,34 @@
     createTeamForm.addEventListener("submit", createTeam);
     window.addEventListener("hashchange", scrollToRequestedPanel);
     document.getElementById("rosterTeamSelect").addEventListener("change", renderRosterTeam);
+    document.getElementById("scheduleGameSearch").addEventListener("input", function () {
+      const league = assignedLeagues.find(item => String(item.id) === String(leagueSelect.value));
+      renderScheduleGameList(league);
+    });
+
+    document.getElementById("scheduleFilterSeason").addEventListener("change", function () {
+      renderScheduleFilterDivisions(false);
+      const league = assignedLeagues.find(item => String(item.id) === String(leagueSelect.value));
+      renderScheduleGameList(league);
+    });
+
+    document.getElementById("scheduleFilterDivision").addEventListener("change", function () {
+      const league = assignedLeagues.find(item => String(item.id) === String(leagueSelect.value));
+      renderScheduleGameList(league);
+    });
+
+    document.getElementById("scheduleFilterStatus").addEventListener("change", function () {
+      const league = assignedLeagues.find(item => String(item.id) === String(leagueSelect.value));
+      renderScheduleGameList(league);
+    });
+
+    document.getElementById("scheduleFilterDate").addEventListener("change", function () {
+      const league = assignedLeagues.find(item => String(item.id) === String(leagueSelect.value));
+      renderScheduleGameList(league);
+    });
+
+    document.getElementById("clearScheduleFiltersButton").addEventListener("click", clearScheduleGameFilters);
+
     document.getElementById("scheduleForm").addEventListener("submit", createScheduledGame);
     document.getElementById("scheduleSeasonSelect").addEventListener("change", renderScheduleDivisions);
     document.getElementById("scheduleDivisionSelect").addEventListener("change", renderScheduleTeams);
