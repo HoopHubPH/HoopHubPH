@@ -284,6 +284,7 @@
     }
 
     #adminViewDashboard:checked ~ .main-content #dashboardView,
+    #adminViewLeagues:checked ~ .main-content #leaguesView,
     #adminViewAccounts:checked ~ .main-content #accountsView,
     #adminViewActivity:checked ~ .main-content #activityView,
     #adminViewAnnouncements:checked ~ .main-content #announcementsView {
@@ -291,6 +292,7 @@
     }
 
     #adminViewDashboard:checked ~ .sidebar [data-admin-view="dashboard"],
+    #adminViewLeagues:checked ~ .sidebar [data-admin-view="leagues"],
     #adminViewAccounts:checked ~ .sidebar [data-admin-view="accounts"],
     #adminViewActivity:checked ~ .sidebar [data-admin-view="activity"],
     #adminViewAnnouncements:checked ~ .sidebar [data-admin-view="announcements"] {
@@ -300,6 +302,7 @@
     }
 
     #adminViewDashboard:checked ~ .sidebar [data-admin-view="dashboard"] .nav-icon,
+    #adminViewLeagues:checked ~ .sidebar [data-admin-view="leagues"] .nav-icon,
     #adminViewAccounts:checked ~ .sidebar [data-admin-view="accounts"] .nav-icon,
     #adminViewActivity:checked ~ .sidebar [data-admin-view="activity"] .nav-icon,
     #adminViewAnnouncements:checked ~ .sidebar [data-admin-view="announcements"] .nav-icon {
@@ -1284,6 +1287,264 @@
     }
 
 
+
+    /* =========================
+       SUPER ADMIN LEAGUE MANAGEMENT
+       ========================= */
+    .league-management-layout {
+      display: grid;
+      grid-template-columns: minmax(320px, .82fr) minmax(0, 1.55fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .league-management-form {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .league-management-field {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .league-management-field.full {
+      grid-column: 1 / -1;
+    }
+
+    .league-management-field label {
+      color: #667085;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+
+    .league-management-input,
+    .league-management-select,
+    .league-management-textarea {
+      width: 100%;
+      color: #171717;
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      font: inherit;
+      font-size: 11px;
+      outline: none;
+    }
+
+    .league-management-input,
+    .league-management-select {
+      height: 41px;
+      padding: 0 11px;
+    }
+
+    .league-management-textarea {
+      min-height: 96px;
+      padding: 11px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .league-management-input:focus,
+    .league-management-select:focus,
+    .league-management-textarea:focus {
+      border-color: rgba(255, 107, 0, .72);
+      box-shadow: 0 0 0 3px rgba(255, 107, 0, .1);
+    }
+
+    .league-management-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .league-management-message {
+      grid-column: 1 / -1;
+      min-height: 18px;
+      color: #667085;
+      font-size: 10px;
+      font-weight: 750;
+      line-height: 1.5;
+    }
+
+    .league-management-message.success {
+      color: #067647;
+    }
+
+    .league-management-message.error {
+      color: #b42318;
+    }
+
+    .league-management-toolbar {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: #fafafa;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .league-management-search {
+      width: min(340px, 100%);
+      height: 38px;
+      padding: 0 11px;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      font-size: 11px;
+      outline: none;
+    }
+
+    .league-management-search:focus {
+      border-color: rgba(255, 107, 0, .72);
+      box-shadow: 0 0 0 3px rgba(255, 107, 0, .1);
+    }
+
+    .league-management-table-wrap {
+      overflow-x: auto;
+    }
+
+    .league-management-table {
+      width: 100%;
+      min-width: 790px;
+      border-collapse: collapse;
+    }
+
+    .league-management-table th,
+    .league-management-table td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      vertical-align: middle;
+      font-size: 10px;
+    }
+
+    .league-management-table th {
+      color: #667085;
+      background: #fafafa;
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+    }
+
+    .league-management-table tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .league-management-name {
+      display: block;
+      color: #171717;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .league-management-description {
+      max-width: 290px;
+      margin-top: 3px;
+      overflow: hidden;
+      color: #667085;
+      font-size: 9px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .league-status-pill {
+      min-width: 70px;
+      padding: 5px 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      font-size: 8px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .league-status-pill.active {
+      color: #067647;
+      background: #ecfdf3;
+    }
+
+    .league-status-pill.pending {
+      color: #b54708;
+      background: #fffaeb;
+    }
+
+    .league-status-pill.suspended {
+      color: #b42318;
+      background: #fff4f2;
+    }
+
+    .league-status-pill.archived {
+      color: #475467;
+      background: #f2f4f7;
+    }
+
+    .league-row-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .league-row-button {
+      min-height: 30px;
+      padding: 0 9px;
+      border-radius: 7px;
+      font-size: 8px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .league-row-button.edit {
+      color: #db5c00;
+      background: #fff1e7;
+      border: 1px solid #ffd1b0;
+    }
+
+    .league-row-button.delete {
+      color: #b42318;
+      background: #fff4f2;
+      border: 1px solid #fecdca;
+    }
+
+    .league-management-empty {
+      padding: 36px 18px !important;
+      color: #667085;
+      text-align: center !important;
+      font-size: 11px !important;
+    }
+
+    @media (max-width: 920px) {
+      .league-management-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .league-management-form {
+        grid-template-columns: 1fr;
+      }
+
+      .league-management-field.full {
+        grid-column: auto;
+      }
+
+      .league-management-actions,
+      .league-management-message {
+        grid-column: auto;
+      }
+    }
+
   </style>
 </head>
 
@@ -1297,6 +1558,7 @@
 
   <div id="appShell" class="app-shell" hidden>
     <input id="adminViewDashboard" class="admin-view-toggle" type="radio" name="adminWorkspace" checked>
+    <input id="adminViewLeagues" class="admin-view-toggle" type="radio" name="adminWorkspace">
     <input id="adminViewAccounts" class="admin-view-toggle" type="radio" name="adminWorkspace">
     <input id="adminViewActivity" class="admin-view-toggle" type="radio" name="adminWorkspace">
     <input id="adminViewAnnouncements" class="admin-view-toggle" type="radio" name="adminWorkspace">
@@ -1334,10 +1596,10 @@
         <span class="nav-icon">LG</span>
         Leagues
       </a>
-      <a id="leagueManagementLink" class="nav-link" href="commissioner-dashboard.html">
+      <label class="nav-link nav-view-button" for="adminViewLeagues" data-admin-view="leagues">
         <span class="nav-icon">LM</span>
         League Management
-      </a>
+      </label>
       <a class="nav-link" href="tournaments.html">
         <span class="nav-icon">TR</span>
         Tournaments
@@ -1466,11 +1728,11 @@
             </header>
 
             <div class="quick-grid">
-              <a class="quick-card" href="leagues.html">
+              <label class="quick-card quick-view-button" for="adminViewLeagues">
                 <strong>Manage Leagues</strong>
                 <span>Create, review, and maintain league information.</span>
                 <span class="quick-arrow">→</span>
-              </a>
+              </label>
 
               <a class="quick-card" href="commissioner-dashboard.html#teamsPanel">
                 <strong>Manage Teams</strong>
@@ -1530,6 +1792,144 @@
         </section>
 
         <p id="lastUpdated" class="footer-note">Dashboard totals are loading...</p>
+        </div>
+
+
+        <div id="leaguesView" class="admin-view" data-view-name="leagues">
+          <section class="page-heading">
+            <div>
+              <h1>League Management</h1>
+              <p>Create, edit, suspend, archive, and remove HoopHub PH league records without leaving Super Admin.</p>
+            </div>
+            <span class="role-badge">Super Admin Only</span>
+          </section>
+
+          <section class="stats-grid" aria-label="League management summary">
+            <article class="stat-card">
+              <div class="stat-top">
+                <span class="stat-label">Total Leagues</span>
+                <span class="stat-symbol">TL</span>
+              </div>
+              <div id="leagueManagementTotalCount" class="stat-value">0</div>
+              <p class="stat-helper">All league records</p>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-top">
+                <span class="stat-label">Active</span>
+                <span class="stat-symbol">AC</span>
+              </div>
+              <div id="leagueManagementActiveCount" class="stat-value">0</div>
+              <p class="stat-helper">Visible active leagues</p>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-top">
+                <span class="stat-label">Pending</span>
+                <span class="stat-symbol">PD</span>
+              </div>
+              <div id="leagueManagementPendingCount" class="stat-value">0</div>
+              <p class="stat-helper">Pending league records</p>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-top">
+                <span class="stat-label">Restricted</span>
+                <span class="stat-symbol">RS</span>
+              </div>
+              <div id="leagueManagementRestrictedCount" class="stat-value">0</div>
+              <p class="stat-helper">Suspended or archived</p>
+            </article>
+          </section>
+
+          <div class="league-management-layout">
+            <section class="panel">
+              <header class="panel-header">
+                <div>
+                  <h2 id="leagueFormHeading">Create League</h2>
+                  <p>League-level information controlled by the HoopHub PH Super Admin.</p>
+                </div>
+                <span class="panel-tag">League Record</span>
+              </header>
+
+              <form id="leagueManagementForm" class="league-management-form">
+                <div class="league-management-field full">
+                  <label for="leagueManagementName">League Name</label>
+                  <input id="leagueManagementName" class="league-management-input" type="text" maxlength="120" required placeholder="Example: QC Public Schools Basketball League">
+                </div>
+
+                <div class="league-management-field">
+                  <label for="leagueManagementLocation">Location</label>
+                  <input id="leagueManagementLocation" class="league-management-input" type="text" maxlength="150" placeholder="Example: Quezon City">
+                </div>
+
+                <div class="league-management-field">
+                  <label for="leagueManagementStatus">Status</label>
+                  <select id="leagueManagementStatus" class="league-management-select">
+                    <option value="pending">Pending</option>
+                    <option value="active" selected>Active</option>
+                    <option value="suspended">Suspended</option>
+                    <option value="archived">Archived</option>
+                  </select>
+                </div>
+
+                <div class="league-management-field">
+                  <label for="leagueManagementSeason">Season Label</label>
+                  <input id="leagueManagementSeason" class="league-management-input" type="text" maxlength="100" placeholder="Example: 2026 Season">
+                </div>
+
+                <div class="league-management-field">
+                  <label for="leagueManagementDivision">Division Label</label>
+                  <input id="leagueManagementDivision" class="league-management-input" type="text" maxlength="100" placeholder="Example: Boys">
+                </div>
+
+                <div class="league-management-field full">
+                  <label for="leagueManagementDescription">Description</label>
+                  <textarea id="leagueManagementDescription" class="league-management-textarea" maxlength="1200" placeholder="Short description of the league."></textarea>
+                </div>
+
+                <div class="league-management-actions">
+                  <button id="saveLeagueButton" class="primary-button" type="submit">CREATE LEAGUE</button>
+                  <button id="cancelLeagueEditButton" class="secondary-button" type="button" hidden>CANCEL EDIT</button>
+                </div>
+
+                <div id="leagueManagementMessage" class="league-management-message" aria-live="polite"></div>
+              </form>
+            </section>
+
+            <section class="panel">
+              <header class="panel-header">
+                <div>
+                  <h2>League Records</h2>
+                  <p>Every league visible to the Super Admin, including suspended and archived records.</p>
+                </div>
+                <button id="refreshLeagueManagementButton" class="secondary-button" type="button">REFRESH</button>
+              </header>
+
+              <div class="league-management-toolbar">
+                <input id="leagueManagementSearch" class="league-management-search" type="search" placeholder="Search league, location, season, or division">
+                <a class="secondary-button" href="leagues.html" style="display:inline-flex;align-items:center;text-decoration:none;">VIEW PUBLIC LEAGUES</a>
+              </div>
+
+              <div class="league-management-table-wrap">
+                <table class="league-management-table">
+                  <thead>
+                    <tr>
+                      <th>League</th>
+                      <th>Location</th>
+                      <th>Season / Division</th>
+                      <th>Status</th>
+                      <th>Updated</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="leagueManagementTableBody">
+                    <tr><td class="league-management-empty" colspan="6">Loading league records...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </div>
         </div>
 
         <div id="accountsView" class="admin-view" data-view-name="accounts">
@@ -1738,7 +2138,6 @@
     const menuButton = document.getElementById("menuButton");
     const sidebar = document.getElementById("sidebar");
     const sidebarOverlay = document.getElementById("sidebarOverlay");
-    const leagueManagementLink = document.getElementById("leagueManagementLink");
 
 
     const accountManagementFrame = document.getElementById("accountManagementFrame");
@@ -1865,6 +2264,22 @@
     const dashboardChartNote = document.getElementById("dashboardChartNote");
     const refreshDashboardChartButton = document.getElementById("refreshDashboardChartButton");
 
+    const leaguesView = document.getElementById("leaguesView");
+    const leagueManagementForm = document.getElementById("leagueManagementForm");
+    const leagueManagementName = document.getElementById("leagueManagementName");
+    const leagueManagementLocation = document.getElementById("leagueManagementLocation");
+    const leagueManagementStatus = document.getElementById("leagueManagementStatus");
+    const leagueManagementSeason = document.getElementById("leagueManagementSeason");
+    const leagueManagementDivision = document.getElementById("leagueManagementDivision");
+    const leagueManagementDescription = document.getElementById("leagueManagementDescription");
+    const leagueManagementMessage = document.getElementById("leagueManagementMessage");
+    const leagueManagementTableBody = document.getElementById("leagueManagementTableBody");
+    const leagueManagementSearch = document.getElementById("leagueManagementSearch");
+    const refreshLeagueManagementButton = document.getElementById("refreshLeagueManagementButton");
+    const saveLeagueButton = document.getElementById("saveLeagueButton");
+    const cancelLeagueEditButton = document.getElementById("cancelLeagueEditButton");
+    const leagueFormHeading = document.getElementById("leagueFormHeading");
+
     const dashboardView = document.getElementById("dashboardView");
     const activityView = document.getElementById("activityView");
     const announcementsView = document.getElementById("announcementsView");
@@ -1886,6 +2301,9 @@
     const publishAnnouncementButton = document.getElementById("publishAnnouncementButton");
     const cancelAnnouncementEditButton = document.getElementById("cancelAnnouncementEditButton");
 
+    let leagueManagementRows = [];
+    let editingLeagueId = null;
+    let currentSuperAdminUser = null;
     let activityRows = [];
     let activityProfiles = [];
     let activityLeagues = [];
@@ -1899,6 +2317,355 @@
       const element = document.createElement("div");
       element.textContent = String(value ?? "");
       return element.innerHTML;
+    }
+
+    function formatLeagueManagementDate(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "—";
+      return new Intl.DateTimeFormat("en-PH", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      }).format(date);
+    }
+
+    function setLeagueManagementMessage(message, type = "") {
+      leagueManagementMessage.textContent = message || "";
+      leagueManagementMessage.className =
+        `league-management-message${type ? " " + type : ""}`;
+    }
+
+    function leagueStatusClass(status) {
+      const normalized = String(status || "pending").toLowerCase();
+      return ["active", "pending", "suspended", "archived"].includes(normalized)
+        ? normalized
+        : "pending";
+    }
+
+    function updateLeagueManagementSummary() {
+      const total = leagueManagementRows.length;
+      const active = leagueManagementRows.filter(
+        item => String(item.status || "").toLowerCase() === "active"
+      ).length;
+      const pending = leagueManagementRows.filter(
+        item => String(item.status || "").toLowerCase() === "pending"
+      ).length;
+      const restricted = leagueManagementRows.filter(item =>
+        ["suspended", "archived"].includes(
+          String(item.status || "").toLowerCase()
+        )
+      ).length;
+
+      document.getElementById("leagueManagementTotalCount").textContent =
+        total.toLocaleString();
+      document.getElementById("leagueManagementActiveCount").textContent =
+        active.toLocaleString();
+      document.getElementById("leagueManagementPendingCount").textContent =
+        pending.toLocaleString();
+      document.getElementById("leagueManagementRestrictedCount").textContent =
+        restricted.toLocaleString();
+    }
+
+    function renderLeagueManagement() {
+      const query = leagueManagementSearch.value.trim().toLowerCase();
+
+      const rows = leagueManagementRows.filter(league => {
+        if (!query) return true;
+        return [
+          league.name,
+          league.location,
+          league.season,
+          league.division,
+          league.status,
+          league.description
+        ].some(value =>
+          String(value || "").toLowerCase().includes(query)
+        );
+      });
+
+      updateLeagueManagementSummary();
+
+      if (!rows.length) {
+        leagueManagementTableBody.innerHTML =
+          '<tr><td class="league-management-empty" colspan="6">No league records match this search.</td></tr>';
+        return;
+      }
+
+      leagueManagementTableBody.innerHTML = rows.map(league => {
+        const status = String(league.status || "pending").toLowerCase();
+        const seasonDivision = [
+          league.season || "No season label",
+          league.division || "No division label"
+        ].join(" · ");
+
+        return `
+          <tr>
+            <td>
+              <span class="league-management-name">${escapeHtml(league.name || "Unnamed League")}</span>
+              <div class="league-management-description" title="${escapeHtml(league.description || "")}">
+                ${escapeHtml(league.description || "No description")}
+              </div>
+            </td>
+            <td>${escapeHtml(league.location || "—")}</td>
+            <td>${escapeHtml(seasonDivision)}</td>
+            <td>
+              <span class="league-status-pill ${leagueStatusClass(status)}">
+                ${escapeHtml(status)}
+              </span>
+            </td>
+            <td>${escapeHtml(formatLeagueManagementDate(league.updated_at || league.created_at))}</td>
+            <td>
+              <div class="league-row-actions">
+                <button
+                  class="league-row-button edit"
+                  type="button"
+                  data-league-action="edit"
+                  data-league-id="${escapeHtml(league.id)}"
+                >EDIT</button>
+                <button
+                  class="league-row-button delete"
+                  type="button"
+                  data-league-action="delete"
+                  data-league-id="${escapeHtml(league.id)}"
+                >DELETE</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    async function loadLeagueManagement() {
+      leagueManagementTableBody.innerHTML =
+        '<tr><td class="league-management-empty" colspan="6">Loading league records...</td></tr>';
+
+      try {
+        const { data, error } = await supabaseClient
+          .from("leagues")
+          .select("id, name, description, location, season, division, status, created_by, created_at, updated_at")
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        leagueManagementRows = data || [];
+        renderLeagueManagement();
+      } catch (error) {
+        console.error("Unable to load league management:", error);
+        leagueManagementTableBody.innerHTML = `
+          <tr>
+            <td class="league-management-empty" colspan="6">
+              Unable to load league records: ${escapeHtml(error?.message || "Unknown error")}
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    function resetLeagueManagementForm() {
+      editingLeagueId = null;
+      leagueManagementForm.reset();
+      leagueManagementStatus.value = "active";
+      leagueFormHeading.textContent = "Create League";
+      saveLeagueButton.textContent = "CREATE LEAGUE";
+      cancelLeagueEditButton.hidden = true;
+      setLeagueManagementMessage("");
+    }
+
+    function editLeagueRecord(leagueId) {
+      const league = leagueManagementRows.find(
+        item => String(item.id) === String(leagueId)
+      );
+      if (!league) return;
+
+      editingLeagueId = league.id;
+      leagueManagementName.value = league.name || "";
+      leagueManagementLocation.value = league.location || "";
+      leagueManagementSeason.value = league.season || "";
+      leagueManagementDivision.value = league.division || "";
+      leagueManagementDescription.value = league.description || "";
+      leagueManagementStatus.value =
+        ["pending", "active", "suspended", "archived"].includes(
+          String(league.status || "").toLowerCase()
+        )
+          ? String(league.status).toLowerCase()
+          : "active";
+
+      leagueFormHeading.textContent = "Edit League";
+      saveLeagueButton.textContent = "SAVE CHANGES";
+      cancelLeagueEditButton.hidden = false;
+      setLeagueManagementMessage(
+        `Editing ${league.name || "selected league"}.`
+      );
+
+      leagueManagementName.focus();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    async function logLeagueManagementAction(action, leagueId, details = {}) {
+      if (!currentSuperAdminUser?.id) return;
+
+      try {
+        const { error } = await supabaseClient
+          .from("activity_logs")
+          .insert({
+            actor_id: currentSuperAdminUser.id,
+            action,
+            target_type: "league",
+            target_id: String(leagueId || ""),
+            details
+          });
+
+        if (error) {
+          console.warn("League activity log was not recorded:", error.message);
+        }
+      } catch (error) {
+        console.warn("League activity log was not recorded:", error);
+      }
+    }
+
+    async function saveLeagueRecord(event) {
+      event.preventDefault();
+
+      const name = leagueManagementName.value.trim();
+      const location = leagueManagementLocation.value.trim();
+      const season = leagueManagementSeason.value.trim();
+      const division = leagueManagementDivision.value.trim();
+      const description = leagueManagementDescription.value.trim();
+      const status = leagueManagementStatus.value;
+
+      if (!name) {
+        setLeagueManagementMessage("League name is required.", "error");
+        return;
+      }
+
+      const payload = {
+        name,
+        location: location || null,
+        season: season || null,
+        division: division || null,
+        description: description || null,
+        status,
+        updated_at: new Date().toISOString()
+      };
+
+      saveLeagueButton.disabled = true;
+      cancelLeagueEditButton.disabled = true;
+      setLeagueManagementMessage(
+        editingLeagueId ? "Saving league changes..." : "Creating league..."
+      );
+
+      try {
+        if (editingLeagueId) {
+          const leagueId = editingLeagueId;
+
+          const { data, error } = await supabaseClient
+            .from("leagues")
+            .update(payload)
+            .eq("id", leagueId)
+            .select("id, name, description, location, season, division, status, created_by, created_at, updated_at")
+            .single();
+
+          if (error) throw error;
+
+          await logLeagueManagementAction(
+            "league_updated",
+            leagueId,
+            { league_name: name, status }
+          );
+
+          resetLeagueManagementForm();
+          await loadLeagueManagement();
+          await loadDashboardCounts();
+          setLeagueManagementMessage(
+            `${data.name} was updated successfully.`,
+            "success"
+          );
+        } else {
+          const createPayload = {
+            ...payload,
+            created_by: currentSuperAdminUser?.id || null
+          };
+
+          const { data, error } = await supabaseClient
+            .from("leagues")
+            .insert(createPayload)
+            .select("id, name, description, location, season, division, status, created_by, created_at, updated_at")
+            .single();
+
+          if (error) throw error;
+
+          await logLeagueManagementAction(
+            "league_created",
+            data.id,
+            { league_name: data.name, status: data.status }
+          );
+
+          resetLeagueManagementForm();
+          await loadLeagueManagement();
+          await loadDashboardCounts();
+          setLeagueManagementMessage(
+            `${data.name} was created successfully.`,
+            "success"
+          );
+        }
+      } catch (error) {
+        console.error("League save failed:", error);
+        setLeagueManagementMessage(
+          error?.message || "Unable to save the league.",
+          "error"
+        );
+      } finally {
+        saveLeagueButton.disabled = false;
+        cancelLeagueEditButton.disabled = false;
+      }
+    }
+
+    async function deleteLeagueRecord(leagueId) {
+      const league = leagueManagementRows.find(
+        item => String(item.id) === String(leagueId)
+      );
+      if (!league) return;
+
+      const confirmed = window.confirm(
+        `Delete "${league.name}"?\n\nThis permanently removes the league record. Connected database records may also be affected. This cannot be undone.`
+      );
+
+      if (!confirmed) return;
+
+      setLeagueManagementMessage(`Deleting ${league.name}...`);
+
+      try {
+        const { error } = await supabaseClient
+          .from("leagues")
+          .delete()
+          .eq("id", league.id);
+
+        if (error) throw error;
+
+        await logLeagueManagementAction(
+          "league_deleted",
+          league.id,
+          { league_name: league.name }
+        );
+
+        if (String(editingLeagueId) === String(league.id)) {
+          resetLeagueManagementForm();
+        }
+
+        await loadLeagueManagement();
+        await loadDashboardCounts();
+
+        setLeagueManagementMessage(
+          `${league.name} was deleted.`,
+          "success"
+        );
+      } catch (error) {
+        console.error("League deletion failed:", error);
+        setLeagueManagementMessage(
+          `Unable to delete ${league.name}: ${error?.message || "Unknown error"}`,
+          "error"
+        );
+      }
     }
 
     function titleCaseAction(value) {
@@ -1942,6 +2709,9 @@
         game_returned_for_correction: "Game Returned for Correction",
         roster_approved: "Roster Approved",
         roster_rejected: "Roster Rejected",
+        league_created: "League Created",
+        league_updated: "League Updated",
+        league_deleted: "League Deleted",
         announcement_created: "Announcement Created",
         announcement_published: "Announcement Published",
         announcement_updated: "Announcement Updated",
@@ -2632,36 +3402,6 @@
       window.location.replace("login.html");
     }
 
-    async function openLeagueManagement(event) {
-      event.preventDefault();
-
-      const { data: userData, error: userError } =
-        await supabaseClient.auth.getUser();
-
-      if (userError || !userData.user) {
-        await returnToLogin(false);
-        return;
-      }
-
-      const { data: profile, error: profileError } = await supabaseClient
-        .from("profiles")
-        .select("role, status")
-        .eq("id", userData.user.id)
-        .maybeSingle();
-
-      if (
-        profileError ||
-        !profile ||
-        profile.role !== "super_admin" ||
-        profile.status !== "active"
-      ) {
-        await returnToLogin(true);
-        return;
-      }
-
-      window.location.href = "commissioner-dashboard.html";
-    }
-
     async function requireSuperAdmin() {
       try {
         const { data: userData, error: userError } =
@@ -2689,11 +3429,13 @@
           return;
         }
 
+        currentSuperAdminUser = userData.user;
         displayAccount(profile, userData.user);
         authScreen.hidden = true;
         appShell.hidden = false;
         await Promise.all([
           loadDashboardCounts(),
+          loadLeagueManagement(),
           loadActivityLog(),
           loadAnnouncements()
         ]);
@@ -3136,7 +3878,25 @@
       toggle.addEventListener("change", closeSidebar);
     });
 
-    leagueManagementLink.addEventListener("click", openLeagueManagement);
+    leagueManagementForm.addEventListener("submit", saveLeagueRecord);
+    cancelLeagueEditButton.addEventListener("click", resetLeagueManagementForm);
+    refreshLeagueManagementButton.addEventListener("click", loadLeagueManagement);
+    leagueManagementSearch.addEventListener("input", renderLeagueManagement);
+
+    leagueManagementTableBody.addEventListener("click", function (event) {
+      const button = event.target.closest("[data-league-action]");
+      if (!button) return;
+
+      const leagueId = button.dataset.leagueId;
+      const action = button.dataset.leagueAction;
+
+      if (action === "edit") editLeagueRecord(leagueId);
+      if (action === "delete") deleteLeagueRecord(leagueId);
+    });
+
+    document.getElementById("adminViewLeagues").addEventListener("change", function () {
+      if (this.checked) loadLeagueManagement();
+    });
 
     [activityLeagueFilter, activityUserFilter, activityActionFilter, activityDateFilter]
       .forEach(control => control.addEventListener("change", renderActivityLog));
