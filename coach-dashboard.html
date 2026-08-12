@@ -449,6 +449,471 @@
       }
     }
 
+
+    /* =========================
+       COACH PERFORMANCE + READINESS DASHBOARD
+       ========================= */
+    .coach-performance-grid {
+      margin-bottom: 17px;
+      display: none;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      position: relative;
+    }
+
+    .coach-performance-grid.active {
+      display: grid;
+    }
+
+    .coach-performance-card {
+      min-width: 0;
+      min-height: 122px;
+      padding: 17px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      box-shadow: var(--shadow);
+    }
+
+    .coach-performance-card > span,
+    .coach-performance-card > strong,
+    .coach-performance-card > small {
+      display: block;
+    }
+
+    .coach-performance-card > span {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: .55px;
+      text-transform: uppercase;
+    }
+
+    .coach-performance-card > strong {
+      margin-top: 10px;
+      color: var(--ink);
+      font-size: 29px;
+      line-height: 1;
+      letter-spacing: -.7px;
+    }
+
+    .coach-performance-card > small {
+      margin-top: 8px;
+      color: #8b929c;
+      font-size: 9px;
+      line-height: 1.4;
+    }
+
+    .coach-performance-primary {
+      background: #171717;
+      border-color: #171717;
+    }
+
+    .coach-performance-primary > span,
+    .coach-performance-primary > small {
+      color: #c5c9cf;
+    }
+
+    .coach-performance-primary > strong {
+      color: #ffffff;
+    }
+
+    .coach-hidden-dashboard-counters {
+      display: none !important;
+    }
+
+    .coach-dashboard-kicker {
+      display: block;
+      color: var(--orange-dark);
+      font-size: 9px;
+      font-weight: bold;
+      letter-spacing: .85px;
+      text-transform: uppercase;
+    }
+
+    .coach-next-game {
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      color: #ffffff;
+      background: #171717;
+      border-bottom: 1px solid #2d2d2d;
+    }
+
+    .coach-next-game-copy {
+      min-width: 0;
+    }
+
+    .coach-next-game .coach-dashboard-kicker {
+      color: #ff9b52;
+    }
+
+    .coach-next-game h3 {
+      margin-top: 7px;
+      font-size: clamp(19px, 2.4vw, 27px);
+      line-height: 1.2;
+    }
+
+    .coach-next-game p {
+      margin-top: 7px;
+      color: #c4c8ce;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .coach-next-game-side {
+      min-width: 125px;
+      padding-left: 20px;
+      text-align: right;
+      border-left: 1px solid rgba(255,255,255,.12);
+    }
+
+    .coach-next-game-side strong,
+    .coach-next-game-side span {
+      display: block;
+    }
+
+    .coach-next-game-side strong {
+      color: var(--orange);
+      font-size: 22px;
+      line-height: 1.1;
+    }
+
+    .coach-next-game-side span {
+      margin-top: 6px;
+      color: #c4c8ce;
+      font-size: 9px;
+      line-height: 1.4;
+      text-transform: uppercase;
+    }
+
+    .coach-readiness-grid {
+      padding: 16px 18px 18px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 11px;
+    }
+
+    .coach-readiness-card {
+      min-width: 0;
+      min-height: 170px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      background: #fafafa;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+
+    .coach-readiness-card.needs-action {
+      background: #fffaf6;
+      border-color: #ffd1b0;
+    }
+
+    .coach-readiness-card.ready {
+      background: #f8fdf9;
+      border-color: #c7ead5;
+    }
+
+    .coach-readiness-card-top {
+      margin-bottom: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .coach-readiness-icon {
+      width: 29px;
+      height: 29px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 29px;
+      color: var(--orange-dark);
+      background: var(--orange-soft);
+      border-radius: 7px;
+      font-size: 8px;
+      font-weight: bold;
+    }
+
+    .coach-mini-status {
+      padding: 5px 7px;
+      color: #667085;
+      background: #f2f4f7;
+      border-radius: 999px;
+      font-size: 8px;
+      font-weight: bold;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .coach-mini-status.ready {
+      color: #067647;
+      background: #ecfdf3;
+    }
+
+    .coach-mini-status.pending {
+      color: #b54708;
+      background: #fff4e5;
+    }
+
+    .coach-mini-status.alert {
+      color: #b42318;
+      background: #fef3f2;
+    }
+
+    .coach-readiness-card > strong {
+      color: var(--ink);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .coach-readiness-card > p {
+      margin: 6px 0 12px;
+      flex: 1;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .coach-dashboard-action {
+      min-height: 32px;
+      padding: 0 9px;
+      color: #344054;
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 7px;
+      font-size: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .coach-readiness-card.needs-action .coach-dashboard-action {
+      color: #ffffff;
+      background: var(--orange);
+      border-color: var(--orange);
+    }
+
+    .coach-dashboard-action:hover {
+      border-color: rgba(255,107,0,.55);
+    }
+
+    .coach-readiness-card.needs-action .coach-dashboard-action:hover {
+      background: var(--orange-dark);
+      border-color: var(--orange-dark);
+    }
+
+    .coach-recent-layout {
+      padding: 17px 18px;
+      display: grid;
+      grid-template-columns: minmax(220px, .85fr) minmax(200px, .7fr) minmax(320px, 1.25fr);
+      gap: 13px;
+    }
+
+    .coach-last-game-card,
+    .coach-form-card,
+    .coach-upcoming-card {
+      min-width: 0;
+      padding: 15px;
+      background: #fafafa;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+
+    .coach-last-result {
+      margin-top: 11px;
+      color: var(--ink);
+      font-size: 27px;
+      font-weight: bold;
+      line-height: 1;
+    }
+
+    .coach-last-result.win {
+      color: #067647;
+    }
+
+    .coach-last-result.loss {
+      color: #b42318;
+    }
+
+    .coach-last-game-card > strong {
+      display: block;
+      margin-top: 9px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .coach-last-game-card > p,
+    .coach-form-card > p {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.5;
+    }
+
+    .coach-text-action {
+      margin-top: 13px;
+      padding: 0;
+      color: var(--orange-dark);
+      background: transparent;
+      border: 0;
+      font-size: 9px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .coach-form-strip {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .coach-form-result {
+      width: 31px;
+      height: 31px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .coach-form-result.win {
+      color: #067647;
+      background: #ecfdf3;
+    }
+
+    .coach-form-result.loss {
+      color: #b42318;
+      background: #fef3f2;
+    }
+
+    .coach-form-result.tie {
+      color: #475467;
+      background: #f2f4f7;
+    }
+
+    .coach-form-empty {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .coach-upcoming-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .coach-upcoming-heading > span:last-child {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: bold;
+    }
+
+    .coach-upcoming-list {
+      margin-top: 8px;
+      display: grid;
+    }
+
+    .coach-upcoming-row {
+      min-height: 48px;
+      padding: 8px 0;
+      display: grid;
+      grid-template-columns: 60px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid #e9ebee;
+    }
+
+    .coach-upcoming-row:last-child {
+      border-bottom: 0;
+    }
+
+    .coach-upcoming-date {
+      color: var(--orange-dark);
+      font-size: 9px;
+      font-weight: bold;
+      line-height: 1.35;
+    }
+
+    .coach-upcoming-opponent strong,
+    .coach-upcoming-opponent span {
+      display: block;
+    }
+
+    .coach-upcoming-opponent strong {
+      font-size: 10px;
+    }
+
+    .coach-upcoming-opponent span {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 8px;
+    }
+
+    .coach-upcoming-side {
+      color: #667085;
+      font-size: 8px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 1060px) {
+      .coach-performance-grid {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+      }
+
+      .coach-readiness-grid {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+      }
+
+      .coach-recent-layout {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+      }
+
+      .coach-upcoming-card {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .coach-performance-grid,
+      .coach-readiness-grid,
+      .coach-recent-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .coach-upcoming-card {
+        grid-column: auto;
+      }
+
+      .coach-next-game {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .coach-next-game-side {
+        width: 100%;
+        padding: 12px 0 0;
+        text-align: left;
+        border-top: 1px solid rgba(255,255,255,.12);
+        border-left: 0;
+      }
+
+      .coach-upcoming-row {
+        grid-template-columns: 58px minmax(0,1fr);
+      }
+
+      .coach-upcoming-side {
+        grid-column: 2;
+      }
+    }
+
   </style>
 </head>
 
@@ -555,10 +1020,36 @@
           <div class="table-wrap"><table><thead><tr><th>Player</th><th>Email</th><th>Status</th><th>Expires</th><th>Actions</th></tr></thead><tbody id="playerInvitationBody"><tr><td class="empty-state" colspan="5">Loading player invitations...</td></tr></tbody></table></div>
         </section>
 
-        <section id="coachDashboardStats" class="stats-grid coach-view-section coach-view-grid-section active" data-coach-section="dashboard">
-          <article class="stat-card"><span>Assigned Teams</span><strong id="teamCount">0</strong></article>
-          <article class="stat-card"><span>Roster Players</span><strong id="playerCount">0</strong></article>
-          <article class="stat-card"><span>Active Assignments</span><strong id="activeAssignmentCount">0</strong></article>
+        <section id="coachDashboardStats" class="coach-performance-grid coach-view-section coach-view-grid-section active" data-coach-section="dashboard">
+          <article class="coach-performance-card coach-performance-primary">
+            <span>Team Record</span>
+            <strong id="coachRecordValue">0-0</strong>
+            <small id="coachRecordHelper">No finalized games yet</small>
+          </article>
+
+          <article class="coach-performance-card">
+            <span>Division Rank</span>
+            <strong id="coachDivisionRank">—</strong>
+            <small id="coachDivisionRankHelper">Checking standings...</small>
+          </article>
+
+          <article class="coach-performance-card">
+            <span>Points Per Game</span>
+            <strong id="coachPPGValue">0.0</strong>
+            <small>Finalized games only</small>
+          </article>
+
+          <article class="coach-performance-card">
+            <span>Avg Point Margin</span>
+            <strong id="coachMarginValue">0.0</strong>
+            <small id="coachMarginHelper">Points scored vs allowed</small>
+          </article>
+
+          <div class="coach-hidden-dashboard-counters" aria-hidden="true">
+            <span id="teamCount">0</span>
+            <span id="playerCount">0</span>
+            <span id="activeAssignmentCount">0</span>
+          </div>
         </section>
 
         <section id="teamApplicationPanel" class="panel coach-view-section" data-coach-section="create-team">
@@ -854,6 +1345,109 @@
           </div>
         </section>
 
+        <section id="coachReadinessCenter" class="panel coach-view-section active" data-coach-section="dashboard">
+          <header class="panel-header">
+            <div>
+              <h2>Team Readiness Center</h2>
+              <p>Game-preparation status for the currently selected team.</p>
+            </div>
+            <span id="coachReadinessOverallBadge" class="status-badge pending">Checking</span>
+          </header>
+
+          <div id="coachNextGameHero" class="coach-next-game">
+            <div class="coach-next-game-copy">
+              <span class="coach-dashboard-kicker">Next Game</span>
+              <h3 id="coachNextGameMatchup">No upcoming game scheduled</h3>
+              <p id="coachNextGameMeta">The next scheduled matchup will appear here.</p>
+            </div>
+
+            <div class="coach-next-game-side">
+              <strong id="coachNextGameCountdown">—</strong>
+              <span id="coachNextGameHomeAway">Schedule pending</span>
+            </div>
+          </div>
+
+          <div class="coach-readiness-grid">
+            <article class="coach-readiness-card" data-readiness-card="roster">
+              <div class="coach-readiness-card-top">
+                <span class="coach-readiness-icon">RO</span>
+                <span id="coachRosterStatusBadge" class="coach-mini-status">Checking</span>
+              </div>
+              <strong>Roster Status</strong>
+              <p id="coachRosterReadinessText">Checking roster submission...</p>
+              <button class="coach-dashboard-action" type="button" data-dashboard-open-view="submit-roster">OPEN ROSTER SUBMISSION</button>
+            </article>
+
+            <article class="coach-readiness-card" data-readiness-card="lineup">
+              <div class="coach-readiness-card-top">
+                <span class="coach-readiness-icon">LU</span>
+                <span id="coachLineupStatusBadge" class="coach-mini-status">Checking</span>
+              </div>
+              <strong>Starting Lineup</strong>
+              <p id="coachLineupReadinessText">Checking next-game lineup...</p>
+              <button class="coach-dashboard-action" type="button" data-dashboard-open-view="lineup">OPEN LINEUP & ATTENDANCE</button>
+            </article>
+
+            <article class="coach-readiness-card" data-readiness-card="availability">
+              <div class="coach-readiness-card-top">
+                <span class="coach-readiness-icon">AV</span>
+                <span id="coachAvailabilityStatusBadge" class="coach-mini-status">Checking</span>
+              </div>
+              <strong>Player Availability</strong>
+              <p id="coachAvailabilityText">Checking next-game attendance...</p>
+              <button class="coach-dashboard-action" type="button" data-dashboard-open-view="lineup">REVIEW ATTENDANCE</button>
+            </article>
+
+            <article class="coach-readiness-card" data-readiness-card="corrections">
+              <div class="coach-readiness-card-top">
+                <span class="coach-readiness-icon">CR</span>
+                <span id="coachCorrectionsStatusBadge" class="coach-mini-status">Checking</span>
+              </div>
+              <strong>Correction Requests</strong>
+              <p id="coachCorrectionsReadinessText">Checking request status...</p>
+              <button class="coach-dashboard-action" type="button" data-dashboard-open-view="corrections">VIEW CORRECTIONS</button>
+            </article>
+          </div>
+        </section>
+
+        <section id="coachRecentUpcoming" class="panel coach-view-section active" data-coach-section="dashboard">
+          <header class="panel-header">
+            <div>
+              <h2>Recent & Upcoming</h2>
+              <p>Latest result, current form, and the next games on the schedule.</p>
+            </div>
+            <button class="secondary-button" type="button" data-dashboard-open-view="schedule">View Full Schedule</button>
+          </header>
+
+          <div class="coach-recent-layout">
+            <div class="coach-last-game-card">
+              <span class="coach-dashboard-kicker">Last Finalized Game</span>
+              <div id="coachLastGameResult" class="coach-last-result">No result yet</div>
+              <strong id="coachLastGameMatchup">No finalized games available</strong>
+              <p id="coachLastGameMeta">Completed games will appear here.</p>
+              <button class="coach-text-action" type="button" data-dashboard-open-view="statistics">VIEW TEAM STATISTICS →</button>
+            </div>
+
+            <div class="coach-form-card">
+              <span class="coach-dashboard-kicker">Last 5 Form</span>
+              <div id="coachRecentForm" class="coach-form-strip">
+                <span class="coach-form-empty">No finalized games</span>
+              </div>
+              <p id="coachFormSummary">Your recent results will appear after games are finalized.</p>
+            </div>
+
+            <div class="coach-upcoming-card">
+              <div class="coach-upcoming-heading">
+                <span class="coach-dashboard-kicker">Next Games</span>
+                <span id="coachUpcomingCount">0 scheduled</span>
+              </div>
+              <div id="coachUpcomingGamesList" class="coach-upcoming-list">
+                <div class="empty-state">No upcoming games scheduled.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section id="coachDashboardOverview" class="panel coach-view-section active" data-coach-section="dashboard">
           <header class="panel-header">
             <div>
@@ -895,6 +1489,13 @@
     let correctionFinalGames = [];
     let currentLineupRows = [];
     let currentCoachView = "dashboard";
+    let coachDashboardSummary = {};
+    let coachDashboardGameRows = [];
+    let coachDashboardCorrectionRows = [];
+    let coachDashboardRosterSubmission = null;
+    let coachDashboardDivisionRank = null;
+    let coachDashboardDivisionRankStatus = "loading";
+    let coachDivisionRankLoadToken = 0;
 
     const coachViewConfig = {
       dashboard: {
@@ -1053,6 +1654,406 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
+    function coachDashboardSelectedTeam() {
+      const assignment = selectedAssignment();
+      return {
+        assignment,
+        team: teams.find(item => item.id === assignment?.team_id) || null,
+        league: leagues.find(item => item.id === assignment?.league_id) || null,
+        roster: players.filter(item => item.team_id === assignment?.team_id)
+      };
+    }
+
+    function formatCoachDashboardDate(value, options = {}) {
+      if (!value) return "Date TBA";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "Date TBA";
+
+      return date.toLocaleString("en-PH", {
+        month: options.short ? "short" : "long",
+        day: "numeric",
+        year: options.withYear === false ? undefined : "numeric",
+        hour: options.includeTime === false ? undefined : "numeric",
+        minute: options.includeTime === false ? undefined : "2-digit"
+      });
+    }
+
+    function coachGameCountdown(value) {
+      if (!value) return "TBA";
+      const gameTime = new Date(value).getTime();
+      if (!Number.isFinite(gameTime)) return "TBA";
+
+      const diff = gameTime - Date.now();
+      if (diff <= 0) return "Today";
+
+      const days = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+
+      if (days >= 2) return `${days} days`;
+      if (days === 1) return "Tomorrow";
+      if (hours >= 1) return `${hours} hr${hours === 1 ? "" : "s"}`;
+      return "Soon";
+    }
+
+    function coachDashboardUpcomingGames() {
+      return coachScheduleGames
+        .filter(game => {
+          if (isFinalCoachGame(game)) return false;
+          if (!game.scheduled_at) return true;
+          const when = new Date(game.scheduled_at).getTime();
+          return !Number.isFinite(when) || when >= Date.now() - 3600000;
+        })
+        .sort((a, b) => {
+          const aTime = a.scheduled_at ? new Date(a.scheduled_at).getTime() : Number.MAX_SAFE_INTEGER;
+          const bTime = b.scheduled_at ? new Date(b.scheduled_at).getTime() : Number.MAX_SAFE_INTEGER;
+          return aTime - bTime;
+        });
+    }
+
+    function setCoachReadinessCard(name, state, badgeText, detailText) {
+      const card = document.querySelector(`[data-readiness-card="${name}"]`);
+      const badge = document.getElementById({
+        roster: "coachRosterStatusBadge",
+        lineup: "coachLineupStatusBadge",
+        availability: "coachAvailabilityStatusBadge",
+        corrections: "coachCorrectionsStatusBadge"
+      }[name]);
+
+      const text = document.getElementById({
+        roster: "coachRosterReadinessText",
+        lineup: "coachLineupReadinessText",
+        availability: "coachAvailabilityText",
+        corrections: "coachCorrectionsReadinessText"
+      }[name]);
+
+      if (card) {
+        card.classList.toggle("ready", state === "ready");
+        card.classList.toggle("needs-action", state === "action");
+      }
+
+      if (badge) {
+        badge.className = "coach-mini-status";
+        if (state === "ready") badge.classList.add("ready");
+        if (state === "action") badge.classList.add("pending");
+        if (state === "alert") badge.classList.add("alert");
+        badge.textContent = badgeText;
+      }
+
+      if (text) text.textContent = detailText;
+    }
+
+    function renderCoachPerformanceDashboard() {
+      const summary = coachDashboardSummary || {};
+      const gamesPlayed = Number(summary.games_played || 0);
+      const wins = Number(summary.wins || 0);
+      const losses = Number(summary.losses || 0);
+      const pointsFor = Number(summary.points_for || 0);
+      const pointsAgainst = Number(summary.points_against || 0);
+      const ppg = Number(summary.average_points || 0);
+      const averageMargin = gamesPlayed > 0 ? (pointsFor - pointsAgainst) / gamesPlayed : 0;
+
+      document.getElementById("coachRecordValue").textContent = `${wins}-${losses}`;
+      document.getElementById("coachRecordHelper").textContent =
+        gamesPlayed
+          ? `${gamesPlayed} finalized game${gamesPlayed === 1 ? "" : "s"}`
+          : "No finalized games yet";
+
+      document.getElementById("coachPPGValue").textContent = ppg.toFixed(1);
+
+      const marginElement = document.getElementById("coachMarginValue");
+      marginElement.textContent = `${averageMargin > 0 ? "+" : ""}${averageMargin.toFixed(1)}`;
+      marginElement.style.color =
+        averageMargin > 0 ? "#067647" :
+        averageMargin < 0 ? "#b42318" :
+        "var(--ink)";
+
+      const rankElement = document.getElementById("coachDivisionRank");
+      const rankHelper = document.getElementById("coachDivisionRankHelper");
+
+      if (coachDashboardDivisionRankStatus === "loading") {
+        rankElement.textContent = "—";
+        rankHelper.textContent = "Checking standings...";
+      } else if (coachDashboardDivisionRank != null) {
+        rankElement.textContent = `#${coachDashboardDivisionRank}`;
+        rankHelper.textContent = "Current division standing";
+      } else {
+        rankElement.textContent = "—";
+        rankHelper.textContent = "Division rank unavailable";
+      }
+
+      renderCoachRecentForm();
+    }
+
+    function renderCoachScheduleDashboard() {
+      const upcomingGames = coachDashboardUpcomingGames();
+      const nextGame = upcomingGames[0] || null;
+
+      document.getElementById("coachUpcomingCount").textContent =
+        `${upcomingGames.length} scheduled`;
+
+      const matchup = document.getElementById("coachNextGameMatchup");
+      const meta = document.getElementById("coachNextGameMeta");
+      const countdown = document.getElementById("coachNextGameCountdown");
+      const homeAway = document.getElementById("coachNextGameHomeAway");
+
+      if (!nextGame) {
+        matchup.textContent = "No upcoming game scheduled";
+        meta.textContent = "The next scheduled matchup will appear here.";
+        countdown.textContent = "—";
+        homeAway.textContent = "Schedule pending";
+      } else {
+        matchup.textContent = `vs ${nextGame.opponent_team_name || "Opponent TBD"}`;
+        meta.textContent =
+          `${formatCoachDashboardDate(nextGame.scheduled_at)} • ${nextGame.venue || "Venue TBA"}`;
+        countdown.textContent = coachGameCountdown(nextGame.scheduled_at);
+        homeAway.textContent = nextGame.is_home_team ? "Home Game" : "Away Game";
+      }
+
+      const upcomingList = document.getElementById("coachUpcomingGamesList");
+      upcomingList.innerHTML = upcomingGames.length
+        ? upcomingGames.slice(0, 3).map(game => `
+            <div class="coach-upcoming-row">
+              <span class="coach-upcoming-date">${escapeHtml(
+                formatCoachDashboardDate(game.scheduled_at, {
+                  short: true,
+                  withYear: false,
+                  includeTime: false
+                })
+              )}</span>
+              <div class="coach-upcoming-opponent">
+                <strong>vs ${escapeHtml(game.opponent_team_name || "Opponent TBD")}</strong>
+                <span>${escapeHtml(
+                  `${formatCoachDashboardDate(game.scheduled_at, {
+                    short: true,
+                    withYear: false
+                  })} • ${game.venue || "Venue TBA"}`
+                )}</span>
+              </div>
+              <span class="coach-upcoming-side">${game.is_home_team ? "Home" : "Away"}</span>
+            </div>
+          `).join("")
+        : '<div class="empty-state">No upcoming games scheduled.</div>';
+
+      renderCoachReadinessDashboard();
+    }
+
+    function renderCoachRecentForm() {
+      const sorted = [...coachDashboardGameRows].sort((a, b) => {
+        const aTime = new Date(a.scheduled_at || a.finalized_at || 0).getTime();
+        const bTime = new Date(b.scheduled_at || b.finalized_at || 0).getTime();
+        return bTime - aTime;
+      });
+
+      const lastGame = sorted[0] || null;
+      const lastFiveNewestFirst = sorted.slice(0, 5);
+      const formChronological = [...lastFiveNewestFirst].reverse();
+
+      const resultElement = document.getElementById("coachLastGameResult");
+      const matchupElement = document.getElementById("coachLastGameMatchup");
+      const metaElement = document.getElementById("coachLastGameMeta");
+      const formElement = document.getElementById("coachRecentForm");
+      const formSummary = document.getElementById("coachFormSummary");
+
+      if (!lastGame) {
+        resultElement.className = "coach-last-result";
+        resultElement.textContent = "No result yet";
+        matchupElement.textContent = "No finalized games available";
+        metaElement.textContent = "Completed games will appear here.";
+      } else {
+        const result = String(lastGame.game_result || "T").toUpperCase();
+        resultElement.className =
+          `coach-last-result ${result === "W" ? "win" : result === "L" ? "loss" : ""}`;
+        resultElement.textContent =
+          `${result} ${Number(lastGame.team_score || 0)}-${Number(lastGame.opponent_score || 0)}`;
+        matchupElement.textContent =
+          `vs ${lastGame.opponent_team_name || "Opponent"}`;
+        metaElement.textContent =
+          `${formatCoachDashboardDate(lastGame.scheduled_at || lastGame.finalized_at)} • ${lastGame.venue || "Venue TBA"}`;
+      }
+
+      formElement.innerHTML = formChronological.length
+        ? formChronological.map(game => {
+            const result = String(game.game_result || "T").toUpperCase();
+            const cls = result === "W" ? "win" : result === "L" ? "loss" : "tie";
+            return `<span class="coach-form-result ${cls}" title="${escapeHtml(game.opponent_team_name || "Opponent")}">${escapeHtml(result)}</span>`;
+          }).join("")
+        : '<span class="coach-form-empty">No finalized games</span>';
+
+      const formWins = lastFiveNewestFirst.filter(
+        game => String(game.game_result || "").toUpperCase() === "W"
+      ).length;
+
+      formSummary.textContent = lastFiveNewestFirst.length
+        ? `${formWins} win${formWins === 1 ? "" : "s"} in the last ${lastFiveNewestFirst.length} finalized game${lastFiveNewestFirst.length === 1 ? "" : "s"}.`
+        : "Your recent results will appear after games are finalized.";
+    }
+
+    function renderCoachReadinessDashboard() {
+      const upcomingGames = coachDashboardUpcomingGames();
+      const nextGame = upcomingGames[0] || null;
+
+      const submission = coachDashboardRosterSubmission;
+      const submissionStatus = String(submission?.submission_status || "").toLowerCase();
+      const rosterSubmitted =
+        !!submission && !["rejected", "not_submitted", "not submitted"].includes(submissionStatus);
+
+      setCoachReadinessCard(
+        "roster",
+        rosterSubmitted ? "ready" : "action",
+        rosterSubmitted ? "Submitted" : "Action Needed",
+        rosterSubmitted
+          ? `${Number(submission.player_count || 0)} player${Number(submission.player_count || 0) === 1 ? "" : "s"} included in the latest roster submission.`
+          : "The current roster has not been submitted to the commissioner yet."
+      );
+
+      if (!nextGame) {
+        setCoachReadinessCard(
+          "lineup",
+          "neutral",
+          "No Game",
+          "There is no upcoming scheduled game requiring a starting lineup."
+        );
+        setCoachReadinessCard(
+          "availability",
+          "neutral",
+          "No Game",
+          "Player availability will appear when an upcoming game is scheduled."
+        );
+      } else {
+        const selectedGame = selectedLineupGame();
+        const lineupMatchesNextGame =
+          selectedGame &&
+          String(selectedGame.game_id) === String(nextGame.game_id);
+
+        if (!lineupMatchesNextGame) {
+          setCoachReadinessCard(
+            "lineup",
+            "action",
+            "Not Loaded",
+            "Open Lineup & Attendance to prepare the next scheduled game."
+          );
+          setCoachReadinessCard(
+            "availability",
+            "action",
+            "Review",
+            "Attendance for the next scheduled game still needs to be reviewed."
+          );
+        } else {
+          const submitted = currentLineupRows.some(row => row.lineup_submitted === true);
+          const starters = currentLineupRows.filter(
+            row => row.is_starter && row.attendance === "available"
+          ).length;
+          const available = currentLineupRows.filter(
+            row => row.attendance === "available"
+          ).length;
+          const unavailable = currentLineupRows.filter(
+            row => row.attendance === "unavailable"
+          ).length;
+          const total = currentLineupRows.length;
+
+          setCoachReadinessCard(
+            "lineup",
+            submitted ? "ready" : "action",
+            submitted ? "Submitted" : starters === 5 ? "Ready" : "Draft",
+            submitted
+              ? "The official starting five is submitted and locked for the next game."
+              : starters === 5
+                ? "Five available starters are selected. Submit the lineup when ready."
+                : `${starters} of 5 starters selected for the next game.`
+          );
+
+          setCoachReadinessCard(
+            "availability",
+            unavailable === 0 && total > 0 ? "ready" : unavailable > 0 ? "action" : "neutral",
+            total > 0 ? `${available}/${total} Available` : "Not Set",
+            total > 0
+              ? `${available} available • ${unavailable} unavailable for the selected game.`
+              : "Attendance has not been prepared for the next scheduled game."
+          );
+        }
+      }
+
+      const pendingCorrections = coachDashboardCorrectionRows.filter(
+        row => String(row.request_status || "pending").toLowerCase() === "pending"
+      );
+
+      setCoachReadinessCard(
+        "corrections",
+        pendingCorrections.length ? "action" : "ready",
+        pendingCorrections.length ? `${pendingCorrections.length} Pending` : "Clear",
+        pendingCorrections.length
+          ? `${pendingCorrections.length} correction request${pendingCorrections.length === 1 ? "" : "s"} waiting for commissioner review.`
+          : "No correction requests are currently waiting for commissioner review."
+      );
+
+      const lineupReady = !nextGame || (
+        currentLineupRows.some(row => row.lineup_submitted === true) &&
+        currentLineupRows.filter(row => row.is_starter && row.attendance === "available").length === 5
+      );
+
+      const overallBadge = document.getElementById("coachReadinessOverallBadge");
+      const ready = rosterSubmitted && lineupReady && pendingCorrections.length === 0;
+
+      overallBadge.className = ready ? "status-badge" : "status-badge pending";
+      overallBadge.textContent = ready ? "Team Ready" : "Needs Attention";
+    }
+
+    async function loadCoachDivisionRank(assignment) {
+      const token = ++coachDivisionRankLoadToken;
+      coachDashboardDivisionRank = null;
+      coachDashboardDivisionRankStatus = "loading";
+      renderCoachPerformanceDashboard();
+
+      if (!assignment) {
+        coachDashboardDivisionRankStatus = "unavailable";
+        renderCoachPerformanceDashboard();
+        return;
+      }
+
+      try {
+        const { data: registrations, error: registrationError } = await supabaseClient
+          .from("league_teams")
+          .select("season_id, division_id, updated_at")
+          .eq("league_id", assignment.league_id)
+          .eq("team_id", assignment.team_id)
+          .order("updated_at", { ascending: false, nullsFirst: false })
+          .limit(1);
+
+        if (token !== coachDivisionRankLoadToken) return;
+        if (registrationError) throw registrationError;
+
+        const registration = registrations?.[0];
+        if (!registration?.season_id || !registration?.division_id) {
+          coachDashboardDivisionRankStatus = "unavailable";
+          renderCoachPerformanceDashboard();
+          return;
+        }
+
+        const { data, error } = await supabaseClient.rpc("get_division_standings", {
+          p_league_id: assignment.league_id,
+          p_season_id: registration.season_id,
+          p_division_id: registration.division_id
+        });
+
+        if (token !== coachDivisionRankLoadToken) return;
+        if (error) throw error;
+
+        const row = (data || []).find(
+          item => String(item.team_id) === String(assignment.team_id)
+        );
+
+        coachDashboardDivisionRank = row?.ranking ?? null;
+        coachDashboardDivisionRankStatus = "loaded";
+      } catch (error) {
+        if (token !== coachDivisionRankLoadToken) return;
+        console.warn("Coach division rank unavailable:", error);
+        coachDashboardDivisionRank = null;
+        coachDashboardDivisionRankStatus = "unavailable";
+      }
+
+      renderCoachPerformanceDashboard();
+    }
+
     async function authorize() {
       try {
         const { data: userData, error: userError } = await supabaseClient.auth.getUser();
@@ -1077,6 +2078,9 @@
         await Promise.all([loadWorkspace(), loadTeamApplicationData()]);
         authScreen.hidden = true;
         appShell.hidden = false;
+        renderCoachPerformanceDashboard();
+        renderCoachScheduleDashboard();
+        renderCoachReadinessDashboard();
         openCoachView(coachViewFromHash(), false);
       } catch (error) {
         console.error("Coach authorization failed:", error);
@@ -1364,6 +2368,7 @@
         if (refreshButton) refreshButton.disabled = true;
         renderLineupGameOptions(null, []);
         renderCorrectionGameOptions(null, []);
+        renderCoachScheduleDashboard();
         return;
       }
 
@@ -1397,6 +2402,7 @@
 
         renderLineupGameOptions(assignment, games);
         renderCorrectionGameOptions(assignment, games);
+        renderCoachScheduleDashboard();
 
         if (!games.length) {
           body.innerHTML = '<tr><td class="empty-state" colspan="6">No games have been scheduled for this team in the selected league.</td></tr>';
@@ -1426,6 +2432,7 @@
         coachScheduleGames = [];
         renderLineupGameOptions(assignment, []);
         renderCorrectionGameOptions(assignment, []);
+        renderCoachScheduleDashboard();
         body.innerHTML = `
           <tr>
             <td class="empty-state" colspan="6">Unable to load game schedule: ${escapeHtml(error?.message || "Unknown error")}</td>
@@ -1454,6 +2461,9 @@
       document.getElementById("statisticsPlayerBody").innerHTML = `<tr><td class="empty-state" colspan="14">${escapeHtml(message)}</td></tr>`;
       document.getElementById("statisticsMessage").textContent = message;
       document.getElementById("refreshStatisticsButton").disabled = true;
+      coachDashboardSummary = {};
+      coachDashboardGameRows = [];
+      renderCoachPerformanceDashboard();
     }
 
     async function loadTeamStatistics(assignment) {
@@ -1488,6 +2498,10 @@
         const summary = Array.isArray(summaryResult.data) ? (summaryResult.data[0] || {}) : (summaryResult.data || {});
         const gameRows = gamesResult.data || [];
         const playerRows = playersResult.data || [];
+
+        coachDashboardSummary = summary;
+        coachDashboardGameRows = gameRows;
+        renderCoachPerformanceDashboard();
 
         document.getElementById("statisticsGamesPlayed").textContent = Number(summary.games_played || 0).toLocaleString();
         document.getElementById("statisticsRecord").textContent = `${Number(summary.wins || 0)}-${Number(summary.losses || 0)}`;
@@ -1538,6 +2552,9 @@
       } catch (error) {
         if (requestToken !== statisticsLoadToken) return;
         console.error("Unable to load coach team statistics:", error);
+        coachDashboardSummary = {};
+        coachDashboardGameRows = [];
+        renderCoachPerformanceDashboard();
         gameBody.innerHTML = `<tr><td class="empty-state" colspan="6">Unable to load game results: ${escapeHtml(error?.message || "Unknown error")}</td></tr>`;
         playerBody.innerHTML = `<tr><td class="empty-state" colspan="14">Unable to load player statistics.</td></tr>`;
         message.textContent = "Unable to load team statistics. Please refresh and try again.";
@@ -1747,6 +2764,8 @@
       populateCorrectionPlayers(assignment);
 
       if (!assignment) {
+        coachDashboardCorrectionRows = [];
+        renderCoachReadinessDashboard();
         if (body) body.innerHTML = '<tr><td class="empty-state" colspan="7">Select an assigned team to view correction requests.</td></tr>';
         if (refreshButton) refreshButton.disabled = true;
         return;
@@ -1764,6 +2783,8 @@
         if (error) throw error;
 
         const requests = data || [];
+        coachDashboardCorrectionRows = requests;
+        renderCoachReadinessDashboard();
         body.innerHTML = requests.length ? requests.map(request => {
           const status = String(request.request_status || "pending").toLowerCase();
           const canWithdraw = status === "pending";
@@ -1785,6 +2806,8 @@
       } catch (error) {
         if (requestToken !== correctionLoadToken) return;
         console.error("Unable to load coach correction requests:", error);
+        coachDashboardCorrectionRows = [];
+        renderCoachReadinessDashboard();
         if (body) body.innerHTML = `<tr><td class="empty-state" colspan="7">Unable to load correction requests: ${escapeHtml(error?.message || "Unknown error")}</td></tr>`;
       } finally {
         if (requestToken === correctionLoadToken && refreshButton) refreshButton.disabled = false;
@@ -1896,6 +2919,7 @@
       if (badge) { badge.className = "status-badge pending"; badge.textContent = "Draft"; }
       if (submitButton) submitButton.disabled = true;
       if (refreshButton) refreshButton.disabled = !select?.value;
+      renderCoachReadinessDashboard();
     }
 
     function lineupGameLabel(game) {
@@ -1980,6 +3004,8 @@
       submitButton.disabled = locked || starterCount !== 5 || !currentLineupRows.length;
       submitButton.textContent = submitted ? "Lineup Submitted" : "Submit Starting Lineup";
 
+      renderCoachReadinessDashboard();
+
       if (!currentLineupRows.length) {
         body.innerHTML = '<tr><td class="empty-state" colspan="5">No player records are available for this game lineup.</td></tr>';
         return;
@@ -2053,6 +3079,7 @@
       } catch (error) {
         if (token !== lineupLoadToken) return;
         currentLineupRows = [];
+        renderCoachReadinessDashboard();
         console.error("Unable to load coach lineup:", error);
         body.innerHTML = `<tr><td class="empty-state" colspan="5">Unable to load lineup: ${escapeHtml(error?.message || "Unknown error")}</td></tr>`;
         message.className = "lineup-message error";
@@ -2383,6 +3410,8 @@
       const button = document.getElementById("submitRosterButton");
 
       if (!assignment) {
+        coachDashboardRosterSubmission = null;
+        renderCoachReadinessDashboard();
         badge.textContent = "Unavailable";
         badge.className = "status-badge rejected";
         message.innerHTML = "<strong>No team assignment selected.</strong>Select an assigned team and league first.";
@@ -2397,6 +3426,8 @@
       });
 
       if (error) {
+        coachDashboardRosterSubmission = null;
+        renderCoachReadinessDashboard();
         badge.textContent = "Unable to Load";
         badge.className = "status-badge rejected";
         message.innerHTML = `<strong>Submission status unavailable.</strong>${escapeHtml(error.message)}`;
@@ -2404,6 +3435,9 @@
       }
 
       const submission = data?.[0];
+      coachDashboardRosterSubmission = submission || null;
+      renderCoachReadinessDashboard();
+
       if (!submission) {
         badge.textContent = "Not Submitted";
         badge.className = "status-badge pending";
@@ -2545,6 +3579,7 @@
         loadTeamStatistics(null);
         loadCorrectionRequests(null);
         resetCorrectionPanel("Select an assigned team to submit or review correction requests.");
+        loadCoachDivisionRank(null);
         return;
       }
 
@@ -2579,6 +3614,7 @@
       loadTeamStatistics(assignment);
       loadCorrectionRequests(assignment);
       populateCorrectionPlayers(assignment);
+      loadCoachDivisionRank(assignment);
     }
 
     function closeSidebar() {
@@ -2662,6 +3698,12 @@
     document.querySelectorAll("[data-coach-view]").forEach(button => {
       button.addEventListener("click", function () {
         openCoachView(this.dataset.coachView);
+      });
+    });
+
+    document.querySelectorAll("[data-dashboard-open-view]").forEach(button => {
+      button.addEventListener("click", function () {
+        openCoachView(this.dataset.dashboardOpenView);
       });
     });
 
