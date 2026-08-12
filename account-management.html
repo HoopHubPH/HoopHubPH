@@ -1051,6 +1051,122 @@
       margin: 0;
     }
 
+
+    /* =========================
+       PLATFORM ACCOUNTS TABLE
+       Professional proportional layout
+       ========================= */
+    .accounts-panel {
+      overflow: hidden;
+      border-radius: 13px;
+    }
+
+    .accounts-panel .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: visible;
+      border-radius: 0 0 13px 13px;
+    }
+
+    .accounts-panel table {
+      width: 100%;
+      min-width: 980px;
+      table-layout: fixed;
+      border-collapse: collapse;
+    }
+
+    .accounts-panel th,
+    .accounts-panel td {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .accounts-panel th:nth-child(1),
+    .accounts-panel td:nth-child(1) {
+      width: 32%;
+    }
+
+    .accounts-panel th:nth-child(2),
+    .accounts-panel td:nth-child(2) {
+      width: 18%;
+    }
+
+    .accounts-panel th:nth-child(3),
+    .accounts-panel td:nth-child(3) {
+      width: 11%;
+    }
+
+    .accounts-panel th:nth-child(4),
+    .accounts-panel td:nth-child(4) {
+      width: 13%;
+    }
+
+    .accounts-panel th:nth-child(5),
+    .accounts-panel td:nth-child(5) {
+      width: 16%;
+    }
+
+    .accounts-panel th:nth-child(6),
+    .accounts-panel td:nth-child(6) {
+      width: 10%;
+      text-align: center;
+    }
+
+    .accounts-panel thead th {
+      height: 48px;
+      vertical-align: middle;
+      background: #fafafa;
+    }
+
+    .accounts-panel tbody td {
+      height: 72px;
+      vertical-align: middle;
+    }
+
+    .accounts-panel tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .accounts-panel tbody tr:last-child td:first-child {
+      border-bottom-left-radius: 13px;
+    }
+
+    .accounts-panel tbody tr:last-child td:last-child {
+      border-bottom-right-radius: 13px;
+    }
+
+    .accounts-panel .account-cell {
+      min-width: 0;
+    }
+
+    .accounts-panel .account-cell > div:last-child {
+      min-width: 0;
+    }
+
+    .accounts-panel .account-name,
+    .accounts-panel .account-email {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .accounts-panel .manage-button {
+      min-width: 78px;
+    }
+
+    @media (max-width: 1180px) {
+      .accounts-panel table {
+        min-width: 900px;
+      }
+
+      .accounts-panel th,
+      .accounts-panel td {
+        padding-left: 13px;
+        padding-right: 13px;
+      }
+    }
+
   </style>
 </head>
 
@@ -1176,7 +1292,7 @@
           </div>
         </div>
 
-        <section class="panel" aria-labelledby="accountsHeading">
+        <section class="panel accounts-panel" aria-labelledby="accountsHeading">
           <header class="panel-header">
             <div>
               <h2 id="accountsHeading">Platform Accounts</h2>
@@ -2382,7 +2498,7 @@
         const height = Math.max(
           document.body.scrollHeight,
           document.documentElement.scrollHeight
-        );
+        ) + 36;
 
         window.parent.postMessage(
           { type: "hoophub-account-height", height },
