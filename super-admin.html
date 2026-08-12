@@ -284,12 +284,14 @@
     }
 
     #adminViewDashboard:checked ~ .main-content #dashboardView,
+    #adminViewAccounts:checked ~ .main-content #accountsView,
     #adminViewActivity:checked ~ .main-content #activityView,
     #adminViewAnnouncements:checked ~ .main-content #announcementsView {
       display: block;
     }
 
     #adminViewDashboard:checked ~ .sidebar [data-admin-view="dashboard"],
+    #adminViewAccounts:checked ~ .sidebar [data-admin-view="accounts"],
     #adminViewActivity:checked ~ .sidebar [data-admin-view="activity"],
     #adminViewAnnouncements:checked ~ .sidebar [data-admin-view="announcements"] {
       color: #ffffff;
@@ -298,6 +300,7 @@
     }
 
     #adminViewDashboard:checked ~ .sidebar [data-admin-view="dashboard"] .nav-icon,
+    #adminViewAccounts:checked ~ .sidebar [data-admin-view="accounts"] .nav-icon,
     #adminViewActivity:checked ~ .sidebar [data-admin-view="activity"] .nav-icon,
     #adminViewAnnouncements:checked ~ .sidebar [data-admin-view="announcements"] .nav-icon {
       background: var(--orange);
@@ -316,6 +319,22 @@
       font: inherit;
       text-align: left;
       cursor: pointer;
+    }
+
+    .account-embed-shell {
+      width: 100%;
+      min-height: calc(100vh - 116px);
+      overflow: hidden;
+      background: transparent;
+    }
+
+    .account-embed-frame {
+      width: 100%;
+      height: calc(100vh - 116px);
+      min-height: 760px;
+      display: block;
+      background: transparent;
+      border: 0;
     }
 
     .announcement-layout {
@@ -1087,6 +1106,7 @@
 
   <div id="appShell" class="app-shell" hidden>
     <input id="adminViewDashboard" class="admin-view-toggle" type="radio" name="adminWorkspace" checked>
+    <input id="adminViewAccounts" class="admin-view-toggle" type="radio" name="adminWorkspace">
     <input id="adminViewActivity" class="admin-view-toggle" type="radio" name="adminWorkspace">
     <input id="adminViewAnnouncements" class="admin-view-toggle" type="radio" name="adminWorkspace">
     <header class="topbar">
@@ -1145,10 +1165,10 @@
       </a>
 
       <p class="nav-label">Administration</p>
-      <a id="accountManagementLink" class="nav-link" href="./account-management.html">
+      <label class="nav-link nav-view-button" for="adminViewAccounts" data-admin-view="accounts">
         <span class="nav-icon">AC</span>
         Accounts
-      </a>
+      </label>
       <label class="nav-link nav-view-button" for="adminViewActivity" data-admin-view="activity">
         <span class="nav-icon">AL</span>
         Activity Logs
@@ -1257,11 +1277,11 @@
                 <span class="quick-arrow">→</span>
               </a>
 
-              <a class="quick-card" href="account-management.html">
+              <label class="quick-card quick-view-button" for="adminViewAccounts">
                 <strong>Manage Accounts</strong>
                 <span>Approve users, change roles, and control account status.</span>
                 <span class="quick-arrow">→</span>
-              </a>
+              </label>
 
               <label class="quick-card quick-view-button" for="adminViewActivity">
                 <strong>View Activity Logs</strong>
@@ -1329,6 +1349,18 @@
         </section>
 
         <p id="lastUpdated" class="footer-note">Dashboard totals are loading...</p>
+        </div>
+
+        <div id="accountsView" class="admin-view" data-view-name="accounts">
+          <div class="account-embed-shell">
+            <iframe
+              id="accountManagementFrame"
+              class="account-embed-frame"
+              src="account-management.html?embed=1"
+              title="HoopHub PH Account Management"
+              loading="lazy"
+            ></iframe>
+          </div>
         </div>
 
         <div id="activityView" class="admin-view" data-view-name="activity">
@@ -2435,13 +2467,6 @@
     });
 
     leagueManagementLink.addEventListener("click", openLeagueManagement);
-
-    document.getElementById("accountManagementLink").addEventListener("click", function (event) {
-      event.preventDefault();
-      closeSidebar();
-      window.location.assign("./account-management.html");
-    });
-
 
     [activityLeagueFilter, activityUserFilter, activityActionFilter, activityDateFilter]
       .forEach(control => control.addEventListener("change", renderActivityLog));
