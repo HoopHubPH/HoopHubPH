@@ -415,7 +415,7 @@
           <form id="teamProfileForm" class="application-form" hidden>
             <div class="form-group"><label for="editTeamName">Team Name</label><input id="editTeamName" class="form-input" type="text" maxlength="100" required></div>
             <div class="form-group"><label for="editTeamLocation">Team Location (Optional)</label><input id="editTeamLocation" class="form-input" type="text" maxlength="150"></div>
-            <div class="form-group form-wide"><label for="editTeamLogoUrl">Logo URL (Optional)</label><input id="editTeamLogoUrl" class="form-input" type="url" maxlength="2000" placeholder="https://example.com/team-logo.png"></div>
+            <div class="form-group form-wide"><label for="editTeamLogoFile">Team Logo — JPEG/JPG (Optional)</label><input id="editTeamLogoFile" class="form-input" type="file" accept="image/jpeg,.jpg,.jpeg"><small>Select a JPEG image up to 2 MB. Leave this empty to keep the current logo.</small></div>
             <div class="form-actions">
               <button id="saveTeamProfileButton" class="primary-button" type="submit">Save Team Profile</button>
               <button id="cancelTeamProfileButton" class="secondary-button" type="button">Cancel</button>
@@ -778,7 +778,7 @@
 
       document.getElementById("editTeamName").value = team.name || "";
       document.getElementById("editTeamLocation").value = team.location || "";
-      document.getElementById("editTeamLogoUrl").value = team.logo_url || "";
+      document.getElementById("editTeamLogoFile").value = "";
       document.getElementById("teamDetails").hidden = true;
       document.getElementById("teamProfileForm").hidden = false;
       document.getElementById("editTeamProfileButton").textContent = "Editing Team Profile";
@@ -807,14 +807,48 @@
 
       const name = document.getElementById("editTeamName").value.trim();
       const location = document.getElementById("editTeamLocation").value.trim();
-      const logoUrl = document.getElementById("editTeamLogoUrl").value.trim();
+      const logoFile = document.getElementById("editTeamLogoFile").files[0] || null;
+      let logoUrl = selectedTeam()?.logo_url || null;
+
+      if (logoFile) {
+        const isJpeg = ["image/jpeg", "image/jpg"].includes(logoFile.type.toLowerCase()) || /\.jpe?g$/i.test(logoFile.name);
+        if (!isJpeg) {
+          message.className = "application-message error";
+          message.textContent = "Please select a JPEG or JPG image only.";
+          button.disabled = false;
+          button.textContent = "Save Team Profile";
+          return;
+        }
+        if (logoFile.size > 2 * 1024 * 1024) {
+          message.className = "application-message error";
+          message.textContent = "The team logo must be 2 MB or smaller.";
+          button.disabled = false;
+          button.textContent = "Save Team Profile";
+          return;
+        }
+      }
 
       try {
+        if (logoFile) {
+          message.textContent = "Uploading the team logo...";
+          const filePath = `${assignment.team_id}/${crypto.randomUUID()}.jpg`;
+          const { error: uploadError } = await supabaseClient.storage
+            .from("team-logos")
+            .upload(filePath, logoFile, { contentType: "image/jpeg", upsert: false });
+          if (uploadError) throw uploadError;
+
+          const { data: publicUrlData } = supabaseClient.storage
+            .from("team-logos")
+            .getPublicUrl(filePath);
+          logoUrl = publicUrlData.publicUrl;
+          message.textContent = "Saving the team profile...";
+        }
+
         const { data, error } = await supabaseClient.rpc("update_coach_team_profile", {
           p_team_id: assignment.team_id,
           p_name: name,
           p_location: location || null,
-          p_logo_url: logoUrl || null
+          p_logo_url: logoUrl
         });
         if (error) throw error;
 
@@ -825,7 +859,7 @@
             ...teams[teamIndex],
             name: updated?.team_name ?? name,
             location: updated?.team_location ?? (location || null),
-            logo_url: updated?.team_logo_url ?? (logoUrl || null)
+            logo_url: updated?.team_logo_url ?? logoUrl
           };
         }
 
