@@ -284,6 +284,7 @@
     }
 
     #adminViewDashboard:checked ~ .main-content #dashboardView,
+    #adminViewLeagueWorkspace:checked ~ .main-content #leagueWorkspaceView,
     #adminViewLeagues:checked ~ .main-content #leaguesView,
     #adminViewAccounts:checked ~ .main-content #accountsView,
     #adminViewActivity:checked ~ .main-content #activityView,
@@ -292,6 +293,7 @@
     }
 
     #adminViewDashboard:checked ~ .sidebar [data-admin-view="dashboard"],
+    #adminViewLeagueWorkspace:checked ~ .sidebar [data-admin-view="league-workspace"],
     #adminViewLeagues:checked ~ .sidebar [data-admin-view="leagues"],
     #adminViewAccounts:checked ~ .sidebar [data-admin-view="accounts"],
     #adminViewActivity:checked ~ .sidebar [data-admin-view="activity"],
@@ -302,6 +304,7 @@
     }
 
     #adminViewDashboard:checked ~ .sidebar [data-admin-view="dashboard"] .nav-icon,
+    #adminViewLeagueWorkspace:checked ~ .sidebar [data-admin-view="league-workspace"] .nav-icon,
     #adminViewLeagues:checked ~ .sidebar [data-admin-view="leagues"] .nav-icon,
     #adminViewAccounts:checked ~ .sidebar [data-admin-view="accounts"] .nav-icon,
     #adminViewActivity:checked ~ .sidebar [data-admin-view="activity"] .nav-icon,
@@ -1545,6 +1548,479 @@
       }
     }
 
+
+    /* =========================
+       PERSONALIZED LEAGUE WORKSPACE
+       ========================= */
+    .league-workspace-heading {
+      align-items: center;
+    }
+
+    .league-workspace-heading-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .league-workspace-select {
+      width: min(340px, 100%);
+      height: 39px;
+      padding: 0 11px;
+      color: var(--ink);
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 750;
+      outline: none;
+    }
+
+    .league-workspace-select:focus {
+      border-color: rgba(255, 107, 0, .72);
+      box-shadow: 0 0 0 3px rgba(255, 107, 0, .10);
+    }
+
+    .league-workspace-hero {
+      margin-top: 20px;
+      padding: 22px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: center;
+      background:
+        radial-gradient(circle at 92% 18%, rgba(255, 107, 0, .15), transparent 28%),
+        linear-gradient(135deg, #171717, #242424);
+      color: #ffffff;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .league-workspace-hero h2 {
+      font-size: clamp(23px, 2.5vw, 31px);
+      letter-spacing: -.7px;
+    }
+
+    .league-workspace-hero p {
+      max-width: 760px;
+      margin-top: 8px;
+      color: #c8ccd2;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .league-workspace-hero-meta {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .league-workspace-chip {
+      padding: 6px 9px;
+      color: #ffffff;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .35px;
+      text-transform: uppercase;
+    }
+
+    .league-workspace-chip.status-active {
+      color: #b7f7d2;
+      border-color: rgba(23,178,106,.4);
+      background: rgba(23,178,106,.13);
+    }
+
+    .league-workspace-chip.status-pending {
+      color: #fedf89;
+      border-color: rgba(247,144,9,.38);
+      background: rgba(247,144,9,.12);
+    }
+
+    .league-workspace-chip.status-suspended,
+    .league-workspace-chip.status-archived {
+      color: #fda29b;
+      border-color: rgba(240,68,56,.38);
+      background: rgba(240,68,56,.11);
+    }
+
+    .league-workspace-public-button {
+      min-height: 40px;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      background: var(--orange);
+      border: 1px solid var(--orange);
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 900;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .league-workspace-public-button:hover {
+      background: var(--orange-dark);
+      border-color: var(--orange-dark);
+    }
+
+    .league-workspace-tabs {
+      margin-top: 18px;
+      padding: 7px;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      box-shadow: var(--shadow);
+    }
+
+    .league-workspace-tab {
+      min-height: 35px;
+      padding: 0 12px;
+      flex: 0 0 auto;
+      color: #667085;
+      background: transparent;
+      border: 0;
+      border-radius: 7px;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .league-workspace-tab:hover {
+      color: var(--ink);
+      background: #f7f7f8;
+    }
+
+    .league-workspace-tab.active {
+      color: #ffffff;
+      background: #171717;
+    }
+
+    .league-workspace-section {
+      margin-top: 18px;
+    }
+
+    .league-workspace-section[hidden] {
+      display: none !important;
+    }
+
+    .league-workspace-overview-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(300px, .8fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .league-workspace-detail-grid {
+      padding: 18px 20px 20px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+    }
+
+    .league-workspace-detail {
+      min-height: 78px;
+      padding: 13px;
+      background: #fafafa;
+      border: 1px solid #eceef1;
+      border-radius: 9px;
+    }
+
+    .league-workspace-detail span {
+      display: block;
+      color: #8b929c;
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: .55px;
+      text-transform: uppercase;
+    }
+
+    .league-workspace-detail strong {
+      display: block;
+      margin-top: 7px;
+      color: #171717;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .league-workspace-quick-list {
+      padding: 10px 18px 16px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .league-workspace-quick-action {
+      min-height: 48px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: #171717;
+      background: #fafafa;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      font-size: 10px;
+      font-weight: 900;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .league-workspace-quick-action:hover {
+      border-color: rgba(255,107,0,.45);
+      background: var(--orange-soft);
+    }
+
+    .league-workspace-toolbar {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: #fafafa;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .league-workspace-toolbar-group {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .league-workspace-table-wrap {
+      overflow-x: auto;
+    }
+
+    .league-workspace-table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+    }
+
+    .league-workspace-table th,
+    .league-workspace-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+      font-size: 10px;
+    }
+
+    .league-workspace-table th {
+      color: #667085;
+      background: #fafafa;
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: .65px;
+      text-transform: uppercase;
+    }
+
+    .league-workspace-table tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .league-workspace-name-cell strong {
+      display: block;
+      color: #171717;
+      font-size: 11px;
+    }
+
+    .league-workspace-name-cell span {
+      display: block;
+      margin-top: 3px;
+      color: #8b929c;
+      font-size: 9px;
+    }
+
+    .league-workspace-status {
+      padding: 5px 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      font-size: 8px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .league-workspace-status.approved,
+    .league-workspace-status.active,
+    .league-workspace-status.final,
+    .league-workspace-status.finalized,
+    .league-workspace-status.published,
+    .league-workspace-status.resolved {
+      color: #067647;
+      background: #ecfdf3;
+    }
+
+    .league-workspace-status.pending,
+    .league-workspace-status.scheduled,
+    .league-workspace-status.draft {
+      color: #b54708;
+      background: #fffaeb;
+    }
+
+    .league-workspace-status.rejected,
+    .league-workspace-status.suspended,
+    .league-workspace-status.cancelled,
+    .league-workspace-status.archived {
+      color: #b42318;
+      background: #fff4f2;
+    }
+
+    .league-workspace-mini-button {
+      min-height: 30px;
+      padding: 0 9px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #344054;
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 7px;
+      font-size: 8px;
+      font-weight: 900;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .league-workspace-mini-button:hover {
+      color: #db5c00;
+      border-color: rgba(255,107,0,.5);
+      background: var(--orange-soft);
+    }
+
+    .league-workspace-empty {
+      padding: 34px 18px !important;
+      color: #667085;
+      text-align: center !important;
+      font-size: 11px !important;
+      line-height: 1.55;
+    }
+
+    .league-workspace-structure-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .league-workspace-simple-list {
+      padding: 10px 18px 16px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .league-workspace-simple-item {
+      padding: 12px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      background: #fafafa;
+      border: 1px solid #eceef1;
+      border-radius: 9px;
+    }
+
+    .league-workspace-simple-item strong {
+      display: block;
+      color: #171717;
+      font-size: 11px;
+    }
+
+    .league-workspace-simple-item span {
+      display: block;
+      margin-top: 4px;
+      color: #7c8490;
+      font-size: 9px;
+      line-height: 1.45;
+    }
+
+    .league-workspace-report-grid {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 11px;
+    }
+
+    .league-workspace-report-card {
+      padding: 16px;
+      background: #fafafa;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+
+    .league-workspace-report-card span {
+      color: #8b929c;
+      font-size: 8px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .league-workspace-report-card strong {
+      display: block;
+      margin-top: 7px;
+      color: #171717;
+      font-size: 21px;
+    }
+
+    .league-workspace-report-card p {
+      margin-top: 5px;
+      color: #68707d;
+      font-size: 9px;
+      line-height: 1.45;
+    }
+
+    .league-workspace-message {
+      padding: 10px 0 0;
+      color: #68707d;
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 960px) {
+      .league-workspace-overview-grid,
+      .league-workspace-structure-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .league-workspace-report-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 650px) {
+      .league-workspace-hero {
+        grid-template-columns: 1fr;
+      }
+
+      .league-workspace-heading-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .league-workspace-select {
+        width: 100%;
+      }
+
+      .league-workspace-detail-grid,
+      .league-workspace-report-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
   </style>
 </head>
 
@@ -1558,6 +2034,7 @@
 
   <div id="appShell" class="app-shell" hidden>
     <input id="adminViewDashboard" class="admin-view-toggle" type="radio" name="adminWorkspace" checked>
+    <input id="adminViewLeagueWorkspace" class="admin-view-toggle" type="radio" name="adminWorkspace">
     <input id="adminViewLeagues" class="admin-view-toggle" type="radio" name="adminWorkspace">
     <input id="adminViewAccounts" class="admin-view-toggle" type="radio" name="adminWorkspace">
     <input id="adminViewActivity" class="admin-view-toggle" type="radio" name="adminWorkspace">
@@ -1592,10 +2069,10 @@
       </label>
 
       <p class="nav-label">Basketball</p>
-      <a class="nav-link" href="leagues.html">
+      <label class="nav-link nav-view-button" for="adminViewLeagueWorkspace" data-admin-view="league-workspace">
         <span class="nav-icon">LG</span>
         Leagues
-      </a>
+      </label>
       <label class="nav-link nav-view-button" for="adminViewLeagues" data-admin-view="leagues">
         <span class="nav-icon">LM</span>
         League Management
@@ -1794,6 +2271,205 @@
         <p id="lastUpdated" class="footer-note">Dashboard totals are loading...</p>
         </div>
 
+
+
+        <div id="leagueWorkspaceView" class="admin-view" data-view-name="league-workspace">
+          <section class="page-heading league-workspace-heading">
+            <div>
+              <h1>League Workspace</h1>
+              <p>Select a league and manage its day-to-day basketball operations without leaving Super Admin.</p>
+            </div>
+
+            <div class="league-workspace-heading-actions">
+              <select id="leagueWorkspaceSelect" class="league-workspace-select" aria-label="Select league workspace">
+                <option value="">Loading leagues...</option>
+              </select>
+              <button id="refreshLeagueWorkspaceButton" class="secondary-button" type="button">REFRESH</button>
+            </div>
+          </section>
+
+          <section id="leagueWorkspaceHero" class="league-workspace-hero">
+            <div>
+              <h2 id="leagueWorkspaceTitle">Select a League</h2>
+              <p id="leagueWorkspaceDescription">Choose a league above to open its personalized operational workspace.</p>
+              <div id="leagueWorkspaceHeroMeta" class="league-workspace-hero-meta"></div>
+            </div>
+            <a id="leagueWorkspacePublicLink" class="league-workspace-public-button" href="leagues.html">VIEW PUBLIC LEAGUES</a>
+          </section>
+
+          <section id="leagueWorkspaceStats" class="stats-grid" aria-label="Selected league summary">
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Teams</span><span class="stat-symbol">TM</span></div>
+              <div id="leagueWorkspaceTeamCount" class="stat-value">0</div>
+              <p class="stat-helper">Approved / registered teams</p>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Players</span><span class="stat-symbol">PL</span></div>
+              <div id="leagueWorkspacePlayerCount" class="stat-value">0</div>
+              <p class="stat-helper">Players on league teams</p>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Games</span><span class="stat-symbol">GM</span></div>
+              <div id="leagueWorkspaceGameCount" class="stat-value">0</div>
+              <p class="stat-helper">Scheduled and completed games</p>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Corrections</span><span class="stat-symbol">CR</span></div>
+              <div id="leagueWorkspaceCorrectionCount" class="stat-value">0</div>
+              <p class="stat-helper">Pending coach correction requests</p>
+            </article>
+          </section>
+
+          <nav class="league-workspace-tabs" aria-label="League workspace sections">
+            <button class="league-workspace-tab active" type="button" data-league-tab="overview">Overview</button>
+            <button class="league-workspace-tab" type="button" data-league-tab="teams">Teams</button>
+            <button class="league-workspace-tab" type="button" data-league-tab="structure">Seasons &amp; Divisions</button>
+            <button class="league-workspace-tab" type="button" data-league-tab="games">Games</button>
+            <button class="league-workspace-tab" type="button" data-league-tab="standings">Standings</button>
+            <button class="league-workspace-tab" type="button" data-league-tab="corrections">Corrections</button>
+            <button class="league-workspace-tab" type="button" data-league-tab="announcements">Announcements</button>
+            <button class="league-workspace-tab" type="button" data-league-tab="reports">Reports</button>
+            <button class="league-workspace-tab" type="button" data-league-tab="settings">Settings</button>
+          </nav>
+
+          <section id="leagueWorkspaceOverview" class="league-workspace-section" data-league-section="overview">
+            <div class="league-workspace-overview-grid">
+              <section class="panel">
+                <header class="panel-header">
+                  <div><h2>League Overview</h2><p>Current identity, structure, and ownership details.</p></div>
+                  <span class="panel-tag">Selected League</span>
+                </header>
+                <div id="leagueWorkspaceDetails" class="league-workspace-detail-grid"></div>
+              </section>
+
+              <section class="panel">
+                <header class="panel-header">
+                  <div><h2>Quick Actions</h2><p>Jump directly to common league operations.</p></div>
+                  <span class="panel-tag">Operations</span>
+                </header>
+                <div class="league-workspace-quick-list">
+                  <button class="league-workspace-quick-action" type="button" data-open-league-tab="teams">Manage Teams <span>→</span></button>
+                  <button class="league-workspace-quick-action" type="button" data-open-league-tab="games">Review Games <span>→</span></button>
+                  <button class="league-workspace-quick-action" type="button" data-open-league-tab="standings">View Standings <span>→</span></button>
+                  <button class="league-workspace-quick-action" type="button" data-open-league-tab="corrections">Review Corrections <span>→</span></button>
+                  <button class="league-workspace-quick-action" type="button" data-open-league-tab="settings">League Settings <span>→</span></button>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          <section id="leagueWorkspaceTeams" class="panel league-workspace-section" data-league-section="teams" hidden>
+            <header class="panel-header">
+              <div><h2>League Teams</h2><p>Approved, pending, suspended, and rejected team registrations for the selected league.</p></div>
+              <a class="secondary-button" href="commissioner-dashboard.html#teamsPanel" style="display:inline-flex;align-items:center;text-decoration:none;">ADVANCED TEAM CONTROL</a>
+            </header>
+            <div class="league-workspace-table-wrap">
+              <table class="league-workspace-table">
+                <thead><tr><th>Team</th><th>Status</th><th>Season</th><th>Division</th><th>Registered</th><th>Open</th></tr></thead>
+                <tbody id="leagueWorkspaceTeamsBody"><tr><td class="league-workspace-empty" colspan="6">Select a league.</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="leagueWorkspaceStructure" class="league-workspace-section" data-league-section="structure" hidden>
+            <div class="league-workspace-structure-grid">
+              <section class="panel">
+                <header class="panel-header">
+                  <div><h2>Seasons</h2><p>Competition seasons created under this league.</p></div>
+                  <a class="secondary-button" href="commissioner-dashboard.html#seasonsPanel" style="display:inline-flex;align-items:center;text-decoration:none;">MANAGE STRUCTURE</a>
+                </header>
+                <div id="leagueWorkspaceSeasonList" class="league-workspace-simple-list"></div>
+              </section>
+              <section class="panel">
+                <header class="panel-header">
+                  <div><h2>Divisions</h2><p>Division structure attached to the league seasons.</p></div>
+                  <span id="leagueWorkspaceDivisionCountLabel" class="panel-tag">0 Divisions</span>
+                </header>
+                <div id="leagueWorkspaceDivisionList" class="league-workspace-simple-list"></div>
+              </section>
+            </div>
+          </section>
+
+          <section id="leagueWorkspaceGames" class="panel league-workspace-section" data-league-section="games" hidden>
+            <header class="panel-header">
+              <div><h2>Games &amp; Schedule</h2><p>Upcoming, active, submitted, cancelled, and finalized games for this league.</p></div>
+              <a class="secondary-button" href="commissioner-dashboard.html#gamesDisplayPanel" style="display:inline-flex;align-items:center;text-decoration:none;">ADVANCED GAME CONTROL</a>
+            </header>
+            <div class="league-workspace-toolbar">
+              <strong id="leagueWorkspaceGamesSummary">0 games</strong>
+              <select id="leagueWorkspaceGameStatusFilter" class="league-workspace-select" style="width:190px;">
+                <option value="all">All statuses</option>
+                <option value="scheduled">Scheduled</option>
+                <option value="live">Live / In Progress</option>
+                <option value="final">Final / Finalized</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div class="league-workspace-table-wrap">
+              <table class="league-workspace-table">
+                <thead><tr><th>Game</th><th>Matchup</th><th>Schedule</th><th>Venue</th><th>Status</th><th>Open</th></tr></thead>
+                <tbody id="leagueWorkspaceGamesBody"><tr><td class="league-workspace-empty" colspan="6">Select a league.</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="leagueWorkspaceStandings" class="panel league-workspace-section" data-league-section="standings" hidden>
+            <header class="panel-header">
+              <div><h2>Division Standings</h2><p>Finalized-game standings calculated from the selected season and division.</p></div>
+              <button id="refreshLeagueWorkspaceStandingsButton" class="secondary-button" type="button">REFRESH STANDINGS</button>
+            </header>
+            <div class="league-workspace-toolbar">
+              <div class="league-workspace-toolbar-group">
+                <select id="leagueWorkspaceStandingsSeason" class="league-workspace-select" style="width:220px;"><option value="">Select season</option></select>
+                <select id="leagueWorkspaceStandingsDivision" class="league-workspace-select" style="width:240px;"><option value="">Select division</option></select>
+              </div>
+              <span id="leagueWorkspaceStandingsMessage" class="league-workspace-message"></span>
+            </div>
+            <div class="league-workspace-table-wrap">
+              <table class="league-workspace-table">
+                <thead><tr><th>#</th><th>Team</th><th>GP</th><th>W</th><th>L</th><th>PF</th><th>PA</th><th>DIFF</th><th>WIN%</th></tr></thead>
+                <tbody id="leagueWorkspaceStandingsBody"><tr><td class="league-workspace-empty" colspan="9">Select a season and division.</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="leagueWorkspaceCorrections" class="panel league-workspace-section" data-league-section="corrections" hidden>
+            <header class="panel-header">
+              <div><h2>Correction Requests</h2><p>Coach-submitted correction requests associated with this league.</p></div>
+              <a class="secondary-button" href="commissioner-dashboard.html#correctionReviewPanel" style="display:inline-flex;align-items:center;text-decoration:none;">REVIEW / APPLY</a>
+            </header>
+            <div class="league-workspace-table-wrap">
+              <table class="league-workspace-table">
+                <thead><tr><th>Submitted</th><th>Game</th><th>Type</th><th>Player / Field</th><th>Requested Change</th><th>Status</th></tr></thead>
+                <tbody id="leagueWorkspaceCorrectionsBody"><tr><td class="league-workspace-empty" colspan="6">Select a league.</td></tr></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="leagueWorkspaceAnnouncements" class="panel league-workspace-section" data-league-section="announcements" hidden>
+            <header class="panel-header">
+              <div><h2>League Announcements</h2><p>Published, scheduled, draft, and archived announcements for this league.</p></div>
+              <button id="openLeagueAnnouncementsManagerButton" class="secondary-button" type="button">MANAGE ANNOUNCEMENTS</button>
+            </header>
+            <div id="leagueWorkspaceAnnouncementList" class="league-workspace-simple-list"></div>
+          </section>
+
+          <section id="leagueWorkspaceReports" class="panel league-workspace-section" data-league-section="reports" hidden>
+            <header class="panel-header">
+              <div><h2>League Report Snapshot</h2><p>A quick operational summary generated from the league's current database records.</p></div>
+              <button id="printLeagueWorkspaceReportButton" class="secondary-button" type="button">PRINT SNAPSHOT</button>
+            </header>
+            <div id="leagueWorkspaceReportGrid" class="league-workspace-report-grid"></div>
+          </section>
+
+          <section id="leagueWorkspaceSettings" class="panel league-workspace-section" data-league-section="settings" hidden>
+            <header class="panel-header">
+              <div><h2>League Settings</h2><p>League identity and lifecycle settings remain controlled through Super Admin League Management.</p></div>
+              <button id="editSelectedLeagueButton" class="primary-button" type="button">EDIT IN LEAGUE MANAGEMENT</button>
+            </header>
+            <div id="leagueWorkspaceSettingsDetails" class="league-workspace-detail-grid"></div>
+          </section>
+        </div>
 
         <div id="leaguesView" class="admin-view" data-view-name="leagues">
           <section class="page-heading">
@@ -2264,6 +2940,34 @@
     const dashboardChartNote = document.getElementById("dashboardChartNote");
     const refreshDashboardChartButton = document.getElementById("refreshDashboardChartButton");
 
+    const leagueWorkspaceView = document.getElementById("leagueWorkspaceView");
+    const leagueWorkspaceSelect = document.getElementById("leagueWorkspaceSelect");
+    const refreshLeagueWorkspaceButton = document.getElementById("refreshLeagueWorkspaceButton");
+    const leagueWorkspaceTitle = document.getElementById("leagueWorkspaceTitle");
+    const leagueWorkspaceDescription = document.getElementById("leagueWorkspaceDescription");
+    const leagueWorkspaceHeroMeta = document.getElementById("leagueWorkspaceHeroMeta");
+    const leagueWorkspacePublicLink = document.getElementById("leagueWorkspacePublicLink");
+    const leagueWorkspaceDetails = document.getElementById("leagueWorkspaceDetails");
+    const leagueWorkspaceTeamsBody = document.getElementById("leagueWorkspaceTeamsBody");
+    const leagueWorkspaceSeasonList = document.getElementById("leagueWorkspaceSeasonList");
+    const leagueWorkspaceDivisionList = document.getElementById("leagueWorkspaceDivisionList");
+    const leagueWorkspaceDivisionCountLabel = document.getElementById("leagueWorkspaceDivisionCountLabel");
+    const leagueWorkspaceGamesBody = document.getElementById("leagueWorkspaceGamesBody");
+    const leagueWorkspaceGamesSummary = document.getElementById("leagueWorkspaceGamesSummary");
+    const leagueWorkspaceGameStatusFilter = document.getElementById("leagueWorkspaceGameStatusFilter");
+    const leagueWorkspaceStandingsSeason = document.getElementById("leagueWorkspaceStandingsSeason");
+    const leagueWorkspaceStandingsDivision = document.getElementById("leagueWorkspaceStandingsDivision");
+    const leagueWorkspaceStandingsBody = document.getElementById("leagueWorkspaceStandingsBody");
+    const leagueWorkspaceStandingsMessage = document.getElementById("leagueWorkspaceStandingsMessage");
+    const refreshLeagueWorkspaceStandingsButton = document.getElementById("refreshLeagueWorkspaceStandingsButton");
+    const leagueWorkspaceCorrectionsBody = document.getElementById("leagueWorkspaceCorrectionsBody");
+    const leagueWorkspaceAnnouncementList = document.getElementById("leagueWorkspaceAnnouncementList");
+    const leagueWorkspaceReportGrid = document.getElementById("leagueWorkspaceReportGrid");
+    const leagueWorkspaceSettingsDetails = document.getElementById("leagueWorkspaceSettingsDetails");
+    const openLeagueAnnouncementsManagerButton = document.getElementById("openLeagueAnnouncementsManagerButton");
+    const printLeagueWorkspaceReportButton = document.getElementById("printLeagueWorkspaceReportButton");
+    const editSelectedLeagueButton = document.getElementById("editSelectedLeagueButton");
+
     const leaguesView = document.getElementById("leaguesView");
     const leagueManagementForm = document.getElementById("leagueManagementForm");
     const leagueManagementName = document.getElementById("leagueManagementName");
@@ -2301,6 +3005,19 @@
     const publishAnnouncementButton = document.getElementById("publishAnnouncementButton");
     const cancelAnnouncementEditButton = document.getElementById("cancelAnnouncementEditButton");
 
+    let leagueWorkspaceData = {
+      league: null,
+      registrations: [],
+      teams: [],
+      players: [],
+      games: [],
+      seasons: [],
+      divisions: [],
+      corrections: [],
+      announcements: [],
+      commissioners: []
+    };
+    let leagueWorkspaceLoadToken = 0;
     let leagueManagementRows = [];
     let editingLeagueId = null;
     let currentSuperAdminUser = null;
@@ -2317,6 +3034,677 @@
       const element = document.createElement("div");
       element.textContent = String(value ?? "");
       return element.innerHTML;
+    }
+
+    function leagueWorkspaceStatusClass(value) {
+      return String(value || "pending")
+        .toLowerCase()
+        .replaceAll(" ", "_");
+    }
+
+    function leagueWorkspaceDate(value) {
+      if (!value) return "—";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "—";
+      return new Intl.DateTimeFormat("en-PH", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      }).format(date);
+    }
+
+    function leagueWorkspaceDateTime(value) {
+      if (!value) return "—";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "—";
+      return new Intl.DateTimeFormat("en-PH", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      }).format(date);
+    }
+
+    function selectedLeagueWorkspaceId() {
+      return leagueWorkspaceSelect.value || "";
+    }
+
+    function selectedLeagueWorkspace() {
+      const id = selectedLeagueWorkspaceId();
+      return leagueManagementRows.find(item => String(item.id) === String(id)) || null;
+    }
+
+    function setLeagueWorkspaceTab(tabName) {
+      document.querySelectorAll("[data-league-tab]").forEach(button => {
+        button.classList.toggle("active", button.dataset.leagueTab === tabName);
+      });
+
+      document.querySelectorAll("[data-league-section]").forEach(section => {
+        section.hidden = section.dataset.leagueSection !== tabName;
+      });
+
+      if (tabName === "standings") {
+        renderLeagueWorkspaceStandingFilters();
+      }
+
+      if (tabName === "reports") {
+        renderLeagueWorkspaceReports();
+      }
+    }
+
+    function populateLeagueWorkspaceOptions(preserve = true) {
+      const previous = preserve ? leagueWorkspaceSelect.value : "";
+
+      leagueWorkspaceSelect.innerHTML = leagueManagementRows.length
+        ? leagueManagementRows.map(league =>
+            `<option value="${escapeHtml(league.id)}">${escapeHtml(league.name || "Unnamed League")}</option>`
+          ).join("")
+        : '<option value="">No leagues available</option>';
+
+      if (previous && leagueManagementRows.some(item => String(item.id) === String(previous))) {
+        leagueWorkspaceSelect.value = previous;
+      } else if (leagueManagementRows.length) {
+        leagueWorkspaceSelect.value = leagueManagementRows[0].id;
+      }
+    }
+
+    async function loadLeagueWorkspaceLeague() {
+      const token = ++leagueWorkspaceLoadToken;
+      const league = selectedLeagueWorkspace();
+
+      if (!league) {
+        leagueWorkspaceData = {
+          league: null,
+          registrations: [],
+          teams: [],
+          players: [],
+          games: [],
+          seasons: [],
+          divisions: [],
+          corrections: [],
+          announcements: [],
+          commissioners: []
+        };
+        renderLeagueWorkspace();
+        return;
+      }
+
+      refreshLeagueWorkspaceButton.disabled = true;
+      refreshLeagueWorkspaceButton.textContent = "REFRESHING...";
+
+      try {
+        const [
+          registrationsResult,
+          gamesResult,
+          seasonsResult,
+          correctionsResult,
+          announcementsResult,
+          commissionerResult
+        ] = await Promise.all([
+          supabaseClient
+            .from("league_teams")
+            .select("league_id, team_id, registration_status, season_id, division_id, registered_at, approved_at, updated_at")
+            .eq("league_id", league.id),
+          supabaseClient
+            .from("games")
+            .select("id, league_id, season_id, division_id, home_team_id, away_team_id, home_team, away_team, home_score, away_score, scheduled_at, venue, status, finalized_at, created_at")
+            .eq("league_id", league.id)
+            .order("scheduled_at", { ascending: true, nullsFirst: false }),
+          supabaseClient
+            .from("seasons")
+            .select("id, league_id, name, start_date, end_date, status, created_at, updated_at")
+            .eq("league_id", league.id)
+            .order("created_at", { ascending: false }),
+          supabaseClient
+            .from("coach_stat_correction_requests")
+            .select("id, league_id, team_id, game_id, player_id, player_name_snapshot, request_type, stat_field, current_value, requested_value, reason, status, submitted_at, reviewed_at")
+            .eq("league_id", league.id)
+            .order("submitted_at", { ascending: false }),
+          supabaseClient
+            .from("announcements")
+            .select("id, title, body, scope, league_id, audience, status, publish_at, expires_at, published_at, created_at, updated_at")
+            .eq("scope", "league")
+            .eq("league_id", league.id)
+            .order("created_at", { ascending: false }),
+          supabaseClient
+            .from("league_commissioners")
+            .select("commissioner_id, active, assigned_at")
+            .eq("league_id", league.id)
+            .eq("active", true)
+        ]);
+
+        for (const result of [
+          registrationsResult,
+          gamesResult,
+          seasonsResult,
+          correctionsResult,
+          announcementsResult,
+          commissionerResult
+        ]) {
+          if (result.error) throw result.error;
+        }
+
+        const registrations = registrationsResult.data || [];
+        const games = gamesResult.data || [];
+        const seasons = seasonsResult.data || [];
+        const corrections = correctionsResult.data || [];
+        const announcements = announcementsResult.data || [];
+        const commissionerLinks = commissionerResult.data || [];
+
+        const teamIds = [...new Set(registrations.map(item => item.team_id).filter(Boolean))];
+        const seasonIds = seasons.map(item => item.id).filter(Boolean);
+        const commissionerIds = commissionerLinks.map(item => item.commissioner_id).filter(Boolean);
+
+        const [teamsResult, divisionsResult, commissionerProfilesResult] = await Promise.all([
+          teamIds.length
+            ? supabaseClient
+                .from("teams")
+                .select("id, name, location, logo_url, created_at")
+                .in("id", teamIds)
+                .order("name")
+            : Promise.resolve({ data: [], error: null }),
+          seasonIds.length
+            ? supabaseClient
+                .from("divisions")
+                .select("id, season_id, name, category, classification, status, created_at, updated_at")
+                .in("season_id", seasonIds)
+                .order("name")
+            : Promise.resolve({ data: [], error: null }),
+          commissionerIds.length
+            ? supabaseClient
+                .from("profiles")
+                .select("id, full_name, email, role, status")
+                .in("id", commissionerIds)
+            : Promise.resolve({ data: [], error: null })
+        ]);
+
+        if (teamsResult.error) throw teamsResult.error;
+        if (divisionsResult.error) throw divisionsResult.error;
+        if (commissionerProfilesResult.error) throw commissionerProfilesResult.error;
+
+        const teams = teamsResult.data || [];
+        const divisions = divisionsResult.data || [];
+        const commissionerProfiles = commissionerProfilesResult.data || [];
+
+        const playerResult = teamIds.length
+          ? await supabaseClient
+              .from("players")
+              .select("id, team_id, first_name, last_name, position, jersey_number")
+              .in("team_id", teamIds)
+          : { data: [], error: null };
+
+        if (playerResult.error) throw playerResult.error;
+        if (token !== leagueWorkspaceLoadToken) return;
+
+        leagueWorkspaceData = {
+          league,
+          registrations,
+          teams,
+          players: playerResult.data || [],
+          games,
+          seasons,
+          divisions,
+          corrections,
+          announcements,
+          commissioners: commissionerProfiles
+        };
+
+        renderLeagueWorkspace();
+      } catch (error) {
+        if (token !== leagueWorkspaceLoadToken) return;
+        console.error("Unable to load League Workspace:", error);
+
+        leagueWorkspaceDescription.textContent =
+          "Unable to load the selected league workspace: " + (error?.message || "Unknown error");
+
+        leagueWorkspaceTeamsBody.innerHTML =
+          '<tr><td class="league-workspace-empty" colspan="6">Unable to load league data.</td></tr>';
+      } finally {
+        if (token === leagueWorkspaceLoadToken) {
+          refreshLeagueWorkspaceButton.disabled = false;
+          refreshLeagueWorkspaceButton.textContent = "REFRESH";
+        }
+      }
+    }
+
+    function renderLeagueWorkspace() {
+      const data = leagueWorkspaceData;
+      const league = data.league;
+
+      if (!league) {
+        leagueWorkspaceTitle.textContent = "No League Selected";
+        leagueWorkspaceDescription.textContent = "Create a league in League Management or select an existing league.";
+        leagueWorkspaceHeroMeta.innerHTML = "";
+        leagueWorkspacePublicLink.href = "leagues.html";
+        leagueWorkspacePublicLink.textContent = "VIEW PUBLIC LEAGUES";
+        leagueWorkspaceDetails.innerHTML =
+          '<div class="league-workspace-detail" style="grid-column:1/-1;"><span>Status</span><strong>No league available</strong></div>';
+
+        ["Team", "Player", "Game", "Correction"].forEach(name => {
+          const el = document.getElementById(`leagueWorkspace${name}Count`);
+          if (el) el.textContent = "0";
+        });
+        return;
+      }
+
+      const status = String(league.status || "active").toLowerCase();
+      const approvedTeams = data.registrations.filter(item => item.registration_status === "approved").length;
+      const pendingCorrections = data.corrections.filter(item => item.status === "pending").length;
+
+      leagueWorkspaceTitle.textContent = league.name || "Unnamed League";
+      leagueWorkspaceDescription.textContent =
+        league.description || "Operational workspace for this HoopHub PH league.";
+
+      leagueWorkspaceHeroMeta.innerHTML = `
+        <span class="league-workspace-chip status-${escapeHtml(status)}">${escapeHtml(status)}</span>
+        <span class="league-workspace-chip">${escapeHtml(league.location || "Location not set")}</span>
+        <span class="league-workspace-chip">${escapeHtml(league.season || "Season not set")}</span>
+        <span class="league-workspace-chip">${escapeHtml(league.division || "Division not set")}</span>
+      `;
+
+      leagueWorkspacePublicLink.href = `league1.html?id=${encodeURIComponent(league.id)}`;
+      leagueWorkspacePublicLink.textContent = "VIEW PUBLIC LEAGUE";
+
+      document.getElementById("leagueWorkspaceTeamCount").textContent =
+        `${approvedTeams}/${data.registrations.length}`;
+      document.getElementById("leagueWorkspacePlayerCount").textContent =
+        data.players.length.toLocaleString();
+      document.getElementById("leagueWorkspaceGameCount").textContent =
+        data.games.length.toLocaleString();
+      document.getElementById("leagueWorkspaceCorrectionCount").textContent =
+        pendingCorrections.toLocaleString();
+
+      const commissionerText = data.commissioners.length
+        ? data.commissioners.map(item => item.full_name || item.email || "Commissioner").join(", ")
+        : "No active commissioner assigned";
+
+      leagueWorkspaceDetails.innerHTML = `
+        <div class="league-workspace-detail"><span>Location</span><strong>${escapeHtml(league.location || "Not set")}</strong></div>
+        <div class="league-workspace-detail"><span>Status</span><strong>${escapeHtml(status)}</strong></div>
+        <div class="league-workspace-detail"><span>Season Label</span><strong>${escapeHtml(league.season || "Not set")}</strong></div>
+        <div class="league-workspace-detail"><span>Division Label</span><strong>${escapeHtml(league.division || "Not set")}</strong></div>
+        <div class="league-workspace-detail"><span>Active Commissioner</span><strong>${escapeHtml(commissionerText)}</strong></div>
+        <div class="league-workspace-detail"><span>Last Updated</span><strong>${escapeHtml(leagueWorkspaceDate(league.updated_at || league.created_at))}</strong></div>
+      `;
+
+      renderLeagueWorkspaceTeams();
+      renderLeagueWorkspaceStructure();
+      renderLeagueWorkspaceGames();
+      renderLeagueWorkspaceStandingFilters();
+      renderLeagueWorkspaceCorrections();
+      renderLeagueWorkspaceAnnouncements();
+      renderLeagueWorkspaceReports();
+      renderLeagueWorkspaceSettings();
+    }
+
+    function renderLeagueWorkspaceTeams() {
+      const { registrations, teams, seasons, divisions } = leagueWorkspaceData;
+      const teamMap = new Map(teams.map(team => [team.id, team]));
+      const seasonMap = new Map(seasons.map(season => [season.id, season]));
+      const divisionMap = new Map(divisions.map(division => [division.id, division]));
+
+      leagueWorkspaceTeamsBody.innerHTML = registrations.length
+        ? registrations.map(registration => {
+            const team = teamMap.get(registration.team_id) || {};
+            const status = String(registration.registration_status || "pending").toLowerCase();
+            return `
+              <tr>
+                <td class="league-workspace-name-cell">
+                  <strong>${escapeHtml(team.name || "Unknown Team")}</strong>
+                  <span>${escapeHtml(team.location || "Location not set")}</span>
+                </td>
+                <td><span class="league-workspace-status ${leagueWorkspaceStatusClass(status)}">${escapeHtml(status)}</span></td>
+                <td>${escapeHtml(seasonMap.get(registration.season_id)?.name || "—")}</td>
+                <td>${escapeHtml(divisionMap.get(registration.division_id)?.name || "—")}</td>
+                <td>${escapeHtml(leagueWorkspaceDate(registration.registered_at))}</td>
+                <td>
+                  ${team.id
+                    ? `<a class="league-workspace-mini-button" href="team1.html?id=${encodeURIComponent(team.id)}">VIEW TEAM</a>`
+                    : "—"}
+                </td>
+              </tr>
+            `;
+          }).join("")
+        : '<tr><td class="league-workspace-empty" colspan="6">No teams are registered in this league yet.</td></tr>';
+    }
+
+    function renderLeagueWorkspaceStructure() {
+      const { seasons, divisions } = leagueWorkspaceData;
+      const seasonMap = new Map(seasons.map(item => [item.id, item]));
+
+      leagueWorkspaceSeasonList.innerHTML = seasons.length
+        ? seasons.map(season => `
+            <div class="league-workspace-simple-item">
+              <div>
+                <strong>${escapeHtml(season.name || "Unnamed Season")}</strong>
+                <span>${escapeHtml(leagueWorkspaceDate(season.start_date))} – ${escapeHtml(leagueWorkspaceDate(season.end_date))}</span>
+              </div>
+              <span class="league-workspace-status ${leagueWorkspaceStatusClass(season.status)}">${escapeHtml(season.status || "draft")}</span>
+            </div>
+          `).join("")
+        : '<div class="league-workspace-empty">No seasons have been created yet.</div>';
+
+      leagueWorkspaceDivisionList.innerHTML = divisions.length
+        ? divisions.map(division => `
+            <div class="league-workspace-simple-item">
+              <div>
+                <strong>${escapeHtml(division.name || "Unnamed Division")}</strong>
+                <span>${escapeHtml(seasonMap.get(division.season_id)?.name || "Unknown season")} · ${escapeHtml(division.category || "No category")} · ${escapeHtml(division.classification || "No classification")}</span>
+              </div>
+              <span class="league-workspace-status ${leagueWorkspaceStatusClass(division.status)}">${escapeHtml(division.status || "active")}</span>
+            </div>
+          `).join("")
+        : '<div class="league-workspace-empty">No divisions have been created yet.</div>';
+
+      leagueWorkspaceDivisionCountLabel.textContent =
+        `${divisions.length.toLocaleString()} Division${divisions.length === 1 ? "" : "s"}`;
+    }
+
+    function leagueWorkspaceGameMatchesFilter(game) {
+      const filter = leagueWorkspaceGameStatusFilter.value;
+      const status = String(game.status || "").toLowerCase();
+
+      if (filter === "all") return true;
+      if (filter === "scheduled") return ["scheduled", "upcoming"].includes(status);
+      if (filter === "live") return ["live", "in_progress", "in progress", "halftime"].includes(status);
+      if (filter === "final") return ["final", "finalized"].includes(status);
+      if (filter === "cancelled") return ["cancelled", "canceled"].includes(status);
+      return true;
+    }
+
+    function renderLeagueWorkspaceGames() {
+      const games = leagueWorkspaceData.games.filter(leagueWorkspaceGameMatchesFilter);
+
+      leagueWorkspaceGamesSummary.textContent =
+        `${games.length.toLocaleString()} game${games.length === 1 ? "" : "s"} shown`;
+
+      leagueWorkspaceGamesBody.innerHTML = games.length
+        ? games.map(game => {
+            const home = game.home_team || leagueWorkspaceData.teams.find(t => t.id === game.home_team_id)?.name || "Home";
+            const away = game.away_team || leagueWorkspaceData.teams.find(t => t.id === game.away_team_id)?.name || "Away";
+            const status = String(game.status || "scheduled").toLowerCase();
+            const score = ["final", "finalized", "live", "in_progress", "in progress"].includes(status)
+              ? ` · ${Number(game.home_score || 0)}-${Number(game.away_score || 0)}`
+              : "";
+
+            return `
+              <tr>
+                <td><strong>Game #${escapeHtml(game.id)}</strong></td>
+                <td>${escapeHtml(home)} vs ${escapeHtml(away)}${escapeHtml(score)}</td>
+                <td>${escapeHtml(leagueWorkspaceDateTime(game.scheduled_at || game.created_at))}</td>
+                <td>${escapeHtml(game.venue || "—")}</td>
+                <td><span class="league-workspace-status ${leagueWorkspaceStatusClass(status)}">${escapeHtml(status)}</span></td>
+                <td><a class="league-workspace-mini-button" href="live-game.html?game=${encodeURIComponent(game.id)}">OPEN</a></td>
+              </tr>
+            `;
+          }).join("")
+        : '<tr><td class="league-workspace-empty" colspan="6">No games match this filter.</td></tr>';
+    }
+
+    function renderLeagueWorkspaceStandingFilters() {
+      const seasons = leagueWorkspaceData.seasons;
+      const previousSeason = leagueWorkspaceStandingsSeason.value;
+
+      leagueWorkspaceStandingsSeason.innerHTML = seasons.length
+        ? '<option value="">Select season</option>' +
+          seasons.map(season => `<option value="${escapeHtml(season.id)}">${escapeHtml(season.name)}</option>`).join("")
+        : '<option value="">No seasons available</option>';
+
+      if (seasons.some(item => String(item.id) === String(previousSeason))) {
+        leagueWorkspaceStandingsSeason.value = previousSeason;
+      } else if (seasons.length === 1) {
+        leagueWorkspaceStandingsSeason.value = seasons[0].id;
+      }
+
+      renderLeagueWorkspaceStandingDivisions(false);
+    }
+
+    function renderLeagueWorkspaceStandingDivisions(preserve = true) {
+      const seasonId = leagueWorkspaceStandingsSeason.value;
+      const previous = preserve ? leagueWorkspaceStandingsDivision.value : "";
+      const divisions = leagueWorkspaceData.divisions.filter(
+        division => String(division.season_id) === String(seasonId)
+      );
+
+      leagueWorkspaceStandingsDivision.innerHTML = seasonId
+        ? (divisions.length
+            ? '<option value="">Select division</option>' +
+              divisions.map(division => `<option value="${escapeHtml(division.id)}">${escapeHtml(division.name)}</option>`).join("")
+            : '<option value="">No divisions available</option>')
+        : '<option value="">Select season first</option>';
+
+      if (divisions.some(item => String(item.id) === String(previous))) {
+        leagueWorkspaceStandingsDivision.value = previous;
+      } else if (divisions.length === 1) {
+        leagueWorkspaceStandingsDivision.value = divisions[0].id;
+      }
+
+      loadLeagueWorkspaceStandings();
+    }
+
+    async function loadLeagueWorkspaceStandings() {
+      const leagueId = selectedLeagueWorkspaceId();
+      const seasonId = leagueWorkspaceStandingsSeason.value;
+      const divisionId = leagueWorkspaceStandingsDivision.value;
+
+      if (!leagueId || !seasonId || !divisionId) {
+        leagueWorkspaceStandingsBody.innerHTML =
+          '<tr><td class="league-workspace-empty" colspan="9">Select a season and division to view standings.</td></tr>';
+        leagueWorkspaceStandingsMessage.textContent = "";
+        return;
+      }
+
+      refreshLeagueWorkspaceStandingsButton.disabled = true;
+      leagueWorkspaceStandingsMessage.textContent = "Loading finalized-game standings...";
+
+      try {
+        const { data, error } = await supabaseClient.rpc("get_division_standings", {
+          p_league_id: leagueId,
+          p_season_id: seasonId,
+          p_division_id: divisionId
+        });
+
+        if (error) throw error;
+
+        const rows = data || [];
+        const teamMap = new Map(leagueWorkspaceData.teams.map(team => [team.id, team]));
+
+        leagueWorkspaceStandingsBody.innerHTML = rows.length
+          ? rows.map(row => {
+              const team = teamMap.get(row.team_id) || {};
+              const difference = Number(row.point_difference || 0);
+              const differenceText = difference > 0 ? `+${difference}` : String(difference);
+              const winPct = (Number(row.win_percentage || 0) * 100).toFixed(1) + "%";
+
+              return `
+                <tr>
+                  <td><strong>${escapeHtml(row.ranking)}</strong></td>
+                  <td>${escapeHtml(team.name || "Unknown Team")}</td>
+                  <td>${escapeHtml(row.games_played)}</td>
+                  <td><strong>${escapeHtml(row.wins)}</strong></td>
+                  <td>${escapeHtml(row.losses)}</td>
+                  <td>${escapeHtml(row.points_for)}</td>
+                  <td>${escapeHtml(row.points_against)}</td>
+                  <td>${escapeHtml(differenceText)}</td>
+                  <td><strong>${escapeHtml(winPct)}</strong></td>
+                </tr>
+              `;
+            }).join("")
+          : '<tr><td class="league-workspace-empty" colspan="9">No standings records are available yet.</td></tr>';
+
+        leagueWorkspaceStandingsMessage.textContent =
+          `Updated ${new Intl.DateTimeFormat("en-PH", { hour: "numeric", minute: "2-digit" }).format(new Date())}. Finalized games only.`;
+      } catch (error) {
+        console.error("Unable to load League Workspace standings:", error);
+        leagueWorkspaceStandingsBody.innerHTML =
+          '<tr><td class="league-workspace-empty" colspan="9">Unable to load standings.</td></tr>';
+        leagueWorkspaceStandingsMessage.textContent =
+          error?.message || "Unable to load standings.";
+      } finally {
+        refreshLeagueWorkspaceStandingsButton.disabled = false;
+      }
+    }
+
+    function renderLeagueWorkspaceCorrections() {
+      const rows = leagueWorkspaceData.corrections;
+
+      leagueWorkspaceCorrectionsBody.innerHTML = rows.length
+        ? rows.map(row => {
+            const status = String(row.status || "pending").toLowerCase();
+            const subject = row.player_name_snapshot ||
+              row.stat_field ||
+              row.request_type ||
+              "Correction";
+
+            return `
+              <tr>
+                <td>${escapeHtml(leagueWorkspaceDateTime(row.submitted_at))}</td>
+                <td>Game #${escapeHtml(row.game_id || "—")}</td>
+                <td>${escapeHtml(String(row.request_type || "other").replaceAll("_", " "))}</td>
+                <td>${escapeHtml(subject)}</td>
+                <td>${escapeHtml(row.current_value ?? "—")} → <strong>${escapeHtml(row.requested_value ?? "—")}</strong></td>
+                <td><span class="league-workspace-status ${leagueWorkspaceStatusClass(status)}">${escapeHtml(status)}</span></td>
+              </tr>
+            `;
+          }).join("")
+        : '<tr><td class="league-workspace-empty" colspan="6">No correction requests for this league.</td></tr>';
+    }
+
+    function renderLeagueWorkspaceAnnouncements() {
+      const rows = leagueWorkspaceData.announcements;
+
+      leagueWorkspaceAnnouncementList.innerHTML = rows.length
+        ? rows.map(item => `
+            <div class="league-workspace-simple-item">
+              <div>
+                <strong>${escapeHtml(item.title || "Untitled Announcement")}</strong>
+                <span>${escapeHtml((item.body || "").slice(0, 160) || "No announcement text")} · ${escapeHtml(leagueWorkspaceDateTime(item.publish_at || item.published_at || item.created_at))}</span>
+              </div>
+              <span class="league-workspace-status ${leagueWorkspaceStatusClass(item.status)}">${escapeHtml(item.status || "draft")}</span>
+            </div>
+          `).join("")
+        : '<div class="league-workspace-empty">No league-specific announcements yet.</div>';
+    }
+
+    function renderLeagueWorkspaceReports() {
+      const data = leagueWorkspaceData;
+      if (!data.league) {
+        leagueWorkspaceReportGrid.innerHTML =
+          '<div class="league-workspace-empty" style="grid-column:1/-1;">Select a league first.</div>';
+        return;
+      }
+
+      const approved = data.registrations.filter(item => item.registration_status === "approved").length;
+      const pendingTeams = data.registrations.filter(item => item.registration_status === "pending").length;
+      const finals = data.games.filter(game => ["final", "finalized"].includes(String(game.status || "").toLowerCase())).length;
+      const upcoming = data.games.filter(game => ["scheduled", "upcoming"].includes(String(game.status || "").toLowerCase())).length;
+      const pendingCorrections = data.corrections.filter(item => item.status === "pending").length;
+      const publishedAnnouncements = data.announcements.filter(item => item.status === "published").length;
+
+      leagueWorkspaceReportGrid.innerHTML = [
+        ["Approved Teams", approved, `${pendingTeams} pending registration${pendingTeams === 1 ? "" : "s"}`],
+        ["Registered Players", data.players.length, "Players linked to league teams"],
+        ["Finalized Games", finals, `${upcoming} upcoming scheduled game${upcoming === 1 ? "" : "s"}`],
+        ["Seasons", data.seasons.length, `${data.divisions.length} division${data.divisions.length === 1 ? "" : "s"}`],
+        ["Pending Corrections", pendingCorrections, "Coach requests awaiting action"],
+        ["Published Notices", publishedAnnouncements, `${data.announcements.length} total league announcement${data.announcements.length === 1 ? "" : "s"}`]
+      ].map(([label, value, detail]) => `
+        <div class="league-workspace-report-card">
+          <span>${escapeHtml(label)}</span>
+          <strong>${Number(value).toLocaleString()}</strong>
+          <p>${escapeHtml(detail)}</p>
+        </div>
+      `).join("");
+    }
+
+    function renderLeagueWorkspaceSettings() {
+      const league = leagueWorkspaceData.league;
+
+      leagueWorkspaceSettingsDetails.innerHTML = league
+        ? `
+            <div class="league-workspace-detail"><span>League Name</span><strong>${escapeHtml(league.name || "Unnamed")}</strong></div>
+            <div class="league-workspace-detail"><span>Status</span><strong>${escapeHtml(league.status || "active")}</strong></div>
+            <div class="league-workspace-detail"><span>Location</span><strong>${escapeHtml(league.location || "Not set")}</strong></div>
+            <div class="league-workspace-detail"><span>Season Label</span><strong>${escapeHtml(league.season || "Not set")}</strong></div>
+            <div class="league-workspace-detail"><span>Division Label</span><strong>${escapeHtml(league.division || "Not set")}</strong></div>
+            <div class="league-workspace-detail"><span>Public Profile</span><strong>league1.html?id=${escapeHtml(league.id)}</strong></div>
+          `
+        : '<div class="league-workspace-detail" style="grid-column:1/-1;"><span>Status</span><strong>Select a league first.</strong></div>';
+    }
+
+    function openSelectedLeagueInManagement() {
+      const league = selectedLeagueWorkspace();
+      if (!league) return;
+
+      document.getElementById("adminViewLeagues").checked = true;
+      editLeagueRecord(league.id);
+    }
+
+    function openSelectedLeagueAnnouncementsManager() {
+      const league = selectedLeagueWorkspace();
+      if (!league) return;
+
+      document.getElementById("adminViewAnnouncements").checked = true;
+      announcementScope.value = "league";
+      renderAnnouncementLeagueField();
+
+      if ([...announcementLeague.options].some(option => String(option.value) === String(league.id))) {
+        announcementLeague.value = league.id;
+      }
+    }
+
+    function printLeagueWorkspaceSnapshot() {
+      const league = selectedLeagueWorkspace();
+      if (!league) return;
+
+      const data = leagueWorkspaceData;
+      const popup = window.open("", "_blank", "width=900,height=700");
+      if (!popup) {
+        window.alert("Allow pop-ups to print the league snapshot.");
+        return;
+      }
+
+      const approved = data.registrations.filter(item => item.registration_status === "approved").length;
+      const finals = data.games.filter(game => ["final", "finalized"].includes(String(game.status || "").toLowerCase())).length;
+      const pendingCorrections = data.corrections.filter(item => item.status === "pending").length;
+
+      popup.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>${escapeHtml(league.name)} - League Snapshot</title>
+          <style>
+            body{font-family:Arial,Helvetica,sans-serif;margin:36px;color:#171717}
+            h1{margin:0;font-size:28px} .muted{color:#667085;margin-top:6px}
+            .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}
+            .card{border:1px solid #ddd;border-radius:10px;padding:15px}
+            .card span{font-size:10px;color:#667085;text-transform:uppercase;font-weight:bold}
+            .card strong{display:block;margin-top:8px;font-size:24px}
+            .details{margin-top:24px;border-top:1px solid #ddd;padding-top:18px;line-height:1.8}
+            @media print{body{margin:18px}}
+          </style>
+        </head>
+        <body>
+          <h1>${escapeHtml(league.name)}</h1>
+          <div class="muted">${escapeHtml(league.location || "Location not set")} · ${escapeHtml(league.status || "active")} · Generated ${escapeHtml(new Date().toLocaleString("en-PH"))}</div>
+          <div class="grid">
+            <div class="card"><span>Approved Teams</span><strong>${approved}</strong></div>
+            <div class="card"><span>Players</span><strong>${data.players.length}</strong></div>
+            <div class="card"><span>Games</span><strong>${data.games.length}</strong></div>
+            <div class="card"><span>Finalized Games</span><strong>${finals}</strong></div>
+            <div class="card"><span>Seasons / Divisions</span><strong>${data.seasons.length} / ${data.divisions.length}</strong></div>
+            <div class="card"><span>Pending Corrections</span><strong>${pendingCorrections}</strong></div>
+          </div>
+          <div class="details">
+            <strong>League Description</strong><br>
+            ${escapeHtml(league.description || "No description set.")}
+          </div>
+          <script>window.onload=()=>{window.print();}<\/script>
+        </body>
+        </html>
+      `);
+      popup.document.close();
     }
 
     function formatLeagueManagementDate(value) {
@@ -2449,6 +3837,7 @@
 
         leagueManagementRows = data || [];
         renderLeagueManagement();
+        populateLeagueWorkspaceOptions(true);
       } catch (error) {
         console.error("Unable to load league management:", error);
         leagueManagementTableBody.innerHTML = `
@@ -3876,6 +5265,35 @@
 
     document.querySelectorAll('input[name="adminWorkspace"]').forEach(function (toggle) {
       toggle.addEventListener("change", closeSidebar);
+    });
+
+    leagueWorkspaceSelect.addEventListener("change", loadLeagueWorkspaceLeague);
+    refreshLeagueWorkspaceButton.addEventListener("click", loadLeagueWorkspaceLeague);
+    leagueWorkspaceGameStatusFilter.addEventListener("change", renderLeagueWorkspaceGames);
+    leagueWorkspaceStandingsSeason.addEventListener("change", () => renderLeagueWorkspaceStandingDivisions(false));
+    leagueWorkspaceStandingsDivision.addEventListener("change", loadLeagueWorkspaceStandings);
+    refreshLeagueWorkspaceStandingsButton.addEventListener("click", loadLeagueWorkspaceStandings);
+    editSelectedLeagueButton.addEventListener("click", openSelectedLeagueInManagement);
+    openLeagueAnnouncementsManagerButton.addEventListener("click", openSelectedLeagueAnnouncementsManager);
+    printLeagueWorkspaceReportButton.addEventListener("click", printLeagueWorkspaceSnapshot);
+
+    document.querySelectorAll("[data-league-tab]").forEach(button => {
+      button.addEventListener("click", () => setLeagueWorkspaceTab(button.dataset.leagueTab));
+    });
+
+    document.querySelectorAll("[data-open-league-tab]").forEach(button => {
+      button.addEventListener("click", () => setLeagueWorkspaceTab(button.dataset.openLeagueTab));
+    });
+
+    document.getElementById("adminViewLeagueWorkspace").addEventListener("change", async function () {
+      if (!this.checked) return;
+
+      if (!leagueManagementRows.length) {
+        await loadLeagueManagement();
+      }
+
+      populateLeagueWorkspaceOptions(true);
+      await loadLeagueWorkspaceLeague();
     });
 
     leagueManagementForm.addEventListener("submit", saveLeagueRecord);
