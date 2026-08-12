@@ -271,12 +271,36 @@
       margin: 0 auto;
     }
 
+    .admin-view-toggle {
+      position: fixed;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
     .admin-view {
       display: none;
     }
 
-    .admin-view.is-active {
+    #adminViewDashboard:checked ~ .main-content #dashboardView,
+    #adminViewActivity:checked ~ .main-content #activityView,
+    #adminViewAnnouncements:checked ~ .main-content #announcementsView {
       display: block;
+    }
+
+    #adminViewDashboard:checked ~ .sidebar [data-admin-view="dashboard"],
+    #adminViewActivity:checked ~ .sidebar [data-admin-view="activity"],
+    #adminViewAnnouncements:checked ~ .sidebar [data-admin-view="announcements"] {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: inset 3px 0 0 var(--orange);
+    }
+
+    #adminViewDashboard:checked ~ .sidebar [data-admin-view="dashboard"] .nav-icon,
+    #adminViewActivity:checked ~ .sidebar [data-admin-view="activity"] .nav-icon,
+    #adminViewAnnouncements:checked ~ .sidebar [data-admin-view="announcements"] .nav-icon {
+      background: var(--orange);
     }
 
     .nav-view-button {
@@ -294,20 +318,270 @@
       cursor: pointer;
     }
 
-    .announcement-placeholder {
+    .announcement-layout {
       margin-top: 18px;
-      padding: 28px;
+      display: grid;
+      grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.25fr);
+      gap: 18px;
+      align-items: start;
     }
 
-    .announcement-placeholder h2 {
-      font-size: 18px;
+    .announcement-form {
+      padding: 20px;
     }
 
-    .announcement-placeholder p {
-      margin-top: 8px;
-      color: var(--muted);
+    .announcement-field {
+      margin-bottom: 15px;
+    }
+
+    .announcement-field:last-child {
+      margin-bottom: 0;
+    }
+
+    .announcement-field label {
+      display: block;
+      margin-bottom: 6px;
+      color: #475467;
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: 0.45px;
+      text-transform: uppercase;
+    }
+
+    .announcement-input,
+    .announcement-textarea,
+    .announcement-select {
+      width: 100%;
+      border: 1px solid #d0d5dd;
+      border-radius: 9px;
+      background: #ffffff;
+      color: var(--ink);
+      font-family: inherit;
       font-size: 12px;
-      line-height: 1.6;
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .announcement-input,
+    .announcement-select {
+      height: 41px;
+      padding: 0 11px;
+    }
+
+    .announcement-textarea {
+      min-height: 132px;
+      padding: 11px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    .announcement-input:focus,
+    .announcement-textarea:focus,
+    .announcement-select:focus {
+      border-color: rgba(255, 107, 0, 0.72);
+      box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.10);
+    }
+
+    .announcement-field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .announcement-field.is-hidden {
+      display: none;
+    }
+
+    .announcement-help {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.45;
+    }
+
+    .announcement-actions {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .primary-button,
+    .danger-button {
+      min-height: 38px;
+      padding: 0 14px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .primary-button {
+      color: #ffffff;
+      background: var(--orange);
+      border: 1px solid var(--orange);
+    }
+
+    .primary-button:hover {
+      background: var(--orange-dark);
+      border-color: var(--orange-dark);
+    }
+
+    .danger-button {
+      color: #b42318;
+      background: #fff5f4;
+      border: 1px solid #fecdca;
+    }
+
+    .primary-button:disabled,
+    .danger-button:disabled {
+      opacity: 0.55;
+      cursor: wait;
+    }
+
+    .announcement-message {
+      min-height: 18px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .announcement-message.success {
+      color: var(--success);
+    }
+
+    .announcement-message.error {
+      color: #b42318;
+    }
+
+    .announcement-filter-row {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      background: #fafafa;
+    }
+
+    .announcement-filter-row .announcement-select {
+      width: min(220px, 100%);
+    }
+
+    .announcement-list {
+      display: grid;
+    }
+
+    .announcement-card {
+      padding: 17px 19px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .announcement-card:last-child {
+      border-bottom: 0;
+    }
+
+    .announcement-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .announcement-card h3 {
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .announcement-body-preview {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.55;
+      white-space: pre-line;
+    }
+
+    .announcement-meta {
+      margin-top: 9px;
+      color: #7c8490;
+      font-size: 9px;
+      line-height: 1.55;
+    }
+
+    .announcement-card-actions {
+      margin-top: 11px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .announcement-mini-button {
+      min-height: 31px;
+      padding: 0 10px;
+      border: 1px solid #d0d5dd;
+      border-radius: 7px;
+      background: #ffffff;
+      color: #344054;
+      font-size: 9px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .announcement-mini-button:hover {
+      border-color: rgba(255, 107, 0, 0.55);
+      background: var(--orange-soft);
+    }
+
+    .announcement-mini-button.publish {
+      color: #ffffff;
+      background: var(--orange);
+      border-color: var(--orange);
+    }
+
+    .announcement-mini-button.delete {
+      color: #b42318;
+      background: #fff5f4;
+      border-color: #fecdca;
+    }
+
+    .announcement-status-badge {
+      flex: 0 0 auto;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 8px;
+      font-weight: bold;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    .announcement-status-badge.draft {
+      color: #475467;
+      background: #f2f4f7;
+    }
+
+    .announcement-status-badge.published {
+      color: #067647;
+      background: #ecfdf3;
+    }
+
+    .announcement-status-badge.scheduled {
+      color: #8c4a13;
+      background: var(--orange-soft);
+    }
+
+    .announcement-status-badge.expired,
+    .announcement-status-badge.archived {
+      color: #667085;
+      background: #f2f4f7;
+    }
+
+    .announcement-empty {
+      padding: 34px 20px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.55;
     }
 
     .page-heading {
@@ -701,6 +975,10 @@
       .activity-toolbar {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
+
+      .announcement-layout {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 780px) {
@@ -784,6 +1062,16 @@
         min-width: 0;
         text-align: left;
       }
+
+      .announcement-field-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .announcement-filter-row,
+      .announcement-card-top {
+        align-items: flex-start;
+        flex-direction: column;
+      }
     }
 
   </style>
@@ -798,6 +1086,9 @@
   </div>
 
   <div id="appShell" class="app-shell" hidden>
+    <input id="adminViewDashboard" class="admin-view-toggle" type="radio" name="adminWorkspace" checked>
+    <input id="adminViewActivity" class="admin-view-toggle" type="radio" name="adminWorkspace">
+    <input id="adminViewAnnouncements" class="admin-view-toggle" type="radio" name="adminWorkspace">
     <header class="topbar">
       <div class="topbar-left">
         <button
@@ -822,10 +1113,10 @@
 
     <aside id="sidebar" class="sidebar" aria-label="Super Admin navigation">
       <p class="nav-label">Overview</p>
-      <button class="nav-link nav-view-button active" type="button" data-admin-view="dashboard">
+      <label class="nav-link nav-view-button" for="adminViewDashboard" data-admin-view="dashboard">
         <span class="nav-icon">OV</span>
         Dashboard
-      </button>
+      </label>
 
       <p class="nav-label">Basketball</p>
       <a class="nav-link" href="leagues.html">
@@ -858,22 +1149,21 @@
         <span class="nav-icon">AC</span>
         Accounts
       </a>
-      <button class="nav-link nav-view-button" type="button" data-admin-view="activity">
+      <label class="nav-link nav-view-button" for="adminViewActivity" data-admin-view="activity">
         <span class="nav-icon">AL</span>
         Activity Logs
-      </button>
-      <button class="nav-link nav-view-button" type="button" data-admin-view="announcements">
+      </label>
+      <label class="nav-link nav-view-button" for="adminViewAnnouncements" data-admin-view="announcements">
         <span class="nav-icon">AN</span>
         Announcements
-        <span class="nav-coming">Next</span>
-      </button>
+      </label>
     </aside>
 
     <div id="sidebarOverlay" class="sidebar-overlay" aria-hidden="true"></div>
 
     <main class="main-content">
       <div class="content-wrap">
-        <div id="dashboardView" class="admin-view is-active" data-view-name="dashboard">
+        <div id="dashboardView" class="admin-view" data-view-name="dashboard">
         <section class="page-heading">
           <div>
             <h1 id="welcomeHeading">Welcome, HoopHub PH Owner</h1>
@@ -973,11 +1263,11 @@
                 <span class="quick-arrow">→</span>
               </a>
 
-              <button class="quick-card quick-view-button" type="button" data-admin-view="activity">
+              <label class="quick-card quick-view-button" for="adminViewActivity">
                 <strong>View Activity Logs</strong>
                 <span>Audit platform actions, corrections, assignments, and finalized-game changes.</span>
                 <span class="quick-arrow">→</span>
-              </button>
+              </label>
 
               <a class="quick-card" href="tournaments.html">
                 <strong>View Tournaments</strong>
@@ -1041,7 +1331,7 @@
         <p id="lastUpdated" class="footer-note">Dashboard totals are loading...</p>
         </div>
 
-        <div id="activityView" class="admin-view" data-view-name="activity" hidden>
+        <div id="activityView" class="admin-view" data-view-name="activity">
           <section class="page-heading">
             <div>
               <h1>Activity Logs</h1>
@@ -1104,7 +1394,7 @@
         </section>
         </div>
 
-        <div id="announcementsView" class="admin-view" data-view-name="announcements" hidden>
+        <div id="announcementsView" class="admin-view" data-view-name="announcements">
           <section class="page-heading">
             <div>
               <h1>Announcements</h1>
@@ -1113,11 +1403,106 @@
             <span class="role-badge">Super Admin</span>
           </section>
 
-          <section class="panel announcement-placeholder">
-            <h2>Announcements Module</h2>
-            <p>This view is separated from the dashboard so it can be built without mixing it with Activity Logs or other Super Admin functions.</p>
-            <p>The publishing controls will be added here next.</p>
-          </section>
+          <div class="announcement-layout">
+            <section class="panel">
+              <header class="panel-header">
+                <div>
+                  <h2 id="announcementFormHeading">Create Announcement</h2>
+                  <p>Publish a platform-wide or league-specific notice.</p>
+                </div>
+                <span class="panel-tag">Publisher</span>
+              </header>
+
+              <form id="announcementForm" class="announcement-form">
+                <div class="announcement-field">
+                  <label for="announcementTitle">Title</label>
+                  <input id="announcementTitle" class="announcement-input" type="text" maxlength="120" required placeholder="Example: Opening Day Schedule">
+                </div>
+
+                <div class="announcement-field">
+                  <label for="announcementBody">Announcement</label>
+                  <textarea id="announcementBody" class="announcement-textarea" maxlength="2500" required placeholder="Write the announcement here..."></textarea>
+                </div>
+
+                <div class="announcement-field-grid">
+                  <div class="announcement-field">
+                    <label for="announcementScope">Scope</label>
+                    <select id="announcementScope" class="announcement-select">
+                      <option value="platform">Platform-wide</option>
+                      <option value="league">Specific league</option>
+                    </select>
+                  </div>
+
+                  <div id="announcementLeagueField" class="announcement-field is-hidden">
+                    <label for="announcementLeague">League</label>
+                    <select id="announcementLeague" class="announcement-select">
+                      <option value="">Select league</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="announcement-field">
+                  <label for="announcementAudience">Audience</label>
+                  <select id="announcementAudience" class="announcement-select">
+                    <option value="everyone">Everyone</option>
+                    <option value="public">Public visitors</option>
+                    <option value="commissioners">Commissioners</option>
+                    <option value="coaches">Coaches / Team Managers</option>
+                    <option value="players">Players</option>
+                    <option value="scorekeepers">Scorekeepers</option>
+                  </select>
+                </div>
+
+                <div class="announcement-field-grid">
+                  <div class="announcement-field">
+                    <label for="announcementPublishAt">Publish / Start</label>
+                    <input id="announcementPublishAt" class="announcement-input" type="datetime-local">
+                    <p class="announcement-help">Leave blank to publish immediately when you press Publish.</p>
+                  </div>
+
+                  <div class="announcement-field">
+                    <label for="announcementExpiresAt">Expires</label>
+                    <input id="announcementExpiresAt" class="announcement-input" type="datetime-local">
+                    <p class="announcement-help">Optional. The announcement can remain active with no expiry.</p>
+                  </div>
+                </div>
+
+                <div class="announcement-actions">
+                  <button id="saveAnnouncementDraftButton" class="secondary-button" type="button">SAVE DRAFT</button>
+                  <button id="publishAnnouncementButton" class="primary-button" type="button">PUBLISH / SCHEDULE</button>
+                  <button id="cancelAnnouncementEditButton" class="secondary-button" type="button" hidden>CANCEL EDIT</button>
+                </div>
+
+                <div id="announcementMessage" class="announcement-message" aria-live="polite"></div>
+              </form>
+            </section>
+
+            <section class="panel">
+              <header class="panel-header">
+                <div>
+                  <h2>Announcement History</h2>
+                  <p>Review, edit, publish, archive, or remove announcements.</p>
+                </div>
+                <button id="refreshAnnouncementsButton" class="secondary-button" type="button">REFRESH</button>
+              </header>
+
+              <div class="announcement-filter-row">
+                <strong id="announcementVisibleCount">0 announcements</strong>
+                <select id="announcementStatusFilter" class="announcement-select" aria-label="Filter announcements by status">
+                  <option value="all">All statuses</option>
+                  <option value="draft">Draft</option>
+                  <option value="scheduled">Scheduled</option>
+                  <option value="published">Published</option>
+                  <option value="expired">Expired</option>
+                  <option value="archived">Archived</option>
+                </select>
+              </div>
+
+              <div id="announcementList" class="announcement-list">
+                <div class="announcement-empty">Loading announcements...</div>
+              </div>
+            </section>
+          </div>
         </div>
       </div>
     </main>
@@ -1151,11 +1536,31 @@
     const activityView = document.getElementById("activityView");
     const announcementsView = document.getElementById("announcementsView");
 
+    const announcementForm = document.getElementById("announcementForm");
+    const announcementTitle = document.getElementById("announcementTitle");
+    const announcementBody = document.getElementById("announcementBody");
+    const announcementScope = document.getElementById("announcementScope");
+    const announcementLeagueField = document.getElementById("announcementLeagueField");
+    const announcementLeague = document.getElementById("announcementLeague");
+    const announcementAudience = document.getElementById("announcementAudience");
+    const announcementPublishAt = document.getElementById("announcementPublishAt");
+    const announcementExpiresAt = document.getElementById("announcementExpiresAt");
+    const announcementMessage = document.getElementById("announcementMessage");
+    const announcementList = document.getElementById("announcementList");
+    const announcementStatusFilter = document.getElementById("announcementStatusFilter");
+    const refreshAnnouncementsButton = document.getElementById("refreshAnnouncementsButton");
+    const saveAnnouncementDraftButton = document.getElementById("saveAnnouncementDraftButton");
+    const publishAnnouncementButton = document.getElementById("publishAnnouncementButton");
+    const cancelAnnouncementEditButton = document.getElementById("cancelAnnouncementEditButton");
+
     let activityRows = [];
     let activityProfiles = [];
     let activityLeagues = [];
     let activityGames = [];
     let activityLeagueTeams = [];
+    let announcementRows = [];
+    let announcementLeagues = [];
+    let editingAnnouncementId = null;
 
     function escapeHtml(value) {
       const element = document.createElement("div");
@@ -1203,7 +1608,12 @@
         game_finalized: "Game Finalized",
         game_returned_for_correction: "Game Returned for Correction",
         roster_approved: "Roster Approved",
-        roster_rejected: "Roster Rejected"
+        roster_rejected: "Roster Rejected",
+        announcement_created: "Announcement Created",
+        announcement_published: "Announcement Published",
+        announcement_updated: "Announcement Updated",
+        announcement_archived: "Announcement Archived",
+        announcement_deleted: "Announcement Deleted"
       };
       return labels[action] || titleCaseAction(action);
     }
@@ -1217,6 +1627,7 @@
       if (value.includes("player")) return "PL";
       if (value.includes("roster")) return "RS";
       if (value.includes("scorekeeper")) return "SK";
+      if (value.includes("announcement")) return "AN";
       if (value.includes("game") || value.includes("final")) return "GM";
       return "LG";
     }
@@ -1271,6 +1682,12 @@
 
     function activityDescription(item) {
       const details = item.details || {};
+
+      if (String(item.action || "").startsWith("announcement_")) {
+        const title = details.title || "Announcement";
+        const scope = details.scope === "league" ? "league announcement" : "platform announcement";
+        return `${title} · ${scope} · ${details.status || "recorded"}.`;
+      }
 
       if (item.action === "approved_correction_applied") {
         const field = String(details.stat_field || "official value").replaceAll("_", " ");
@@ -1503,37 +1920,366 @@
     }
 
 
-    function showAdminView(viewName) {
-      const views = {
-        dashboard: dashboardView,
-        activity: activityView,
-        announcements: announcementsView
+    function announcementStatus(row) {
+      if (!row) return "draft";
+      if (row.status === "archived") return "archived";
+
+      if (row.status === "published") {
+        const now = Date.now();
+        const publishAt = row.publish_at ? new Date(row.publish_at).getTime() : null;
+        const expiresAt = row.expires_at ? new Date(row.expires_at).getTime() : null;
+
+        if (Number.isFinite(expiresAt) && expiresAt <= now) return "expired";
+        if (Number.isFinite(publishAt) && publishAt > now) return "scheduled";
+        return "published";
+      }
+
+      return "draft";
+    }
+
+    function announcementStatusLabel(status) {
+      return {
+        draft: "Draft",
+        scheduled: "Scheduled",
+        published: "Published",
+        expired: "Expired",
+        archived: "Archived"
+      }[status] || titleCaseAction(status);
+    }
+
+    function announcementAudienceLabel(value) {
+      return {
+        everyone: "Everyone",
+        public: "Public visitors",
+        commissioners: "Commissioners",
+        coaches: "Coaches / Team Managers",
+        players: "Players",
+        scorekeepers: "Scorekeepers"
+      }[value] || titleCaseAction(value);
+    }
+
+    function formatAnnouncementDate(value) {
+      if (!value) return "—";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "—";
+      return new Intl.DateTimeFormat("en-PH", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      }).format(date);
+    }
+
+    function toLocalDateTimeInput(value) {
+      if (!value) return "";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "";
+      const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+      return local.toISOString().slice(0, 16);
+    }
+
+    function showAnnouncementMessage(message, type = "") {
+      announcementMessage.textContent = message || "";
+      announcementMessage.className = `announcement-message${type ? ` ${type}` : ""}`;
+    }
+
+    function syncAnnouncementScope() {
+      const isLeague = announcementScope.value === "league";
+      announcementLeagueField.classList.toggle("is-hidden", !isLeague);
+      announcementLeague.required = isLeague;
+      if (!isLeague) announcementLeague.value = "";
+    }
+
+    function resetAnnouncementForm() {
+      editingAnnouncementId = null;
+      announcementForm.reset();
+      announcementScope.value = "platform";
+      announcementAudience.value = "everyone";
+      announcementLeague.value = "";
+      syncAnnouncementScope();
+      document.getElementById("announcementFormHeading").textContent = "Create Announcement";
+      cancelAnnouncementEditButton.hidden = true;
+      showAnnouncementMessage("");
+    }
+
+    function announcementPayload(status) {
+      const title = announcementTitle.value.trim();
+      const body = announcementBody.value.trim();
+      const scope = announcementScope.value;
+      const leagueId = scope === "league" ? announcementLeague.value : null;
+      const publishInput = announcementPublishAt.value;
+      const expiresInput = announcementExpiresAt.value;
+
+      if (title.length < 3) {
+        throw new Error("Announcement title must be at least 3 characters.");
+      }
+
+      if (body.length < 5) {
+        throw new Error("Announcement message must be at least 5 characters.");
+      }
+
+      if (scope === "league" && !leagueId) {
+        throw new Error("Select the league for this announcement.");
+      }
+
+      let publishAt = publishInput ? new Date(publishInput).toISOString() : null;
+      const expiresAt = expiresInput ? new Date(expiresInput).toISOString() : null;
+
+      if (status === "published" && !publishAt) {
+        publishAt = new Date().toISOString();
+      }
+
+      if (
+        expiresAt &&
+        publishAt &&
+        new Date(expiresAt).getTime() <= new Date(publishAt).getTime()
+      ) {
+        throw new Error("Expiry must be later than the publish/start time.");
+      }
+
+      const existing = announcementRows.find(row => row.id === editingAnnouncementId);
+
+      return {
+        title,
+        body,
+        scope,
+        league_id: leagueId || null,
+        audience: announcementAudience.value,
+        status,
+        publish_at: publishAt,
+        expires_at: expiresAt,
+        published_at: status === "published"
+          ? (existing?.published_at || new Date().toISOString())
+          : (existing?.published_at || null)
       };
+    }
 
-      const selectedView = views[viewName] || dashboardView;
+    function populateAnnouncementLeagues() {
+      announcementLeague.innerHTML =
+        '<option value="">Select league</option>' +
+        announcementLeagues.map(league =>
+          `<option value="${escapeHtml(league.id)}">${escapeHtml(league.name || "Unnamed league")}</option>`
+        ).join("");
+    }
 
-      Object.values(views).forEach(function (element) {
-        if (!element) return;
-        element.classList.remove("is-active");
-        element.hidden = true;
-      });
+    function renderAnnouncements() {
+      const filter = announcementStatusFilter.value || "all";
+      const filtered = announcementRows.filter(row =>
+        filter === "all" || announcementStatus(row) === filter
+      );
 
-      if (selectedView) {
-        selectedView.hidden = false;
-        selectedView.classList.add("is-active");
+      document.getElementById("announcementVisibleCount").textContent =
+        `${filtered.length.toLocaleString()} announcement${filtered.length === 1 ? "" : "s"}`;
+
+      if (!filtered.length) {
+        announcementList.innerHTML =
+          '<div class="announcement-empty">No announcements match the selected status.</div>';
+        return;
       }
 
-      document.querySelectorAll(".nav-view-button").forEach(function (control) {
-        control.classList.toggle("active", control.dataset.adminView === viewName);
-      });
+      const leagueById = new Map(announcementLeagues.map(league => [String(league.id), league]));
 
-      if (viewName === "activity" && !activityRows.length) {
-        loadActivityLog();
+      announcementList.innerHTML = filtered.map(row => {
+        const status = announcementStatus(row);
+        const league = row.league_id ? leagueById.get(String(row.league_id)) : null;
+        const scopeLabel = row.scope === "league"
+          ? (league?.name || "League")
+          : "Platform-wide";
+        const startLabel = row.publish_at
+          ? `Starts ${formatAnnouncementDate(row.publish_at)}`
+          : "No publish time set";
+        const expiryLabel = row.expires_at
+          ? `Expires ${formatAnnouncementDate(row.expires_at)}`
+          : "No expiry";
+
+        const publishButton = row.status === "draft"
+          ? `<button class="announcement-mini-button publish" type="button" data-announcement-action="publish" data-announcement-id="${escapeHtml(row.id)}">PUBLISH</button>`
+          : "";
+
+        const archiveButton = row.status === "published"
+          ? `<button class="announcement-mini-button" type="button" data-announcement-action="archive" data-announcement-id="${escapeHtml(row.id)}">ARCHIVE</button>`
+          : "";
+
+        return `
+          <article class="announcement-card">
+            <div class="announcement-card-top">
+              <div>
+                <h3>${escapeHtml(row.title || "Untitled announcement")}</h3>
+                <div class="announcement-body-preview">${escapeHtml(row.body || "")}</div>
+              </div>
+              <span class="announcement-status-badge ${escapeHtml(status)}">${escapeHtml(announcementStatusLabel(status))}</span>
+            </div>
+
+            <div class="announcement-meta">
+              ${escapeHtml(scopeLabel)} · ${escapeHtml(announcementAudienceLabel(row.audience))}
+              <br>
+              ${escapeHtml(startLabel)} · ${escapeHtml(expiryLabel)}
+              <br>
+              Created ${escapeHtml(formatAnnouncementDate(row.created_at))}
+            </div>
+
+            <div class="announcement-card-actions">
+              <button class="announcement-mini-button" type="button" data-announcement-action="edit" data-announcement-id="${escapeHtml(row.id)}">EDIT</button>
+              ${publishButton}
+              ${archiveButton}
+              <button class="announcement-mini-button delete" type="button" data-announcement-action="delete" data-announcement-id="${escapeHtml(row.id)}">DELETE</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    async function loadAnnouncements() {
+      refreshAnnouncementsButton.disabled = true;
+      refreshAnnouncementsButton.textContent = "REFRESHING...";
+
+      try {
+        const [announcementResult, leagueResult] = await Promise.all([
+          supabaseClient
+            .from("announcements")
+            .select("id, title, body, scope, league_id, audience, status, publish_at, expires_at, published_at, created_by, created_at, updated_at")
+            .order("created_at", { ascending: false })
+            .limit(200),
+          supabaseClient
+            .from("leagues")
+            .select("id, name")
+            .order("name")
+        ]);
+
+        if (announcementResult.error) throw announcementResult.error;
+
+        announcementRows = announcementResult.data || [];
+        announcementLeagues = leagueResult.error ? [] : (leagueResult.data || []);
+        populateAnnouncementLeagues();
+        renderAnnouncements();
+      } catch (error) {
+        console.error("Unable to load announcements:", error);
+        announcementRows = [];
+        announcementList.innerHTML =
+          `<div class="announcement-empty">Unable to load announcements: ${escapeHtml(error.message || "Unknown error")}</div>`;
+        showAnnouncementMessage(
+          "Announcements are not ready yet. Run the HoopHub announcements SQL setup, then refresh this page.",
+          "error"
+        );
+      } finally {
+        refreshAnnouncementsButton.disabled = false;
+        refreshAnnouncementsButton.textContent = "REFRESH";
+      }
+    }
+
+    async function saveAnnouncement(status) {
+      saveAnnouncementDraftButton.disabled = true;
+      publishAnnouncementButton.disabled = true;
+
+      try {
+        const payload = announcementPayload(status);
+        let result;
+
+        if (editingAnnouncementId) {
+          result = await supabaseClient
+            .from("announcements")
+            .update(payload)
+            .eq("id", editingAnnouncementId)
+            .select("id")
+            .single();
+        } else {
+          result = await supabaseClient
+            .from("announcements")
+            .insert(payload)
+            .select("id")
+            .single();
+        }
+
+        if (result.error) throw result.error;
+
+        const isScheduled =
+          status === "published" &&
+          payload.publish_at &&
+          new Date(payload.publish_at).getTime() > Date.now();
+
+        const successMessage =
+          status === "draft"
+            ? "Draft saved successfully."
+            : isScheduled
+              ? "Announcement scheduled successfully."
+              : "Announcement published successfully.";
+
+        resetAnnouncementForm();
+        showAnnouncementMessage(successMessage, "success");
+        await Promise.all([loadAnnouncements(), loadActivityLog()]);
+      } catch (error) {
+        console.error("Unable to save announcement:", error);
+        showAnnouncementMessage(error.message || "Unable to save announcement.", "error");
+      } finally {
+        saveAnnouncementDraftButton.disabled = false;
+        publishAnnouncementButton.disabled = false;
+      }
+    }
+
+    function editAnnouncement(id) {
+      const row = announcementRows.find(item => item.id === id);
+      if (!row) return;
+
+      editingAnnouncementId = row.id;
+      announcementTitle.value = row.title || "";
+      announcementBody.value = row.body || "";
+      announcementScope.value = row.scope || "platform";
+      syncAnnouncementScope();
+      announcementLeague.value = row.league_id || "";
+      announcementAudience.value = row.audience || "everyone";
+      announcementPublishAt.value = toLocalDateTimeInput(row.publish_at);
+      announcementExpiresAt.value = toLocalDateTimeInput(row.expires_at);
+      document.getElementById("announcementFormHeading").textContent = "Edit Announcement";
+      cancelAnnouncementEditButton.hidden = false;
+      showAnnouncementMessage("Editing the selected announcement.");
+    }
+
+    async function updateAnnouncementStatus(id, status) {
+      const row = announcementRows.find(item => item.id === id);
+      if (!row) return;
+
+      const updates = { status };
+
+      if (status === "published") {
+        updates.publish_at = row.publish_at || new Date().toISOString();
+        updates.published_at = row.published_at || new Date().toISOString();
       }
 
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-      closeSidebar();
+      const { error } = await supabaseClient
+        .from("announcements")
+        .update(updates)
+        .eq("id", id);
+
+      if (error) {
+        alert(`Unable to update announcement: ${error.message}`);
+        return;
+      }
+
+      await Promise.all([loadAnnouncements(), loadActivityLog()]);
+    }
+
+    async function deleteAnnouncement(id) {
+      const row = announcementRows.find(item => item.id === id);
+      if (!row) return;
+
+      const confirmed = confirm(
+        `Delete "${row.title || "this announcement"}"?\n\nThis removes the announcement record permanently.`
+      );
+      if (!confirmed) return;
+
+      const { error } = await supabaseClient
+        .from("announcements")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        alert(`Unable to delete announcement: ${error.message}`);
+        return;
+      }
+
+      if (editingAnnouncementId === id) resetAnnouncementForm();
+      await Promise.all([loadAnnouncements(), loadActivityLog()]);
     }
 
 
@@ -1611,12 +2357,12 @@
         }
 
         displayAccount(profile, userData.user);
-        showAdminView("dashboard");
         authScreen.hidden = true;
         appShell.hidden = false;
         await Promise.all([
           loadDashboardCounts(),
-          loadActivityLog()
+          loadActivityLog(),
+          loadAnnouncements()
         ]);
       } catch (error) {
         console.error("Authorization check failed:", error);
@@ -1684,14 +2430,8 @@
       link.addEventListener("click", closeSidebar);
     });
 
-    document.querySelectorAll("[data-admin-view]").forEach(function (control) {
-      control.addEventListener("click", function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        const viewName = control.dataset.adminView;
-        if (!viewName) return;
-        showAdminView(viewName);
-      });
+    document.querySelectorAll('input[name="adminWorkspace"]').forEach(function (toggle) {
+      toggle.addEventListener("change", closeSidebar);
     });
 
     leagueManagementLink.addEventListener("click", openLeagueManagement);
@@ -1707,6 +2447,32 @@
       .forEach(control => control.addEventListener("change", renderActivityLog));
 
     refreshActivityButton.addEventListener("click", loadActivityLog);
+
+    announcementScope.addEventListener("change", syncAnnouncementScope);
+    announcementStatusFilter.addEventListener("change", renderAnnouncements);
+    refreshAnnouncementsButton.addEventListener("click", loadAnnouncements);
+    saveAnnouncementDraftButton.addEventListener("click", function () {
+      saveAnnouncement("draft");
+    });
+    publishAnnouncementButton.addEventListener("click", function () {
+      saveAnnouncement("published");
+    });
+    cancelAnnouncementEditButton.addEventListener("click", resetAnnouncementForm);
+
+    announcementList.addEventListener("click", function (event) {
+      const button = event.target.closest("[data-announcement-action]");
+      if (!button) return;
+
+      const id = button.dataset.announcementId;
+      const action = button.dataset.announcementAction;
+
+      if (action === "edit") editAnnouncement(id);
+      if (action === "publish") updateAnnouncementStatus(id, "published");
+      if (action === "archive") updateAnnouncementStatus(id, "archived");
+      if (action === "delete") deleteAnnouncement(id);
+    });
+
+    syncAnnouncementScope();
 
     logoutButton.addEventListener("click", async function () {
       logoutButton.disabled = true;
