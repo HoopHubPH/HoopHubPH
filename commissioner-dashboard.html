@@ -1842,6 +1842,182 @@
       }
     }
 
+
+    /* ========================================================
+       SUPER ADMIN STYLE COMMISSIONER MENU HIGHLIGHT
+       ======================================================== */
+    #commissionerViewDashboard:checked ~ .sidebar [data-commissioner-view="dashboard"],
+    #commissionerViewSeasons:checked ~ .sidebar [data-commissioner-view="seasons"],
+    #commissionerViewCreateTeam:checked ~ .sidebar [data-commissioner-view="create-team"],
+    #commissionerViewTeams:checked ~ .sidebar [data-commissioner-view="teams"],
+    #commissionerViewRoster:checked ~ .sidebar [data-commissioner-view="roster"],
+    #commissionerViewSchedule:checked ~ .sidebar [data-commissioner-view="schedule"],
+    #commissionerViewGames:checked ~ .sidebar [data-commissioner-view="games"],
+    #commissionerViewStandings:checked ~ .sidebar [data-commissioner-view="standings"],
+    #commissionerViewScorekeepers:checked ~ .sidebar [data-commissioner-view="scorekeepers"],
+    #commissionerViewReview:checked ~ .sidebar [data-commissioner-view="review"],
+    #commissionerViewCorrections:checked ~ .sidebar [data-commissioner-view="corrections"],
+    #commissionerViewReports:checked ~ .sidebar [data-commissioner-view="reports"] {
+      color: #ffffff;
+      background: #2b2b2b;
+      box-shadow: inset 3px 0 var(--orange);
+    }
+
+    .sidebar .commissioner-nav-view:hover {
+      color: #ffffff;
+      background: #242424;
+    }
+
+    /* ========================================================
+       LARGER MENU FONT WITH LESS SPACE BETWEEN FUNCTIONS
+       ======================================================== */
+    .sidebar {
+      height: calc(100vh - 66px);
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 2px;
+      overflow-y: hidden;
+    }
+
+    .sidebar .nav-label {
+      margin: 5px 8px 2px;
+      font-size: 9.5px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      flex: 0 0 auto;
+    }
+
+    .sidebar .nav-label:first-child {
+      margin-top: 0;
+    }
+
+    .sidebar .nav-link {
+      min-height: 34px;
+      height: 34px;
+      margin: 0;
+      padding: 0 10px;
+      gap: 8px;
+      flex: 0 0 34px;
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .sidebar .nav-icon {
+      width: 23px;
+      height: 23px;
+      flex: 0 0 23px;
+      font-size: 8px;
+      border-radius: 6px;
+    }
+
+    @media (max-height: 660px) {
+      .sidebar {
+        padding: 6px 9px;
+        gap: 1px;
+      }
+
+      .sidebar .nav-label {
+        margin: 3px 7px 1px;
+        font-size: 8.5px;
+      }
+
+      .sidebar .nav-link {
+        min-height: 31px;
+        height: 31px;
+        flex-basis: 31px;
+        font-size: 13.5px;
+      }
+
+      .sidebar .nav-icon {
+        width: 21px;
+        height: 21px;
+        flex-basis: 21px;
+        font-size: 7.5px;
+      }
+    }
+
+    /* ========================================================
+       FUNCTIONAL COMMISSIONER TOOLS
+       ======================================================== */
+    .commissioner-tools-grid {
+      align-items: stretch;
+    }
+
+    .commissioner-tool-card {
+      min-height: 132px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+    }
+
+    .commissioner-tool-card:hover {
+      border-color: #ffd1b0;
+      box-shadow: 0 8px 20px rgba(17, 24, 39, .08);
+      transform: translateY(-1px);
+    }
+
+    .commissioner-tool-card strong {
+      font-size: 13px;
+    }
+
+    .commissioner-tool-card span {
+      font-size: 9.5px;
+      line-height: 1.5;
+    }
+
+    .commissioner-tool-actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .commissioner-tool-button {
+      min-height: 31px;
+      padding: 0 9px;
+      color: #344054;
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 7px;
+      font-size: 8px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .commissioner-tool-button:hover {
+      color: var(--orange-dark);
+      background: var(--orange-soft);
+      border-color: #ffd1b0;
+    }
+
+    .commissioner-tool-button.primary {
+      color: #ffffff;
+      background: var(--orange);
+      border-color: var(--orange);
+    }
+
+    .commissioner-tool-button.primary:hover {
+      color: #ffffff;
+      background: var(--orange-dark);
+      border-color: var(--orange-dark);
+    }
+
+    @media (max-width: 680px) {
+      .commissioner-tool-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .commissioner-tool-button {
+        width: 100%;
+      }
+    }
+
   </style>
 </head>
 
@@ -2564,12 +2740,59 @@
               <p>Use the sidebar to open each secured Commissioner workflow as its own workspace.</p>
             </div>
           </header>
-          <div class="module-grid">
-            <article class="module-card"><strong>Seasons & Divisions</strong><span>Create seasons, divisions, tournaments, and brackets.</span></article>
-            <article class="module-card"><strong>Team & Roster Approval</strong><span>Review team registrations, coaches, and submitted player rosters.</span></article>
-            <article class="module-card"><strong>Game Scheduling</strong><span>Schedule matchups and assign scorekeepers to games.</span></article>
-            <article class="module-card"><strong>Game Review</strong><span>Review submitted box scores, corrections, fouls, and suspensions.</span></article>
-            <article class="module-card"><strong>Reports</strong><span>Generate league, team, game, and player reports.</span></article>
+          <div class="module-grid commissioner-tools-grid">
+            <article class="module-card commissioner-tool-card">
+              <div>
+                <strong>Seasons &amp; Divisions</strong>
+                <span>Create and manage seasons, divisions, and team placement.</span>
+              </div>
+              <div class="commissioner-tool-actions">
+                <button class="commissioner-tool-button primary" type="button" data-tool-view="seasons">OPEN SEASONS</button>
+              </div>
+            </article>
+
+            <article class="module-card commissioner-tool-card">
+              <div>
+                <strong>Team &amp; Roster Approval</strong>
+                <span>Review league team registrations and submitted team rosters.</span>
+              </div>
+              <div class="commissioner-tool-actions">
+                <button class="commissioner-tool-button primary" type="button" data-tool-view="teams">TEAM REGISTRATIONS</button>
+                <button class="commissioner-tool-button" type="button" data-tool-view="roster">ROSTER APPROVAL</button>
+              </div>
+            </article>
+
+            <article class="module-card commissioner-tool-card">
+              <div>
+                <strong>Game Scheduling</strong>
+                <span>Create matchups, manage the schedule, and assign scorekeepers.</span>
+              </div>
+              <div class="commissioner-tool-actions">
+                <button class="commissioner-tool-button primary" type="button" data-tool-view="schedule">OPEN SCHEDULE</button>
+                <button class="commissioner-tool-button" type="button" data-tool-view="scorekeepers">SCOREKEEPERS</button>
+              </div>
+            </article>
+
+            <article class="module-card commissioner-tool-card">
+              <div>
+                <strong>Game Review</strong>
+                <span>Review submitted game results and coach correction requests.</span>
+              </div>
+              <div class="commissioner-tool-actions">
+                <button class="commissioner-tool-button primary" type="button" data-tool-view="review">GAME REVIEW</button>
+                <button class="commissioner-tool-button" type="button" data-tool-view="corrections">CORRECTIONS</button>
+              </div>
+            </article>
+
+            <article class="module-card commissioner-tool-card">
+              <div>
+                <strong>Reports</strong>
+                <span>Generate printable league, team, schedule, and result reports.</span>
+              </div>
+              <div class="commissioner-tool-actions">
+                <button class="commissioner-tool-button primary" type="button" data-tool-view="reports">OPEN REPORTS</button>
+              </div>
+            </article>
           </div>
         </section>
       </div>
@@ -4701,6 +4924,16 @@
       document.getElementById("sidebar").classList.remove("open");
       document.getElementById("sidebarOverlay").classList.remove("open");
     }
+
+    document.getElementById("modules").addEventListener("click", event => {
+      const button = event.target.closest("[data-tool-view]");
+      if (!button) return;
+
+      const viewName = button.dataset.toolView;
+      if (!commissionerViewConfig[viewName]) return;
+
+      openCommissionerView(viewName);
+    });
 
     document.querySelectorAll('input[name="commissionerWorkspace"]').forEach(toggle => {
       toggle.addEventListener("change", function () {
