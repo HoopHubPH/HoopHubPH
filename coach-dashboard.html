@@ -270,6 +270,17 @@
     .result-badge.tie { color: #475467; background: #f2f4f7; }
     .statistics-note { padding: 12px 18px 16px; color: var(--muted); font-size: 11px; line-height: 1.5; }
 
+    .correction-callout { padding: 13px 18px; color: #7a3e00; background: #fff8f2; border-bottom: 1px solid #ffd9bd; font-size: 12px; line-height: 1.5; }
+    .correction-callout strong { color: var(--ink); }
+    .correction-form textarea.form-input { min-height: 96px; padding: 10px 11px; resize: vertical; line-height: 1.45; }
+    .correction-form .form-group[hidden] { display: none !important; }
+    .correction-history-detail { color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .correction-history-detail strong { color: var(--ink); }
+    .correction-history-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .correction-message { min-height: 20px; color: var(--muted); font-size: 12px; }
+    .correction-message.success { color: var(--success); }
+    .correction-message.error { color: #b42318; }
+
     .module-grid { padding: 18px; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 11px; }
     .module-card { min-height: 94px; padding: 15px; background: #fafafa; border: 1px solid var(--line); border-radius: 9px; }
     .module-card strong, .module-card span { display: block; }
@@ -353,7 +364,7 @@
       <p class="nav-label">Team Records</p>
       <a class="nav-link" href="#gameSchedulePanel"><span class="nav-icon">GM</span> Game Schedule</a>
       <a class="nav-link" href="#teamStatisticsPanel"><span class="nav-icon">ST</span> Statistics</a>
-      <a class="nav-link" href="#modules"><span class="nav-icon">CR</span> Corrections <span class="coming">Next</span></a>
+      <a class="nav-link" href="#correctionRequestsPanel"><span class="nav-icon">CR</span> Corrections</a>
     </aside>
 
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
@@ -615,6 +626,101 @@
           <div id="statisticsMessage" class="statistics-note">Only finalized games are included in these statistics.</div>
         </section>
 
+        <section id="correctionRequestsPanel" class="panel">
+          <header class="panel-header">
+            <div>
+              <h2>Correction Requests</h2>
+              <p>Request a review of an official finalized-game record without directly editing league statistics.</p>
+            </div>
+            <button id="refreshCorrectionsButton" class="secondary-button" type="button">Refresh Requests</button>
+          </header>
+
+          <div class="correction-callout"><strong>Commissioner review required.</strong> Coaches can report a player stat, team score, game detail, or another issue. Official records remain unchanged until an authorized reviewer handles the request.</div>
+
+          <form id="correctionRequestForm" class="application-form correction-form">
+            <div class="form-group form-wide">
+              <label for="correctionGameSelect">Finalized Game</label>
+              <select id="correctionGameSelect" class="form-input" required>
+                <option value="">Loading finalized games...</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="correctionTypeSelect">Correction Type</label>
+              <select id="correctionTypeSelect" class="form-input" required>
+                <option value="">Select correction type</option>
+                <option value="player_stat">Player Stat</option>
+                <option value="team_score">Team Score</option>
+                <option value="game_detail">Game Detail</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div id="correctionPlayerGroup" class="form-group" hidden>
+              <label for="correctionPlayerSelect">Player</label>
+              <select id="correctionPlayerSelect" class="form-input">
+                <option value="">Select player</option>
+              </select>
+            </div>
+
+            <div id="correctionStatGroup" class="form-group" hidden>
+              <label for="correctionStatField">Statistic</label>
+              <select id="correctionStatField" class="form-input">
+                <option value="">Select statistic</option>
+                <option value="points">Points</option>
+                <option value="two_pt_made">2PT Made</option>
+                <option value="two_pt_attempted">2PT Attempted</option>
+                <option value="three_pt_made">3PT Made</option>
+                <option value="three_pt_attempted">3PT Attempted</option>
+                <option value="ft_made">FT Made</option>
+                <option value="ft_attempted">FT Attempted</option>
+                <option value="offensive_rebounds">Offensive Rebounds</option>
+                <option value="defensive_rebounds">Defensive Rebounds</option>
+                <option value="rebounds">Total Rebounds</option>
+                <option value="assists">Assists</option>
+                <option value="steals">Steals</option>
+                <option value="blocks">Blocks</option>
+                <option value="turnovers">Turnovers</option>
+                <option value="fouls">Personal Fouls</option>
+                <option value="minutes_played">Minutes Played</option>
+                <option value="plus_minus">Plus / Minus</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label id="correctionCurrentValueLabel" for="correctionCurrentValue">Current Value (Optional)</label>
+              <input id="correctionCurrentValue" class="form-input" type="text" maxlength="100" placeholder="Current official value">
+            </div>
+
+            <div class="form-group">
+              <label id="correctionRequestedValueLabel" for="correctionRequestedValue">Requested Corrected Value</label>
+              <input id="correctionRequestedValue" class="form-input" type="text" maxlength="100" placeholder="What should the official value be?">
+            </div>
+
+            <div class="form-group form-wide">
+              <label for="correctionReason">Reason / Explanation</label>
+              <textarea id="correctionReason" class="form-input" minlength="5" maxlength="1000" required placeholder="Explain what is incorrect and why it should be reviewed."></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button id="submitCorrectionButton" class="primary-button" type="submit" disabled>Submit Correction Request</button>
+            </div>
+            <div id="correctionMessage" class="correction-message form-wide" role="status" aria-live="polite"></div>
+          </form>
+
+          <div class="statistics-section">
+            <div class="statistics-section-header">
+              <div><h3>Request History</h3><p>Track commissioner review status for requests submitted for this team.</p></div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Submitted</th><th>Game</th><th>Type</th><th>Requested Change</th><th>Reason</th><th>Status</th><th>Review / Actions</th></tr></thead>
+                <tbody id="correctionRequestsBody"><tr><td class="empty-state" colspan="7">Loading correction requests...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
         <section id="modules" class="panel">
           <header class="panel-header">
             <div><h2>Coach Modules</h2><p>Official game statistics remain protected and read-only.</p></div>
@@ -648,7 +754,9 @@
     let scheduleLoadToken = 0;
     let lineupLoadToken = 0;
     let statisticsLoadToken = 0;
+    let correctionLoadToken = 0;
     let coachScheduleGames = [];
+    let correctionFinalGames = [];
     let currentLineupRows = [];
 
     const authScreen = document.getElementById("authScreen");
@@ -983,6 +1091,7 @@
         body.innerHTML = '<tr><td class="empty-state" colspan="6">Select an assigned team to view its game schedule.</td></tr>';
         if (refreshButton) refreshButton.disabled = true;
         renderLineupGameOptions(null, []);
+        renderCorrectionGameOptions(null, []);
         return;
       }
 
@@ -1015,6 +1124,7 @@
         });
 
         renderLineupGameOptions(assignment, games);
+        renderCorrectionGameOptions(assignment, games);
 
         if (!games.length) {
           body.innerHTML = '<tr><td class="empty-state" colspan="6">No games have been scheduled for this team in the selected league.</td></tr>';
@@ -1043,6 +1153,7 @@
         console.error("Unable to load coach game schedule:", error);
         coachScheduleGames = [];
         renderLineupGameOptions(assignment, []);
+        renderCorrectionGameOptions(assignment, []);
         body.innerHTML = `
           <tr>
             <td class="empty-state" colspan="6">Unable to load game schedule: ${escapeHtml(error?.message || "Unknown error")}</td>
@@ -1161,6 +1272,298 @@
       } finally {
         if (requestToken === statisticsLoadToken) refreshButton.disabled = false;
       }
+    }
+
+    function correctionTypeLabel(value) {
+      return {
+        player_stat: "Player Stat",
+        team_score: "Team Score",
+        game_detail: "Game Detail",
+        other: "Other"
+      }[String(value || "")] || "Correction";
+    }
+
+    function correctionStatusClass(value) {
+      const status = String(value || "").toLowerCase();
+      if (["rejected", "withdrawn"].includes(status)) return "rejected";
+      if (status === "pending") return "pending";
+      return "";
+    }
+
+    function correctionGameLabel(game) {
+      const date = formatScheduleDate(game.scheduled_at || game.finalized_at);
+      const opponent = game.opponent_team_name || "Opponent";
+      const score = `${game.home_score ?? 0} - ${game.away_score ?? 0}`;
+      return `Game #${game.game_id} — ${date} — vs ${opponent} — ${score}`;
+    }
+
+    function populateCorrectionPlayers(assignment) {
+      const select = document.getElementById("correctionPlayerSelect");
+      if (!select) return;
+
+      const roster = assignment
+        ? players
+            .filter(player => player.team_id === assignment.team_id)
+            .sort((a, b) => Number(a.jersey_number ?? 999) - Number(b.jersey_number ?? 999))
+        : [];
+
+      select.innerHTML = '<option value="">Select player</option>' + roster.map(player => {
+        const name = `${player.first_name || ""} ${player.last_name || ""}`.trim() || "Player";
+        const jersey = player.jersey_number ?? "—";
+        return `<option value="${escapeHtml(player.id)}">#${escapeHtml(jersey)} — ${escapeHtml(name)}</option>`;
+      }).join("");
+    }
+
+    function resetCorrectionPanel(message = "Select an assigned team to submit or review correction requests.") {
+      correctionFinalGames = [];
+      const gameSelect = document.getElementById("correctionGameSelect");
+      const body = document.getElementById("correctionRequestsBody");
+      const refreshButton = document.getElementById("refreshCorrectionsButton");
+      const submitButton = document.getElementById("submitCorrectionButton");
+      const form = document.getElementById("correctionRequestForm");
+      const messageBox = document.getElementById("correctionMessage");
+
+      if (form) form.reset();
+      if (gameSelect) {
+        gameSelect.innerHTML = `<option value="">${escapeHtml(message)}</option>`;
+        gameSelect.disabled = true;
+      }
+      if (body) body.innerHTML = `<tr><td class="empty-state" colspan="7">${escapeHtml(message)}</td></tr>`;
+      if (refreshButton) refreshButton.disabled = true;
+      if (submitButton) submitButton.disabled = true;
+      if (messageBox) {
+        messageBox.className = "correction-message form-wide";
+        messageBox.textContent = "";
+      }
+      populateCorrectionPlayers(null);
+      syncCorrectionForm();
+    }
+
+    function renderCorrectionGameOptions(assignment, games) {
+      const select = document.getElementById("correctionGameSelect");
+      if (!select) return;
+
+      const previous = select.value;
+      correctionFinalGames = (Array.isArray(games) ? games : []).filter(game => isFinalCoachGame(game));
+
+      if (!assignment) {
+        select.innerHTML = '<option value="">No assigned team</option>';
+        select.disabled = true;
+        syncCorrectionForm();
+        return;
+      }
+
+      if (!correctionFinalGames.length) {
+        select.innerHTML = '<option value="">No finalized games available</option>';
+        select.disabled = true;
+        syncCorrectionForm();
+        return;
+      }
+
+      select.disabled = false;
+      select.innerHTML = '<option value="">Select a finalized game</option>' + correctionFinalGames.map(game =>
+        `<option value="${escapeHtml(game.game_id)}">${escapeHtml(correctionGameLabel(game))}</option>`
+      ).join("");
+
+      if (correctionFinalGames.some(game => String(game.game_id) === previous)) {
+        select.value = previous;
+      }
+
+      syncCorrectionForm();
+    }
+
+    function selectedCorrectionGame() {
+      const value = String(document.getElementById("correctionGameSelect")?.value || "");
+      return correctionFinalGames.find(game => String(game.game_id) === value) || null;
+    }
+
+    function syncCorrectionForm() {
+      const type = String(document.getElementById("correctionTypeSelect")?.value || "");
+      const playerGroup = document.getElementById("correctionPlayerGroup");
+      const statGroup = document.getElementById("correctionStatGroup");
+      const playerSelect = document.getElementById("correctionPlayerSelect");
+      const statSelect = document.getElementById("correctionStatField");
+      const currentInput = document.getElementById("correctionCurrentValue");
+      const requestedInput = document.getElementById("correctionRequestedValue");
+      const currentLabel = document.getElementById("correctionCurrentValueLabel");
+      const requestedLabel = document.getElementById("correctionRequestedValueLabel");
+      const submitButton = document.getElementById("submitCorrectionButton");
+      const game = selectedCorrectionGame();
+      const assignment = selectedAssignment();
+      const playerStat = type === "player_stat";
+      const teamScore = type === "team_score";
+
+      if (playerGroup) playerGroup.hidden = !playerStat;
+      if (statGroup) statGroup.hidden = !playerStat;
+      if (playerSelect) playerSelect.required = playerStat;
+      if (statSelect) statSelect.required = playerStat;
+      if (requestedInput) requestedInput.required = playerStat || teamScore;
+
+      if (currentLabel) currentLabel.textContent = teamScore ? "Current Official Team Score" : "Current Value (Optional)";
+      if (requestedLabel) requestedLabel.textContent = (playerStat || teamScore) ? "Requested Corrected Value" : "Requested Change (Optional)";
+
+      if (teamScore && game && currentInput) {
+        const teamScoreValue = game.is_home_team ? game.home_score : game.away_score;
+        currentInput.value = String(teamScoreValue ?? 0);
+      }
+
+      if (submitButton) submitButton.disabled = !assignment || !game || !type;
+    }
+
+    function correctionChangeSummary(request) {
+      const parts = [];
+      if (request.player_name) parts.push(request.player_name);
+      if (request.stat_field) parts.push(String(request.stat_field).replace(/_/g, " "));
+
+      const before = request.current_value == null || request.current_value === "" ? "—" : request.current_value;
+      const after = request.requested_value == null || request.requested_value === "" ? "Review requested" : request.requested_value;
+
+      return `
+        <div class="correction-history-detail">
+          ${parts.length ? `<strong>${escapeHtml(parts.join(" · "))}</strong><br>` : ""}
+          ${escapeHtml(before)} ${request.requested_value ? "→" : ""} ${escapeHtml(after)}
+        </div>
+      `;
+    }
+
+    async function loadCorrectionRequests(assignment) {
+      const body = document.getElementById("correctionRequestsBody");
+      const refreshButton = document.getElementById("refreshCorrectionsButton");
+      const requestToken = ++correctionLoadToken;
+
+      populateCorrectionPlayers(assignment);
+
+      if (!assignment) {
+        if (body) body.innerHTML = '<tr><td class="empty-state" colspan="7">Select an assigned team to view correction requests.</td></tr>';
+        if (refreshButton) refreshButton.disabled = true;
+        return;
+      }
+
+      if (refreshButton) refreshButton.disabled = true;
+      if (body) body.innerHTML = '<tr><td class="empty-state" colspan="7">Loading correction requests...</td></tr>';
+
+      try {
+        const { data, error } = await supabaseClient.rpc("get_coach_correction_requests", {
+          p_team_id: assignment.team_id
+        });
+
+        if (requestToken !== correctionLoadToken) return;
+        if (error) throw error;
+
+        const requests = data || [];
+        body.innerHTML = requests.length ? requests.map(request => {
+          const status = String(request.request_status || "pending").toLowerCase();
+          const canWithdraw = status === "pending";
+          return `
+            <tr>
+              <td><strong>${escapeHtml(formatScheduleDate(request.submitted_at))}</strong></td>
+              <td><strong>Game #${escapeHtml(request.game_id)}</strong><br><span style="color:var(--muted);font-size:10px">vs ${escapeHtml(request.opponent_team_name || "Opponent")}</span></td>
+              <td>${escapeHtml(correctionTypeLabel(request.request_type))}</td>
+              <td>${correctionChangeSummary(request)}</td>
+              <td>${escapeHtml(request.reason || "—")}</td>
+              <td><span class="status-badge ${escapeHtml(correctionStatusClass(status))}">${escapeHtml(status.replace(/_/g, " "))}</span></td>
+              <td>
+                <div class="correction-history-detail">${escapeHtml(request.review_notes || (canWithdraw ? "Awaiting commissioner review." : "No review notes."))}</div>
+                ${canWithdraw ? `<div class="correction-history-actions" style="margin-top:7px"><button class="mini-button danger" type="button" onclick="withdrawCorrectionRequest('${escapeHtml(request.correction_request_id)}', this)">Withdraw</button></div>` : ""}
+              </td>
+            </tr>
+          `;
+        }).join("") : '<tr><td class="empty-state" colspan="7">No correction requests have been submitted for this team.</td></tr>';
+      } catch (error) {
+        if (requestToken !== correctionLoadToken) return;
+        console.error("Unable to load coach correction requests:", error);
+        if (body) body.innerHTML = `<tr><td class="empty-state" colspan="7">Unable to load correction requests: ${escapeHtml(error?.message || "Unknown error")}</td></tr>`;
+      } finally {
+        if (requestToken === correctionLoadToken && refreshButton) refreshButton.disabled = false;
+      }
+    }
+
+    async function submitCorrectionRequest(event) {
+      event.preventDefault();
+
+      const assignment = selectedAssignment();
+      const game = selectedCorrectionGame();
+      const type = String(document.getElementById("correctionTypeSelect").value || "");
+      const playerId = type === "player_stat" ? (document.getElementById("correctionPlayerSelect").value || null) : null;
+      const statField = type === "player_stat" ? (document.getElementById("correctionStatField").value || null) : null;
+      const currentValue = document.getElementById("correctionCurrentValue").value.trim() || null;
+      const requestedValue = document.getElementById("correctionRequestedValue").value.trim() || null;
+      const reason = document.getElementById("correctionReason").value.trim();
+      const button = document.getElementById("submitCorrectionButton");
+      const message = document.getElementById("correctionMessage");
+
+      message.className = "correction-message form-wide";
+      message.textContent = "";
+
+      if (!assignment) return alert("Select an assigned team first.");
+      if (!game) return alert("Select a finalized game first.");
+      if (!type) return alert("Select a correction type.");
+      if (type === "player_stat" && !playerId) return alert("Select the player whose statistic needs correction.");
+      if (type === "player_stat" && !statField) return alert("Select the statistic that needs correction.");
+      if (["player_stat", "team_score"].includes(type) && !requestedValue) return alert("Enter the requested corrected value.");
+      if (reason.length < 5) return alert("Please provide a clear reason for the correction request.");
+
+      if (!confirm(`Submit this correction request for Game #${game.game_id}?\n\nThe official record will not change until it is reviewed by an authorized league official.`)) return;
+
+      button.disabled = true;
+      button.textContent = "Submitting Request...";
+      message.textContent = "Sending the correction request for review...";
+
+      try {
+        const { error } = await supabaseClient.rpc("submit_coach_correction_request", {
+          p_game_id: Number(game.game_id),
+          p_team_id: assignment.team_id,
+          p_player_id: playerId,
+          p_request_type: type,
+          p_stat_field: statField,
+          p_current_value: currentValue,
+          p_requested_value: requestedValue,
+          p_reason: reason
+        });
+
+        if (error) throw error;
+
+        message.className = "correction-message success form-wide";
+        message.textContent = "Correction request submitted successfully. It is now pending commissioner review.";
+
+        const keepGame = document.getElementById("correctionGameSelect").value;
+        document.getElementById("correctionTypeSelect").value = "";
+        document.getElementById("correctionPlayerSelect").value = "";
+        document.getElementById("correctionStatField").value = "";
+        document.getElementById("correctionCurrentValue").value = "";
+        document.getElementById("correctionRequestedValue").value = "";
+        document.getElementById("correctionReason").value = "";
+        document.getElementById("correctionGameSelect").value = keepGame;
+        syncCorrectionForm();
+        await loadCorrectionRequests(assignment);
+      } catch (error) {
+        console.error("Unable to submit correction request:", error);
+        message.className = "correction-message error form-wide";
+        message.textContent = error?.message || "Unable to submit correction request.";
+      } finally {
+        button.textContent = "Submit Correction Request";
+        syncCorrectionForm();
+      }
+    }
+
+    async function withdrawCorrectionRequest(requestId, button) {
+      if (!confirm("Withdraw this pending correction request?")) return;
+
+      button.disabled = true;
+      button.textContent = "Withdrawing...";
+
+      const { error } = await supabaseClient.rpc("withdraw_coach_correction_request", {
+        p_request_id: requestId
+      });
+
+      if (error) {
+        alert("Unable to withdraw correction request: " + error.message);
+        button.disabled = false;
+        button.textContent = "Withdraw";
+        return;
+      }
+
+      await loadCorrectionRequests(selectedAssignment());
     }
 
     function resetLineupPanel(message = "Select a scheduled game to prepare the lineup.") {
@@ -1816,6 +2219,8 @@
         resetLineupPanel("Select an assigned team to prepare a lineup.");
         loadTeamSchedule(null);
         loadTeamStatistics(null);
+        loadCorrectionRequests(null);
+        resetCorrectionPanel("Select an assigned team to submit or review correction requests.");
         return;
       }
 
@@ -1848,6 +2253,8 @@
       resetLineupPanel("Loading scheduled games for this team...");
       loadTeamSchedule(assignment);
       loadTeamStatistics(assignment);
+      loadCorrectionRequests(assignment);
+      populateCorrectionPlayers(assignment);
     }
 
     function closeSidebar() {
@@ -1865,6 +2272,19 @@
 
     document.getElementById("refreshStatisticsButton").addEventListener("click", function () {
       loadTeamStatistics(selectedAssignment());
+    });
+
+    document.getElementById("correctionGameSelect").addEventListener("change", syncCorrectionForm);
+    document.getElementById("correctionTypeSelect").addEventListener("change", function () {
+      document.getElementById("correctionCurrentValue").value = "";
+      document.getElementById("correctionRequestedValue").value = "";
+      syncCorrectionForm();
+    });
+    document.getElementById("correctionRequestForm").addEventListener("submit", submitCorrectionRequest);
+    document.getElementById("refreshCorrectionsButton").addEventListener("click", function () {
+      const assignment = selectedAssignment();
+      loadCorrectionRequests(assignment);
+      loadTeamSchedule(assignment);
     });
 
     teamSelect.addEventListener("change", function () {
