@@ -983,7 +983,7 @@
     .scorekeeper-summary-grid {
       padding: 16px 18px;
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 10px;
       background: #fafafa;
       border-bottom: 1px solid var(--line);
@@ -1028,6 +1028,15 @@
 
     .scorekeeper-assignment-cell {
       min-width: 210px;
+    }
+
+    #scorekeepersPanel table {
+      min-width: 1120px;
+    }
+
+    #scorekeepersPanel .review-actions {
+      min-width: 180px;
+      flex-wrap: nowrap;
     }
 
     @media (max-width: 680px) {
@@ -2769,23 +2778,27 @@
         <section id="scorekeepersPanel" class="panel commissioner-view-section">
           <header class="panel-header">
             <div>
-              <h2>Scorekeeper Assignments</h2>
-              <p>Assign or reassign a scorekeeper to scheduled games in the currently selected league.</p>
+              <h2>Game Operations Assignments</h2>
+              <p>Assign the Main Scorekeeper and dedicated Clock Operator for each scheduled game. The same active scorekeeper account may be used for both when needed.</p>
             </div>
             <button id="refreshScorekeeperAssignmentsButton" class="secondary-button" type="button">REFRESH</button>
           </header>
 
           <div class="scorekeeper-summary-grid">
             <div class="scorekeeper-summary-card">
-              <span>Available Scorekeepers</span>
+              <span>Available Scorekeeper Accounts</span>
               <strong id="availableScorekeeperCount">0</strong>
             </div>
             <div class="scorekeeper-summary-card">
-              <span>Assigned Games</span>
+              <span>Main Scorekeepers Assigned</span>
               <strong id="assignedScorekeeperGameCount">0</strong>
             </div>
             <div class="scorekeeper-summary-card">
-              <span>Unassigned Games</span>
+              <span>Clock Operators Assigned</span>
+              <strong id="assignedClockOperatorGameCount">0</strong>
+            </div>
+            <div class="scorekeeper-summary-card">
+              <span>Games Missing Main Scorekeeper</span>
               <strong id="unassignedScorekeeperGameCount">0</strong>
             </div>
           </div>
@@ -2798,12 +2811,13 @@
                   <th>Matchup</th>
                   <th>Date &amp; Time</th>
                   <th>Status</th>
-                  <th>Scorekeeper</th>
-                  <th>Action</th>
+                  <th>Main Scorekeeper</th>
+                  <th>Clock Operator</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="scorekeeperAssignmentBody">
-                <tr><td class="empty-state" colspan="6">Loading scorekeeper assignments...</td></tr>
+                <tr><td class="empty-state" colspan="7">Loading game operations assignments...</td></tr>
               </tbody>
             </table>
           </div>
@@ -3203,6 +3217,8 @@
     let scheduledGames = [];
     let availableScorekeepers = [];
     let gameScorekeeperAssignments = [];
+    let availableClockOperators = [];
+    let gameClockOperatorAssignments = [];
     let editingGameId = null;
     let rosterReviewRows = [];
     let rosterReviewLeagueId = null;
@@ -3274,7 +3290,7 @@
       scorekeepers: {
         radioId: "commissionerViewScorekeepers",
         title: "Scorekeepers",
-        description: "Assign or reassign scorekeepers to scheduled league games.",
+        description: "Assign Main Scorekeepers and Clock Operators to scheduled league games.",
         hash: "#scorekeepersPanel"
       },
       review: {
@@ -3536,6 +3552,16 @@
         .rpc("list_manageable_game_scorekeepers");
       if (assignmentError) throw assignmentError;
       gameScorekeeperAssignments = assignmentRows || [];
+
+      const { data: clockOperatorRows, error: clockOperatorError } = await supabaseClient
+        .rpc("list_clock_operators_for_scheduling");
+      if (clockOperatorError) throw clockOperatorError;
+      availableClockOperators = clockOperatorRows || [];
+
+      const { data: clockAssignmentRows, error: clockAssignmentError } = await supabaseClient
+        .rpc("list_manageable_game_clock_operators");
+      if (clockAssignmentError) throw clockAssignmentError;
+      gameClockOperatorAssignments = clockAssignmentRows || [];
 
       renderLeagueOptions();
       renderWorkspace();
@@ -3971,19 +3997,36 @@
         "Assigned Scorekeeper";
     }
 
+    function clockOperatorDisplayName(clockOperatorId) {
+      const operator = availableClockOperators.find(
+        item => String(item.clock_operator_id) === String(clockOperatorId)
+      );
+
+      return operator?.full_name ||
+        operator?.email ||
+        "Assigned Clock Operator";
+    }
+
     function renderScorekeeperManagement(league) {
       const body = document.getElementById("scorekeeperAssignmentBody");
       const availableCount = document.getElementById("availableScorekeeperCount");
       const assignedCount = document.getElementById("assignedScorekeeperGameCount");
+      const assignedClockCount = document.getElementById("assignedClockOperatorGameCount");
       const unassignedCount = document.getElementById("unassignedScorekeeperGameCount");
 
-      availableCount.textContent = availableScorekeepers.length.toLocaleString();
+      const availableAccountIds = new Set([
+        ...availableScorekeepers.map(item => String(item.scorekeeper_id || "")),
+        ...availableClockOperators.map(item => String(item.clock_operator_id || ""))
+      ].filter(Boolean));
+
+      availableCount.textContent = availableAccountIds.size.toLocaleString();
 
       if (!league) {
         assignedCount.textContent = "0";
+        assignedClockCount.textContent = "0";
         unassignedCount.textContent = "0";
         body.innerHTML =
-          '<tr><td class="empty-state" colspan="6">No assigned league.</td></tr>';
+          '<tr><td class="empty-state" colspan="7">No assigned league.</td></tr>';
         return;
       }
 
@@ -3991,19 +4034,29 @@
         game => String(game.league_id) === String(league.id)
       );
 
-      const assignments = new Map(
+      const mainAssignments = new Map(
         gameScorekeeperAssignments.map(item => [
           Number(item.game_id),
           item.scorekeeper_id
         ])
       );
 
-      const assignedGames = games.filter(game => assignments.get(Number(game.id)));
+      const clockAssignments = new Map(
+        gameClockOperatorAssignments.map(item => [
+          Number(item.game_id),
+          item.clock_operator_id
+        ])
+      );
+
+      const assignedGames = games.filter(game => mainAssignments.get(Number(game.id)));
+      const assignedClockGames = games.filter(game => clockAssignments.get(Number(game.id)));
+
       assignedCount.textContent = assignedGames.length.toLocaleString();
+      assignedClockCount.textContent = assignedClockGames.length.toLocaleString();
       unassignedCount.textContent =
         Math.max(0, games.length - assignedGames.length).toLocaleString();
 
-      const optionsForGame = selectedId =>
+      const mainOptionsForGame = selectedId =>
         '<option value="">Unassigned</option>' +
         availableScorekeepers.map(item => {
           const selected =
@@ -4013,10 +4066,21 @@
           return `<option value="${escapeHtml(item.scorekeeper_id)}"${selected}>${escapeHtml(item.full_name || item.email || "Scorekeeper")}</option>`;
         }).join("");
 
+      const clockOptionsForGame = selectedId =>
+        '<option value="">Unassigned</option>' +
+        availableClockOperators.map(item => {
+          const selected =
+            String(item.clock_operator_id) === String(selectedId || "")
+              ? " selected"
+              : "";
+          return `<option value="${escapeHtml(item.clock_operator_id)}"${selected}>${escapeHtml(item.full_name || item.email || "Clock Operator")}</option>`;
+        }).join("");
+
       body.innerHTML = games.length
         ? games.map(game => {
             const status = String(game.status || "scheduled").toLowerCase();
-            const assignmentId = assignments.get(Number(game.id)) || "";
+            const mainAssignmentId = mainAssignments.get(Number(game.id)) || "";
+            const clockAssignmentId = clockAssignments.get(Number(game.id)) || "";
             const canManage = status === "scheduled";
 
             return `
@@ -4028,12 +4092,25 @@
                 <td class="scorekeeper-assignment-cell">
                   ${
                     canManage
-                      ? `<select id="scorekeeperAssignment-${Number(game.id)}" class="scorekeeper-assignment-select">
-                           ${optionsForGame(assignmentId)}
+                      ? `<select id="scorekeeperAssignment-${Number(game.id)}" class="scorekeeper-assignment-select" aria-label="Main Scorekeeper for Game #${Number(game.id)}">
+                           ${mainOptionsForGame(mainAssignmentId)}
                          </select>`
                       : escapeHtml(
-                          assignmentId
-                            ? scorekeeperDisplayName(assignmentId)
+                          mainAssignmentId
+                            ? scorekeeperDisplayName(mainAssignmentId)
+                            : "Unassigned"
+                        )
+                  }
+                </td>
+                <td class="scorekeeper-assignment-cell">
+                  ${
+                    canManage
+                      ? `<select id="clockOperatorAssignment-${Number(game.id)}" class="scorekeeper-assignment-select" aria-label="Clock Operator for Game #${Number(game.id)}">
+                           ${clockOptionsForGame(clockAssignmentId)}
+                         </select>`
+                      : escapeHtml(
+                          clockAssignmentId
+                            ? clockOperatorDisplayName(clockAssignmentId)
                             : "Unassigned"
                         )
                   }
@@ -4041,14 +4118,17 @@
                 <td>
                   ${
                     canManage
-                      ? `<button class="table-action" type="button" onclick="saveScorekeeperAssignment(${Number(game.id)}, this)">SAVE</button>`
+                      ? `<div class="review-actions">
+                           <button class="table-action" type="button" onclick="saveScorekeeperAssignment(${Number(game.id)}, this)">SAVE MAIN</button>
+                           <button class="table-action" type="button" onclick="saveClockOperatorAssignment(${Number(game.id)}, this)">SAVE CLOCK</button>
+                         </div>`
                       : '<span class="status-badge">Locked</span>'
                   }
                 </td>
               </tr>
             `;
           }).join("")
-        : '<tr><td class="empty-state" colspan="6">No games are available in this league yet.</td></tr>';
+        : '<tr><td class="empty-state" colspan="7">No games are available in this league yet.</td></tr>';
     }
 
     async function refreshScorekeeperData() {
@@ -4058,22 +4138,30 @@
       button.disabled = true;
       button.textContent = "REFRESHING...";
       message.className = "form-message";
-      message.textContent = "Refreshing scorekeeper assignments...";
+      message.textContent = "Refreshing game operations assignments...";
 
       try {
         const [
           scorekeeperResult,
-          assignmentResult
+          assignmentResult,
+          clockOperatorResult,
+          clockAssignmentResult
         ] = await Promise.all([
           supabaseClient.rpc("list_scorekeepers_for_scheduling"),
-          supabaseClient.rpc("list_manageable_game_scorekeepers")
+          supabaseClient.rpc("list_manageable_game_scorekeepers"),
+          supabaseClient.rpc("list_clock_operators_for_scheduling"),
+          supabaseClient.rpc("list_manageable_game_clock_operators")
         ]);
 
         if (scorekeeperResult.error) throw scorekeeperResult.error;
         if (assignmentResult.error) throw assignmentResult.error;
+        if (clockOperatorResult.error) throw clockOperatorResult.error;
+        if (clockAssignmentResult.error) throw clockAssignmentResult.error;
 
         availableScorekeepers = scorekeeperResult.data || [];
         gameScorekeeperAssignments = assignmentResult.data || [];
+        availableClockOperators = clockOperatorResult.data || [];
+        gameClockOperatorAssignments = clockAssignmentResult.data || [];
 
         const league = assignedLeagues.find(
           item => String(item.id) === String(leagueSelect.value)
@@ -4092,12 +4180,12 @@
         );
 
         message.className = "form-message success";
-        message.textContent = "Scorekeeper assignments refreshed.";
+        message.textContent = "Game operations assignments refreshed.";
       } catch (error) {
-        console.error("Unable to refresh scorekeeper assignments:", error);
+        console.error("Unable to refresh game operations assignments:", error);
         message.className = "form-message error";
         message.textContent =
-          "Unable to refresh scorekeeper assignments: " +
+          "Unable to refresh game operations assignments: " +
           (error.message || "Unknown error");
       } finally {
         button.disabled = false;
@@ -4177,6 +4265,75 @@
       } finally {
         button.disabled = false;
         button.textContent = "SAVE";
+      }
+    }
+
+    async function saveClockOperatorAssignment(gameId, button) {
+      const game = scheduledGames.find(
+        item => Number(item.id) === Number(gameId)
+      );
+      if (!game) return;
+
+      const status = String(game.status || "").toLowerCase();
+      if (status !== "scheduled") {
+        alert("Only scheduled games can have their Clock Operator assignment changed.");
+        return;
+      }
+
+      const select = document.getElementById(
+        `clockOperatorAssignment-${Number(gameId)}`
+      );
+      const clockOperatorId = select?.value || null;
+      const message = document.getElementById("scorekeeperAssignmentMessage");
+
+      button.disabled = true;
+      button.textContent = "SAVING...";
+      message.className = "form-message";
+      message.textContent = `Saving Clock Operator assignment for Game #${gameId}...`;
+
+      try {
+        const { error } = await supabaseClient.rpc(
+          "set_game_clock_operator_assignment",
+          {
+            p_game_id: Number(game.id),
+            p_clock_operator_id: clockOperatorId,
+            p_active: Boolean(clockOperatorId)
+          }
+        );
+
+        if (error) throw error;
+
+        gameClockOperatorAssignments =
+          gameClockOperatorAssignments.filter(
+            item => Number(item.game_id) !== Number(game.id)
+          );
+
+        if (clockOperatorId) {
+          gameClockOperatorAssignments.push({
+            game_id: Number(game.id),
+            clock_operator_id: clockOperatorId
+          });
+        }
+
+        const league = assignedLeagues.find(
+          item => String(item.id) === String(game.league_id)
+        );
+
+        renderScorekeeperManagement(league);
+
+        message.className = "form-message success";
+        message.textContent = clockOperatorId
+          ? `Game #${game.id} Clock Operator was assigned to ${clockOperatorDisplayName(clockOperatorId)}.`
+          : `Clock Operator assignment was removed from Game #${game.id}.`;
+      } catch (error) {
+        console.error("Unable to save Clock Operator assignment:", error);
+        message.className = "form-message error";
+        message.textContent =
+          "Unable to save Clock Operator assignment: " +
+          (error.message || "Unknown error");
+      } finally {
+        button.disabled = false;
+        button.textContent = "SAVE CLOCK";
       }
     }
 
