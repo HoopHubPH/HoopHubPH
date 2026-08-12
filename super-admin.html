@@ -499,6 +499,150 @@
       line-height: 1.45;
     }
 
+
+    .activity-panel {
+      margin-top: 18px;
+      overflow: hidden;
+    }
+
+    .secondary-button {
+      min-height: 36px;
+      padding: 0 13px;
+      color: var(--ink);
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .secondary-button:hover {
+      border-color: rgba(255, 107, 0, 0.55);
+      background: var(--orange-soft);
+    }
+
+    .secondary-button:disabled {
+      opacity: 0.55;
+      cursor: wait;
+    }
+
+    .activity-toolbar {
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(150px, 1fr));
+      gap: 11px;
+      background: #fafafa;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .activity-filter {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .activity-filter label {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: bold;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+
+    .activity-control {
+      width: 100%;
+      height: 39px;
+      padding: 0 10px;
+      color: var(--ink);
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .activity-summary {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--line);
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .activity-summary strong {
+      color: var(--ink);
+    }
+
+    .activity-list {
+      display: grid;
+    }
+
+    .activity-item {
+      padding: 15px 20px;
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .activity-item:last-child {
+      border-bottom: 0;
+    }
+
+    .activity-symbol {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      color: var(--orange-dark);
+      background: var(--orange-soft);
+      border-radius: 9px;
+      font-size: 9px;
+      font-weight: bold;
+    }
+
+    .activity-title {
+      font-size: 12px;
+      font-weight: bold;
+      line-height: 1.35;
+    }
+
+    .activity-detail {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.55;
+      word-break: break-word;
+    }
+
+    .activity-meta {
+      min-width: 125px;
+      color: #8c929b;
+      font-size: 9px;
+      line-height: 1.55;
+      text-align: right;
+    }
+
+    .activity-meta strong {
+      display: block;
+      color: #475467;
+      font-size: 9px;
+    }
+
+    .activity-empty {
+      padding: 34px 20px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
     .footer-note {
       margin-top: 20px;
       color: #8c929b;
@@ -513,6 +657,10 @@
 
       .section-grid {
         grid-template-columns: 1fr;
+      }
+
+      .activity-toolbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
@@ -577,6 +725,25 @@
 
       .stat-card {
         min-height: 122px;
+      }
+
+      .activity-toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .activity-summary {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .activity-item {
+        grid-template-columns: 34px minmax(0, 1fr);
+      }
+
+      .activity-meta {
+        grid-column: 2;
+        min-width: 0;
+        text-align: left;
       }
     }
 
@@ -652,7 +819,7 @@
         <span class="nav-icon">AC</span>
         Accounts
       </a>
-      <a class="nav-link" href="account-management.html#activity-log">
+      <a class="nav-link" href="#activityLogPanel">
         <span class="nav-icon">AL</span>
         Activity Logs
       </a>
@@ -766,9 +933,9 @@
                 <span class="quick-arrow">→</span>
               </a>
 
-              <a class="quick-card" href="account-management.html#activity-log">
+              <a class="quick-card" href="#activityLogPanel">
                 <strong>View Activity Logs</strong>
-                <span>Review account changes and scorekeeper assignments.</span>
+                <span>Audit platform actions, corrections, assignments, and finalized-game changes.</span>
                 <span class="quick-arrow">→</span>
               </a>
 
@@ -831,6 +998,60 @@
           </article>
         </section>
 
+
+        <section id="activityLogPanel" class="panel activity-panel" aria-labelledby="activityLogHeading">
+          <header class="panel-header">
+            <div>
+              <h2 id="activityLogHeading">Platform Activity Log</h2>
+              <p>Audit recorded HoopHub PH actions across accounts, leagues, games, teams, and official corrections.</p>
+            </div>
+            <button id="refreshActivityButton" class="secondary-button" type="button">REFRESH LOG</button>
+          </header>
+
+          <div class="activity-toolbar">
+            <div class="activity-filter">
+              <label for="activityLeagueFilter">League</label>
+              <select id="activityLeagueFilter" class="activity-control">
+                <option value="all">All leagues</option>
+              </select>
+            </div>
+
+            <div class="activity-filter">
+              <label for="activityUserFilter">User</label>
+              <select id="activityUserFilter" class="activity-control">
+                <option value="all">All users</option>
+              </select>
+            </div>
+
+            <div class="activity-filter">
+              <label for="activityActionFilter">Action</label>
+              <select id="activityActionFilter" class="activity-control">
+                <option value="all">All actions</option>
+              </select>
+            </div>
+
+            <div class="activity-filter">
+              <label for="activityDateFilter">Date</label>
+              <select id="activityDateFilter" class="activity-control">
+                <option value="all">All available</option>
+                <option value="today">Today</option>
+                <option value="7">Last 7 days</option>
+                <option value="30">Last 30 days</option>
+                <option value="90">Last 90 days</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="activity-summary">
+            <span><strong id="activityVisibleCount">0</strong> matching actions</span>
+            <span id="activityLoadNote">Loading the latest recorded activity...</span>
+          </div>
+
+          <div id="activityLogList" class="activity-list">
+            <div class="activity-empty">Loading platform activity...</div>
+          </div>
+        </section>
+
         <p id="lastUpdated" class="footer-note">Dashboard totals are loading...</p>
       </div>
     </main>
@@ -853,6 +1074,365 @@
     const sidebar = document.getElementById("sidebar");
     const sidebarOverlay = document.getElementById("sidebarOverlay");
     const leagueManagementLink = document.getElementById("leagueManagementLink");
+
+    const activityLogList = document.getElementById("activityLogList");
+    const activityLeagueFilter = document.getElementById("activityLeagueFilter");
+    const activityUserFilter = document.getElementById("activityUserFilter");
+    const activityActionFilter = document.getElementById("activityActionFilter");
+    const activityDateFilter = document.getElementById("activityDateFilter");
+    const refreshActivityButton = document.getElementById("refreshActivityButton");
+
+    let activityRows = [];
+    let activityProfiles = [];
+    let activityLeagues = [];
+    let activityGames = [];
+    let activityLeagueTeams = [];
+
+    function escapeHtml(value) {
+      const element = document.createElement("div");
+      element.textContent = String(value ?? "");
+      return element.innerHTML;
+    }
+
+    function titleCaseAction(value) {
+      return String(value || "activity")
+        .replaceAll("_", " ")
+        .replace(/\b\w/g, character => character.toUpperCase());
+    }
+
+    function activityProfileName(profile) {
+      if (!profile) return "System";
+      return String(profile.full_name || profile.email || "User").trim();
+    }
+
+    function formatActivityDate(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "Unknown time";
+      return new Intl.DateTimeFormat("en-PH", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      }).format(date);
+    }
+
+    function activityActionLabel(action) {
+      const labels = {
+        account_updated: "Account Updated",
+        scorekeeper_assignment_activated: "Scorekeeper Assigned",
+        scorekeeper_assignment_revoked: "Scorekeeper Removed",
+        commissioner_assigned: "Commissioner Assigned",
+        commissioner_unassigned: "Commissioner Removed",
+        coach_assigned: "Coach Assigned",
+        coach_unassigned: "Coach Removed",
+        player_account_linked: "Player Account Linked",
+        player_account_unlinked: "Player Account Unlinked",
+        approved_correction_applied: "Finalized Correction Applied",
+        correction_approved: "Correction Approved",
+        correction_rejected: "Correction Rejected",
+        game_finalized: "Game Finalized",
+        game_returned_for_correction: "Game Returned for Correction",
+        roster_approved: "Roster Approved",
+        roster_rejected: "Roster Rejected"
+      };
+      return labels[action] || titleCaseAction(action);
+    }
+
+    function activitySymbol(action) {
+      const value = String(action || "");
+      if (value.includes("correction")) return "CR";
+      if (value.includes("account")) return "AC";
+      if (value.includes("commissioner")) return "CM";
+      if (value.includes("coach")) return "CH";
+      if (value.includes("player")) return "PL";
+      if (value.includes("roster")) return "RS";
+      if (value.includes("scorekeeper")) return "SK";
+      if (value.includes("game") || value.includes("final")) return "GM";
+      return "LG";
+    }
+
+    function activityGameById(gameId) {
+      return activityGames.find(game => String(game.id) === String(gameId));
+    }
+
+    function activityLeagueById(leagueId) {
+      return activityLeagues.find(league => String(league.id) === String(leagueId));
+    }
+
+    function activityLeagueIds(item) {
+      const details = item.details || {};
+      const ids = new Set();
+
+      if (details.league_id) ids.add(String(details.league_id));
+
+      if (
+        String(item.target_type || "").includes("league") &&
+        item.target_id &&
+        activityLeagueById(item.target_id)
+      ) {
+        ids.add(String(item.target_id));
+      }
+
+      const gameId = details.game_id ||
+        (String(item.target_type || "").includes("game") ? item.target_id : null);
+      const game = gameId ? activityGameById(gameId) : null;
+      if (game?.league_id) ids.add(String(game.league_id));
+
+      const teamId = details.team_id ||
+        (String(item.target_type || "").includes("team") ? item.target_id : null);
+      if (teamId) {
+        activityLeagueTeams
+          .filter(row => String(row.team_id) === String(teamId))
+          .forEach(row => {
+            if (row.league_id) ids.add(String(row.league_id));
+          });
+      }
+
+      return [...ids];
+    }
+
+    function activityLeagueLabel(item) {
+      const leagueIds = activityLeagueIds(item);
+      if (!leagueIds.length) return "Platform";
+      return leagueIds
+        .map(id => activityLeagueById(id)?.name || "League")
+        .join(", ");
+    }
+
+    function activityDescription(item) {
+      const details = item.details || {};
+
+      if (item.action === "approved_correction_applied") {
+        const field = String(details.stat_field || "official value").replaceAll("_", " ");
+        const previous = details.previous_value ?? "—";
+        const applied = details.applied_value ?? "—";
+        const game = details.game_id ? `Game #${details.game_id}` : "Finalized game";
+        return `${game}: ${field} changed from ${previous} to ${applied}.`;
+      }
+
+      if (item.action === "account_updated") {
+        const account = details.email || "Account";
+        const previousRole = details.previous_role || "unknown role";
+        const newRole = details.new_role || "unknown role";
+        const previousStatus = details.previous_status || "unknown status";
+        const newStatus = details.new_status || "unknown status";
+        return `${account}: ${previousRole} / ${previousStatus} → ${newRole} / ${newStatus}.`;
+      }
+
+      if (
+        item.action === "scorekeeper_assignment_activated" ||
+        item.action === "scorekeeper_assignment_revoked"
+      ) {
+        const verb = item.action.endsWith("revoked") ? "removed from" : "assigned to";
+        return `${details.scorekeeper_email || "Scorekeeper"} was ${verb} Game #${details.game_id ?? item.target_id ?? "—"}.`;
+      }
+
+      if (item.action === "commissioner_assigned" || item.action === "commissioner_unassigned") {
+        const profile = activityProfiles.find(profile => profile.id === details.commissioner_id);
+        const verb = item.action === "commissioner_assigned" ? "assigned" : "removed";
+        return `${activityProfileName(profile)} was ${verb} ${item.action === "commissioner_assigned" ? "to" : "from"} ${activityLeagueLabel(item)}.`;
+      }
+
+      if (item.action === "coach_assigned" || item.action === "coach_unassigned") {
+        const profile = activityProfiles.find(profile => profile.id === details.coach_id);
+        const verb = item.action === "coach_assigned" ? "assigned" : "removed";
+        return `${activityProfileName(profile)} was ${verb} ${item.action === "coach_assigned" ? "to" : "from"} a team assignment.`;
+      }
+
+      if (item.action === "player_account_linked" || item.action === "player_account_unlinked") {
+        return `Player account was ${item.action.endsWith("unlinked") ? "unlinked" : "linked"}.`;
+      }
+
+      if (details.game_id) {
+        const game = activityGameById(details.game_id);
+        const matchup = game
+          ? `${game.home_team || "Home"} vs ${game.away_team || "Away"}`
+          : `Game #${details.game_id}`;
+        return `${matchup}${item.target_id ? ` · Target ${item.target_id}` : ""}.`;
+      }
+
+      if (item.target_id) {
+        return `${String(item.target_type || "Target").replaceAll("_", " ")}: ${item.target_id}.`;
+      }
+
+      return "Platform action recorded.";
+    }
+
+    function populateActivityFilters() {
+      const currentLeague = activityLeagueFilter.value || "all";
+      const currentUser = activityUserFilter.value || "all";
+      const currentAction = activityActionFilter.value || "all";
+
+      activityLeagueFilter.innerHTML =
+        '<option value="all">All leagues</option>' +
+        activityLeagues.map(league =>
+          `<option value="${escapeHtml(league.id)}">${escapeHtml(league.name || "Unnamed league")}</option>`
+        ).join("");
+
+      activityUserFilter.innerHTML =
+        '<option value="all">All users</option>' +
+        activityProfiles.map(profile =>
+          `<option value="${escapeHtml(profile.id)}">${escapeHtml(activityProfileName(profile))}</option>`
+        ).join("");
+
+      const actions = [...new Set(activityRows.map(item => item.action).filter(Boolean))]
+        .sort((a, b) => activityActionLabel(a).localeCompare(activityActionLabel(b)));
+
+      activityActionFilter.innerHTML =
+        '<option value="all">All actions</option>' +
+        actions.map(action =>
+          `<option value="${escapeHtml(action)}">${escapeHtml(activityActionLabel(action))}</option>`
+        ).join("");
+
+      if ([...activityLeagueFilter.options].some(option => option.value === currentLeague)) {
+        activityLeagueFilter.value = currentLeague;
+      }
+      if ([...activityUserFilter.options].some(option => option.value === currentUser)) {
+        activityUserFilter.value = currentUser;
+      }
+      if ([...activityActionFilter.options].some(option => option.value === currentAction)) {
+        activityActionFilter.value = currentAction;
+      }
+    }
+
+    function activityPassesDate(item) {
+      const filter = activityDateFilter.value;
+      if (filter === "all") return true;
+
+      const created = new Date(item.created_at);
+      if (Number.isNaN(created.getTime())) return false;
+
+      const now = new Date();
+
+      if (filter === "today") {
+        return created.getFullYear() === now.getFullYear() &&
+          created.getMonth() === now.getMonth() &&
+          created.getDate() === now.getDate();
+      }
+
+      const days = Number(filter);
+      return created.getTime() >= now.getTime() - days * 24 * 60 * 60 * 1000;
+    }
+
+    function renderActivityLog() {
+      const leagueFilter = activityLeagueFilter.value;
+      const userFilter = activityUserFilter.value;
+      const actionFilter = activityActionFilter.value;
+
+      const filtered = activityRows.filter(item => {
+        const leagueMatch = leagueFilter === "all" ||
+          activityLeagueIds(item).includes(String(leagueFilter));
+        const userMatch = userFilter === "all" ||
+          String(item.actor_id || "") === String(userFilter);
+        const actionMatch = actionFilter === "all" ||
+          item.action === actionFilter;
+
+        return leagueMatch && userMatch && actionMatch && activityPassesDate(item);
+      });
+
+      document.getElementById("activityVisibleCount").textContent =
+        filtered.length.toLocaleString();
+
+      if (!filtered.length) {
+        activityLogList.innerHTML =
+          '<div class="activity-empty">No recorded actions match the selected filters.</div>';
+        return;
+      }
+
+      const profileById = new Map(activityProfiles.map(profile => [profile.id, profile]));
+
+      activityLogList.innerHTML = filtered.map(item => {
+        const actor = profileById.get(item.actor_id);
+        const actorName = activityProfileName(actor);
+        const actorRole = actor?.role ? titleCaseAction(actor.role) : "System";
+        const league = activityLeagueLabel(item);
+
+        return `
+          <article class="activity-item">
+            <div class="activity-symbol">${escapeHtml(activitySymbol(item.action))}</div>
+            <div>
+              <div class="activity-title">${escapeHtml(activityActionLabel(item.action))}</div>
+              <div class="activity-detail">
+                ${escapeHtml(activityDescription(item))}
+                <br>
+                By ${escapeHtml(actorName)} · ${escapeHtml(actorRole)} · ${escapeHtml(league)}
+              </div>
+            </div>
+            <div class="activity-meta">
+              <strong>${escapeHtml(formatActivityDate(item.created_at))}</strong>
+              ${escapeHtml(String(item.target_type || "platform").replaceAll("_", " "))}
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    async function loadActivityLog() {
+      refreshActivityButton.disabled = true;
+      refreshActivityButton.textContent = "REFRESHING...";
+      document.getElementById("activityLoadNote").textContent = "Refreshing recorded activity...";
+
+      try {
+        const [
+          activityResult,
+          profilesResult,
+          leaguesResult,
+          gamesResult,
+          leagueTeamsResult
+        ] = await Promise.all([
+          supabaseClient
+            .from("activity_logs")
+            .select("id, actor_id, action, target_type, target_id, details, created_at")
+            .order("created_at", { ascending: false })
+            .limit(250),
+
+          supabaseClient
+            .from("profiles")
+            .select("id, email, full_name, role, status")
+            .order("full_name"),
+
+          supabaseClient
+            .from("leagues")
+            .select("id, name")
+            .order("name"),
+
+          supabaseClient
+            .from("games")
+            .select("id, league_id, home_team, away_team"),
+
+          supabaseClient
+            .from("league_teams")
+            .select("league_id, team_id")
+        ]);
+
+        if (activityResult.error) throw activityResult.error;
+
+        activityRows = activityResult.data || [];
+        activityProfiles = profilesResult.error ? [] : (profilesResult.data || []);
+        activityLeagues = leaguesResult.error ? [] : (leaguesResult.data || []);
+        activityGames = gamesResult.error ? [] : (gamesResult.data || []);
+        activityLeagueTeams = leagueTeamsResult.error ? [] : (leagueTeamsResult.data || []);
+
+        populateActivityFilters();
+        renderActivityLog();
+
+        document.getElementById("activityLoadNote").textContent =
+          `Showing up to the latest ${activityRows.length.toLocaleString()} recorded actions.`;
+      } catch (error) {
+        console.error("Unable to load activity log:", error);
+        activityRows = [];
+        activityLogList.innerHTML =
+          `<div class="activity-empty">Unable to load the Activity Log: ${escapeHtml(error.message || "Unknown error")}</div>`;
+        document.getElementById("activityVisibleCount").textContent = "0";
+        document.getElementById("activityLoadNote").textContent =
+          "Activity Log could not be loaded.";
+      } finally {
+        refreshActivityButton.disabled = false;
+        refreshActivityButton.textContent = "REFRESH LOG";
+      }
+    }
+
 
     function displayAccount(profile, user) {
       const emailName = user.email ? user.email.split("@")[0] : "Owner";
@@ -930,7 +1510,10 @@
         displayAccount(profile, userData.user);
         authScreen.hidden = true;
         appShell.hidden = false;
-        await loadDashboardCounts();
+        await Promise.all([
+          loadDashboardCounts(),
+          loadActivityLog()
+        ]);
       } catch (error) {
         console.error("Authorization check failed:", error);
         await returnToLogin(true);
@@ -1003,6 +1586,12 @@
       closeSidebar();
       window.location.assign("./account-management.html");
     });
+
+
+    [activityLeagueFilter, activityUserFilter, activityActionFilter, activityDateFilter]
+      .forEach(control => control.addEventListener("change", renderActivityLog));
+
+    refreshActivityButton.addEventListener("click", loadActivityLog);
 
     logoutButton.addEventListener("click", async function () {
       logoutButton.disabled = true;
