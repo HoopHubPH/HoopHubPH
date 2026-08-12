@@ -254,6 +254,22 @@
     td strong { font-size: 11px; }
     .empty-state { padding: 34px 18px; color: var(--muted); text-align: center; font-size: 11px; line-height: 1.6; }
 
+    .statistics-summary { padding: 16px 18px; display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: 10px; border-bottom: 1px solid var(--line); background: #fafafa; }
+    .statistics-summary-card { min-width: 0; padding: 13px 14px; background: #fff; border: 1px solid var(--line); border-radius: 9px; }
+    .statistics-summary-card span, .statistics-summary-card strong { display: block; }
+    .statistics-summary-card span { color: var(--muted); font-size: 9px; font-weight: 900; letter-spacing: .4px; text-transform: uppercase; }
+    .statistics-summary-card strong { margin-top: 6px; font-size: 21px; }
+    .statistics-section { border-top: 1px solid var(--line); }
+    .statistics-section:first-of-type { border-top: 0; }
+    .statistics-section-header { padding: 14px 18px 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .statistics-section-header h3 { font-size: 14px; }
+    .statistics-section-header p { margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .result-badge { min-width: 28px; padding: 5px 7px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; font-size: 10px; font-weight: 900; }
+    .result-badge.win { color: #067647; background: #ecfdf3; }
+    .result-badge.loss { color: #b42318; background: #fef3f2; }
+    .result-badge.tie { color: #475467; background: #f2f4f7; }
+    .statistics-note { padding: 12px 18px 16px; color: var(--muted); font-size: 11px; line-height: 1.5; }
+
     .module-grid { padding: 18px; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 11px; }
     .module-card { min-height: 94px; padding: 15px; background: #fafafa; border: 1px solid var(--line); border-radius: 9px; }
     .module-card strong, .module-card span { display: block; }
@@ -280,6 +296,7 @@
       .application-form { grid-template-columns: 1fr; }
       .lineup-toolbar { grid-template-columns: 1fr; }
       .lineup-summary { grid-template-columns: 1fr; }
+      .statistics-summary { grid-template-columns: repeat(2, minmax(0,1fr)); }
       .lineup-footer { align-items: stretch; flex-direction: column; }
       .lineup-footer .primary-button { width: 100%; }
     }
@@ -335,7 +352,7 @@
 
       <p class="nav-label">Team Records</p>
       <a class="nav-link" href="#gameSchedulePanel"><span class="nav-icon">GM</span> Game Schedule</a>
-      <a class="nav-link" href="#modules"><span class="nav-icon">ST</span> Statistics <span class="coming">Next</span></a>
+      <a class="nav-link" href="#teamStatisticsPanel"><span class="nav-icon">ST</span> Statistics</a>
       <a class="nav-link" href="#modules"><span class="nav-icon">CR</span> Corrections <span class="coming">Next</span></a>
     </aside>
 
@@ -549,6 +566,55 @@
           </div>
         </section>
 
+        <section id="teamStatisticsPanel" class="panel">
+          <header class="panel-header">
+            <div>
+              <h2>Team Statistics</h2>
+              <p>Verified statistics from finalized games only. Coaches can view but cannot edit official game records here.</p>
+            </div>
+            <button id="refreshStatisticsButton" class="secondary-button" type="button">Refresh Statistics</button>
+          </header>
+
+          <div class="statistics-summary">
+            <div class="statistics-summary-card"><span>Games</span><strong id="statisticsGamesPlayed">0</strong></div>
+            <div class="statistics-summary-card"><span>Record</span><strong id="statisticsRecord">0-0</strong></div>
+            <div class="statistics-summary-card"><span>Points For</span><strong id="statisticsPointsFor">0</strong></div>
+            <div class="statistics-summary-card"><span>Points Against</span><strong id="statisticsPointsAgainst">0</strong></div>
+            <div class="statistics-summary-card"><span>PPG</span><strong id="statisticsPPG">0.0</strong></div>
+            <div class="statistics-summary-card"><span>Opp PPG</span><strong id="statisticsOppPPG">0.0</strong></div>
+          </div>
+
+          <div class="statistics-section">
+            <div class="statistics-section-header">
+              <div><h3>Finalized Game Results</h3><p>Official results for this team's completed games.</p></div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Date</th><th>Opponent</th><th>Home / Away</th><th>Result</th><th>Score</th><th>Venue</th></tr></thead>
+                <tbody id="statisticsGameResultsBody"><tr><td class="empty-state" colspan="6">Loading finalized game results...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="statistics-section">
+            <div class="statistics-section-header">
+              <div><h3>Player Statistics</h3><p>Aggregated official statistics from finalized games.</p></div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Player</th><th>GP</th><th>MIN</th><th>PTS</th><th>REB</th><th>AST</th><th>STL</th><th>BLK</th><th>TO</th><th>PF</th><th>2PT</th><th>3PT</th><th>FT</th><th>+/-</th>
+                  </tr>
+                </thead>
+                <tbody id="statisticsPlayerBody"><tr><td class="empty-state" colspan="14">Loading player statistics...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div id="statisticsMessage" class="statistics-note">Only finalized games are included in these statistics.</div>
+        </section>
+
         <section id="modules" class="panel">
           <header class="panel-header">
             <div><h2>Coach Modules</h2><p>Official game statistics remain protected and read-only.</p></div>
@@ -581,6 +647,7 @@
     let openApplicationLeagues = [];
     let scheduleLoadToken = 0;
     let lineupLoadToken = 0;
+    let statisticsLoadToken = 0;
     let coachScheduleGames = [];
     let currentLineupRows = [];
 
@@ -983,6 +1050,116 @@
         `;
       } finally {
         if (requestToken === scheduleLoadToken && refreshButton) refreshButton.disabled = false;
+      }
+    }
+
+    function formatStatisticsMinutes(value) {
+      const totalSeconds = Math.max(0, Math.round(Number(value || 0)));
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${minutes}:${String(seconds).padStart(2, "0")}`;
+    }
+
+    function resetTeamStatistics(message = "Select an assigned team to view statistics.") {
+      document.getElementById("statisticsGamesPlayed").textContent = "0";
+      document.getElementById("statisticsRecord").textContent = "0-0";
+      document.getElementById("statisticsPointsFor").textContent = "0";
+      document.getElementById("statisticsPointsAgainst").textContent = "0";
+      document.getElementById("statisticsPPG").textContent = "0.0";
+      document.getElementById("statisticsOppPPG").textContent = "0.0";
+      document.getElementById("statisticsGameResultsBody").innerHTML = `<tr><td class="empty-state" colspan="6">${escapeHtml(message)}</td></tr>`;
+      document.getElementById("statisticsPlayerBody").innerHTML = `<tr><td class="empty-state" colspan="14">${escapeHtml(message)}</td></tr>`;
+      document.getElementById("statisticsMessage").textContent = message;
+      document.getElementById("refreshStatisticsButton").disabled = true;
+    }
+
+    async function loadTeamStatistics(assignment) {
+      const refreshButton = document.getElementById("refreshStatisticsButton");
+      const gameBody = document.getElementById("statisticsGameResultsBody");
+      const playerBody = document.getElementById("statisticsPlayerBody");
+      const message = document.getElementById("statisticsMessage");
+      const requestToken = ++statisticsLoadToken;
+
+      if (!assignment) {
+        resetTeamStatistics();
+        return;
+      }
+
+      refreshButton.disabled = true;
+      gameBody.innerHTML = '<tr><td class="empty-state" colspan="6">Loading finalized game results...</td></tr>';
+      playerBody.innerHTML = '<tr><td class="empty-state" colspan="14">Loading player statistics...</td></tr>';
+      message.textContent = "Loading verified statistics...";
+
+      try {
+        const [summaryResult, gamesResult, playersResult] = await Promise.all([
+          supabaseClient.rpc("get_coach_team_statistics_summary", { p_team_id: assignment.team_id }),
+          supabaseClient.rpc("get_coach_team_game_results", { p_team_id: assignment.team_id }),
+          supabaseClient.rpc("get_coach_team_player_statistics", { p_team_id: assignment.team_id })
+        ]);
+
+        if (requestToken !== statisticsLoadToken) return;
+        if (summaryResult.error) throw summaryResult.error;
+        if (gamesResult.error) throw gamesResult.error;
+        if (playersResult.error) throw playersResult.error;
+
+        const summary = Array.isArray(summaryResult.data) ? (summaryResult.data[0] || {}) : (summaryResult.data || {});
+        const gameRows = gamesResult.data || [];
+        const playerRows = playersResult.data || [];
+
+        document.getElementById("statisticsGamesPlayed").textContent = Number(summary.games_played || 0).toLocaleString();
+        document.getElementById("statisticsRecord").textContent = `${Number(summary.wins || 0)}-${Number(summary.losses || 0)}`;
+        document.getElementById("statisticsPointsFor").textContent = Number(summary.points_for || 0).toLocaleString();
+        document.getElementById("statisticsPointsAgainst").textContent = Number(summary.points_against || 0).toLocaleString();
+        document.getElementById("statisticsPPG").textContent = Number(summary.average_points || 0).toFixed(1);
+        document.getElementById("statisticsOppPPG").textContent = Number(summary.average_points_allowed || 0).toFixed(1);
+
+        gameBody.innerHTML = gameRows.length ? gameRows.map(game => {
+          const result = String(game.game_result || "T").toUpperCase();
+          const resultClass = result === "W" ? "win" : (result === "L" ? "loss" : "tie");
+          return `
+            <tr>
+              <td><strong>${escapeHtml(formatScheduleDate(game.scheduled_at || game.finalized_at))}</strong></td>
+              <td><strong>${escapeHtml(game.opponent_team_name || "Opponent")}</strong></td>
+              <td>${escapeHtml(game.home_away || "—")}</td>
+              <td><span class="result-badge ${resultClass}">${escapeHtml(result)}</span></td>
+              <td><strong>${escapeHtml(`${game.team_score ?? 0} - ${game.opponent_score ?? 0}`)}</strong></td>
+              <td>${escapeHtml(game.venue || "—")}</td>
+            </tr>
+          `;
+        }).join("") : '<tr><td class="empty-state" colspan="6">No finalized games are available for this team yet.</td></tr>';
+
+        playerBody.innerHTML = playerRows.length ? playerRows.map(player => {
+          const name = `${player.first_name || ""} ${player.last_name || ""}`.trim() || "Player";
+          const plusMinus = Number(player.plus_minus || 0);
+          return `
+            <tr>
+              <td><strong>${escapeHtml(name)}</strong><br><span style="color:var(--muted);font-size:10px">#${escapeHtml(player.jersey_number ?? "—")} · ${escapeHtml(player.player_position || "—")}</span></td>
+              <td>${Number(player.games_played || 0)}</td>
+              <td>${escapeHtml(formatStatisticsMinutes(player.minutes_played))}</td>
+              <td><strong>${Number(player.points || 0)}</strong></td>
+              <td>${Number(player.rebounds || 0)}</td>
+              <td>${Number(player.assists || 0)}</td>
+              <td>${Number(player.steals || 0)}</td>
+              <td>${Number(player.blocks || 0)}</td>
+              <td>${Number(player.turnovers || 0)}</td>
+              <td>${Number(player.fouls || 0)}</td>
+              <td>${Number(player.two_pt_made || 0)}/${Number(player.two_pt_attempted || 0)}</td>
+              <td>${Number(player.three_pt_made || 0)}/${Number(player.three_pt_attempted || 0)}</td>
+              <td>${Number(player.ft_made || 0)}/${Number(player.ft_attempted || 0)}</td>
+              <td><strong>${plusMinus > 0 ? "+" : ""}${plusMinus}</strong></td>
+            </tr>
+          `;
+        }).join("") : '<tr><td class="empty-state" colspan="14">No finalized player statistics are available for this team yet.</td></tr>';
+
+        message.textContent = "Official statistics from finalized games only. These records are read-only for coaches.";
+      } catch (error) {
+        if (requestToken !== statisticsLoadToken) return;
+        console.error("Unable to load coach team statistics:", error);
+        gameBody.innerHTML = `<tr><td class="empty-state" colspan="6">Unable to load game results: ${escapeHtml(error?.message || "Unknown error")}</td></tr>`;
+        playerBody.innerHTML = `<tr><td class="empty-state" colspan="14">Unable to load player statistics.</td></tr>`;
+        message.textContent = "Unable to load team statistics. Please refresh and try again.";
+      } finally {
+        if (requestToken === statisticsLoadToken) refreshButton.disabled = false;
       }
     }
 
@@ -1638,6 +1815,7 @@
         loadPlayerInvitations(null);
         resetLineupPanel("Select an assigned team to prepare a lineup.");
         loadTeamSchedule(null);
+        loadTeamStatistics(null);
         return;
       }
 
@@ -1669,6 +1847,7 @@
       document.getElementById("lineupGameSelect").disabled = true;
       resetLineupPanel("Loading scheduled games for this team...");
       loadTeamSchedule(assignment);
+      loadTeamStatistics(assignment);
     }
 
     function closeSidebar() {
@@ -1682,6 +1861,10 @@
 
     document.getElementById("refreshScheduleButton").addEventListener("click", function () {
       loadTeamSchedule(selectedAssignment());
+    });
+
+    document.getElementById("refreshStatisticsButton").addEventListener("click", function () {
+      loadTeamStatistics(selectedAssignment());
     });
 
     teamSelect.addEventListener("change", function () {
