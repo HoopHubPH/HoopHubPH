@@ -946,6 +946,319 @@
       }
     }
 
+
+    /* =========================
+       PLAYER PERFORMANCE CENTER
+       ========================= */
+    .player-performance-layout {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(250px, .7fr);
+      gap: 13px;
+      background: #fafafa;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .player-trend-card,
+    .player-milestone-card {
+      min-width: 0;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+
+    .player-trend-card {
+      padding: 15px;
+    }
+
+    .player-performance-kicker {
+      display: block;
+      color: var(--orange-dark);
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+    }
+
+    .player-trend-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .player-trend-header > div:first-child > strong,
+    .player-personal-bests-heading > div > strong {
+      display: block;
+      margin-top: 5px;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .player-trend-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 3px;
+      background: #f2f4f7;
+      border-radius: 8px;
+    }
+
+    .player-trend-tab {
+      min-width: 42px;
+      height: 28px;
+      padding: 0 8px;
+      color: #667085;
+      background: transparent;
+      border: 0;
+      border-radius: 6px;
+      font-size: 9px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .player-trend-tab.active {
+      color: #fff;
+      background: #171717;
+    }
+
+    .player-trend-summary {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 8px;
+    }
+
+    .player-trend-summary > div {
+      padding: 9px 10px;
+      background: #fafafa;
+      border: 1px solid #eef0f2;
+      border-radius: 8px;
+    }
+
+    .player-trend-summary span,
+    .player-trend-summary strong {
+      display: block;
+    }
+
+    .player-trend-summary span {
+      color: var(--muted);
+      font-size: 8px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .player-trend-summary strong {
+      margin-top: 4px;
+      font-size: 15px;
+    }
+
+    .player-trend-chart {
+      min-height: 210px;
+      margin-top: 12px;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid #eef0f2;
+      border-radius: 9px;
+    }
+
+    .player-trend-chart svg {
+      width: 100%;
+      height: 210px;
+      display: block;
+    }
+
+    .player-trend-chart .empty-state {
+      min-height: 210px;
+      display: grid;
+      place-items: center;
+    }
+
+    .player-milestone-card {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: #171717;
+      border-color: #171717;
+      color: #fff;
+    }
+
+    .player-milestone-card .player-performance-kicker {
+      color: #ff9b52;
+    }
+
+    .player-milestone-icon {
+      width: 42px;
+      height: 42px;
+      margin-top: 14px;
+      display: grid;
+      place-items: center;
+      color: #171717;
+      background: var(--orange);
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .player-milestone-card > strong {
+      margin-top: 12px;
+      font-size: 19px;
+      line-height: 1.2;
+    }
+
+    .player-milestone-card > p {
+      margin-top: 7px;
+      color: #c5c9cf;
+      font-size: 9px;
+      line-height: 1.5;
+    }
+
+    .player-milestone-progress-track {
+      height: 8px;
+      margin-top: 18px;
+      overflow: hidden;
+      background: rgba(255,255,255,.13);
+      border-radius: 999px;
+    }
+
+    .player-milestone-progress-bar {
+      height: 100%;
+      min-width: 0;
+      background: var(--orange);
+      border-radius: 999px;
+      transition: width .25s ease;
+    }
+
+    .player-milestone-progress-copy {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: #c5c9cf;
+      font-size: 8px;
+    }
+
+    .player-milestone-progress-copy strong {
+      color: #fff;
+      font-size: 9px;
+    }
+
+    .player-milestone-action {
+      margin-top: 14px;
+      padding: 0;
+      width: max-content;
+      max-width: 100%;
+      color: var(--orange-dark);
+      background: transparent;
+      border: 0;
+      font-size: 8px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .player-milestone-card .player-milestone-action {
+      color: #ff9b52;
+    }
+
+    .player-personal-bests {
+      padding: 17px 18px 18px;
+    }
+
+    .player-personal-bests-heading {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .player-best-grid {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0,1fr));
+      gap: 8px;
+    }
+
+    .player-best-card {
+      min-width: 0;
+      padding: 12px;
+      background: #fafafa;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .player-best-card span,
+    .player-best-card strong,
+    .player-best-card small {
+      display: block;
+    }
+
+    .player-best-card span {
+      color: var(--muted);
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: .45px;
+      text-transform: uppercase;
+    }
+
+    .player-best-card strong {
+      margin-top: 7px;
+      color: var(--ink);
+      font-size: 21px;
+      line-height: 1;
+    }
+
+    .player-best-card small {
+      margin-top: 6px;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 7px;
+      line-height: 1.35;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 1100px) {
+      .player-best-grid {
+        grid-template-columns: repeat(4, minmax(0,1fr));
+      }
+    }
+
+    @media (max-width: 850px) {
+      .player-performance-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .player-milestone-card {
+        min-height: 270px;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .player-trend-header,
+      .player-personal-bests-heading {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .player-trend-tabs {
+        width: max-content;
+      }
+
+      .player-best-grid {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+      }
+
+      .player-trend-summary {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .player-best-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
   </style>
 </head>
 
@@ -1105,6 +1418,89 @@
               <span>Career PPG</span>
               <strong id="dashboardPPG">0.0</strong>
               <small id="dashboardCareerGames">0 verified games</small>
+            </div>
+          </div>
+        </section>
+
+        <section id="playerPerformanceCenter" class="panel player-view-section active" data-player-section="dashboard">
+          <header class="panel-header">
+            <div>
+              <h2>Performance Center</h2>
+              <p>Track your recent form, career highs, and progress toward your next milestone.</p>
+            </div>
+            <span class="readonly-note">Verified Stats</span>
+          </header>
+
+          <div class="player-performance-layout">
+            <div class="player-trend-card">
+              <div class="player-trend-header">
+                <div>
+                  <span class="player-performance-kicker">Last 5 Games</span>
+                  <strong>Performance Trend</strong>
+                </div>
+                <div class="player-trend-tabs" role="group" aria-label="Performance trend metric">
+                  <button class="player-trend-tab active" type="button" data-trend-metric="points">PTS</button>
+                  <button class="player-trend-tab" type="button" data-trend-metric="rebounds">REB</button>
+                  <button class="player-trend-tab" type="button" data-trend-metric="assists">AST</button>
+                </div>
+              </div>
+
+              <div class="player-trend-summary">
+                <div>
+                  <span>Last 5 Avg</span>
+                  <strong id="playerTrendRecentAvg">0.0</strong>
+                </div>
+                <div>
+                  <span>Career Avg</span>
+                  <strong id="playerTrendCareerAvg">0.0</strong>
+                </div>
+                <div>
+                  <span>Trend</span>
+                  <strong id="playerTrendDifference">0.0</strong>
+                </div>
+              </div>
+
+              <div id="playerTrendChart" class="player-trend-chart" aria-label="Recent performance trend chart">
+                <div class="empty-state">Play verified games to build your performance trend.</div>
+              </div>
+            </div>
+
+            <div class="player-milestone-card">
+              <span class="player-performance-kicker">Next Milestone</span>
+              <div id="nextMilestoneIcon" class="player-milestone-icon">★</div>
+              <strong id="nextMilestoneTitle">First Verified Game</strong>
+              <p id="nextMilestoneDescription">Your next career milestone will appear here.</p>
+
+              <div class="player-milestone-progress-track">
+                <div id="nextMilestoneProgressBar" class="player-milestone-progress-bar" style="width:0%"></div>
+              </div>
+
+              <div class="player-milestone-progress-copy">
+                <strong id="nextMilestoneProgressValue">0 / 1</strong>
+                <span id="nextMilestoneRemaining">1 game remaining</span>
+              </div>
+
+              <button class="player-milestone-action" type="button" data-dashboard-player-view="awards">VIEW ALL MILESTONES →</button>
+            </div>
+          </div>
+
+          <div class="player-personal-bests">
+            <div class="player-personal-bests-heading">
+              <div>
+                <span class="player-performance-kicker">Career Highs</span>
+                <strong>Personal Bests</strong>
+              </div>
+              <button class="player-milestone-action" type="button" data-dashboard-player-view="career">VIEW CAREER STATS →</button>
+            </div>
+
+            <div class="player-best-grid">
+              <article class="player-best-card"><span>Points</span><strong id="bestPoints">0</strong><small id="bestPointsGame">No game yet</small></article>
+              <article class="player-best-card"><span>Rebounds</span><strong id="bestRebounds">0</strong><small id="bestReboundsGame">No game yet</small></article>
+              <article class="player-best-card"><span>Assists</span><strong id="bestAssists">0</strong><small id="bestAssistsGame">No game yet</small></article>
+              <article class="player-best-card"><span>Steals</span><strong id="bestSteals">0</strong><small id="bestStealsGame">No game yet</small></article>
+              <article class="player-best-card"><span>Blocks</span><strong id="bestBlocks">0</strong><small id="bestBlocksGame">No game yet</small></article>
+              <article class="player-best-card"><span>3PT Made</span><strong id="bestThreeMade">0</strong><small id="bestThreeMadeGame">No game yet</small></article>
+              <article class="player-best-card"><span>Plus / Minus</span><strong id="bestPlusMinus">0</strong><small id="bestPlusMinusGame">No game yet</small></article>
             </div>
           </div>
         </section>
@@ -1358,6 +1754,7 @@
     let games = [];
     let currentPlayerView = "dashboard";
     let playerGameCenterLoadToken = 0;
+    let currentTrendMetric = "points";
 
     const playerViewConfig = {
       dashboard: {
@@ -2132,6 +2529,318 @@
       }
     }
 
+    function playerStatGameLabel(row) {
+      const game = games.find(item => String(item.id) === String(row.game_id));
+      return game ? `Game #${game.id}` : `Game #${row.game_id}`;
+    }
+
+    function bestStatRow(rows, field) {
+      if (!rows.length) return null;
+      return [...rows].sort((a, b) => {
+        const difference = numberValue(b[field]) - numberValue(a[field]);
+        if (difference !== 0) return difference;
+        return numberValue(b.game_id) - numberValue(a.game_id);
+      })[0];
+    }
+
+    function renderPersonalBests(playerStats) {
+      const definitions = [
+        ["points", "bestPoints", "bestPointsGame"],
+        ["rebounds", "bestRebounds", "bestReboundsGame"],
+        ["assists", "bestAssists", "bestAssistsGame"],
+        ["steals", "bestSteals", "bestStealsGame"],
+        ["blocks", "bestBlocks", "bestBlocksGame"],
+        ["three_pt_made", "bestThreeMade", "bestThreeMadeGame"],
+        ["plus_minus", "bestPlusMinus", "bestPlusMinusGame"]
+      ];
+
+      definitions.forEach(([field, valueId, gameId]) => {
+        const row = bestStatRow(playerStats, field);
+        const value = row ? numberValue(row[field]) : 0;
+
+        document.getElementById(valueId).textContent =
+          field === "plus_minus" && value > 0 ? `+${value}` : String(value);
+
+        document.getElementById(gameId).textContent =
+          row ? playerStatGameLabel(row) : "No game yet";
+      });
+    }
+
+    function trendMetricLabel(metric) {
+      return ({
+        points: "PTS",
+        rebounds: "REB",
+        assists: "AST"
+      })[metric] || metric.toUpperCase();
+    }
+
+    function playerTrendRows(playerStats) {
+      return [...playerStats]
+        .sort((a, b) => numberValue(b.game_id) - numberValue(a.game_id))
+        .slice(0, 5)
+        .reverse();
+    }
+
+    function renderPerformanceTrend(playerStats) {
+      const metric = currentTrendMetric;
+      const recentRows = playerTrendRows(playerStats);
+      const chart = document.getElementById("playerTrendChart");
+
+      const recentValues = recentRows.map(row => numberValue(row[metric]));
+      const allValues = playerStats.map(row => numberValue(row[metric]));
+
+      const recentAverage = recentValues.length
+        ? recentValues.reduce((sum, value) => sum + value, 0) / recentValues.length
+        : 0;
+
+      const careerAverage = allValues.length
+        ? allValues.reduce((sum, value) => sum + value, 0) / allValues.length
+        : 0;
+
+      const difference = recentAverage - careerAverage;
+
+      document.getElementById("playerTrendRecentAvg").textContent =
+        recentAverage.toFixed(1);
+      document.getElementById("playerTrendCareerAvg").textContent =
+        careerAverage.toFixed(1);
+
+      const differenceElement = document.getElementById("playerTrendDifference");
+      differenceElement.textContent =
+        `${difference > 0 ? "+" : ""}${difference.toFixed(1)}`;
+      differenceElement.style.color =
+        difference > 0 ? "#067647" :
+        difference < 0 ? "#b42318" :
+        "var(--ink)";
+
+      if (!recentRows.length) {
+        chart.innerHTML =
+          '<div class="empty-state">Play verified games to build your performance trend.</div>';
+        return;
+      }
+
+      const width = 680;
+      const height = 210;
+      const padLeft = 42;
+      const padRight = 20;
+      const padTop = 24;
+      const padBottom = 36;
+      const plotWidth = width - padLeft - padRight;
+      const plotHeight = height - padTop - padBottom;
+
+      const maxValue = Math.max(1, ...recentValues);
+      const chartMax = Math.max(5, Math.ceil(maxValue * 1.2));
+
+      const points = recentValues.map((value, index) => {
+        const x = recentValues.length === 1
+          ? padLeft + plotWidth / 2
+          : padLeft + (plotWidth * index / (recentValues.length - 1));
+
+        const y = padTop + plotHeight - (value / chartMax) * plotHeight;
+
+        return { x, y, value, row: recentRows[index] };
+      });
+
+      const path = points.map((point, index) =>
+        `${index === 0 ? "M" : "L"} ${point.x.toFixed(1)} ${point.y.toFixed(1)}`
+      ).join(" ");
+
+      const areaPath = points.length
+        ? `${path} L ${points[points.length - 1].x.toFixed(1)} ${(padTop + plotHeight).toFixed(1)} L ${points[0].x.toFixed(1)} ${(padTop + plotHeight).toFixed(1)} Z`
+        : "";
+
+      const gridLines = [0, .25, .5, .75, 1].map(ratio => {
+        const y = padTop + plotHeight * ratio;
+        const label = Math.round(chartMax * (1 - ratio));
+        return `
+          <line x1="${padLeft}" y1="${y}" x2="${width - padRight}" y2="${y}"
+                stroke="#e9ebee" stroke-width="1" stroke-dasharray="3 5"/>
+          <text x="${padLeft - 10}" y="${y + 3}" text-anchor="end"
+                font-size="8" fill="#98a2b3">${label}</text>
+        `;
+      }).join("");
+
+      const pointMarkup = points.map((point, index) => {
+        const label = `G${point.row.game_id}`;
+        return `
+          <circle cx="${point.x}" cy="${point.y}" r="5" fill="#fff" stroke="#ff6b00" stroke-width="3"/>
+          <text x="${point.x}" y="${point.y - 11}" text-anchor="middle"
+                font-size="9" font-weight="700" fill="#171717">${point.value}</text>
+          <text x="${point.x}" y="${height - 12}" text-anchor="middle"
+                font-size="8" fill="#667085">${label}</text>
+        `;
+      }).join("");
+
+      chart.innerHTML = `
+        <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" role="img"
+             aria-label="Last ${recentRows.length} games ${trendMetricLabel(metric)} trend">
+          ${gridLines}
+          <path d="${areaPath}" fill="rgba(255,107,0,.08)"></path>
+          <path d="${path}" fill="none" stroke="#ff6b00" stroke-width="3"
+                stroke-linecap="round" stroke-linejoin="round"></path>
+          ${pointMarkup}
+        </svg>
+      `;
+    }
+
+    function nextMilestoneCandidate(playerStats, totals) {
+      const candidates = [
+        {
+          title: "First Verified Game",
+          icon: "1",
+          current: playerStats.length,
+          target: 1,
+          unit: "game",
+          description: "Complete your first verified HoopHub PH game."
+        },
+        {
+          title: "25 Verified Games",
+          icon: "25",
+          current: playerStats.length,
+          target: 25,
+          unit: "game",
+          description: "Build your HoopHub PH career with 25 verified appearances."
+        },
+        {
+          title: "50 Verified Games",
+          icon: "50",
+          current: playerStats.length,
+          target: 50,
+          unit: "game",
+          description: "Reach 50 verified career appearances."
+        },
+        {
+          title: "100 Career Points",
+          icon: "100",
+          current: totals.points,
+          target: 100,
+          unit: "point",
+          description: "Reach your first 100 verified career points."
+        },
+        {
+          title: "500 Career Points",
+          icon: "500",
+          current: totals.points,
+          target: 500,
+          unit: "point",
+          description: "Join the 500-point career milestone."
+        },
+        {
+          title: "1,000 Career Points",
+          icon: "1K",
+          current: totals.points,
+          target: 1000,
+          unit: "point",
+          description: "Reach 1,000 verified career points."
+        },
+        {
+          title: "100 Career Rebounds",
+          icon: "REB",
+          current: totals.rebounds,
+          target: 100,
+          unit: "rebound",
+          description: "Reach 100 verified career rebounds."
+        },
+        {
+          title: "250 Career Rebounds",
+          icon: "REB",
+          current: totals.rebounds,
+          target: 250,
+          unit: "rebound",
+          description: "Reach 250 verified career rebounds."
+        },
+        {
+          title: "100 Career Assists",
+          icon: "AST",
+          current: totals.assists,
+          target: 100,
+          unit: "assist",
+          description: "Reach 100 verified career assists."
+        },
+        {
+          title: "250 Career Assists",
+          icon: "AST",
+          current: totals.assists,
+          target: 250,
+          unit: "assist",
+          description: "Reach 250 verified career assists."
+        },
+        {
+          title: "50 Career Steals",
+          icon: "STL",
+          current: totals.steals,
+          target: 50,
+          unit: "steal",
+          description: "Reach 50 verified career steals."
+        },
+        {
+          title: "50 Career Blocks",
+          icon: "BLK",
+          current: totals.blocks,
+          target: 50,
+          unit: "block",
+          description: "Reach 50 verified career blocks."
+        }
+      ];
+
+      const incomplete = candidates.filter(item => item.current < item.target);
+
+      if (!incomplete.length) {
+        return {
+          title: "Milestone Leader",
+          icon: "★",
+          current: 1,
+          target: 1,
+          unit: "milestone",
+          description: "You have completed every currently tracked HoopHub PH milestone."
+        };
+      }
+
+      incomplete.forEach(item => {
+        item.progress = item.target > 0 ? item.current / item.target : 0;
+      });
+
+      return incomplete.sort((a, b) => {
+        if (b.progress !== a.progress) return b.progress - a.progress;
+        return a.target - b.target;
+      })[0];
+    }
+
+    function renderNextMilestone(playerStats, totals) {
+      const milestone = nextMilestoneCandidate(playerStats, totals);
+
+      const current = Math.min(milestone.current, milestone.target);
+      const remaining = Math.max(0, milestone.target - milestone.current);
+      const percentage = milestone.target > 0
+        ? Math.min(100, Math.max(0, current / milestone.target * 100))
+        : 0;
+
+      document.getElementById("nextMilestoneIcon").textContent = milestone.icon;
+      document.getElementById("nextMilestoneTitle").textContent = milestone.title;
+      document.getElementById("nextMilestoneDescription").textContent =
+        milestone.description;
+      document.getElementById("nextMilestoneProgressBar").style.width =
+        `${percentage.toFixed(1)}%`;
+      document.getElementById("nextMilestoneProgressValue").textContent =
+        `${milestone.current.toLocaleString()} / ${milestone.target.toLocaleString()}`;
+
+      const plural = remaining === 1
+        ? milestone.unit
+        : `${milestone.unit}s`;
+
+      document.getElementById("nextMilestoneRemaining").textContent =
+        remaining
+          ? `${remaining.toLocaleString()} ${plural} remaining`
+          : "All tracked milestones completed";
+    }
+
+    function renderPlayerPerformanceCenter(playerStats) {
+      renderPersonalBests(playerStats);
+      renderPerformanceTrend(playerStats);
+
+      const totals = statTotals(playerStats);
+      renderNextMilestone(playerStats, totals);
+    }
+
     async function authorize() {
       try {
         const { data: userData, error: userError } = await supabaseClient.auth.getUser();
@@ -2233,6 +2942,7 @@
         document.getElementById("teamHistoryList").innerHTML =
           '<div class="empty-state">No team history is available.</div>';
         populateCorrectionGameOptions([]);
+        renderPlayerPerformanceCenter([]);
         loadPlayerGameCenter(null);
         return;
       }
@@ -2323,6 +3033,7 @@
       const careerTotals = renderCareerStatistics(playerStats);
       renderTeamHistory(player, playerStats);
       renderMilestones(playerStats, careerTotals);
+      renderPlayerPerformanceCenter(playerStats);
       renderShareProfile(player, team);
       populateCorrectionGameOptions(playerStats);
       loadPlayerGameCenter(player);
@@ -2344,6 +3055,21 @@
     document.querySelectorAll("[data-dashboard-player-view]").forEach(button => {
       button.addEventListener("click", function () {
         openPlayerView(this.dataset.dashboardPlayerView);
+      });
+    });
+
+    document.querySelectorAll("[data-trend-metric]").forEach(button => {
+      button.addEventListener("click", function () {
+        currentTrendMetric = this.dataset.trendMetric || "points";
+
+        document.querySelectorAll("[data-trend-metric]").forEach(tab => {
+          tab.classList.toggle(
+            "active",
+            tab.dataset.trendMetric === currentTrendMetric
+          );
+        });
+
+        renderPerformanceTrend(currentLinkedPlayerStats());
       });
     });
 
