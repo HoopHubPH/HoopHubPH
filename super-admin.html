@@ -2885,6 +2885,219 @@
       }
     }
 
+
+    /* =========================
+       SUPER ADMIN DISPLAY NAME
+       ========================= */
+    .display-name-edit-button {
+      height: 32px;
+      padding: 0 10px;
+      color: #ffffff;
+      background: rgba(255, 255, 255, .07);
+      border: 1px solid rgba(255, 255, 255, .13);
+      border-radius: 7px;
+      font-size: 9px;
+      font-weight: bold;
+      letter-spacing: .25px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .display-name-edit-button:hover {
+      color: #ffffff;
+      background: rgba(255, 107, 0, .16);
+      border-color: rgba(255, 107, 0, .48);
+    }
+
+    .display-name-modal[hidden] {
+      display: none !important;
+    }
+
+    .display-name-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1200;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .display-name-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(17, 17, 17, .64);
+      backdrop-filter: blur(2px);
+    }
+
+    .display-name-dialog {
+      position: relative;
+      z-index: 1;
+      width: min(470px, 100%);
+      overflow: hidden;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .24);
+    }
+
+    .display-name-dialog-header {
+      min-height: 92px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      background: #fafafa;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .display-name-kicker {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--orange-dark);
+      font-size: 8px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .display-name-dialog-header h2 {
+      font-size: 18px;
+      letter-spacing: -.3px;
+    }
+
+    .display-name-dialog-header p {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .display-name-close-button {
+      width: 32px;
+      height: 32px;
+      flex: 0 0 32px;
+      display: grid;
+      place-items: center;
+      color: #667085;
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .display-name-form {
+      padding: 20px;
+    }
+
+    .display-name-current {
+      margin-bottom: 16px;
+      padding: 12px 13px;
+      background: #fafafa;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+    }
+
+    .display-name-current span,
+    .display-name-current strong {
+      display: block;
+    }
+
+    .display-name-current span {
+      color: var(--muted);
+      font-size: 8px;
+      font-weight: bold;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+    }
+
+    .display-name-current strong {
+      margin-top: 5px;
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    .display-name-field label {
+      display: block;
+      margin-bottom: 6px;
+      color: #475467;
+      font-size: 9px;
+      font-weight: bold;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+
+    .display-name-field input {
+      width: 100%;
+      height: 42px;
+      padding: 0 11px;
+      color: var(--ink);
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .display-name-field input:focus {
+      border-color: rgba(255, 107, 0, .72);
+      box-shadow: 0 0 0 3px rgba(255, 107, 0, .10);
+    }
+
+    .display-name-field small {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.45;
+    }
+
+    .display-name-message {
+      min-height: 18px;
+      margin-top: 11px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .display-name-message.success {
+      color: var(--success);
+    }
+
+    .display-name-message.error {
+      color: #b42318;
+    }
+
+    .display-name-actions {
+      margin-top: 14px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    @media (max-width: 560px) {
+      .display-name-edit-button {
+        display: none;
+      }
+
+      .display-name-dialog {
+        width: 100%;
+      }
+
+      .display-name-actions {
+        align-items: stretch;
+        flex-direction: column-reverse;
+      }
+
+      .display-name-actions .primary-button,
+      .display-name-actions .secondary-button {
+        width: 100%;
+      }
+    }
+
   </style>
 </head>
 
@@ -2924,6 +3137,7 @@
           <strong id="headerAccountName">HoopHub PH Owner</strong>
           <span>Super Admin</span>
         </div>
+        <button id="editDisplayNameButton" class="display-name-edit-button" type="button" hidden>EDIT NAME</button>
         <button id="logoutButton" class="logout-button" type="button">Log Out</button>
       </div>
     </header>
@@ -4030,6 +4244,58 @@
         </div>
       </div>
     </main>
+
+    <div id="displayNameModal" class="display-name-modal" hidden aria-hidden="true">
+      <div class="display-name-modal-backdrop" data-display-name-close></div>
+
+      <section
+        class="display-name-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="displayNameModalTitle"
+      >
+        <header class="display-name-dialog-header">
+          <div>
+            <span class="display-name-kicker">Super Admin Profile</span>
+            <h2 id="displayNameModalTitle">Edit Display Name</h2>
+            <p>This changes only the name shown on your Super Admin account.</p>
+          </div>
+          <button
+            id="closeDisplayNameModalButton"
+            class="display-name-close-button"
+            type="button"
+            aria-label="Close edit display name"
+          >×</button>
+        </header>
+
+        <form id="displayNameForm" class="display-name-form">
+          <div class="display-name-current">
+            <span>Current Display Name</span>
+            <strong id="currentDisplayNamePreview">—</strong>
+          </div>
+
+          <div class="display-name-field">
+            <label for="displayNameInput">New Display Name</label>
+            <input
+              id="displayNameInput"
+              type="text"
+              maxlength="80"
+              autocomplete="name"
+              placeholder="Enter your display name"
+              required
+            >
+            <small>2–80 characters. Your email, role, status, and permissions will not change.</small>
+          </div>
+
+          <div id="displayNameMessage" class="display-name-message" aria-live="polite"></div>
+
+          <div class="display-name-actions">
+            <button id="cancelDisplayNameButton" class="secondary-button" type="button">CANCEL</button>
+            <button id="saveDisplayNameButton" class="primary-button" type="submit">SAVE DISPLAY NAME</button>
+          </div>
+        </form>
+      </section>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -4048,6 +4314,15 @@
     const menuButton = document.getElementById("menuButton");
     const sidebar = document.getElementById("sidebar");
     const sidebarOverlay = document.getElementById("sidebarOverlay");
+    const editDisplayNameButton = document.getElementById("editDisplayNameButton");
+    const displayNameModal = document.getElementById("displayNameModal");
+    const displayNameForm = document.getElementById("displayNameForm");
+    const displayNameInput = document.getElementById("displayNameInput");
+    const displayNameMessage = document.getElementById("displayNameMessage");
+    const currentDisplayNamePreview = document.getElementById("currentDisplayNamePreview");
+    const closeDisplayNameModalButton = document.getElementById("closeDisplayNameModalButton");
+    const cancelDisplayNameButton = document.getElementById("cancelDisplayNameButton");
+    const saveDisplayNameButton = document.getElementById("saveDisplayNameButton");
 
 
     const accountManagementFrame = document.getElementById("accountManagementFrame");
@@ -4316,6 +4591,7 @@
     let leagueManagementRows = [];
     let editingLeagueId = null;
     let currentSuperAdminUser = null;
+    let currentSuperAdminProfile = null;
     let activityRows = [];
     let activityProfiles = [];
     let activityLeagues = [];
@@ -7400,6 +7676,185 @@
     }
 
 
+    function setDisplayNameMessage(message = "", type = "") {
+      displayNameMessage.textContent = message;
+      displayNameMessage.className = `display-name-message${type ? ` ${type}` : ""}`;
+    }
+
+    function openDisplayNameModal() {
+      if (
+        !currentSuperAdminUser?.id ||
+        currentSuperAdminProfile?.role !== "super_admin" ||
+        currentSuperAdminProfile?.status !== "active"
+      ) {
+        return;
+      }
+
+      const fallbackName = currentSuperAdminUser.email
+        ? currentSuperAdminUser.email.split("@")[0]
+        : "Owner";
+
+      const currentName =
+        String(currentSuperAdminProfile.full_name || "").trim() ||
+        fallbackName;
+
+      currentDisplayNamePreview.textContent = currentName;
+      displayNameInput.value = currentName;
+      setDisplayNameMessage("");
+
+      displayNameModal.hidden = false;
+      displayNameModal.setAttribute("aria-hidden", "false");
+
+      requestAnimationFrame(() => {
+        displayNameInput.focus();
+        displayNameInput.select();
+      });
+    }
+
+    function closeDisplayNameModal() {
+      displayNameModal.hidden = true;
+      displayNameModal.setAttribute("aria-hidden", "true");
+      setDisplayNameMessage("");
+      saveDisplayNameButton.disabled = false;
+      saveDisplayNameButton.textContent = "SAVE DISPLAY NAME";
+    }
+
+    async function logDisplayNameChange(oldName, newName) {
+      if (!currentSuperAdminUser?.id) return;
+
+      try {
+        const { error } = await supabaseClient
+          .from("activity_logs")
+          .insert({
+            actor_id: currentSuperAdminUser.id,
+            action: "super_admin_display_name_updated",
+            target_type: "profile",
+            target_id: String(currentSuperAdminUser.id),
+            details: {
+              previous_display_name: oldName,
+              new_display_name: newName
+            }
+          });
+
+        if (error) {
+          console.warn("Display name activity log was not recorded:", error.message);
+        }
+      } catch (error) {
+        console.warn("Display name activity log was not recorded:", error);
+      }
+    }
+
+    async function saveSuperAdminDisplayName(event) {
+      event.preventDefault();
+
+      const newName = displayNameInput.value.trim();
+
+      if (
+        !currentSuperAdminUser?.id ||
+        currentSuperAdminProfile?.role !== "super_admin" ||
+        currentSuperAdminProfile?.status !== "active"
+      ) {
+        setDisplayNameMessage(
+          "Only an active Super Admin account can change this display name.",
+          "error"
+        );
+        return;
+      }
+
+      if (newName.length < 2) {
+        setDisplayNameMessage(
+          "Display name must be at least 2 characters.",
+          "error"
+        );
+        return;
+      }
+
+      if (newName.length > 80) {
+        setDisplayNameMessage(
+          "Display name must be 80 characters or fewer.",
+          "error"
+        );
+        return;
+      }
+
+      const oldName =
+        String(currentSuperAdminProfile.full_name || "").trim() ||
+        (currentSuperAdminUser.email
+          ? currentSuperAdminUser.email.split("@")[0]
+          : "Owner");
+
+      if (newName === oldName) {
+        setDisplayNameMessage("This is already your current display name.");
+        return;
+      }
+
+      saveDisplayNameButton.disabled = true;
+      saveDisplayNameButton.textContent = "SAVING...";
+      setDisplayNameMessage("Updating your Super Admin display name...");
+
+      try {
+        const { data, error } = await supabaseClient.rpc(
+          "update_super_admin_display_name",
+          { p_full_name: newName }
+        );
+
+        if (error) throw error;
+
+        const updatedName =
+          Array.isArray(data)
+            ? String(data[0]?.updated_full_name || newName)
+            : String(data?.updated_full_name || newName);
+
+        currentSuperAdminProfile = {
+          ...currentSuperAdminProfile,
+          full_name: updatedName
+        };
+
+        displayAccount(currentSuperAdminProfile, currentSuperAdminUser);
+        currentDisplayNamePreview.textContent = updatedName;
+
+        /*
+         * The RPC itself performs the secure profile update.
+         * This best-effort activity entry keeps the existing dashboard
+         * audit behavior consistent if direct activity inserts are allowed.
+         */
+        await logDisplayNameChange(oldName, updatedName);
+
+        setDisplayNameMessage(
+          "Display name updated successfully.",
+          "success"
+        );
+
+        setTimeout(() => {
+          closeDisplayNameModal();
+        }, 650);
+      } catch (error) {
+        console.error("Unable to update Super Admin display name:", error);
+
+        const message = String(error?.message || "");
+
+        if (
+          message.includes("update_super_admin_display_name") ||
+          message.includes("schema cache") ||
+          message.includes("function")
+        ) {
+          setDisplayNameMessage(
+            "Display-name security setup is not installed yet. Run the supplied SQL file in Supabase, then try again.",
+            "error"
+          );
+        } else {
+          setDisplayNameMessage(
+            message || "Unable to update the display name.",
+            "error"
+          );
+        }
+      } finally {
+        saveDisplayNameButton.disabled = false;
+        saveDisplayNameButton.textContent = "SAVE DISPLAY NAME";
+      }
+    }
+
+
     function displayAccount(profile, user) {
       const emailName = user.email ? user.email.split("@")[0] : "Owner";
       const displayName = String(profile.full_name || "").trim() || emailName;
@@ -7444,7 +7899,9 @@
         }
 
         currentSuperAdminUser = userData.user;
+        currentSuperAdminProfile = profile;
         displayAccount(profile, userData.user);
+        editDisplayNameButton.hidden = false;
         authScreen.hidden = true;
         appShell.hidden = false;
         await Promise.all([
@@ -8318,6 +8775,23 @@
     });
 
     syncAnnouncementScope();
+
+    editDisplayNameButton.addEventListener("click", openDisplayNameModal);
+    displayNameForm.addEventListener("submit", saveSuperAdminDisplayName);
+    closeDisplayNameModalButton.addEventListener("click", closeDisplayNameModal);
+    cancelDisplayNameButton.addEventListener("click", closeDisplayNameModal);
+
+    displayNameModal.addEventListener("click", event => {
+      if (event.target.closest("[data-display-name-close]")) {
+        closeDisplayNameModal();
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && !displayNameModal.hidden) {
+        closeDisplayNameModal();
+      }
+    });
 
     logoutButton.addEventListener("click", async function () {
       logoutButton.disabled = true;
