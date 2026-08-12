@@ -476,6 +476,8 @@
     .review-button{min-height:29px;padding:0 9px;border-radius:6px;font-size:8px;font-weight:900;cursor:pointer}
     .review-button.approve{color:#067647;background:#ecfdf3;border:1px solid #abefc6}
     .review-button.reject{color:#b42318;background:#fff4f2;border:1px solid #fecdca}
+    .review-button.apply{color:#ffffff;background:var(--orange);border:1px solid var(--orange)}
+    .review-button.apply:hover{background:var(--orange-dark);border-color:var(--orange-dark)}
     .review-button:disabled{opacity:.5;cursor:wait}
     .roster-team-toolbar{padding:16px 18px;display:grid;grid-template-columns:minmax(220px,1.4fr) repeat(3,minmax(110px,.5fr));gap:10px;align-items:stretch;border-bottom:1px solid var(--line);background:#fafafa}
     .roster-team-picker label{display:block;margin-bottom:6px;color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase}
@@ -1642,12 +1644,26 @@
           ? `<div class="correction-review-note">Reviewed ${escapeHtml(formatDateTime(row.reviewed_at))}${row.reviewed_by_name ? ` by ${escapeHtml(row.reviewed_by_name)}` : ""}${row.review_notes ? `<br><strong>Note:</strong> ${escapeHtml(row.review_notes)}` : ""}</div>`
           : "";
 
-        const actions = status === "pending"
-          ? `<div class="review-actions">
+        let actions = `<span class="correction-review-note">Review complete.</span>`;
+
+        if (status === "pending") {
+          actions = `<div class="review-actions">
                <button class="review-button approve" type="button" onclick="reviewCoachCorrectionRequest('${row.correction_request_id}','approved',this)">APPROVE</button>
                <button class="review-button reject" type="button" onclick="reviewCoachCorrectionRequest('${row.correction_request_id}','rejected',this)">REJECT</button>
-             </div>`
-          : `<span class="correction-review-note">Review complete.</span>`;
+             </div>`;
+        } else if (status === "approved") {
+          const canApplyAutomatically = row.request_type === "player_stat" || row.request_type === "team_score";
+          actions = canApplyAutomatically
+            ? `<div class="review-actions">
+                 <button class="review-button apply" type="button" onclick="applyApprovedCoachCorrection('${row.correction_request_id}',this)">APPLY CORRECTION</button>
+               </div>
+               <div class="correction-review-note">Approved. Official record has not been changed yet.</div>`
+            : `<span class="correction-review-note">Approved. Manual handling is required for this request type.</span>`;
+        } else if (status === "resolved") {
+          actions = `<span class="correction-review-note">Correction applied to the official record.</span>`;
+        } else if (status === "withdrawn") {
+          actions = `<span class="correction-review-note">Withdrawn by coach.</span>`;
+        }
 
         return `
           <tr>
@@ -1764,6 +1780,84 @@
         console.error("Unable to review correction request:", error);
         setFormMessage("correctionReviewMessage", error?.message || "Unable to review correction request.", "error");
         alert("Unable to review correction request: " + (error?.message || "Unknown error"));
+      } finally {
+        button.disabled = false;
+        button.textContent = originalText;
+      }
+    }
+
+    async function applyApprovedCoachCorrection(requestId, button) {
+      const row = correctionReviewRows.find(item => item.correction_request_id === requestId);
+      if (!row) return alert("This correction request could not be found.");
+
+      if (String(row.request_status || "").toLowerCase() !== "approved") {
+        return alert("Only an approved correction request can be applied.");
+      }
+
+      if (row.request_type !== "player_stat" && row.request_type !== "team_score") {
+        return alert("This request type requires manual commissioner or Super Admin handling and cannot be auto-applied.");
+      }
+
+      const changeTitle = row.request_type === "player_stat"
+        ? `${row.player_name || "Player"} — ${correctionStatLabel(row.stat_field)}`
+        : `${row.team_name || "Team"} — Team Score`;
+
+      const currentValue = row.current_value ?? "—";
+      const requestedValue = row.requested_value ?? "—";
+
+      const confirmed = window.confirm(
+        `APPLY OFFICIAL CORRECTION?\n\n` +
+        `Game #${row.game_id}\n` +
+        `${changeTitle}\n\n` +
+        `Current official value: ${currentValue}\n` +
+        `New official value: ${requestedValue}\n\n` +
+        `This will change an official finalized record. The game will remain finalized and locked. ` +
+        `The correction will be written to the activity log and this request will be marked Resolved.\n\n` +
+        `Continue?`
+      );
+
+      if (!confirmed) return;
+
+      button.disabled = true;
+      const originalText = button.textContent;
+      button.textContent = "APPLYING...";
+      setFormMessage("correctionReviewMessage", "Applying approved correction to the official record...");
+
+      try {
+        const { data, error } = await supabaseClient.rpc("apply_approved_coach_correction", {
+          p_request_id: requestId
+        });
+
+        if (error) throw error;
+
+        const result = Array.isArray(data) ? data[0] : data;
+        const appliedValue = result?.applied_value ?? requestedValue;
+        const previousValue = result?.previous_value ?? currentValue;
+
+        if (row.request_type === "team_score") {
+          const game = scheduledGames.find(item => Number(item.id) === Number(row.game_id));
+          if (game) {
+            if (game.home_team_id === row.team_id) {
+              game.home_score = Number(appliedValue);
+            } else if (game.away_team_id === row.team_id) {
+              game.away_score = Number(appliedValue);
+            }
+            renderDivisionGames();
+            await loadDivisionStandings();
+          }
+        }
+
+        await loadCommissionerCorrectionRequests(leagueSelect.value);
+
+        setFormMessage(
+          "correctionReviewMessage",
+          `Correction applied successfully: ${changeTitle} changed from ${previousValue} to ${appliedValue}. The request is now Resolved and the game remains finalized.`,
+          "success"
+        );
+      } catch (error) {
+        console.error("Unable to apply approved correction:", error);
+        setFormMessage("correctionReviewMessage", error?.message || "Unable to apply approved correction.", "error");
+        alert("Unable to apply approved correction: " + (error?.message || "Unknown error"));
       } finally {
         button.disabled = false;
         button.textContent = originalText;
