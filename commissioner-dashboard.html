@@ -884,6 +884,15 @@
       .report-toolbar { grid-template-columns: 1fr; }
       .report-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
+
+    /* =========================
+       DIRECT SECTION LANDING
+       Keeps anchored panels below the fixed top bar.
+       ========================= */
+    .panel[id] {
+      scroll-margin-top: 84px;
+    }
+
   </style>
 </head>
 
@@ -916,6 +925,7 @@
         <span class="nav-icon">DB</span> Dashboard
       </a>
       <a class="nav-link" href="#seasonsPanel"><span class="nav-icon">SE</span> Seasons</a>
+      <a class="nav-link" href="#createTeamPanel"><span class="nav-icon">CT</span> Create Team</a>
       <a class="nav-link" href="#teamsPanel"><span class="nav-icon">TM</span> Teams</a>
       <a class="nav-link" href="#rosterApprovalPanel"><span class="nav-icon">RA</span> Roster Approval</a>
       <a class="nav-link" href="#schedulePanel"><span class="nav-icon">SC</span> Schedule</a>
@@ -1018,6 +1028,58 @@
             <div class="form-actions"><button id="assignTeamButton" class="primary-button" type="button">ASSIGN TEAM TO DIVISION</button></div>
             <div id="assignmentMessage" class="form-message" aria-live="polite"></div>
           </div>
+        </section>
+
+        <section id="createTeamPanel" class="panel">
+          <header class="panel-header">
+            <div>
+              <h2>Create Team</h2>
+              <p>Create and immediately register an approved team in the currently selected league.</p>
+            </div>
+            <span class="status-badge">Authorized</span>
+          </header>
+
+          <form id="createTeamForm" class="schedule-form">
+            <div class="form-group">
+              <label for="newTeamName">Team Name</label>
+              <input
+                id="newTeamName"
+                class="form-input"
+                type="text"
+                maxlength="100"
+                placeholder="Example: Quezon City Eagles"
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="newTeamLocation">Team Location</label>
+              <input
+                id="newTeamLocation"
+                class="form-input"
+                type="text"
+                maxlength="150"
+                placeholder="Example: Quezon City"
+              >
+            </div>
+
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label for="newTeamLogo">Logo URL (Optional)</label>
+              <input
+                id="newTeamLogo"
+                class="form-input"
+                type="url"
+                maxlength="500"
+                placeholder="https://example.com/team-logo.png"
+              >
+            </div>
+
+            <div class="form-actions">
+              <button id="createTeamButton" class="primary-button" type="submit">CREATE TEAM</button>
+            </div>
+
+            <div id="createTeamMessage" class="form-message" aria-live="polite"></div>
+          </form>
         </section>
 
         <section id="teamsPanel" class="panel">
@@ -1353,6 +1415,9 @@
     const authScreen = document.getElementById("authScreen");
     const appShell = document.getElementById("appShell");
     const leagueSelect = document.getElementById("leagueSelect");
+    const createTeamForm = document.getElementById("createTeamForm");
+    const createTeamButton = document.getElementById("createTeamButton");
+    const createTeamMessage = document.getElementById("createTeamMessage");
 
     function escapeHtml(value) {
       const element = document.createElement("div");
@@ -1440,6 +1505,7 @@
         await loadWorkspace();
         authScreen.hidden = true;
         appShell.hidden = false;
+        scrollToRequestedPanel();
       } catch (error) {
         console.error("Commissioner authorization failed:", error);
         await returnToLogin(true);
@@ -1864,6 +1930,106 @@
       }
     }
 
+    function setCreateTeamMessage(message, type = "") {
+      if (!createTeamMessage) return;
+      createTeamMessage.className = `form-message${type ? " " + type : ""}`;
+      createTeamMessage.textContent = message || "";
+    }
+
+    function setCreateTeamEnabled(enabled) {
+      if (!createTeamForm) return;
+      createTeamForm.querySelectorAll("input, button").forEach(element => {
+        element.disabled = !enabled;
+      });
+    }
+
+    async function createTeam(event) {
+      event.preventDefault();
+
+      const leagueId = leagueSelect.value;
+      const name = document.getElementById("newTeamName").value.trim();
+      const location = document.getElementById("newTeamLocation").value.trim();
+      const logoUrl = document.getElementById("newTeamLogo").value.trim();
+
+      if (!leagueId) {
+        setCreateTeamMessage("Select a league before creating a team.", "error");
+        return;
+      }
+
+      if (!name) {
+        setCreateTeamMessage("Team name is required.", "error");
+        return;
+      }
+
+      createTeamButton.disabled = true;
+      createTeamButton.textContent = "CREATING...";
+      setCreateTeamMessage("Creating team...");
+
+      try {
+        const { error } = await supabaseClient.rpc("create_team_for_league", {
+          target_league_id: leagueId,
+          team_name: name,
+          team_location: location || null,
+          team_logo_url: logoUrl || null
+        });
+
+        if (error) throw error;
+
+        createTeamForm.reset();
+
+        /*
+         * Reload the exact same Commissioner workspace so the new team
+         * immediately appears in Registered Teams and all related selectors.
+         */
+        await loadWorkspace();
+        leagueSelect.value = leagueId;
+        renderWorkspace();
+
+        setCreateTeamMessage(
+          `${name} was created and registered successfully.`,
+          "success"
+        );
+      } catch (error) {
+        console.error("Team creation failed:", error);
+        setCreateTeamMessage(
+          error?.message || "Unable to create the team.",
+          "error"
+        );
+      } finally {
+        createTeamButton.disabled = false;
+        createTeamButton.textContent = "CREATE TEAM";
+      }
+    }
+
+    function scrollToRequestedPanel() {
+      const hash = window.location.hash;
+      if (!hash) return;
+
+      let target = null;
+
+      try {
+        target = document.querySelector(hash);
+      } catch (error) {
+        console.warn("Invalid Commissioner Dashboard section:", hash);
+        return;
+      }
+
+      if (!target) return;
+
+      /*
+       * The Commissioner workspace is hidden while Supabase authorization
+       * and data loading run. Scroll only after the workspace is visible.
+       */
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          target.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+        }, 100);
+      });
+    }
+
     function renderWorkspace() {
       const selectedId = leagueSelect.value || assignedLeagues[0]?.id || "";
       const league = assignedLeagues.find(item => item.id === selectedId);
@@ -1883,6 +2049,8 @@
         document.getElementById("rosterReviewBody").innerHTML = '<tr><td class="empty-state" colspan="5">No assigned league.</td></tr>';
         document.getElementById("approvedTeamCount").textContent = "0";
         document.getElementById("pendingTeamCount").textContent = "0";
+        setCreateTeamEnabled(false);
+        setCreateTeamMessage("");
         renderScheduling(null, []);
         renderGameReviewQueue(null);
         renderSeasonWorkspace(null, []);
@@ -1901,6 +2069,7 @@
       document.getElementById("leagueStatus").textContent = league.status || "active";
       document.getElementById("approvedTeamCount").textContent = approved.length.toLocaleString();
       document.getElementById("pendingTeamCount").textContent = pending.length.toLocaleString();
+      setCreateTeamEnabled(true);
       document.getElementById("leagueDetails").innerHTML = `
         <div class="detail-box"><span>Location</span><strong>${escapeHtml(league.location || "Not set")}</strong></div>
         <div class="detail-box"><span>Season</span><strong>${escapeHtml(league.season || "Not set")}</strong></div>
@@ -2848,6 +3017,8 @@
     }
 
     leagueSelect.addEventListener("change", renderWorkspace);
+    createTeamForm.addEventListener("submit", createTeam);
+    window.addEventListener("hashchange", scrollToRequestedPanel);
     document.getElementById("rosterTeamSelect").addEventListener("change", renderRosterTeam);
     document.getElementById("scheduleForm").addEventListener("submit", createScheduledGame);
     document.getElementById("scheduleSeasonSelect").addEventListener("change", renderScheduleDivisions);
