@@ -2018,6 +2018,86 @@
       }
     }
 
+
+    /* ========================================================
+       UNIFORM SIDEBAR TYPOGRAPHY WITH SUPER ADMIN
+       Keep Commissioner compact spacing so all entries still fit.
+       ======================================================== */
+    .sidebar .nav-link {
+      color: #d6d9de;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0;
+      line-height: 1;
+    }
+
+    .sidebar .nav-icon {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.09);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .sidebar .nav-label {
+      color: #818894;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+    }
+
+    #commissionerViewDashboard:checked ~ .sidebar [data-commissioner-view="dashboard"],
+    #commissionerViewSeasons:checked ~ .sidebar [data-commissioner-view="seasons"],
+    #commissionerViewCreateTeam:checked ~ .sidebar [data-commissioner-view="create-team"],
+    #commissionerViewTeams:checked ~ .sidebar [data-commissioner-view="teams"],
+    #commissionerViewRoster:checked ~ .sidebar [data-commissioner-view="roster"],
+    #commissionerViewSchedule:checked ~ .sidebar [data-commissioner-view="schedule"],
+    #commissionerViewGames:checked ~ .sidebar [data-commissioner-view="games"],
+    #commissionerViewStandings:checked ~ .sidebar [data-commissioner-view="standings"],
+    #commissionerViewScorekeepers:checked ~ .sidebar [data-commissioner-view="scorekeepers"],
+    #commissionerViewReview:checked ~ .sidebar [data-commissioner-view="review"],
+    #commissionerViewCorrections:checked ~ .sidebar [data-commissioner-view="corrections"],
+    #commissionerViewReports:checked ~ .sidebar [data-commissioner-view="reports"] {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: inset 3px 0 0 var(--orange);
+    }
+
+    #commissionerViewDashboard:checked ~ .sidebar [data-commissioner-view="dashboard"] .nav-icon,
+    #commissionerViewSeasons:checked ~ .sidebar [data-commissioner-view="seasons"] .nav-icon,
+    #commissionerViewCreateTeam:checked ~ .sidebar [data-commissioner-view="create-team"] .nav-icon,
+    #commissionerViewTeams:checked ~ .sidebar [data-commissioner-view="teams"] .nav-icon,
+    #commissionerViewRoster:checked ~ .sidebar [data-commissioner-view="roster"] .nav-icon,
+    #commissionerViewSchedule:checked ~ .sidebar [data-commissioner-view="schedule"] .nav-icon,
+    #commissionerViewGames:checked ~ .sidebar [data-commissioner-view="games"] .nav-icon,
+    #commissionerViewStandings:checked ~ .sidebar [data-commissioner-view="standings"] .nav-icon,
+    #commissionerViewScorekeepers:checked ~ .sidebar [data-commissioner-view="scorekeepers"] .nav-icon,
+    #commissionerViewReview:checked ~ .sidebar [data-commissioner-view="review"] .nav-icon,
+    #commissionerViewCorrections:checked ~ .sidebar [data-commissioner-view="corrections"] .nav-icon,
+    #commissionerViewReports:checked ~ .sidebar [data-commissioner-view="reports"] .nav-icon {
+      background: var(--orange);
+    }
+
+    .sidebar .commissioner-nav-view:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    @media (max-height: 660px) {
+      .sidebar .nav-link {
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .sidebar .nav-icon {
+        font-size: 10px;
+        font-weight: 700;
+      }
+
+      .sidebar .nav-label {
+        font-size: 8px;
+      }
+    }
+
   </style>
 </head>
 
