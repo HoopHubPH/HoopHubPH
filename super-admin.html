@@ -286,6 +286,9 @@
     #adminViewDashboard:checked ~ .main-content #dashboardView,
     #adminViewLeagueWorkspace:checked ~ .main-content #leagueWorkspaceView,
     #adminViewLeagues:checked ~ .main-content #leaguesView,
+    #adminViewTournaments:checked ~ .main-content #tournamentWorkspaceView,
+    #adminViewTeams:checked ~ .main-content #teamWorkspaceView,
+    #adminViewPlayers:checked ~ .main-content #playerWorkspaceView,
     #adminViewAccounts:checked ~ .main-content #accountsView,
     #adminViewActivity:checked ~ .main-content #activityView,
     #adminViewAnnouncements:checked ~ .main-content #announcementsView {
@@ -295,6 +298,9 @@
     #adminViewDashboard:checked ~ .sidebar [data-admin-view="dashboard"],
     #adminViewLeagueWorkspace:checked ~ .sidebar [data-admin-view="league-workspace"],
     #adminViewLeagues:checked ~ .sidebar [data-admin-view="leagues"],
+    #adminViewTournaments:checked ~ .sidebar [data-admin-view="tournaments"],
+    #adminViewTeams:checked ~ .sidebar [data-admin-view="teams"],
+    #adminViewPlayers:checked ~ .sidebar [data-admin-view="players"],
     #adminViewAccounts:checked ~ .sidebar [data-admin-view="accounts"],
     #adminViewActivity:checked ~ .sidebar [data-admin-view="activity"],
     #adminViewAnnouncements:checked ~ .sidebar [data-admin-view="announcements"] {
@@ -306,6 +312,9 @@
     #adminViewDashboard:checked ~ .sidebar [data-admin-view="dashboard"] .nav-icon,
     #adminViewLeagueWorkspace:checked ~ .sidebar [data-admin-view="league-workspace"] .nav-icon,
     #adminViewLeagues:checked ~ .sidebar [data-admin-view="leagues"] .nav-icon,
+    #adminViewTournaments:checked ~ .sidebar [data-admin-view="tournaments"] .nav-icon,
+    #adminViewTeams:checked ~ .sidebar [data-admin-view="teams"] .nav-icon,
+    #adminViewPlayers:checked ~ .sidebar [data-admin-view="players"] .nav-icon,
     #adminViewAccounts:checked ~ .sidebar [data-admin-view="accounts"] .nav-icon,
     #adminViewActivity:checked ~ .sidebar [data-admin-view="activity"] .nav-icon,
     #adminViewAnnouncements:checked ~ .sidebar [data-admin-view="announcements"] .nav-icon {
@@ -2143,6 +2152,355 @@
       line-height: 1.55;
     }
 
+
+    /* =========================
+       SUPER ADMIN ENTITY WORKSPACES
+       Tournaments / Teams / Players
+       ========================= */
+    .admin-entity-heading {
+      align-items: center;
+    }
+
+    .admin-entity-heading-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .admin-entity-control {
+      min-width: 175px;
+      height: 39px;
+      padding: 0 11px;
+      color: var(--ink);
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 10px;
+      font-weight: 750;
+      outline: none;
+    }
+
+    .admin-entity-search {
+      min-width: 250px;
+    }
+
+    .admin-entity-control:focus {
+      border-color: rgba(255, 107, 0, .72);
+      box-shadow: 0 0 0 3px rgba(255, 107, 0, .10);
+    }
+
+    .admin-entity-banner {
+      margin-top: 18px;
+      padding: 17px 19px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      color: #ffffff;
+      background:
+        radial-gradient(circle at 94% 18%, rgba(255,107,0,.17), transparent 28%),
+        linear-gradient(135deg, #171717, #242424);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .admin-entity-banner strong {
+      display: block;
+      font-size: 15px;
+    }
+
+    .admin-entity-banner p {
+      margin-top: 5px;
+      max-width: 820px;
+      color: #c7ccd3;
+      font-size: 10px;
+      line-height: 1.55;
+    }
+
+    .admin-entity-banner .secondary-button {
+      color: #ffffff;
+      background: rgba(255,255,255,.07);
+      border-color: rgba(255,255,255,.18);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .admin-entity-banner .secondary-button:hover {
+      color: #ffffff;
+      background: rgba(255,107,0,.18);
+      border-color: rgba(255,107,0,.55);
+    }
+
+    .admin-entity-layout {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(300px, .72fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .admin-entity-full {
+      margin-top: 18px;
+    }
+
+    .admin-entity-toolbar {
+      padding: 13px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: #667085;
+      background: #fafafa;
+      border-bottom: 1px solid var(--line);
+      font-size: 10px;
+    }
+
+    .admin-entity-toolbar-left,
+    .admin-entity-toolbar-right {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .admin-entity-table-wrap {
+      overflow-x: auto;
+    }
+
+    .admin-entity-table {
+      width: 100%;
+      min-width: 880px;
+      border-collapse: collapse;
+    }
+
+    .admin-entity-table th,
+    .admin-entity-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+      font-size: 10px;
+    }
+
+    .admin-entity-table th {
+      color: #667085;
+      background: #fafafa;
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: .65px;
+      text-transform: uppercase;
+    }
+
+    .admin-entity-table tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .admin-entity-table tbody tr:hover {
+      background: #fffaf6;
+    }
+
+    .admin-entity-name strong {
+      display: block;
+      color: #171717;
+      font-size: 11px;
+    }
+
+    .admin-entity-name span {
+      display: block;
+      margin-top: 3px;
+      color: #8b929c;
+      font-size: 9px;
+      line-height: 1.4;
+    }
+
+    .admin-entity-empty {
+      padding: 34px 18px !important;
+      color: #667085;
+      text-align: center !important;
+      font-size: 11px !important;
+      line-height: 1.55;
+    }
+
+    .admin-entity-status {
+      padding: 5px 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      font-size: 8px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .admin-entity-status.active,
+    .admin-entity-status.approved,
+    .admin-entity-status.final,
+    .admin-entity-status.finalized {
+      color: #067647;
+      background: #ecfdf3;
+    }
+
+    .admin-entity-status.pending,
+    .admin-entity-status.scheduled,
+    .admin-entity-status.upcoming,
+    .admin-entity-status.draft {
+      color: #b54708;
+      background: #fffaeb;
+    }
+
+    .admin-entity-status.live,
+    .admin-entity-status.in_progress,
+    .admin-entity-status.halftime {
+      color: #c75200;
+      background: var(--orange-soft);
+    }
+
+    .admin-entity-status.rejected,
+    .admin-entity-status.cancelled,
+    .admin-entity-status.suspended,
+    .admin-entity-status.archived {
+      color: #b42318;
+      background: #fff4f2;
+    }
+
+    .admin-entity-mini-button {
+      min-height: 30px;
+      padding: 0 9px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #344054;
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 7px;
+      font-size: 8px;
+      font-weight: 900;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .admin-entity-mini-button:hover {
+      color: #db5c00;
+      background: var(--orange-soft);
+      border-color: rgba(255,107,0,.5);
+    }
+
+    .admin-entity-mini-button.primary {
+      color: #ffffff;
+      background: var(--orange);
+      border-color: var(--orange);
+    }
+
+    .admin-entity-mini-button.primary:hover {
+      color: #ffffff;
+      background: var(--orange-dark);
+      border-color: var(--orange-dark);
+    }
+
+    .admin-entity-card-list {
+      padding: 10px 18px 17px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .admin-entity-card-item {
+      padding: 12px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      background: #fafafa;
+      border: 1px solid #eceef1;
+      border-radius: 9px;
+    }
+
+    .admin-entity-card-item strong {
+      display: block;
+      color: #171717;
+      font-size: 11px;
+    }
+
+    .admin-entity-card-item span {
+      display: block;
+      margin-top: 4px;
+      color: #7c8490;
+      font-size: 9px;
+      line-height: 1.45;
+    }
+
+    .admin-entity-detail-grid {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .admin-entity-detail {
+      min-height: 76px;
+      padding: 12px;
+      background: #fafafa;
+      border: 1px solid #eceef1;
+      border-radius: 9px;
+    }
+
+    .admin-entity-detail span {
+      color: #8b929c;
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+
+    .admin-entity-detail strong {
+      display: block;
+      margin-top: 7px;
+      color: #171717;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .admin-entity-actions {
+      padding: 0 18px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .admin-entity-note {
+      color: #8b929c;
+      font-size: 9px;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 980px) {
+      .admin-entity-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .admin-entity-heading-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .admin-entity-control,
+      .admin-entity-search {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .admin-entity-detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
   </style>
 </head>
 
@@ -2158,6 +2516,9 @@
     <input id="adminViewDashboard" class="admin-view-toggle" type="radio" name="adminWorkspace" checked>
     <input id="adminViewLeagueWorkspace" class="admin-view-toggle" type="radio" name="adminWorkspace">
     <input id="adminViewLeagues" class="admin-view-toggle" type="radio" name="adminWorkspace">
+    <input id="adminViewTournaments" class="admin-view-toggle" type="radio" name="adminWorkspace">
+    <input id="adminViewTeams" class="admin-view-toggle" type="radio" name="adminWorkspace">
+    <input id="adminViewPlayers" class="admin-view-toggle" type="radio" name="adminWorkspace">
     <input id="adminViewAccounts" class="admin-view-toggle" type="radio" name="adminWorkspace">
     <input id="adminViewActivity" class="admin-view-toggle" type="radio" name="adminWorkspace">
     <input id="adminViewAnnouncements" class="admin-view-toggle" type="radio" name="adminWorkspace">
@@ -2199,18 +2560,18 @@
         <span class="nav-icon">LM</span>
         League Management
       </label>
-      <a class="nav-link" href="tournaments.html">
+      <label class="nav-link nav-view-button" for="adminViewTournaments" data-admin-view="tournaments">
         <span class="nav-icon">TR</span>
         Tournaments
-      </a>
-      <a class="nav-link" href="commissioner-dashboard.html#teamsPanel">
+      </label>
+      <label class="nav-link nav-view-button" for="adminViewTeams" data-admin-view="teams">
         <span class="nav-icon">TM</span>
         Teams
-      </a>
-      <a class="nav-link" href="players.html">
+      </label>
+      <label class="nav-link nav-view-button" for="adminViewPlayers" data-admin-view="players">
         <span class="nav-icon">PL</span>
         Players
-      </a>
+      </label>
       <a class="nav-link" href="scorekeeper.html">
         <span class="nav-icon">SK</span>
         Scorekeeper
@@ -2333,11 +2694,11 @@
                 <span class="quick-arrow">→</span>
               </label>
 
-              <a class="quick-card" href="commissioner-dashboard.html#teamsPanel">
+              <label class="quick-card quick-view-button" for="adminViewTeams">
                 <strong>Manage Teams</strong>
-                <span>Review registered teams and manage league team access.</span>
+                <span>Open the Super Admin Team Workspace for platform-wide team records.</span>
                 <span class="quick-arrow">→</span>
-              </a>
+              </label>
 
               <a class="quick-card" href="commissioner-dashboard.html#createTeamPanel">
                 <strong>Create Team</strong>
@@ -2345,11 +2706,11 @@
                 <span class="quick-arrow">→</span>
               </a>
 
-              <a class="quick-card" href="players.html">
-                <strong>View Players</strong>
-                <span>Review player profiles and available records.</span>
+              <label class="quick-card quick-view-button" for="adminViewPlayers">
+                <strong>Manage Players</strong>
+                <span>Open the Super Admin Player Workspace for profiles and career records.</span>
                 <span class="quick-arrow">→</span>
-              </a>
+              </label>
 
               <a class="quick-card" href="add-player.html">
                 <strong>Add Player</strong>
@@ -2375,11 +2736,11 @@
                 <span class="quick-arrow">→</span>
               </label>
 
-              <a class="quick-card" href="tournaments.html">
-                <strong>View Tournaments</strong>
-                <span>Open current tournament and competition pages.</span>
+              <label class="quick-card quick-view-button" for="adminViewTournaments">
+                <strong>Manage Competitions</strong>
+                <span>Open the Super Admin Tournament & Competition Workspace.</span>
                 <span class="quick-arrow">→</span>
-              </a>
+              </label>
 
               <a class="quick-card" href="index.html">
                 <strong>View Public Website</strong>
@@ -2393,6 +2754,331 @@
         <p id="lastUpdated" class="footer-note">Dashboard totals are loading...</p>
         </div>
 
+
+
+
+        <div id="tournamentWorkspaceView" class="admin-view" data-view-name="tournaments">
+          <section class="page-heading admin-entity-heading">
+            <div>
+              <h1>Tournament &amp; Competition Workspace</h1>
+              <p>Run competition operations from live HoopHub PH league, season, division, team, and game data.</p>
+            </div>
+
+            <div class="admin-entity-heading-actions">
+              <select id="tournamentWorkspaceLeagueFilter" class="admin-entity-control" aria-label="Filter tournament workspace by league">
+                <option value="">Loading leagues...</option>
+              </select>
+              <button id="refreshTournamentWorkspaceButton" class="secondary-button" type="button">REFRESH</button>
+            </div>
+          </section>
+
+          <section class="admin-entity-banner">
+            <div>
+              <strong>Database-backed Competition Control</strong>
+              <p>Your current public tournaments page is still a static showcase. This Super Admin workspace does not depend on those cards—it uses the real Supabase competition structure already powering leagues, divisions, standings, and games.</p>
+            </div>
+            <a class="secondary-button" href="tournaments.html">VIEW PUBLIC TOURNAMENTS</a>
+          </section>
+
+          <section class="stats-grid" aria-label="Tournament workspace summary">
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Seasons</span><span class="stat-symbol">SE</span></div>
+              <div id="tournamentSeasonCount" class="stat-value">0</div>
+              <p class="stat-helper">Competition seasons in scope</p>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Divisions</span><span class="stat-symbol">DV</span></div>
+              <div id="tournamentDivisionCount" class="stat-value">0</div>
+              <p class="stat-helper">Competition divisions in scope</p>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Approved Teams</span><span class="stat-symbol">TM</span></div>
+              <div id="tournamentTeamCount" class="stat-value">0</div>
+              <p class="stat-helper">Approved league registrations</p>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Games</span><span class="stat-symbol">GM</span></div>
+              <div id="tournamentGameCount" class="stat-value">0</div>
+              <p class="stat-helper">Scheduled and completed games</p>
+            </article>
+          </section>
+
+          <section class="admin-entity-layout">
+            <article class="panel">
+              <header class="panel-header">
+                <div>
+                  <h2>Competition Structure</h2>
+                  <p>Seasons and their live division / team / game structure.</p>
+                </div>
+                <a class="secondary-button" href="commissioner-dashboard.html#seasonsPanel" style="display:inline-flex;align-items:center;text-decoration:none;">STRUCTURE TOOLS</a>
+              </header>
+              <div class="admin-entity-table-wrap">
+                <table class="admin-entity-table">
+                  <thead>
+                    <tr>
+                      <th>Season</th>
+                      <th>League</th>
+                      <th>Status</th>
+                      <th>Divisions</th>
+                      <th>Approved Teams</th>
+                      <th>Games</th>
+                      <th>Schedule</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tournamentStructureBody">
+                    <tr><td class="admin-entity-empty" colspan="7">Loading competition structure...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="panel">
+              <header class="panel-header">
+                <div>
+                  <h2>Competition Snapshot</h2>
+                  <p>Current state of the selected competition scope.</p>
+                </div>
+                <span class="panel-tag">Live Data</span>
+              </header>
+              <div id="tournamentSnapshotList" class="admin-entity-card-list"></div>
+              <div class="admin-entity-actions">
+                <a class="admin-entity-mini-button primary" href="commissioner-dashboard.html#schedulePanel">SCHEDULE GAME</a>
+                <a class="admin-entity-mini-button" href="commissioner-dashboard.html#standingsPanel">STANDINGS</a>
+                <a class="admin-entity-mini-button" href="commissioner-dashboard.html#gamesDisplayPanel">GAME CONTROL</a>
+              </div>
+            </article>
+          </section>
+
+          <section class="panel admin-entity-full">
+            <header class="panel-header">
+              <div>
+                <h2>Competition Games</h2>
+                <p>Latest live, scheduled, cancelled, submitted, and finalized games in the selected scope.</p>
+              </div>
+              <select id="tournamentGameFilter" class="admin-entity-control" style="min-width:170px;">
+                <option value="all">All statuses</option>
+                <option value="scheduled">Scheduled</option>
+                <option value="live">Live</option>
+                <option value="final">Final</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </header>
+            <div class="admin-entity-table-wrap">
+              <table class="admin-entity-table">
+                <thead>
+                  <tr>
+                    <th>Game</th>
+                    <th>League</th>
+                    <th>Matchup</th>
+                    <th>Schedule</th>
+                    <th>Venue</th>
+                    <th>Status</th>
+                    <th>Open</th>
+                  </tr>
+                </thead>
+                <tbody id="tournamentGamesBody">
+                  <tr><td class="admin-entity-empty" colspan="7">Loading competition games...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+
+        <div id="teamWorkspaceView" class="admin-view" data-view-name="teams">
+          <section class="page-heading admin-entity-heading">
+            <div>
+              <h1>Team Workspace</h1>
+              <p>Review every HoopHub PH team, league registration, roster size, and game activity from one Super Admin page.</p>
+            </div>
+
+            <div class="admin-entity-heading-actions">
+              <button id="refreshTeamWorkspaceButton" class="secondary-button" type="button">REFRESH</button>
+              <a class="primary-button" href="commissioner-dashboard.html#createTeamPanel" style="display:inline-flex;align-items:center;text-decoration:none;">CREATE TEAM</a>
+            </div>
+          </section>
+
+          <section class="stats-grid" aria-label="Team workspace summary">
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Total Teams</span><span class="stat-symbol">TM</span></div>
+              <div id="adminTeamTotalCount" class="stat-value">0</div>
+              <p class="stat-helper">All team records</p>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Approved</span><span class="stat-symbol">AP</span></div>
+              <div id="adminTeamApprovedCount" class="stat-value">0</div>
+              <p class="stat-helper">Approved league registrations</p>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Pending</span><span class="stat-symbol">PD</span></div>
+              <div id="adminTeamPendingCount" class="stat-value">0</div>
+              <p class="stat-helper">Registrations awaiting review</p>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Players</span><span class="stat-symbol">PL</span></div>
+              <div id="adminTeamPlayerCount" class="stat-value">0</div>
+              <p class="stat-helper">Players attached to teams</p>
+            </article>
+          </section>
+
+          <section class="admin-entity-layout">
+            <article class="panel">
+              <header class="panel-header">
+                <div>
+                  <h2>Platform Teams</h2>
+                  <p>Search and filter all team records without leaving Super Admin.</p>
+                </div>
+                <a class="secondary-button" href="teams.html" style="display:inline-flex;align-items:center;text-decoration:none;">VIEW PUBLIC DIRECTORY</a>
+              </header>
+
+              <div class="admin-entity-toolbar">
+                <div class="admin-entity-toolbar-left">
+                  <input id="adminTeamSearch" class="admin-entity-control admin-entity-search" type="search" placeholder="Search team or location">
+                  <select id="adminTeamLeagueFilter" class="admin-entity-control">
+                    <option value="all">All leagues</option>
+                  </select>
+                  <select id="adminTeamStatusFilter" class="admin-entity-control">
+                    <option value="all">All registrations</option>
+                    <option value="approved">Approved</option>
+                    <option value="pending">Pending</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                </div>
+                <strong id="adminTeamResultCount">0 teams</strong>
+              </div>
+
+              <div class="admin-entity-table-wrap">
+                <table class="admin-entity-table">
+                  <thead>
+                    <tr>
+                      <th>Team</th>
+                      <th>League Membership</th>
+                      <th>Roster</th>
+                      <th>Games</th>
+                      <th>Created</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminTeamTableBody">
+                    <tr><td class="admin-entity-empty" colspan="6">Loading teams...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="panel">
+              <header class="panel-header">
+                <div>
+                  <h2>Selected Team</h2>
+                  <p>Internal Super Admin team summary.</p>
+                </div>
+                <span class="panel-tag">Team Detail</span>
+              </header>
+              <div id="adminSelectedTeamDetails" class="admin-entity-detail-grid">
+                <div class="admin-entity-detail" style="grid-column:1/-1;"><span>Status</span><strong>Select a team from the table.</strong></div>
+              </div>
+              <div id="adminSelectedTeamMemberships" class="admin-entity-card-list"></div>
+              <div id="adminSelectedTeamActions" class="admin-entity-actions"></div>
+            </article>
+          </section>
+        </div>
+
+
+        <div id="playerWorkspaceView" class="admin-view" data-view-name="players">
+          <section class="page-heading admin-entity-heading">
+            <div>
+              <h1>Player Workspace</h1>
+              <p>Review player profiles, team assignments, and recorded career statistics across HoopHub PH.</p>
+            </div>
+
+            <div class="admin-entity-heading-actions">
+              <button id="refreshPlayerWorkspaceButton" class="secondary-button" type="button">REFRESH</button>
+              <a class="primary-button" href="add-player.html" style="display:inline-flex;align-items:center;text-decoration:none;">ADD PLAYER</a>
+            </div>
+          </section>
+
+          <section class="stats-grid" aria-label="Player workspace summary">
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Players</span><span class="stat-symbol">PL</span></div>
+              <div id="adminPlayerTotalCount" class="stat-value">0</div>
+              <p class="stat-helper">Registered player profiles</p>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Teams Represented</span><span class="stat-symbol">TM</span></div>
+              <div id="adminPlayerTeamCount" class="stat-value">0</div>
+              <p class="stat-helper">Teams with player records</p>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">With Game Stats</span><span class="stat-symbol">GS</span></div>
+              <div id="adminPlayerStatCount" class="stat-value">0</div>
+              <p class="stat-helper">Players with recorded game statistics</p>
+            </article>
+            <article class="stat-card">
+              <div class="stat-top"><span class="stat-label">Recorded Points</span><span class="stat-symbol">PT</span></div>
+              <div id="adminPlayerPointsCount" class="stat-value">0</div>
+              <p class="stat-helper">Total player-game points</p>
+            </article>
+          </section>
+
+          <section class="admin-entity-layout">
+            <article class="panel">
+              <header class="panel-header">
+                <div>
+                  <h2>Platform Players</h2>
+                  <p>Search and compare player records without leaving Super Admin.</p>
+                </div>
+                <a class="secondary-button" href="players.html" style="display:inline-flex;align-items:center;text-decoration:none;">VIEW PUBLIC DIRECTORY</a>
+              </header>
+
+              <div class="admin-entity-toolbar">
+                <div class="admin-entity-toolbar-left">
+                  <input id="adminPlayerSearch" class="admin-entity-control admin-entity-search" type="search" placeholder="Search player, team, position, jersey">
+                  <select id="adminPlayerTeamFilter" class="admin-entity-control">
+                    <option value="all">All teams</option>
+                  </select>
+                  <select id="adminPlayerPositionFilter" class="admin-entity-control">
+                    <option value="all">All positions</option>
+                  </select>
+                </div>
+                <strong id="adminPlayerResultCount">0 players</strong>
+              </div>
+
+              <div class="admin-entity-table-wrap">
+                <table class="admin-entity-table">
+                  <thead>
+                    <tr>
+                      <th>Player</th>
+                      <th>Team</th>
+                      <th>Pos.</th>
+                      <th>GP</th>
+                      <th>PTS</th>
+                      <th>REB</th>
+                      <th>AST</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminPlayerTableBody">
+                    <tr><td class="admin-entity-empty" colspan="8">Loading players...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="panel">
+              <header class="panel-header">
+                <div>
+                  <h2>Selected Player</h2>
+                  <p>Internal profile and career summary.</p>
+                </div>
+                <span class="panel-tag">Player Detail</span>
+              </header>
+              <div id="adminSelectedPlayerDetails" class="admin-entity-detail-grid">
+                <div class="admin-entity-detail" style="grid-column:1/-1;"><span>Status</span><strong>Select a player from the table.</strong></div>
+              </div>
+              <div id="adminSelectedPlayerActions" class="admin-entity-actions"></div>
+            </article>
+          </section>
+        </div>
 
 
         <div id="leagueWorkspaceView" class="admin-view" data-view-name="league-workspace">
@@ -3100,6 +3786,32 @@
     const dashboardChartNote = document.getElementById("dashboardChartNote");
     const refreshDashboardChartButton = document.getElementById("refreshDashboardChartButton");
 
+    const tournamentWorkspaceLeagueFilter = document.getElementById("tournamentWorkspaceLeagueFilter");
+    const refreshTournamentWorkspaceButton = document.getElementById("refreshTournamentWorkspaceButton");
+    const tournamentGameFilter = document.getElementById("tournamentGameFilter");
+    const tournamentStructureBody = document.getElementById("tournamentStructureBody");
+    const tournamentSnapshotList = document.getElementById("tournamentSnapshotList");
+    const tournamentGamesBody = document.getElementById("tournamentGamesBody");
+
+    const refreshTeamWorkspaceButton = document.getElementById("refreshTeamWorkspaceButton");
+    const adminTeamSearch = document.getElementById("adminTeamSearch");
+    const adminTeamLeagueFilter = document.getElementById("adminTeamLeagueFilter");
+    const adminTeamStatusFilter = document.getElementById("adminTeamStatusFilter");
+    const adminTeamResultCount = document.getElementById("adminTeamResultCount");
+    const adminTeamTableBody = document.getElementById("adminTeamTableBody");
+    const adminSelectedTeamDetails = document.getElementById("adminSelectedTeamDetails");
+    const adminSelectedTeamMemberships = document.getElementById("adminSelectedTeamMemberships");
+    const adminSelectedTeamActions = document.getElementById("adminSelectedTeamActions");
+
+    const refreshPlayerWorkspaceButton = document.getElementById("refreshPlayerWorkspaceButton");
+    const adminPlayerSearch = document.getElementById("adminPlayerSearch");
+    const adminPlayerTeamFilter = document.getElementById("adminPlayerTeamFilter");
+    const adminPlayerPositionFilter = document.getElementById("adminPlayerPositionFilter");
+    const adminPlayerResultCount = document.getElementById("adminPlayerResultCount");
+    const adminPlayerTableBody = document.getElementById("adminPlayerTableBody");
+    const adminSelectedPlayerDetails = document.getElementById("adminSelectedPlayerDetails");
+    const adminSelectedPlayerActions = document.getElementById("adminSelectedPlayerActions");
+
     const leagueWorkspaceView = document.getElementById("leagueWorkspaceView");
     const leagueWorkspaceSyncStatus = document.getElementById("leagueWorkspaceSyncStatus");
     const leagueWorkspaceSelect = document.getElementById("leagueWorkspaceSelect");
@@ -3170,6 +3882,33 @@
     const publishAnnouncementButton = document.getElementById("publishAnnouncementButton");
     const cancelAnnouncementEditButton = document.getElementById("cancelAnnouncementEditButton");
 
+    let adminTournamentData = {
+      leagues: [],
+      seasons: [],
+      divisions: [],
+      registrations: [],
+      games: []
+    };
+
+    let adminTeamData = {
+      teams: [],
+      registrations: [],
+      leagues: [],
+      players: [],
+      games: [],
+      errors: {}
+    };
+
+    let adminPlayerData = {
+      players: [],
+      statRows: [],
+      statSummary: new Map(),
+      errors: {}
+    };
+
+    let selectedAdminTeamId = null;
+    let selectedAdminPlayerId = null;
+
     let leagueWorkspaceData = {
       league: null,
       registrations: [],
@@ -3202,6 +3941,898 @@
       const element = document.createElement("div");
       element.textContent = String(value ?? "");
       return element.innerHTML;
+    }
+
+    function adminEntityStatusClass(value) {
+      return String(value || "pending")
+        .toLowerCase()
+        .replaceAll(" ", "_");
+    }
+
+    function adminEntityDate(value) {
+      if (!value) return "—";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "—";
+      return new Intl.DateTimeFormat("en-PH", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      }).format(date);
+    }
+
+    function adminEntityDateTime(value) {
+      if (!value) return "—";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "—";
+      return new Intl.DateTimeFormat("en-PH", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      }).format(date);
+    }
+
+    function safeAdminRows(result, key, errors = null) {
+      if (result?.error) {
+        console.warn(`Super Admin ${key} workspace data unavailable:`, result.error);
+        if (errors) {
+          errors[key] = result.error.message || `Unable to load ${key}.`;
+        }
+        return [];
+      }
+      return result?.data || [];
+    }
+
+    /* ========================================================
+       TOURNAMENT & COMPETITION WORKSPACE
+       ======================================================== */
+    async function loadTournamentWorkspace() {
+      refreshTournamentWorkspaceButton.disabled = true;
+      refreshTournamentWorkspaceButton.textContent = "REFRESHING...";
+
+      tournamentStructureBody.innerHTML =
+        '<tr><td class="admin-entity-empty" colspan="7">Loading live competition structure...</td></tr>';
+      tournamentGamesBody.innerHTML =
+        '<tr><td class="admin-entity-empty" colspan="7">Loading live competition games...</td></tr>';
+
+      try {
+        const [
+          leagueResult,
+          seasonResult,
+          divisionResult,
+          registrationResult,
+          gameResult
+        ] = await Promise.all([
+          supabaseClient
+            .from("leagues")
+            .select("id, name, location, status")
+            .order("name"),
+
+          supabaseClient
+            .from("seasons")
+            .select("id, league_id, name, start_date, end_date, status, created_at")
+            .order("created_at", { ascending: false }),
+
+          supabaseClient
+            .from("divisions")
+            .select("id, season_id, name, category, classification, status, created_at")
+            .order("name"),
+
+          supabaseClient
+            .from("league_teams")
+            .select("league_id, team_id, registration_status, season_id, division_id"),
+
+          supabaseClient
+            .from("games")
+            .select("id, league_id, season_id, division_id, home_team_id, away_team_id, home_team, away_team, home_score, away_score, scheduled_at, venue, status, finalized_at, created_at")
+            .order("scheduled_at", { ascending: false, nullsFirst: false })
+        ]);
+
+        const errors = {};
+        adminTournamentData = {
+          leagues: safeAdminRows(leagueResult, "tournament leagues", errors),
+          seasons: safeAdminRows(seasonResult, "tournament seasons", errors),
+          divisions: safeAdminRows(divisionResult, "tournament divisions", errors),
+          registrations: safeAdminRows(registrationResult, "tournament registrations", errors),
+          games: safeAdminRows(gameResult, "tournament games", errors),
+          errors
+        };
+
+        populateTournamentLeagueFilter();
+        renderTournamentWorkspace();
+      } catch (error) {
+        console.error("Unable to load Tournament Workspace:", error);
+        tournamentStructureBody.innerHTML =
+          `<tr><td class="admin-entity-empty" colspan="7">Unable to load competition workspace: ${escapeHtml(error?.message || "Unknown error")}</td></tr>`;
+      } finally {
+        refreshTournamentWorkspaceButton.disabled = false;
+        refreshTournamentWorkspaceButton.textContent = "REFRESH";
+      }
+    }
+
+    function populateTournamentLeagueFilter() {
+      const previous = tournamentWorkspaceLeagueFilter.value;
+      tournamentWorkspaceLeagueFilter.innerHTML =
+        '<option value="all">All leagues / competitions</option>' +
+        adminTournamentData.leagues
+          .map(league =>
+            `<option value="${escapeHtml(league.id)}">${escapeHtml(league.name || "Unnamed League")}</option>`
+          )
+          .join("");
+
+      if (
+        previous &&
+        [...tournamentWorkspaceLeagueFilter.options].some(
+          option => option.value === previous
+        )
+      ) {
+        tournamentWorkspaceLeagueFilter.value = previous;
+      } else {
+        tournamentWorkspaceLeagueFilter.value = "all";
+      }
+    }
+
+    function tournamentScopeLeagueIds() {
+      const selected = tournamentWorkspaceLeagueFilter.value;
+      return selected && selected !== "all"
+        ? new Set([selected])
+        : new Set(adminTournamentData.leagues.map(item => String(item.id)));
+    }
+
+    function tournamentGameMatchesFilter(game) {
+      const filter = tournamentGameFilter.value;
+      const status = String(game.status || "").toLowerCase();
+
+      if (filter === "all") return true;
+      if (filter === "scheduled") return ["scheduled", "upcoming"].includes(status);
+      if (filter === "live") return ["live", "in_progress", "in progress", "halftime"].includes(status);
+      if (filter === "final") return ["final", "finalized"].includes(status);
+      if (filter === "cancelled") return ["cancelled", "canceled"].includes(status);
+      return true;
+    }
+
+    function renderTournamentWorkspace() {
+      const leagueIds = tournamentScopeLeagueIds();
+      const leagueMap = new Map(
+        adminTournamentData.leagues.map(item => [String(item.id), item])
+      );
+
+      const seasons = adminTournamentData.seasons.filter(
+        item => leagueIds.has(String(item.league_id))
+      );
+
+      const seasonIds = new Set(seasons.map(item => String(item.id)));
+
+      const divisions = adminTournamentData.divisions.filter(
+        item => seasonIds.has(String(item.season_id))
+      );
+
+      const registrations = adminTournamentData.registrations.filter(
+        item => leagueIds.has(String(item.league_id))
+      );
+
+      const approvedRegistrations = registrations.filter(
+        item => String(item.registration_status || "").toLowerCase() === "approved"
+      );
+
+      const games = adminTournamentData.games.filter(
+        item => leagueIds.has(String(item.league_id))
+      );
+
+      document.getElementById("tournamentSeasonCount").textContent =
+        seasons.length.toLocaleString();
+      document.getElementById("tournamentDivisionCount").textContent =
+        divisions.length.toLocaleString();
+      document.getElementById("tournamentTeamCount").textContent =
+        approvedRegistrations.length.toLocaleString();
+      document.getElementById("tournamentGameCount").textContent =
+        games.length.toLocaleString();
+
+      const divisionBySeason = new Map();
+      divisions.forEach(division => {
+        const key = String(division.season_id);
+        if (!divisionBySeason.has(key)) divisionBySeason.set(key, []);
+        divisionBySeason.get(key).push(division);
+      });
+
+      tournamentStructureBody.innerHTML = seasons.length
+        ? seasons.map(season => {
+            const league = leagueMap.get(String(season.league_id)) || {};
+            const seasonDivisions = divisionBySeason.get(String(season.id)) || [];
+            const seasonTeamIds = new Set(
+              approvedRegistrations
+                .filter(item =>
+                  !item.season_id ||
+                  String(item.season_id) === String(season.id)
+                )
+                .map(item => item.team_id)
+                .filter(Boolean)
+            );
+            const seasonGames = games.filter(
+              game => String(game.season_id || "") === String(season.id)
+            );
+
+            return `
+              <tr>
+                <td class="admin-entity-name">
+                  <strong>${escapeHtml(season.name || "Unnamed Season")}</strong>
+                  <span>${escapeHtml(adminEntityDate(season.start_date))} – ${escapeHtml(adminEntityDate(season.end_date))}</span>
+                </td>
+                <td>${escapeHtml(league.name || "Unknown League")}</td>
+                <td><span class="admin-entity-status ${adminEntityStatusClass(season.status)}">${escapeHtml(season.status || "draft")}</span></td>
+                <td>${seasonDivisions.length.toLocaleString()}</td>
+                <td>${seasonTeamIds.size.toLocaleString()}</td>
+                <td>${seasonGames.length.toLocaleString()}</td>
+                <td><a class="admin-entity-mini-button" href="commissioner-dashboard.html#schedulePanel">OPEN</a></td>
+              </tr>
+            `;
+          }).join("")
+        : '<tr><td class="admin-entity-empty" colspan="7">No database-backed seasons are available in this competition scope.</td></tr>';
+
+      const finalGames = games.filter(game =>
+        ["final", "finalized"].includes(String(game.status || "").toLowerCase())
+      ).length;
+
+      const liveGames = games.filter(game =>
+        ["live", "in_progress", "in progress", "halftime"].includes(
+          String(game.status || "").toLowerCase()
+        )
+      ).length;
+
+      const upcomingGames = games.filter(game =>
+        ["scheduled", "upcoming"].includes(String(game.status || "").toLowerCase())
+      ).length;
+
+      const activeDivisions = divisions.filter(
+        division => String(division.status || "active").toLowerCase() === "active"
+      ).length;
+
+      tournamentSnapshotList.innerHTML = [
+        ["Live Games", liveGames, "Currently active competition games"],
+        ["Upcoming Games", upcomingGames, "Scheduled competition games"],
+        ["Final Results", finalGames, "Finalized or final game records"],
+        ["Active Divisions", activeDivisions, "Competition divisions currently active"]
+      ].map(([label, value, detail]) => `
+        <div class="admin-entity-card-item">
+          <div>
+            <strong>${escapeHtml(label)}</strong>
+            <span>${escapeHtml(detail)}</span>
+          </div>
+          <strong>${Number(value).toLocaleString()}</strong>
+        </div>
+      `).join("");
+
+      renderTournamentGames();
+    }
+
+    function renderTournamentGames() {
+      const leagueIds = tournamentScopeLeagueIds();
+      const leagueMap = new Map(
+        adminTournamentData.leagues.map(item => [String(item.id), item])
+      );
+
+      const rows = adminTournamentData.games
+        .filter(game => leagueIds.has(String(game.league_id)))
+        .filter(tournamentGameMatchesFilter)
+        .slice(0, 120);
+
+      tournamentGamesBody.innerHTML = rows.length
+        ? rows.map(game => {
+            const status = String(game.status || "scheduled").toLowerCase();
+            const home = game.home_team || "Home Team";
+            const away = game.away_team || "Away Team";
+            const isScored = [
+              "live", "in_progress", "in progress", "halftime", "final", "finalized"
+            ].includes(status);
+
+            return `
+              <tr>
+                <td><strong>#${escapeHtml(game.id)}</strong></td>
+                <td>${escapeHtml(leagueMap.get(String(game.league_id))?.name || "Unknown League")}</td>
+                <td>
+                  <strong>${escapeHtml(home)} vs ${escapeHtml(away)}</strong>
+                  ${isScored ? `<span style="display:block;margin-top:3px;color:#7c8490;">${Number(game.home_score || 0)} – ${Number(game.away_score || 0)}</span>` : ""}
+                </td>
+                <td>${escapeHtml(adminEntityDateTime(game.scheduled_at || game.created_at))}</td>
+                <td>${escapeHtml(game.venue || "—")}</td>
+                <td><span class="admin-entity-status ${adminEntityStatusClass(status)}">${escapeHtml(status)}</span></td>
+                <td><a class="admin-entity-mini-button" href="live-game.html?game=${encodeURIComponent(game.id)}">OPEN</a></td>
+              </tr>
+            `;
+          }).join("")
+        : '<tr><td class="admin-entity-empty" colspan="7">No games match this competition filter.</td></tr>';
+    }
+
+    /* ========================================================
+       TEAM WORKSPACE
+       ======================================================== */
+    async function loadTeamWorkspace() {
+      refreshTeamWorkspaceButton.disabled = true;
+      refreshTeamWorkspaceButton.textContent = "REFRESHING...";
+      adminTeamTableBody.innerHTML =
+        '<tr><td class="admin-entity-empty" colspan="6">Loading platform teams...</td></tr>';
+
+      try {
+        const [
+          teamResult,
+          registrationResult,
+          leagueResult,
+          playerResult,
+          gameResult
+        ] = await Promise.all([
+          supabaseClient
+            .from("teams")
+            .select("id, name, location, logo_url, created_at")
+            .order("name"),
+
+          supabaseClient
+            .from("league_teams")
+            .select("league_id, team_id, registration_status, season_id, division_id, registered_at, approved_at, updated_at"),
+
+          supabaseClient
+            .from("leagues")
+            .select("id, name, status")
+            .order("name"),
+
+          supabaseClient
+            .from("players")
+            .select("id, team_id, first_name, last_name, position, jersey_number"),
+
+          supabaseClient
+            .from("games")
+            .select("id, league_id, home_team_id, away_team_id, status, finalized_at")
+        ]);
+
+        const errors = {};
+        adminTeamData = {
+          teams: safeAdminRows(teamResult, "teams", errors),
+          registrations: safeAdminRows(registrationResult, "team registrations", errors),
+          leagues: safeAdminRows(leagueResult, "team leagues", errors),
+          players: safeAdminRows(playerResult, "team players", errors),
+          games: safeAdminRows(gameResult, "team games", errors),
+          errors
+        };
+
+        populateAdminTeamLeagueFilter();
+        renderTeamWorkspace();
+
+        if (
+          selectedAdminTeamId &&
+          !adminTeamData.teams.some(team => String(team.id) === String(selectedAdminTeamId))
+        ) {
+          selectedAdminTeamId = null;
+        }
+
+        if (!selectedAdminTeamId && adminTeamData.teams.length) {
+          selectedAdminTeamId = adminTeamData.teams[0].id;
+        }
+
+        renderSelectedAdminTeam();
+      } catch (error) {
+        console.error("Unable to load Team Workspace:", error);
+        adminTeamTableBody.innerHTML =
+          `<tr><td class="admin-entity-empty" colspan="6">Unable to load Team Workspace: ${escapeHtml(error?.message || "Unknown error")}</td></tr>`;
+      } finally {
+        refreshTeamWorkspaceButton.disabled = false;
+        refreshTeamWorkspaceButton.textContent = "REFRESH";
+      }
+    }
+
+    function populateAdminTeamLeagueFilter() {
+      const previous = adminTeamLeagueFilter.value;
+      adminTeamLeagueFilter.innerHTML =
+        '<option value="all">All leagues</option>' +
+        adminTeamData.leagues.map(league =>
+          `<option value="${escapeHtml(league.id)}">${escapeHtml(league.name || "Unnamed League")}</option>`
+        ).join("");
+
+      if (
+        previous &&
+        [...adminTeamLeagueFilter.options].some(option => option.value === previous)
+      ) {
+        adminTeamLeagueFilter.value = previous;
+      }
+    }
+
+    function registrationsForTeam(teamId) {
+      return adminTeamData.registrations.filter(
+        item => String(item.team_id) === String(teamId)
+      );
+    }
+
+    function playersForTeam(teamId) {
+      return adminTeamData.players.filter(
+        item => String(item.team_id) === String(teamId)
+      );
+    }
+
+    function gamesForTeam(teamId) {
+      return adminTeamData.games.filter(
+        game =>
+          String(game.home_team_id || "") === String(teamId) ||
+          String(game.away_team_id || "") === String(teamId)
+      );
+    }
+
+    function teamMatchesAdminFilters(team) {
+      const query = adminTeamSearch.value.trim().toLowerCase();
+      const leagueFilter = adminTeamLeagueFilter.value;
+      const statusFilter = adminTeamStatusFilter.value;
+      const registrations = registrationsForTeam(team.id);
+
+      const queryMatch =
+        !query ||
+        [team.name, team.location]
+          .some(value => String(value || "").toLowerCase().includes(query));
+
+      const leagueMatch =
+        leagueFilter === "all" ||
+        registrations.some(
+          item => String(item.league_id) === String(leagueFilter)
+        );
+
+      const statusMatch =
+        statusFilter === "all" ||
+        registrations.some(
+          item =>
+            String(item.registration_status || "").toLowerCase() === statusFilter
+        );
+
+      return queryMatch && leagueMatch && statusMatch;
+    }
+
+    function renderTeamWorkspace() {
+      const leagueMap = new Map(
+        adminTeamData.leagues.map(item => [String(item.id), item])
+      );
+
+      const approvedCount = adminTeamData.registrations.filter(
+        item => String(item.registration_status || "").toLowerCase() === "approved"
+      ).length;
+
+      const pendingCount = adminTeamData.registrations.filter(
+        item => String(item.registration_status || "").toLowerCase() === "pending"
+      ).length;
+
+      document.getElementById("adminTeamTotalCount").textContent =
+        adminTeamData.teams.length.toLocaleString();
+      document.getElementById("adminTeamApprovedCount").textContent =
+        approvedCount.toLocaleString();
+      document.getElementById("adminTeamPendingCount").textContent =
+        pendingCount.toLocaleString();
+      document.getElementById("adminTeamPlayerCount").textContent =
+        adminTeamData.players.length.toLocaleString();
+
+      const rows = adminTeamData.teams.filter(teamMatchesAdminFilters);
+
+      adminTeamResultCount.textContent =
+        `${rows.length.toLocaleString()} team${rows.length === 1 ? "" : "s"}`;
+
+      adminTeamTableBody.innerHTML = rows.length
+        ? rows.map(team => {
+            const registrations = registrationsForTeam(team.id);
+            const roster = playersForTeam(team.id);
+            const games = gamesForTeam(team.id);
+
+            const membershipText = registrations.length
+              ? registrations.slice(0, 3).map(registration => {
+                  const leagueName =
+                    leagueMap.get(String(registration.league_id))?.name ||
+                    "Unknown League";
+                  const status =
+                    String(registration.registration_status || "pending").toLowerCase();
+                  return `${leagueName} (${status})`;
+                }).join(" · ") +
+                (registrations.length > 3 ? ` · +${registrations.length - 3} more` : "")
+              : "Not registered in a league";
+
+            return `
+              <tr>
+                <td class="admin-entity-name">
+                  <strong>${escapeHtml(team.name || "Unnamed Team")}</strong>
+                  <span>${escapeHtml(team.location || "Location not set")}</span>
+                </td>
+                <td>${escapeHtml(membershipText)}</td>
+                <td>${roster.length.toLocaleString()}</td>
+                <td>${games.length.toLocaleString()}</td>
+                <td>${escapeHtml(adminEntityDate(team.created_at))}</td>
+                <td>
+                  <button class="admin-entity-mini-button primary" type="button" data-admin-team-select="${escapeHtml(team.id)}">SELECT</button>
+                  <a class="admin-entity-mini-button" href="team1.html?id=${encodeURIComponent(team.id)}">PUBLIC</a>
+                </td>
+              </tr>
+            `;
+          }).join("")
+        : '<tr><td class="admin-entity-empty" colspan="6">No teams match the current filters.</td></tr>';
+    }
+
+    function renderSelectedAdminTeam() {
+      const team = adminTeamData.teams.find(
+        item => String(item.id) === String(selectedAdminTeamId)
+      );
+
+      if (!team) {
+        adminSelectedTeamDetails.innerHTML =
+          '<div class="admin-entity-detail" style="grid-column:1/-1;"><span>Status</span><strong>Select a team from the table.</strong></div>';
+        adminSelectedTeamMemberships.innerHTML = "";
+        adminSelectedTeamActions.innerHTML = "";
+        return;
+      }
+
+      const registrations = registrationsForTeam(team.id);
+      const roster = playersForTeam(team.id);
+      const games = gamesForTeam(team.id);
+      const finalGames = games.filter(game =>
+        Boolean(game.finalized_at) ||
+        ["final", "finalized"].includes(String(game.status || "").toLowerCase())
+      ).length;
+
+      adminSelectedTeamDetails.innerHTML = `
+        <div class="admin-entity-detail"><span>Team</span><strong>${escapeHtml(team.name || "Unnamed Team")}</strong></div>
+        <div class="admin-entity-detail"><span>Location</span><strong>${escapeHtml(team.location || "Not set")}</strong></div>
+        <div class="admin-entity-detail"><span>Roster</span><strong>${roster.length.toLocaleString()} players</strong></div>
+        <div class="admin-entity-detail"><span>League Memberships</span><strong>${registrations.length.toLocaleString()}</strong></div>
+        <div class="admin-entity-detail"><span>Games</span><strong>${games.length.toLocaleString()}</strong></div>
+        <div class="admin-entity-detail"><span>Final Results</span><strong>${finalGames.toLocaleString()}</strong></div>
+      `;
+
+      const leagueMap = new Map(
+        adminTeamData.leagues.map(item => [String(item.id), item])
+      );
+
+      adminSelectedTeamMemberships.innerHTML = registrations.length
+        ? registrations.map(registration => {
+            const league =
+              leagueMap.get(String(registration.league_id)) || {};
+            const status =
+              String(registration.registration_status || "pending").toLowerCase();
+
+            return `
+              <div class="admin-entity-card-item">
+                <div>
+                  <strong>${escapeHtml(league.name || "Unknown League")}</strong>
+                  <span>Registration updated ${escapeHtml(adminEntityDate(registration.updated_at || registration.registered_at))}</span>
+                </div>
+                <span class="admin-entity-status ${adminEntityStatusClass(status)}">${escapeHtml(status)}</span>
+              </div>
+            `;
+          }).join("")
+        : '<div class="admin-entity-empty">This team has no league registration records.</div>';
+
+      adminSelectedTeamActions.innerHTML = `
+        <a class="admin-entity-mini-button primary" href="team1.html?id=${encodeURIComponent(team.id)}">VIEW PUBLIC TEAM</a>
+        <a class="admin-entity-mini-button" href="commissioner-dashboard.html#teamsPanel">REGISTRATION CONTROL</a>
+        <a class="admin-entity-mini-button" href="commissioner-dashboard.html#rosterApprovalPanel">ROSTER CONTROL</a>
+      `;
+    }
+
+    /* ========================================================
+       PLAYER WORKSPACE
+       ======================================================== */
+    async function loadPlayerWorkspace() {
+      refreshPlayerWorkspaceButton.disabled = true;
+      refreshPlayerWorkspaceButton.textContent = "REFRESHING...";
+      adminPlayerTableBody.innerHTML =
+        '<tr><td class="admin-entity-empty" colspan="8">Loading platform players...</td></tr>';
+
+      try {
+        const [playerResult, statResult] = await Promise.all([
+          supabaseClient
+            .from("players")
+            .select(`
+              id,
+              team_id,
+              first_name,
+              last_name,
+              position,
+              jersey_number,
+              height,
+              photo_url,
+              created_at,
+              teams (
+                id,
+                name
+              )
+            `)
+            .order("created_at", { ascending: false }),
+
+          supabaseClient
+            .from("player_game_stats")
+            .select("player_id, game_id, points, rebounds, offensive_rebounds, defensive_rebounds, assists, steals, blocks, turnovers, fouls, minutes_played")
+        ]);
+
+        const errors = {};
+        const players = safeAdminRows(playerResult, "players", errors);
+        const statRows = safeAdminRows(statResult, "player game stats", errors);
+
+        const statSummary = new Map();
+
+        statRows.forEach(row => {
+          const key = String(row.player_id || "");
+          if (!key) return;
+
+          if (!statSummary.has(key)) {
+            statSummary.set(key, {
+              games: new Set(),
+              points: 0,
+              rebounds: 0,
+              assists: 0,
+              steals: 0,
+              blocks: 0,
+              turnovers: 0,
+              fouls: 0,
+              minutes: 0
+            });
+          }
+
+          const summary = statSummary.get(key);
+          if (row.game_id !== null && row.game_id !== undefined) {
+            summary.games.add(String(row.game_id));
+          }
+          summary.points += Number(row.points || 0);
+          summary.rebounds += Number(
+            row.rebounds ??
+            (Number(row.offensive_rebounds || 0) + Number(row.defensive_rebounds || 0))
+          );
+          summary.assists += Number(row.assists || 0);
+          summary.steals += Number(row.steals || 0);
+          summary.blocks += Number(row.blocks || 0);
+          summary.turnovers += Number(row.turnovers || 0);
+          summary.fouls += Number(row.fouls || 0);
+          summary.minutes += Number(row.minutes_played || 0);
+        });
+
+        adminPlayerData = {
+          players,
+          statRows,
+          statSummary,
+          errors
+        };
+
+        populateAdminPlayerFilters();
+        renderPlayerWorkspace();
+
+        if (
+          selectedAdminPlayerId &&
+          !players.some(player => String(player.id) === String(selectedAdminPlayerId))
+        ) {
+          selectedAdminPlayerId = null;
+        }
+
+        if (!selectedAdminPlayerId && players.length) {
+          selectedAdminPlayerId = players[0].id;
+        }
+
+        renderSelectedAdminPlayer();
+      } catch (error) {
+        console.error("Unable to load Player Workspace:", error);
+        adminPlayerTableBody.innerHTML =
+          `<tr><td class="admin-entity-empty" colspan="8">Unable to load Player Workspace: ${escapeHtml(error?.message || "Unknown error")}</td></tr>`;
+      } finally {
+        refreshPlayerWorkspaceButton.disabled = false;
+        refreshPlayerWorkspaceButton.textContent = "REFRESH";
+      }
+    }
+
+    function populateAdminPlayerFilters() {
+      const previousTeam = adminPlayerTeamFilter.value;
+      const previousPosition = adminPlayerPositionFilter.value;
+
+      const teamMap = new Map();
+
+      adminPlayerData.players.forEach(player => {
+        const team = player.teams;
+        if (team?.id) {
+          teamMap.set(String(team.id), team.name || "Unnamed Team");
+        }
+      });
+
+      adminPlayerTeamFilter.innerHTML =
+        '<option value="all">All teams</option>' +
+        [...teamMap.entries()]
+          .sort((a, b) => String(a[1]).localeCompare(String(b[1])))
+          .map(([id, name]) =>
+            `<option value="${escapeHtml(id)}">${escapeHtml(name)}</option>`
+          )
+          .join("");
+
+      const positions = [
+        ...new Set(
+          adminPlayerData.players
+            .map(player => String(player.position || "").trim())
+            .filter(Boolean)
+        )
+      ].sort((a, b) => a.localeCompare(b));
+
+      adminPlayerPositionFilter.innerHTML =
+        '<option value="all">All positions</option>' +
+        positions.map(position =>
+          `<option value="${escapeHtml(position)}">${escapeHtml(position)}</option>`
+        ).join("");
+
+      if (
+        previousTeam &&
+        [...adminPlayerTeamFilter.options].some(option => option.value === previousTeam)
+      ) {
+        adminPlayerTeamFilter.value = previousTeam;
+      }
+
+      if (
+        previousPosition &&
+        [...adminPlayerPositionFilter.options].some(option => option.value === previousPosition)
+      ) {
+        adminPlayerPositionFilter.value = previousPosition;
+      }
+    }
+
+    function adminPlayerSummary(playerId) {
+      return adminPlayerData.statSummary.get(String(playerId)) || {
+        games: new Set(),
+        points: 0,
+        rebounds: 0,
+        assists: 0,
+        steals: 0,
+        blocks: 0,
+        turnovers: 0,
+        fouls: 0,
+        minutes: 0
+      };
+    }
+
+    function playerMatchesAdminFilters(player) {
+      const query = adminPlayerSearch.value.trim().toLowerCase();
+      const teamFilter = adminPlayerTeamFilter.value;
+      const positionFilter = adminPlayerPositionFilter.value;
+      const fullName =
+        `${player.first_name || ""} ${player.last_name || ""}`.trim();
+
+      const queryMatch =
+        !query ||
+        [
+          fullName,
+          player.teams?.name,
+          player.position,
+          player.jersey_number
+        ].some(value =>
+          String(value ?? "").toLowerCase().includes(query)
+        );
+
+      const teamMatch =
+        teamFilter === "all" ||
+        String(player.team_id || "") === String(teamFilter);
+
+      const positionMatch =
+        positionFilter === "all" ||
+        String(player.position || "") === positionFilter;
+
+      return queryMatch && teamMatch && positionMatch;
+    }
+
+    function renderPlayerWorkspace() {
+      const playerTeamIds = new Set(
+        adminPlayerData.players
+          .map(player => player.team_id)
+          .filter(Boolean)
+          .map(String)
+      );
+
+      const playersWithStats = new Set(
+        adminPlayerData.statRows
+          .map(row => row.player_id)
+          .filter(Boolean)
+          .map(String)
+      );
+
+      const totalPoints = adminPlayerData.statRows.reduce(
+        (sum, row) => sum + Number(row.points || 0),
+        0
+      );
+
+      document.getElementById("adminPlayerTotalCount").textContent =
+        adminPlayerData.players.length.toLocaleString();
+      document.getElementById("adminPlayerTeamCount").textContent =
+        playerTeamIds.size.toLocaleString();
+
+      if (adminPlayerData.errors["player game stats"]) {
+        document.getElementById("adminPlayerStatCount").textContent = "—";
+        document.getElementById("adminPlayerPointsCount").textContent = "—";
+      } else {
+        document.getElementById("adminPlayerStatCount").textContent =
+          playersWithStats.size.toLocaleString();
+        document.getElementById("adminPlayerPointsCount").textContent =
+          totalPoints.toLocaleString();
+      }
+
+      const rows = adminPlayerData.players.filter(playerMatchesAdminFilters);
+
+      adminPlayerResultCount.textContent =
+        `${rows.length.toLocaleString()} player${rows.length === 1 ? "" : "s"}`;
+
+      adminPlayerTableBody.innerHTML = rows.length
+        ? rows.map(player => {
+            const summary = adminPlayerSummary(player.id);
+            const statsUnavailable = Boolean(
+              adminPlayerData.errors["player game stats"]
+            );
+            const fullName =
+              `${player.first_name || ""} ${player.last_name || ""}`.trim() ||
+              "Unnamed Player";
+
+            return `
+              <tr>
+                <td class="admin-entity-name">
+                  <strong>${escapeHtml(fullName)}</strong>
+                  <span>#${escapeHtml(player.jersey_number ?? "—")} · ${escapeHtml(player.height || "Height not set")}</span>
+                </td>
+                <td>${escapeHtml(player.teams?.name || "No team")}</td>
+                <td>${escapeHtml(player.position || "—")}</td>
+                <td>${statsUnavailable ? "—" : summary.games.size.toLocaleString()}</td>
+                <td><strong>${statsUnavailable ? "—" : summary.points.toLocaleString()}</strong></td>
+                <td>${statsUnavailable ? "—" : summary.rebounds.toLocaleString()}</td>
+                <td>${statsUnavailable ? "—" : summary.assists.toLocaleString()}</td>
+                <td>
+                  <button class="admin-entity-mini-button primary" type="button" data-admin-player-select="${escapeHtml(player.id)}">SELECT</button>
+                  <a class="admin-entity-mini-button" href="player1.html?id=${encodeURIComponent(player.id)}">PUBLIC</a>
+                </td>
+              </tr>
+            `;
+          }).join("")
+        : '<tr><td class="admin-entity-empty" colspan="8">No players match the current filters.</td></tr>';
+    }
+
+    function renderSelectedAdminPlayer() {
+      const player = adminPlayerData.players.find(
+        item => String(item.id) === String(selectedAdminPlayerId)
+      );
+
+      if (!player) {
+        adminSelectedPlayerDetails.innerHTML =
+          '<div class="admin-entity-detail" style="grid-column:1/-1;"><span>Status</span><strong>Select a player from the table.</strong></div>';
+        adminSelectedPlayerActions.innerHTML = "";
+        return;
+      }
+
+      const summary = adminPlayerSummary(player.id);
+      const statsUnavailable = Boolean(
+        adminPlayerData.errors["player game stats"]
+      );
+      const fullName =
+        `${player.first_name || ""} ${player.last_name || ""}`.trim() ||
+        "Unnamed Player";
+
+      adminSelectedPlayerDetails.innerHTML = `
+        <div class="admin-entity-detail"><span>Player</span><strong>${escapeHtml(fullName)}</strong></div>
+        <div class="admin-entity-detail"><span>Team</span><strong>${escapeHtml(player.teams?.name || "No team")}</strong></div>
+        <div class="admin-entity-detail"><span>Jersey</span><strong>#${escapeHtml(player.jersey_number ?? "—")}</strong></div>
+        <div class="admin-entity-detail"><span>Position</span><strong>${escapeHtml(player.position || "Not set")}</strong></div>
+        <div class="admin-entity-detail"><span>Games</span><strong>${statsUnavailable ? "Unavailable" : summary.games.size.toLocaleString()}</strong></div>
+        <div class="admin-entity-detail"><span>Points</span><strong>${statsUnavailable ? "Unavailable" : summary.points.toLocaleString()}</strong></div>
+        <div class="admin-entity-detail"><span>Rebounds</span><strong>${statsUnavailable ? "Unavailable" : summary.rebounds.toLocaleString()}</strong></div>
+        <div class="admin-entity-detail"><span>Assists</span><strong>${statsUnavailable ? "Unavailable" : summary.assists.toLocaleString()}</strong></div>
+        <div class="admin-entity-detail"><span>Steals</span><strong>${statsUnavailable ? "Unavailable" : summary.steals.toLocaleString()}</strong></div>
+        <div class="admin-entity-detail"><span>Blocks</span><strong>${statsUnavailable ? "Unavailable" : summary.blocks.toLocaleString()}</strong></div>
+      `;
+
+      adminSelectedPlayerActions.innerHTML = `
+        <a class="admin-entity-mini-button primary" href="player1.html?id=${encodeURIComponent(player.id)}">VIEW PUBLIC PLAYER</a>
+        <a class="admin-entity-mini-button" href="add-player.html">ADD PLAYER</a>
+        ${player.team_id
+          ? `<button class="admin-entity-mini-button" type="button" data-open-player-team="${escapeHtml(player.team_id)}">OPEN TEAM WORKSPACE</button>`
+          : ""}
+      `;
+    }
+
+    function openTeamWorkspaceFromPlayer(teamId) {
+      document.getElementById("adminViewTeams").checked = true;
+      selectedAdminTeamId = teamId;
+
+      if (!adminTeamData.teams.length) {
+        loadTeamWorkspace().then(renderSelectedAdminTeam);
+      } else {
+        renderTeamWorkspace();
+        renderSelectedAdminTeam();
+      }
     }
 
     function leagueWorkspaceStatusClass(value) {
@@ -5875,6 +7506,52 @@
 
     document.querySelectorAll('input[name="adminWorkspace"]').forEach(function (toggle) {
       toggle.addEventListener("change", closeSidebar);
+    });
+
+    document.getElementById("adminViewTournaments").addEventListener("change", function () {
+      if (this.checked) loadTournamentWorkspace();
+    });
+
+    document.getElementById("adminViewTeams").addEventListener("change", function () {
+      if (this.checked) loadTeamWorkspace();
+    });
+
+    document.getElementById("adminViewPlayers").addEventListener("change", function () {
+      if (this.checked) loadPlayerWorkspace();
+    });
+
+    refreshTournamentWorkspaceButton.addEventListener("click", loadTournamentWorkspace);
+    tournamentWorkspaceLeagueFilter.addEventListener("change", renderTournamentWorkspace);
+    tournamentGameFilter.addEventListener("change", renderTournamentGames);
+
+    refreshTeamWorkspaceButton.addEventListener("click", loadTeamWorkspace);
+    adminTeamSearch.addEventListener("input", renderTeamWorkspace);
+    adminTeamLeagueFilter.addEventListener("change", renderTeamWorkspace);
+    adminTeamStatusFilter.addEventListener("change", renderTeamWorkspace);
+
+    adminTeamTableBody.addEventListener("click", event => {
+      const button = event.target.closest("[data-admin-team-select]");
+      if (!button) return;
+      selectedAdminTeamId = button.dataset.adminTeamSelect;
+      renderSelectedAdminTeam();
+    });
+
+    refreshPlayerWorkspaceButton.addEventListener("click", loadPlayerWorkspace);
+    adminPlayerSearch.addEventListener("input", renderPlayerWorkspace);
+    adminPlayerTeamFilter.addEventListener("change", renderPlayerWorkspace);
+    adminPlayerPositionFilter.addEventListener("change", renderPlayerWorkspace);
+
+    adminPlayerTableBody.addEventListener("click", event => {
+      const button = event.target.closest("[data-admin-player-select]");
+      if (!button) return;
+      selectedAdminPlayerId = button.dataset.adminPlayerSelect;
+      renderSelectedAdminPlayer();
+    });
+
+    adminSelectedPlayerActions.addEventListener("click", event => {
+      const button = event.target.closest("[data-open-player-team]");
+      if (!button) return;
+      openTeamWorkspaceFromPlayer(button.dataset.openPlayerTeam);
     });
 
     leagueWorkspaceSelect.addEventListener("change", loadLeagueWorkspaceLeague);
