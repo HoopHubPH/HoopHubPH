@@ -403,12 +403,25 @@
           <div class="table-wrap"><table><thead><tr><th>Team</th><th>League</th><th>Status</th><th>Submitted</th></tr></thead><tbody id="teamApplicationBody"><tr><td class="empty-state" colspan="4">Loading your applications...</td></tr></tbody></table></div>
         </section>
 
-        <section class="panel">
+        <section id="teamProfilePanel" class="panel">
           <header class="panel-header">
             <div><h2 id="teamName">Assigned Team</h2><p>Current team workspace and league assignment.</p></div>
-            <span id="staffRoleBadge" class="status-badge">Coach</span>
+            <div class="form-actions">
+              <span id="staffRoleBadge" class="status-badge">Coach</span>
+              <button id="editTeamProfileButton" class="secondary-button" type="button">Edit Team Profile</button>
+            </div>
           </header>
           <div id="teamDetails" class="team-details"></div>
+          <form id="teamProfileForm" class="application-form" hidden>
+            <div class="form-group"><label for="editTeamName">Team Name</label><input id="editTeamName" class="form-input" type="text" maxlength="100" required></div>
+            <div class="form-group"><label for="editTeamLocation">Team Location (Optional)</label><input id="editTeamLocation" class="form-input" type="text" maxlength="150"></div>
+            <div class="form-group form-wide"><label for="editTeamLogoUrl">Logo URL (Optional)</label><input id="editTeamLogoUrl" class="form-input" type="url" maxlength="2000" placeholder="https://example.com/team-logo.png"></div>
+            <div class="form-actions">
+              <button id="saveTeamProfileButton" class="primary-button" type="submit">Save Team Profile</button>
+              <button id="cancelTeamProfileButton" class="secondary-button" type="button">Cancel</button>
+            </div>
+            <div id="teamProfileMessage" class="application-message" role="status" aria-live="polite"></div>
+          </form>
         </section>
 
         <section id="rosterPanel" class="panel">
@@ -745,6 +758,92 @@
       return assignments.find(item => item.league_id === leagueId && item.team_id === teamId) || null;
     }
 
+    function selectedTeam() {
+      const assignment = selectedAssignment();
+      return teams.find(item => item.id === assignment?.team_id) || null;
+    }
+
+    function closeTeamProfileEditor() {
+      document.getElementById("teamProfileForm").hidden = true;
+      document.getElementById("teamDetails").hidden = false;
+      document.getElementById("editTeamProfileButton").textContent = "Edit Team Profile";
+      const message = document.getElementById("teamProfileMessage");
+      message.className = "application-message";
+      message.textContent = "";
+    }
+
+    function openTeamProfileEditor() {
+      const team = selectedTeam();
+      if (!team) return alert("Select an assigned team first.");
+
+      document.getElementById("editTeamName").value = team.name || "";
+      document.getElementById("editTeamLocation").value = team.location || "";
+      document.getElementById("editTeamLogoUrl").value = team.logo_url || "";
+      document.getElementById("teamDetails").hidden = true;
+      document.getElementById("teamProfileForm").hidden = false;
+      document.getElementById("editTeamProfileButton").textContent = "Editing Team Profile";
+      document.getElementById("editTeamName").focus();
+    }
+
+    async function saveTeamProfile(event) {
+      event.preventDefault();
+
+      const assignment = selectedAssignment();
+      const form = document.getElementById("teamProfileForm");
+      const button = document.getElementById("saveTeamProfileButton");
+      const message = document.getElementById("teamProfileMessage");
+
+      if (!assignment) {
+        message.className = "application-message error";
+        message.textContent = "Select an assigned team before editing its profile.";
+        return;
+      }
+      if (!form.reportValidity()) return;
+
+      button.disabled = true;
+      button.textContent = "Saving...";
+      message.className = "application-message";
+      message.textContent = "Updating the team profile...";
+
+      const name = document.getElementById("editTeamName").value.trim();
+      const location = document.getElementById("editTeamLocation").value.trim();
+      const logoUrl = document.getElementById("editTeamLogoUrl").value.trim();
+
+      try {
+        const { data, error } = await supabaseClient.rpc("update_coach_team_profile", {
+          p_team_id: assignment.team_id,
+          p_name: name,
+          p_location: location || null,
+          p_logo_url: logoUrl || null
+        });
+        if (error) throw error;
+
+        const updated = data?.[0];
+        const teamIndex = teams.findIndex(item => item.id === assignment.team_id);
+        if (teamIndex !== -1) {
+          teams[teamIndex] = {
+            ...teams[teamIndex],
+            name: updated?.team_name ?? name,
+            location: updated?.team_location ?? (location || null),
+            logo_url: updated?.team_logo_url ?? (logoUrl || null)
+          };
+        }
+
+        const selectedValue = teamSelect.value;
+        renderOptions();
+        teamSelect.value = selectedValue;
+        closeTeamProfileEditor();
+        renderWorkspace();
+        alert("Team profile updated successfully.");
+      } catch (error) {
+        message.className = "application-message error";
+        message.textContent = "Unable to update the team profile: " + (error?.message || "Please try again.");
+      } finally {
+        button.disabled = false;
+        button.textContent = "Save Team Profile";
+      }
+    }
+
     async function loadSubmissionStatus(assignment) {
       const badge = document.getElementById("submissionStatus");
       const message = document.getElementById("submissionMessage");
@@ -892,12 +991,15 @@
         document.getElementById("staffRoleBadge").textContent = "Waiting";
         document.getElementById("teamDetails").innerHTML = '<div class="empty-state" style="grid-column:1/-1">Ask the Super Admin to assign a team to this account.</div>';
         document.getElementById("playerTableBody").innerHTML = '<tr><td class="empty-state" colspan="4">No assigned team.</td></tr>';
+        document.getElementById("editTeamProfileButton").disabled = true;
+        closeTeamProfileEditor();
         loadSubmissionStatus(null);
         loadPlayerInvitations(null);
         return;
       }
 
       document.getElementById("teamName").textContent = team.name;
+      document.getElementById("editTeamProfileButton").disabled = false;
       document.getElementById("staffRoleBadge").textContent = staffRoleLabel(assignment.staff_role);
       document.getElementById("teamDetails").innerHTML = `
         <div class="detail-box"><span>League</span><strong>${escapeHtml(league?.name || "Not set")}</strong></div>
@@ -926,7 +1028,15 @@
       document.getElementById("sidebarOverlay").classList.remove("open");
     }
 
-    teamSelect.addEventListener("change", renderWorkspace);
+    teamSelect.addEventListener("change", function () {
+      closeTeamProfileEditor();
+      renderWorkspace();
+    });
+    document.getElementById("editTeamProfileButton").addEventListener("click", function () {
+      if (document.getElementById("teamProfileForm").hidden) openTeamProfileEditor();
+    });
+    document.getElementById("cancelTeamProfileButton").addEventListener("click", closeTeamProfileEditor);
+    document.getElementById("teamProfileForm").addEventListener("submit", saveTeamProfile);
     document.getElementById("addPlayerForm").addEventListener("submit", addTeamPlayer);
     document.getElementById("teamApplicationForm").addEventListener("submit", submitTeamApplication);
     document.getElementById("submitRosterButton").addEventListener("click", async function () {
