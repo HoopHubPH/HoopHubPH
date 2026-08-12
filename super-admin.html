@@ -271,6 +271,41 @@
       margin: 0 auto;
     }
 
+    .admin-view[hidden] {
+      display: none !important;
+    }
+
+    .nav-view-button {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .quick-view-button {
+      width: 100%;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .announcement-placeholder {
+      margin-top: 18px;
+      padding: 28px;
+    }
+
+    .announcement-placeholder h2 {
+      font-size: 18px;
+    }
+
+    .announcement-placeholder p {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
     .page-heading {
       display: flex;
       align-items: flex-start;
@@ -783,10 +818,10 @@
 
     <aside id="sidebar" class="sidebar" aria-label="Super Admin navigation">
       <p class="nav-label">Overview</p>
-      <a class="nav-link active" href="super-admin.html">
+      <button class="nav-link nav-view-button active" type="button" data-admin-view="dashboard">
         <span class="nav-icon">OV</span>
         Dashboard
-      </a>
+      </button>
 
       <p class="nav-label">Basketball</p>
       <a class="nav-link" href="leagues.html">
@@ -819,21 +854,22 @@
         <span class="nav-icon">AC</span>
         Accounts
       </a>
-      <a class="nav-link" href="#activityLogPanel">
+      <button class="nav-link nav-view-button" type="button" data-admin-view="activity">
         <span class="nav-icon">AL</span>
         Activity Logs
-      </a>
-      <a class="nav-link" href="#upcoming-admin-tools">
+      </button>
+      <button class="nav-link nav-view-button" type="button" data-admin-view="announcements">
         <span class="nav-icon">AN</span>
         Announcements
         <span class="nav-coming">Next</span>
-      </a>
+      </button>
     </aside>
 
     <div id="sidebarOverlay" class="sidebar-overlay" aria-hidden="true"></div>
 
     <main class="main-content">
       <div class="content-wrap">
+        <div id="dashboardView" class="admin-view" data-view-name="dashboard">
         <section class="page-heading">
           <div>
             <h1 id="welcomeHeading">Welcome, HoopHub PH Owner</h1>
@@ -933,11 +969,11 @@
                 <span class="quick-arrow">→</span>
               </a>
 
-              <a class="quick-card" href="#activityLogPanel">
+              <button class="quick-card quick-view-button" type="button" data-admin-view="activity">
                 <strong>View Activity Logs</strong>
                 <span>Audit platform actions, corrections, assignments, and finalized-game changes.</span>
                 <span class="quick-arrow">→</span>
-              </a>
+              </button>
 
               <a class="quick-card" href="tournaments.html">
                 <strong>View Tournaments</strong>
@@ -998,6 +1034,17 @@
           </article>
         </section>
 
+        <p id="lastUpdated" class="footer-note">Dashboard totals are loading...</p>
+        </div>
+
+        <div id="activityView" class="admin-view" data-view-name="activity" hidden>
+          <section class="page-heading">
+            <div>
+              <h1>Activity Logs</h1>
+              <p>Review recorded HoopHub PH actions without leaving the Super Admin dashboard.</p>
+            </div>
+            <span class="role-badge">Super Admin Audit</span>
+          </section>
 
         <section id="activityLogPanel" class="panel activity-panel" aria-labelledby="activityLogHeading">
           <header class="panel-header">
@@ -1051,8 +1098,23 @@
             <div class="activity-empty">Loading platform activity...</div>
           </div>
         </section>
+        </div>
 
-        <p id="lastUpdated" class="footer-note">Dashboard totals are loading...</p>
+        <div id="announcementsView" class="admin-view" data-view-name="announcements" hidden>
+          <section class="page-heading">
+            <div>
+              <h1>Announcements</h1>
+              <p>Manage HoopHub PH announcements from this dedicated workspace.</p>
+            </div>
+            <span class="role-badge">Super Admin</span>
+          </section>
+
+          <section class="panel announcement-placeholder">
+            <h2>Announcements Module</h2>
+            <p>This view is separated from the dashboard so it can be built without mixing it with Activity Logs or other Super Admin functions.</p>
+            <p>The publishing controls will be added here next.</p>
+          </section>
+        </div>
       </div>
     </main>
   </div>
@@ -1081,6 +1143,9 @@
     const activityActionFilter = document.getElementById("activityActionFilter");
     const activityDateFilter = document.getElementById("activityDateFilter");
     const refreshActivityButton = document.getElementById("refreshActivityButton");
+    const dashboardView = document.getElementById("dashboardView");
+    const activityView = document.getElementById("activityView");
+    const announcementsView = document.getElementById("announcementsView");
 
     let activityRows = [];
     let activityProfiles = [];
@@ -1434,6 +1499,30 @@
     }
 
 
+    function showAdminView(viewName) {
+      const views = {
+        dashboard: dashboardView,
+        activity: activityView,
+        announcements: announcementsView
+      };
+
+      Object.entries(views).forEach(([name, element]) => {
+        if (element) element.hidden = name !== viewName;
+      });
+
+      document.querySelectorAll("[data-admin-view]").forEach(control => {
+        control.classList.toggle("active", control.dataset.adminView === viewName);
+      });
+
+      if (viewName === "activity" && !activityRows.length) {
+        loadActivityLog();
+      }
+
+      window.scrollTo({ top: 0, behavior: "auto" });
+      closeSidebar();
+    }
+
+
     function displayAccount(profile, user) {
       const emailName = user.email ? user.email.split("@")[0] : "Owner";
       const displayName = String(profile.full_name || "").trim() || emailName;
@@ -1508,6 +1597,7 @@
         }
 
         displayAccount(profile, userData.user);
+        showAdminView("dashboard");
         authScreen.hidden = true;
         appShell.hidden = false;
         await Promise.all([
@@ -1576,9 +1666,16 @@
       }
     });
 
-    document.querySelectorAll(".sidebar .nav-link").forEach(function (link) {
+    document.querySelectorAll(".sidebar a.nav-link").forEach(function (link) {
       link.addEventListener("click", closeSidebar);
     });
+
+    document.querySelectorAll("[data-admin-view]").forEach(function (control) {
+      control.addEventListener("click", function () {
+        showAdminView(control.dataset.adminView);
+      });
+    });
+
     leagueManagementLink.addEventListener("click", openLeagueManagement);
 
     document.getElementById("accountManagementLink").addEventListener("click", function (event) {
