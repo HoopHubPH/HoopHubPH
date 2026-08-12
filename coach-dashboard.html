@@ -1189,7 +1189,7 @@
       <button class="nav-link coach-nav-view" type="button" data-coach-view="roster"><span class="nav-icon">RO</span> Team Roster</button>
       <button class="nav-link coach-nav-view" type="button" data-coach-view="submit-roster"><span class="nav-icon">RS</span> Submit Roster</button>
       <button class="nav-link coach-nav-view" type="button" data-coach-view="add-player"><span class="nav-icon">AP</span> Add Player</button>
-      <button class="nav-link coach-nav-view" type="button" data-coach-view="invitations"><span class="nav-icon">IV</span> Player Invites</button>
+      <button class="nav-link coach-nav-view" type="button" data-coach-view="invitations"><span class="nav-icon">IV</span> Player Account Invites</button>
       <button class="nav-link coach-nav-view" type="button" data-coach-view="lineup"><span class="nav-icon">LU</span> Lineup & Attendance</button>
 
       <p class="nav-label">Team Records</p>
@@ -1271,9 +1271,9 @@
 
         <section id="playerInvitationsPanel" class="panel coach-view-section" data-coach-section="invitations">
           <header class="panel-header">
-            <div><h2>Player Invitations <span style="color:#ff6b00;font-size:12px">(Optional)</span></h2><p>Players can participate without an account. Invite them only if they want to claim their profile and use the Player Dashboard.</p></div>
+            <div><h2>Player Account Invites <span style="color:#ff6b00;font-size:12px">(Optional)</span></h2><p>Players can participate without an account. Invite them only if they want to claim their profile and use the Player Dashboard.</p></div>
           </header>
-          <div class="table-wrap"><table><thead><tr><th>Player</th><th>Email</th><th>Status</th><th>Expires</th><th>Actions</th></tr></thead><tbody id="playerInvitationBody"><tr><td class="empty-state" colspan="5">Loading player invitations...</td></tr></tbody></table></div>
+          <div class="table-wrap"><table><thead><tr><th>Player</th><th>Email</th><th>Status</th><th>Expires</th><th>Actions</th></tr></thead><tbody id="playerInvitationBody"><tr><td class="empty-state" colspan="5">Loading player account invites...</td></tr></tbody></table></div>
         </section>
 
         <section id="coachDashboardStats" class="coach-performance-grid coach-view-section coach-view-grid-section active" data-coach-section="dashboard">
@@ -1844,7 +1844,7 @@
       },
       invitations: {
         eyebrow: "Team Workspace",
-        title: "Player Invitations",
+        title: "Player Account Invites",
         description: "Invite players who want to claim their profile and use the Player Dashboard.",
         hash: "player-invites"
       },
@@ -4062,7 +4062,7 @@
         return;
       }
 
-      body.innerHTML = '<tr><td class="empty-state" colspan="5">Loading player invitations...</td></tr>';
+      body.innerHTML = '<tr><td class="empty-state" colspan="5">Loading player account invites...</td></tr>';
       const { data, error } = await supabaseClient.rpc("get_team_player_invitations", {
         p_league_id: assignment.league_id,
         p_team_id: assignment.team_id
