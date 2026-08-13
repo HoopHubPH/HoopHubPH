@@ -1846,6 +1846,13 @@
       return Number.isFinite(number) ? number : 0;
     }
 
+    function isFinalizedPlayerGame(game) {
+      if (!game) return false;
+      if (game.finalized_at) return true;
+      const status = String(game.status || "").trim().toLowerCase();
+      return ["final", "finalized", "completed", "complete"].includes(status);
+    }
+
     function minutesLabel(value) {
       const totalSeconds = Math.max(0, Math.round(numberValue(value)));
       const minutes = Math.floor(totalSeconds / 60);
@@ -2902,13 +2909,17 @@
           ? supabaseClient.from("teams").select("id, name, location").in("id", teamIds)
           : Promise.resolve({ data: [], error: null }));
         extraQueries.push(gameIds.length
-          ? supabaseClient.from("games").select("id, home_team, away_team, status, period").in("id", gameIds)
+          ? supabaseClient.from("games").select("id, home_team, away_team, status, period, finalized_at").in("id", gameIds)
           : Promise.resolve({ data: [], error: null }));
         const [teamResult, gameResult] = await Promise.all(extraQueries);
         if (teamResult.error) throw teamResult.error;
         if (gameResult.error) throw gameResult.error;
         teams = teamResult.data || [];
         games = gameResult.data || [];
+        const finalizedGameIds = new Set(
+          games.filter(isFinalizedPlayerGame).map(game => String(game.id))
+        );
+        stats = stats.filter(row => finalizedGameIds.has(String(row.game_id)));
       }
 
       renderOptions();
