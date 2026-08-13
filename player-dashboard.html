@@ -571,22 +571,6 @@
       color: #b42318;
     }
 
-    .player-correction-note {
-      padding: 13px 18px;
-      color: #7a3e00;
-      background: #fff8f2;
-      border-bottom: 1px solid #ffd9bd;
-      font-size: 11px;
-      line-height: 1.5;
-    }
-
-    .player-correction-form {
-      padding: 18px;
-      display: grid;
-      grid-template-columns: repeat(2,minmax(0,1fr));
-      gap: 13px;
-    }
-
     .form-group {
       display: flex;
       flex-direction: column;
@@ -615,28 +599,11 @@
       background: #f2f4f7;
     }
 
-    .player-correction-textarea {
-      min-height: 100px;
-      padding: 10px 11px;
-      resize: vertical;
-      line-height: 1.45;
-    }
-
     .form-wide,
     .form-actions {
       grid-column: 1 / -1;
     }
 
-    .player-correction-history { border-top: 1px solid var(--line); }
-    .player-correction-history-header { padding: 15px 18px 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .player-correction-history-header h3 { font-size: 14px; }
-    .player-correction-history-header p { margin-top: 3px; color: var(--muted); font-size: 10px; }
-    .correction-status { padding: 5px 8px; display: inline-flex; border-radius: 999px; font-size: 9px; font-weight: 900; text-transform: capitalize; }
-    .correction-status.pending { color: #b54708; background: #fff4e5; }
-    .correction-status.approved { color: #067647; background: #ecfdf3; }
-    .correction-status.rejected { color: #b42318; background: #fef3f2; }
-    .correction-status.withdrawn { color: #475467; background: #f2f4f7; }
-    .correction-withdraw-button { min-height: 29px; padding: 0 9px; color: #b42318; background: #fff; border: 1px solid #f2b8b5; border-radius: 7px; font-size: 9px; font-weight: 800; cursor: pointer; }
 
     @media (max-height: 690px) and (min-width: 901px) {
       .sidebar {
@@ -698,9 +665,6 @@
       .career-shooting-section,
       .player-overview-grid,
       .milestone-grid,
-      .player-correction-form {
-        grid-template-columns: 1fr;
-      }
 
       .team-history-card {
         grid-template-columns: 1fr 1fr 1fr;
@@ -1301,7 +1265,6 @@
 
       <p class="nav-label">Player Tools</p>
       <button class="nav-link player-nav-view" type="button" data-player-view="share"><span class="nav-icon">SH</span> Share Profile</button>
-      <button class="nav-link player-nav-view" type="button" data-player-view="corrections"><span class="nav-icon">CR</span> Corrections</button>
     </aside>
 
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
@@ -1686,79 +1649,6 @@
           </div>
         </section>
 
-        <!-- CORRECTIONS -->
-        <section id="correctionsPanel" class="panel player-view-section" data-player-section="corrections">
-          <header class="panel-header">
-            <div>
-              <h2>Correction Requests</h2>
-              <p>Submit and track requests when an official finalized-game statistic needs review.</p>
-            </div>
-            <span class="readonly-note">Stats Stay Protected</span>
-          </header>
-
-          <div class="player-correction-note">
-            Players cannot directly edit official statistics. Submitting this form sends a protected request into the existing coach and commissioner review workflow.
-          </div>
-
-          <form id="playerCorrectionForm" class="player-correction-form">
-            <div class="form-group">
-              <label for="playerCorrectionGame">Game</label>
-              <select id="playerCorrectionGame" class="form-input" required>
-                <option value="">Select a game</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="playerCorrectionStat">Statistic</label>
-              <select id="playerCorrectionStat" class="form-input" required>
-                <option value="">Select statistic</option>
-                <option value="points">Points</option>
-                <option value="rebounds">Rebounds</option>
-                <option value="assists">Assists</option>
-                <option value="steals">Steals</option>
-                <option value="blocks">Blocks</option>
-                <option value="turnovers">Turnovers</option>
-                <option value="fouls">Personal Fouls</option>
-                <option value="minutes">Minutes Played</option>
-                <option value="plus_minus">Plus / Minus</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="playerCorrectionCurrent">Current Official Value</label>
-              <input id="playerCorrectionCurrent" class="form-input" type="text" readonly placeholder="Auto-filled">
-            </div>
-
-            <div class="form-group">
-              <label for="playerCorrectionRequested">What It Should Be</label>
-              <input id="playerCorrectionRequested" class="form-input" type="text" maxlength="40" required placeholder="Enter corrected value">
-            </div>
-
-            <div class="form-group form-wide">
-              <label for="playerCorrectionReason">Reason</label>
-              <textarea id="playerCorrectionReason" class="form-input player-correction-textarea" minlength="5" maxlength="800" required placeholder="Explain what is wrong and what should be reviewed."></textarea>
-            </div>
-
-            <div class="form-actions">
-              <button id="submitPlayerCorrectionButton" class="primary-button" type="submit">Submit Correction Request</button>
-            </div>
-
-            <div id="playerCorrectionMessage" class="tool-message form-wide" aria-live="polite"></div>
-          </form>
-
-          <div class="player-correction-history">
-            <div class="player-correction-history-header">
-              <div><h3>Request History</h3><p>Track pending, approved, rejected, and withdrawn requests.</p></div>
-              <button id="refreshPlayerCorrectionsButton" class="secondary-button" type="button">Refresh</button>
-            </div>
-            <div class="table-wrap">
-              <table>
-                <thead><tr><th>Submitted</th><th>Game</th><th>Statistic</th><th>Requested Change</th><th>Status</th><th>Review / Action</th></tr></thead>
-                <tbody id="playerCorrectionHistoryBody"><tr><td class="empty-state" colspan="6">Loading correction requests...</td></tr></tbody>
-              </table>
-            </div>
-          </div>
-        </section>
       </div>
     </main>
   </div>
@@ -1778,7 +1668,6 @@
     let games = [];
     let currentPlayerView = "dashboard";
     let playerGameCenterLoadToken = 0;
-    let playerCorrectionLoadToken = 0;
     let currentTrendMetric = "points";
 
     const playerViewConfig = {
@@ -1824,12 +1713,6 @@
         description: "Open or copy your public HoopHub PH player profile.",
         hash: "share-profile"
       },
-      corrections: {
-        eyebrow: "Player Tools",
-        title: "Corrections",
-        description: "Prepare a structured correction request for your coach without editing official statistics.",
-        hash: "corrections"
-      }
     };
 
     const playerHashMap = {
@@ -1844,8 +1727,7 @@
       "team-history": "teams",
       awards: "awards",
       share: "share",
-      "share-profile": "share",
-      corrections: "corrections"
+      "share-profile": "share"
     };
 
     const authScreen = document.getElementById("authScreen");
@@ -3046,9 +2928,7 @@
           '<tr><td class="empty-state" colspan="10">No linked player record.</td></tr>';
         document.getElementById("teamHistoryList").innerHTML =
           '<div class="empty-state">No team history is available.</div>';
-        populateCorrectionGameOptions([]);
         renderPlayerPerformanceCenter([]);
-        loadPlayerCorrectionRequests(null);
         loadPlayerGameCenter(null);
         return;
       }
@@ -3141,8 +3021,6 @@
       renderMilestones(playerStats, careerTotals);
       renderPlayerPerformanceCenter(playerStats);
       renderShareProfile(player, team);
-      populateCorrectionGameOptions(playerStats);
-      loadPlayerCorrectionRequests(player);
       loadPlayerGameCenter(player);
     }
 
@@ -3184,12 +3062,6 @@
       openPlayerView(playerViewFromHash(), false);
     });
 
-    document.getElementById("playerCorrectionGame").addEventListener("change", syncPlayerCorrectionCurrentValue);
-    document.getElementById("playerCorrectionStat").addEventListener("change", syncPlayerCorrectionCurrentValue);
-    document.getElementById("playerCorrectionForm").addEventListener("submit", submitPlayerCorrectionRequest);
-    document.getElementById("refreshPlayerCorrectionsButton").addEventListener("click", function () {
-      loadPlayerCorrectionRequests();
-    });
 
     document.getElementById("openPublicProfileButton").addEventListener("click", function () {
       const url = publicProfileUrl(currentLinkedPlayer());
