@@ -270,6 +270,107 @@
     .result-badge.tie { color: #475467; background: #f2f4f7; }
     .statistics-note { padding: 12px 18px 16px; color: var(--muted); font-size: 11px; line-height: 1.5; }
 
+    /* Team analytics additions */
+    .coach-snapshot-panel {
+      margin-bottom: 17px;
+      display: none;
+      background: #171717;
+      border: 1px solid #252525;
+      border-radius: 11px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .coach-snapshot-panel.active { display: block; }
+    .coach-snapshot-header {
+      padding: 13px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    .coach-snapshot-header h2 { color: #fff; font-size: 14px; }
+    .coach-snapshot-header p { margin-top: 3px; color: #aeb4bd; font-size: 9px; }
+    .coach-snapshot-button {
+      min-height: 34px;
+      padding: 0 12px;
+      flex: 0 0 auto;
+      color: #fff;
+      background: var(--orange);
+      border: 1px solid var(--orange);
+      border-radius: 7px;
+      font-size: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .coach-snapshot-button:hover { background: var(--orange-dark); border-color: var(--orange-dark); }
+    .coach-snapshot-grid {
+      padding: 12px 16px 15px;
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0,1fr));
+      gap: 8px;
+    }
+    .coach-snapshot-stat {
+      min-width: 0;
+      padding: 10px;
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 8px;
+    }
+    .coach-snapshot-stat span, .coach-snapshot-stat strong { display: block; }
+    .coach-snapshot-stat span { color: #aeb4bd; font-size: 8px; font-weight: bold; text-transform: uppercase; }
+    .coach-snapshot-stat strong { margin-top: 5px; color: #fff; font-size: 17px; }
+
+    .team-analytics-area { padding: 17px 18px 19px; border-top: 1px solid var(--line); background: #fafafa; }
+    .team-analytics-heading { margin-bottom: 13px; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+    .team-analytics-heading h3 { font-size: 16px; }
+    .team-analytics-heading p { margin-top: 4px; color: var(--muted); font-size: 10px; }
+    .analytics-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+    .analytics-card { min-width: 0; padding: 14px; background: #fff; border: 1px solid var(--line); border-radius: 10px; }
+    .analytics-card.wide { grid-column: 1 / -1; }
+    .analytics-card-header { margin-bottom: 12px; }
+    .analytics-card-header h4 { font-size: 12px; }
+    .analytics-card-header p { margin-top: 3px; color: var(--muted); font-size: 9px; line-height: 1.4; }
+    .analytics-chart-wrap { position: relative; height: 270px; }
+    .analytics-chart-wrap.trend { height: 285px; }
+    .analytics-empty {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: none;
+      place-items: center;
+      color: var(--muted);
+      background: rgba(255,255,255,.94);
+      font-size: 10px;
+      text-align: center;
+    }
+    .analytics-empty.visible { display: grid; }
+    .player-leaders-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 9px; }
+    .player-leader-card { min-width: 0; padding: 12px; background: #fafafa; border: 1px solid var(--line); border-radius: 8px; }
+    .player-leader-card > span { color: var(--orange-dark); font-size: 8px; font-weight: bold; text-transform: uppercase; }
+    .player-leader-card > strong { margin-top: 7px; display: block; overflow: hidden; color: var(--ink); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .player-leader-card > b { margin-top: 7px; display: block; font-size: 20px; }
+    .player-leader-card > small { margin-top: 4px; display: block; color: var(--muted); font-size: 8px; }
+
+    @media (max-width: 1060px) {
+      .coach-snapshot-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+      .player-leaders-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    }
+
+    @media (max-width: 760px) {
+      .analytics-grid { grid-template-columns: 1fr; }
+      .analytics-card.wide { grid-column: auto; }
+      .coach-snapshot-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .player-leaders-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+
+    @media (max-width: 520px) {
+      .coach-snapshot-header { align-items: stretch; flex-direction: column; }
+      .coach-snapshot-button { width: 100%; }
+      .analytics-chart-wrap { height: 235px; }
+      .analytics-chart-wrap.trend { height: 250px; }
+    }
+
     .correction-callout { padding: 15px 18px; color: #7a3e00; background: #fff8f2; border-bottom: 1px solid #ffd9bd; font-size: 12px; line-height: 1.5; }
     .correction-callout strong { color: var(--ink); }
     .correction-steps { margin-top: 10px; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; }
@@ -1308,6 +1409,25 @@
           </div>
         </section>
 
+        <section id="coachTeamSnapshot" class="coach-snapshot-panel coach-view-section active" data-coach-section="dashboard" aria-labelledby="coachSnapshotTitle">
+          <div class="coach-snapshot-header">
+            <div>
+              <h2 id="coachSnapshotTitle">Team Performance Snapshot</h2>
+              <p>Per-game team averages from finalized games only.</p>
+            </div>
+            <button id="viewTeamAnalyticsButton" class="coach-snapshot-button" type="button">View Team Analytics</button>
+          </div>
+          <div class="coach-snapshot-grid">
+            <div class="coach-snapshot-stat"><span>PTS</span><strong id="snapshotPTS">0.0</strong></div>
+            <div class="coach-snapshot-stat"><span>REB</span><strong id="snapshotREB">0.0</strong></div>
+            <div class="coach-snapshot-stat"><span>AST</span><strong id="snapshotAST">0.0</strong></div>
+            <div class="coach-snapshot-stat"><span>STL</span><strong id="snapshotSTL">0.0</strong></div>
+            <div class="coach-snapshot-stat"><span>BLK</span><strong id="snapshotBLK">0.0</strong></div>
+            <div class="coach-snapshot-stat"><span>TO</span><strong id="snapshotTO">0.0</strong></div>
+            <div class="coach-snapshot-stat"><span>FG%</span><strong id="snapshotFGPCT">0.0%</strong></div>
+          </div>
+        </section>
+
         <section id="teamApplicationPanel" class="panel coach-view-section" data-coach-section="create-team">
           <header class="panel-header">
             <div><h2>Create Team & Apply to a League</h2><p>Create a new team application for an open Hoop Hub PH league.</p></div>
@@ -1462,6 +1582,48 @@
             <div class="statistics-summary-card"><span>Points Against</span><strong id="statisticsPointsAgainst">0</strong></div>
             <div class="statistics-summary-card"><span>PPG</span><strong id="statisticsPPG">0.0</strong></div>
             <div class="statistics-summary-card"><span>Opp PPG</span><strong id="statisticsOppPPG">0.0</strong></div>
+          </div>
+
+          <div class="team-analytics-area">
+            <div class="team-analytics-heading">
+              <div>
+                <h3>Team Analytics</h3>
+                <p>Team profile, production, efficiency, scoring trend and leaders from official finalized-game statistics.</p>
+              </div>
+            </div>
+
+            <div class="analytics-grid">
+              <article class="analytics-card">
+                <div class="analytics-card-header"><h4>Team Profile</h4><p>Balanced view of six core performance categories.</p></div>
+                <div class="analytics-chart-wrap"><canvas id="teamProfileChart"></canvas><div id="teamProfileEmpty" class="analytics-empty visible">Finalized-game data will appear here.</div></div>
+              </article>
+
+              <article class="analytics-card">
+                <div class="analytics-card-header"><h4>Shooting Efficiency</h4><p>Combined team percentages from official made and attempted shots.</p></div>
+                <div class="analytics-chart-wrap"><canvas id="shootingEfficiencyChart"></canvas><div id="shootingEfficiencyEmpty" class="analytics-empty visible">Finalized-game shooting data will appear here.</div></div>
+              </article>
+
+              <article class="analytics-card wide">
+                <div class="analytics-card-header"><h4>Team Production</h4><p>Per-game averages across the main box-score categories.</p></div>
+                <div class="analytics-chart-wrap"><canvas id="teamProductionChart"></canvas><div id="teamProductionEmpty" class="analytics-empty visible">Finalized-game production will appear here.</div></div>
+              </article>
+
+              <article class="analytics-card wide">
+                <div class="analytics-card-header"><h4>Game-by-Game Scoring Trend</h4><p>Our score compared with the opponent in chronological order.</p></div>
+                <div class="analytics-chart-wrap trend"><canvas id="scoringTrendChart"></canvas><div id="scoringTrendEmpty" class="analytics-empty visible">Finalized game results will appear here.</div></div>
+              </article>
+
+              <article class="analytics-card wide">
+                <div class="analytics-card-header"><h4>Player Leaders</h4><p>Top finalized-game producer in each category, shown as a per-game average and total.</p></div>
+                <div id="playerLeadersGrid" class="player-leaders-grid">
+                  <div class="player-leader-card"><span>PTS Leader</span><strong>—</strong><b>0.0</b><small>No finalized games</small></div>
+                  <div class="player-leader-card"><span>REB Leader</span><strong>—</strong><b>0.0</b><small>No finalized games</small></div>
+                  <div class="player-leader-card"><span>AST Leader</span><strong>—</strong><b>0.0</b><small>No finalized games</small></div>
+                  <div class="player-leader-card"><span>STL Leader</span><strong>—</strong><b>0.0</b><small>No finalized games</small></div>
+                  <div class="player-leader-card"><span>BLK Leader</span><strong>—</strong><b>0.0</b><small>No finalized games</small></div>
+                </div>
+              </article>
+            </div>
           </div>
 
           <div class="statistics-section">
@@ -1763,6 +1925,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <script>
     const SUPABASE_URL = "https://tkrsyiwffqkgfyooewsf.supabase.co";
     const SUPABASE_KEY = "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
@@ -1785,6 +1948,8 @@
     let currentCoachView = "dashboard";
     let coachDashboardSummary = {};
     let coachDashboardGameRows = [];
+    let coachDashboardPlayerRows = [];
+    let coachAnalyticsCharts = {};
     let coachDashboardCorrectionRows = [];
     let coachDashboardRosterSubmission = null;
     let coachDashboardDivisionRank = null;
@@ -1966,6 +2131,12 @@
       if (updateHash) {
         const nextHash = coachViewConfig[viewName].hash;
         history.replaceState(null, "", `${window.location.pathname}${window.location.search}#${nextHash}`);
+      }
+
+      if (viewName === "statistics") {
+        window.requestAnimationFrame(() => {
+          Object.values(coachAnalyticsCharts).forEach(chart => chart?.resize());
+        });
       }
 
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -3037,6 +3208,198 @@
       return `${minutes}:${String(seconds).padStart(2, "0")}`;
     }
 
+    function analyticsNumber(value) {
+      const number = Number(value || 0);
+      return Number.isFinite(number) ? number : 0;
+    }
+
+    function analyticsPercent(made, attempted) {
+      const attempts = analyticsNumber(attempted);
+      return attempts > 0 ? (analyticsNumber(made) / attempts) * 100 : 0;
+    }
+
+    function analyticsPlayerName(player) {
+      return `${player?.first_name || ""} ${player?.last_name || ""}`.trim() || "Player";
+    }
+
+    function buildTeamAnalytics(summary, gameRows, playerRows) {
+      const gamesPlayed = analyticsNumber(summary?.games_played);
+      const total = field => playerRows.reduce((sum, player) => sum + analyticsNumber(player?.[field]), 0);
+      const average = value => gamesPlayed > 0 ? value / gamesPlayed : 0;
+
+      const twoMade = total("two_pt_made");
+      const twoAttempted = total("two_pt_attempted");
+      const threeMade = total("three_pt_made");
+      const threeAttempted = total("three_pt_attempted");
+      const ftMade = total("ft_made");
+      const ftAttempted = total("ft_attempted");
+      const fieldGoalsMade = twoMade + threeMade;
+      const fieldGoalsAttempted = twoAttempted + threeAttempted;
+
+      const totals = {
+        points: analyticsNumber(summary?.points_for) || total("points"),
+        rebounds: total("rebounds"),
+        offensiveRebounds: total("offensive_rebounds"),
+        defensiveRebounds: total("defensive_rebounds"),
+        assists: total("assists"),
+        steals: total("steals"),
+        blocks: total("blocks"),
+        turnovers: total("turnovers"),
+        fouls: total("fouls")
+      };
+
+      return {
+        gamesPlayed,
+        averages: Object.fromEntries(Object.entries(totals).map(([key, value]) => [key, average(value)])),
+        percentages: {
+          fg: analyticsPercent(fieldGoalsMade, fieldGoalsAttempted),
+          twoPt: analyticsPercent(twoMade, twoAttempted),
+          threePt: analyticsPercent(threeMade, threeAttempted),
+          ft: analyticsPercent(ftMade, ftAttempted)
+        },
+        gameRows: [...gameRows].sort((a, b) => {
+          const aTime = new Date(a.scheduled_at || a.finalized_at || 0).getTime();
+          const bTime = new Date(b.scheduled_at || b.finalized_at || 0).getTime();
+          return aTime - bTime;
+        }),
+        playerRows
+      };
+    }
+
+    function setAnalyticsEmpty(id, show) {
+      document.getElementById(id)?.classList.toggle("visible", show);
+    }
+
+    function replaceAnalyticsChart(name, canvasId, config) {
+      if (coachAnalyticsCharts[name]) coachAnalyticsCharts[name].destroy();
+      if (!window.Chart) return;
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      coachAnalyticsCharts[name] = new Chart(canvas, config);
+    }
+
+    function analyticsBaseOptions(horizontal = false) {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: horizontal ? "y" : "x",
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: "#171717",
+            titleFont: { family: "Arial", size: 11 },
+            bodyFont: { family: "Arial", size: 10 },
+            padding: 10
+          }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: "#667085", font: { family: "Arial", size: 9 } } },
+          y: { beginAtZero: true, grid: { color: "rgba(16,24,40,.07)" }, ticks: { color: "#667085", font: { family: "Arial", size: 9 } } }
+        }
+      };
+    }
+
+    function renderPlayerLeaders(playerRows) {
+      const categories = [
+        ["PTS", "points"], ["REB", "rebounds"], ["AST", "assists"], ["STL", "steals"], ["BLK", "blocks"]
+      ];
+      const grid = document.getElementById("playerLeadersGrid");
+      grid.innerHTML = categories.map(([label, field]) => {
+        const leader = [...playerRows].sort((a, b) => analyticsNumber(b?.[field]) - analyticsNumber(a?.[field]))[0];
+        if (!leader) {
+          return `<div class="player-leader-card"><span>${label} Leader</span><strong>—</strong><b>0.0</b><small>No finalized games</small></div>`;
+        }
+        const total = analyticsNumber(leader[field]);
+        const games = analyticsNumber(leader.games_played);
+        const perGame = games > 0 ? total / games : 0;
+        return `<div class="player-leader-card"><span>${label} Leader</span><strong title="${escapeHtml(analyticsPlayerName(leader))}">${escapeHtml(analyticsPlayerName(leader))}</strong><b>${perGame.toFixed(1)}</b><small>per game · ${total.toLocaleString()} total</small></div>`;
+      }).join("");
+    }
+
+    function resetTeamAnalytics() {
+      ["snapshotPTS", "snapshotREB", "snapshotAST", "snapshotSTL", "snapshotBLK", "snapshotTO"].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = "0.0";
+      });
+      document.getElementById("snapshotFGPCT").textContent = "0.0%";
+      Object.values(coachAnalyticsCharts).forEach(chart => chart?.destroy());
+      coachAnalyticsCharts = {};
+      ["teamProfileEmpty", "teamProductionEmpty", "shootingEfficiencyEmpty", "scoringTrendEmpty"].forEach(id => setAnalyticsEmpty(id, true));
+      renderPlayerLeaders([]);
+    }
+
+    function renderTeamAnalytics(summary, gameRows, playerRows) {
+      const analytics = buildTeamAnalytics(summary, gameRows, playerRows);
+      const averages = analytics.averages;
+      const percentages = analytics.percentages;
+      const hasGames = analytics.gamesPlayed > 0;
+
+      document.getElementById("snapshotPTS").textContent = averages.points.toFixed(1);
+      document.getElementById("snapshotREB").textContent = averages.rebounds.toFixed(1);
+      document.getElementById("snapshotAST").textContent = averages.assists.toFixed(1);
+      document.getElementById("snapshotSTL").textContent = averages.steals.toFixed(1);
+      document.getElementById("snapshotBLK").textContent = averages.blocks.toFixed(1);
+      document.getElementById("snapshotTO").textContent = averages.turnovers.toFixed(1);
+      document.getElementById("snapshotFGPCT").textContent = `${percentages.fg.toFixed(1)}%`;
+
+      const profileValues = [
+        Math.min(100, averages.points),
+        Math.min(100, percentages.fg),
+        Math.min(100, averages.rebounds * 2),
+        Math.min(100, averages.assists * (100 / 30)),
+        Math.min(100, (averages.steals + averages.blocks) * (100 / 15)),
+        Math.max(0, 100 - averages.turnovers * 4)
+      ];
+
+      setAnalyticsEmpty("teamProfileEmpty", !hasGames);
+      setAnalyticsEmpty("teamProductionEmpty", !hasGames);
+      setAnalyticsEmpty("shootingEfficiencyEmpty", !hasGames);
+      setAnalyticsEmpty("scoringTrendEmpty", analytics.gameRows.length === 0);
+
+      replaceAnalyticsChart("profile", "teamProfileChart", {
+        type: "radar",
+        data: {
+          labels: ["Scoring", "Shooting", "Rebounding", "Playmaking", "Defense", "Ball Security"],
+          datasets: [{ data: profileValues, borderColor: "#ff6b00", backgroundColor: "rgba(255,107,0,.18)", pointBackgroundColor: "#171717", pointBorderColor: "#fff", borderWidth: 2, pointRadius: 3 }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { backgroundColor: "#171717", callbacks: { label: context => ` Profile score: ${context.raw.toFixed(1)}` } } },
+          scales: { r: { beginAtZero: true, max: 100, ticks: { display: false, stepSize: 20 }, grid: { color: "rgba(16,24,40,.1)" }, angleLines: { color: "rgba(16,24,40,.1)" }, pointLabels: { color: "#344054", font: { family: "Arial", size: 9, weight: "bold" } } } }
+        }
+      });
+
+      replaceAnalyticsChart("production", "teamProductionChart", {
+        type: "bar",
+        data: {
+          labels: ["PTS", "REB", "OREB", "DREB", "AST", "STL", "BLK", "TO", "PF"],
+          datasets: [{ data: [averages.points, averages.rebounds, averages.offensiveRebounds, averages.defensiveRebounds, averages.assists, averages.steals, averages.blocks, averages.turnovers, averages.fouls], backgroundColor: ["#ff6b00", "#242424", "#737373", "#a3a3a3", "#ff8a33", "#525252", "#8b5b39", "#c2410c", "#9ca3af"], borderRadius: 5, maxBarThickness: 48 }]
+        },
+        options: analyticsBaseOptions(false)
+      });
+
+      replaceAnalyticsChart("shooting", "shootingEfficiencyChart", {
+        type: "bar",
+        data: { labels: ["FG%", "2PT%", "3PT%", "FT%"], datasets: [{ data: [percentages.fg, percentages.twoPt, percentages.threePt, percentages.ft], backgroundColor: ["#171717", "#ff6b00", "#ff8a33", "#737373"], borderRadius: 5, maxBarThickness: 44 }] },
+        options: { ...analyticsBaseOptions(false), scales: { x: { grid: { display: false }, ticks: { color: "#667085", font: { family: "Arial", size: 9 } } }, y: { beginAtZero: true, suggestedMax: 100, max: 100, grid: { color: "rgba(16,24,40,.07)" }, ticks: { callback: value => `${value}%`, color: "#667085", font: { family: "Arial", size: 9 } } } } }
+      });
+
+      replaceAnalyticsChart("trend", "scoringTrendChart", {
+        type: "line",
+        data: {
+          labels: analytics.gameRows.map((game, index) => `G${index + 1} · ${game.opponent_team_name || "Opponent"}`),
+          datasets: [
+            { label: "Our Team", data: analytics.gameRows.map(game => analyticsNumber(game.team_score)), borderColor: "#ff6b00", backgroundColor: "#ff6b00", pointRadius: 3, pointHoverRadius: 5, tension: .28, borderWidth: 2 },
+            { label: "Opponent", data: analytics.gameRows.map(game => analyticsNumber(game.opponent_score)), borderColor: "#171717", backgroundColor: "#171717", pointRadius: 3, pointHoverRadius: 5, tension: .28, borderWidth: 2 }
+          ]
+        },
+        options: { ...analyticsBaseOptions(false), plugins: { ...analyticsBaseOptions(false).plugins, legend: { display: true, position: "bottom", labels: { usePointStyle: true, boxWidth: 7, color: "#475467", font: { family: "Arial", size: 9 } } } } }
+      });
+
+      renderPlayerLeaders(analytics.playerRows);
+    }
+
     function resetTeamStatistics(message = "Select an assigned team to view statistics.") {
       document.getElementById("statisticsGamesPlayed").textContent = "0";
       document.getElementById("statisticsRecord").textContent = "0-0";
@@ -3050,6 +3413,8 @@
       document.getElementById("refreshStatisticsButton").disabled = true;
       coachDashboardSummary = {};
       coachDashboardGameRows = [];
+      coachDashboardPlayerRows = [];
+      resetTeamAnalytics();
       renderCoachPerformanceDashboard();
     }
 
@@ -3088,7 +3453,9 @@
 
         coachDashboardSummary = summary;
         coachDashboardGameRows = gameRows;
+        coachDashboardPlayerRows = playerRows;
         renderCoachPerformanceDashboard();
+        renderTeamAnalytics(summary, gameRows, playerRows);
 
         document.getElementById("statisticsGamesPlayed").textContent = Number(summary.games_played || 0).toLocaleString();
         document.getElementById("statisticsRecord").textContent = `${Number(summary.wins || 0)}-${Number(summary.losses || 0)}`;
@@ -3141,6 +3508,8 @@
         console.error("Unable to load coach team statistics:", error);
         coachDashboardSummary = {};
         coachDashboardGameRows = [];
+        coachDashboardPlayerRows = [];
+        resetTeamAnalytics();
         renderCoachPerformanceDashboard();
         gameBody.innerHTML = `<tr><td class="empty-state" colspan="6">Unable to load game results: ${escapeHtml(error?.message || "Unknown error")}</td></tr>`;
         playerBody.innerHTML = `<tr><td class="empty-state" colspan="14">Unable to load player statistics.</td></tr>`;
@@ -4219,6 +4588,10 @@
 
     document.getElementById("refreshStatisticsButton").addEventListener("click", function () {
       loadTeamStatistics(selectedAssignment());
+    });
+
+    document.getElementById("viewTeamAnalyticsButton").addEventListener("click", function () {
+      openCoachView("statistics");
     });
 
     document.getElementById("correctionGameSelect").addEventListener("change", syncCorrectionForm);
