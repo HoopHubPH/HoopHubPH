@@ -1575,7 +1575,7 @@
               <option value="">Select position</option><option value="point guard">Point Guard</option><option value="shooting guard">Shooting Guard</option><option value="small forward">Small Forward</option><option value="power forward">Power Forward</option><option value="center">Center</option><option value="point guard/shooting guard">Point Guard/Shooting Guard</option><option value="shooting guard/small forward">Shooting Guard/Small Forward</option><option value="small forward/power forward">Small Forward/Power Forward</option><option value="power forward/center">Power Forward/Center</option>
             </select></div>
             <div class="form-group"><label for="editPlayerHeight">Height (Optional)</label><input id="editPlayerHeight" class="form-input" type="text" maxlength="30" placeholder="Example: 5'10&quot;"></div>
-            <div class="form-group"><label for="editPlayerPhotoFile">Player Photo — JPG, JPEG or PNG (Optional)</label><input id="editPlayerPhotoFile" class="form-input" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png"><small>Choose a new photo up to 5 MB, or leave empty to keep the current photo.</small></div>
+            <div class="form-group"><label for="editPlayerPhotoFile">Player Photo — Mandatory 2×2 Crop</label><input id="editPlayerPhotoFile" class="form-input" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png"><small id="editPlayerPhotoStatus">Choose a JPG, JPEG or PNG. The mandatory 2×2 crop window will open before the photo can be saved. Leave empty to keep the current photo.</small></div>
             <div class="form-actions"><button id="savePlayerButton" class="primary-button" type="submit">Save Player</button> <button id="cancelPlayerEditButton" class="secondary-button" type="button">Cancel</button></div>
             <div id="playerEditMessage" class="application-message" role="status" aria-live="polite"></div>
           </form>
@@ -2002,6 +2002,8 @@
     let coachDivisionRankLoadToken = 0;
 
     let croppedPlayerPhotoBlob = null;
+    let editedPlayerPhotoBlob = null;
+    let activePlayerPhotoCropTarget = "add";
     let croppedPlayerPhotoPreviewUrl = "";
     let cropSourceImage = null;
     let cropSourceObjectUrl = "";
@@ -2914,12 +2916,20 @@
       }
 
       cropSourceImage = null;
-      if (clearFileInput) playerPhotoFile.value = "";
+      if (clearFileInput) {
+        if (activePlayerPhotoCropTarget === "edit") {
+          document.getElementById("editPlayerPhotoFile").value = "";
+        } else {
+          playerPhotoFile.value = "";
+        }
+      }
     }
 
-    function openPlayerPhotoCropModal(file) {
+    function openPlayerPhotoCropModal(file, target = "add") {
+      activePlayerPhotoCropTarget = target;
       if (!isSupportedPlayerPhoto(file)) {
-        playerPhotoFile.value = "";
+        if (target === "edit") document.getElementById("editPlayerPhotoFile").value = "";
+        else playerPhotoFile.value = "";
         alert("Please choose a JPG, JPEG or PNG image only.");
         return;
       }
@@ -2951,7 +2961,7 @@
 
       image.onerror = function () {
         closePlayerPhotoCropModal();
-        alert("HoopHub could not read that image. Please choose another JPEG/JPG file.");
+        alert("HoopHub could not read that image. Please choose another JPG, JPEG or PNG file.");
       };
 
       image.src = cropSourceObjectUrl;
@@ -3013,6 +3023,13 @@
         return;
       }
 
+      if (activePlayerPhotoCropTarget === "edit") {
+        editedPlayerPhotoBlob = blob;
+        document.getElementById("editPlayerPhotoStatus").textContent = "2×2 crop ready. Save the player to upload this standardized 600×600 photo.";
+        closePlayerPhotoCropModal(false);
+        return;
+      }
+
       croppedPlayerPhotoBlob = blob;
 
       if (croppedPlayerPhotoPreviewUrl) {
@@ -3063,14 +3080,11 @@
       }
     }
 
-    async function uploadEditedPlayerPhoto(assignment, file) {
-      const isPng = String(file.type || "").toLowerCase() === "image/png" || /\.png$/i.test(file.name || "");
-      const extension = isPng ? "png" : "jpg";
-      const contentType = isPng ? "image/png" : "image/jpeg";
-      const filePath = `${assignment.team_id}/${currentUser.id}/${crypto.randomUUID()}.${extension}`;
+    async function uploadEditedPlayerPhoto(assignment, croppedBlob) {
+      const filePath = `${assignment.team_id}/${currentUser.id}/${crypto.randomUUID()}.jpg`;
       const { error: uploadError } = await supabaseClient.storage
         .from("player-photos")
-        .upload(filePath, file, { contentType, upsert: false });
+        .upload(filePath, croppedBlob, { contentType: "image/jpeg", upsert: false });
       if (uploadError) throw uploadError;
       const { data } = supabaseClient.storage.from("player-photos").getPublicUrl(filePath);
       return data?.publicUrl || null;
@@ -4262,6 +4276,8 @@
       form.hidden = true;
       form.reset();
       document.getElementById("editPlayerId").value = "";
+      editedPlayerPhotoBlob = null;
+      document.getElementById("editPlayerPhotoStatus").textContent = "Choose a JPG, JPEG or PNG. The mandatory 2×2 crop window will open before the photo can be saved. Leave empty to keep the current photo.";
       const message = document.getElementById("playerEditMessage");
       message.className = "application-message";
       message.textContent = "";
@@ -4278,6 +4294,8 @@
       document.getElementById("editPlayerPosition").value = String(player.position || "").toLowerCase();
       document.getElementById("editPlayerHeight").value = player.height || "";
       document.getElementById("editPlayerPhotoFile").value = "";
+      editedPlayerPhotoBlob = null;
+      document.getElementById("editPlayerPhotoStatus").textContent = "Choose a JPG, JPEG or PNG. The mandatory 2×2 crop window will open before the photo can be saved. Leave empty to keep the current photo.";
       document.getElementById("playerEditForm").hidden = false;
       document.getElementById("playerEditMessage").textContent = "Editing " + [player.first_name, player.last_name].filter(Boolean).join(" ") + ".";
       document.getElementById("playerEditForm").scrollIntoView({ behavior: "smooth", block: "center" });
@@ -4309,15 +4327,20 @@
         message.textContent = "The player photo must be 5 MB or smaller.";
         return;
       }
+      if (photoFile && !editedPlayerPhotoBlob) {
+        message.className = "application-message error";
+        message.textContent = "Complete the mandatory 2×2 crop before saving the player photo.";
+        return;
+      }
       button.disabled = true;
       button.textContent = "Saving...";
       message.className = "application-message";
       message.textContent = "Updating player details...";
       try {
         let photoUrl = currentPlayer.photo_url || null;
-        if (photoFile) {
+        if (editedPlayerPhotoBlob) {
           message.textContent = "Uploading the player photo...";
-          photoUrl = await uploadEditedPlayerPhoto(assignment, photoFile);
+          photoUrl = await uploadEditedPlayerPhoto(assignment, editedPlayerPhotoBlob);
           message.textContent = "Updating player details...";
         }
         const { error } = await supabaseClient.rpc("update_coach_team_player", {
@@ -4754,7 +4777,13 @@
     document.getElementById("cancelPlayerEditButton").addEventListener("click", closePlayerEditor);
     playerPhotoFile.addEventListener("change", function () {
       const file = this.files?.[0] || null;
-      if (file) openPlayerPhotoCropModal(file);
+      if (file) openPlayerPhotoCropModal(file, "add");
+    });
+
+    document.getElementById("editPlayerPhotoFile").addEventListener("change", function () {
+      const file = this.files?.[0] || null;
+      editedPlayerPhotoBlob = null;
+      if (file) openPlayerPhotoCropModal(file, "edit");
     });
 
     removePlayerPhotoButton.addEventListener("click", resetPlayerPhotoSelection);
