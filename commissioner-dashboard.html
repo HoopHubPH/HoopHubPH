@@ -4541,7 +4541,10 @@
         return;
       }
 
-      const registrations = leagueTeams.filter(item => item.league_id === league.id);
+      const registrations = leagueTeams.filter(item =>
+        item.league_id === league.id &&
+        (!seasonId || item.season_id === seasonId)
+      );
       const approved = registrations.filter(item => item.registration_status === "approved");
       const pending = registrations.filter(item => item.registration_status === "pending");
 
