@@ -682,14 +682,16 @@
     }
 
     .coach-next-game-team-name {
-      margin-top: 4px;
+      margin-top: 5px;
       display: block;
       overflow: hidden;
       color: #ffffff;
-      font-size: 12px;
+      font-size: clamp(27px, 3.6vw, 38px);
       font-weight: bold;
+      line-height: 1.05;
+      letter-spacing: -.5px;
       text-overflow: ellipsis;
-      white-space: nowrap;
+      white-space: normal;
     }
 
     .coach-next-game .coach-dashboard-kicker {
@@ -697,9 +699,11 @@
     }
 
     .coach-next-game h3 {
-      margin-top: 7px;
-      font-size: clamp(19px, 2.4vw, 27px);
-      line-height: 1.2;
+      margin-top: 8px;
+      color: #d5d8dd;
+      font-size: clamp(13px, 1.5vw, 17px);
+      font-weight: bold;
+      line-height: 1.25;
     }
 
     .coach-next-game p {
