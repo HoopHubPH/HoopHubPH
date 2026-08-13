@@ -5021,7 +5021,26 @@
 
     async function finalizeReviewedGame(gameId, button) {
       const game = scheduledGames.find(item => Number(item.id) === Number(gameId));
-      if (!game || !window.confirm(`Finalize Game #${gameId}? This permanently locks the score and updates standings.`)) return;
+      if (!game) return;
+
+      const homeTeam = game.home_team || "Home Team";
+      const awayTeam = game.away_team || "Away Team";
+      const homeScore = Number(game.home_score || 0);
+      const awayScore = Number(game.away_score || 0);
+      const confirmation = [
+        `FINALIZE GAME #${gameId}?`,
+        "",
+        `${homeTeam} ${homeScore} – ${awayScore} ${awayTeam}`,
+        "",
+        "Finalizing this game will:",
+        "• Lock the official score and game statistics",
+        "• Update division standings",
+        "• Include player totals in finalized statistics",
+        "",
+        "Review the matchup and score carefully before continuing."
+      ].join("\n");
+
+      if (!window.confirm(confirmation)) return;
       button.disabled = true;
       const message = document.getElementById("gameReviewMessage");
       try {
