@@ -1396,14 +1396,14 @@
             </div>
             <div class="form-group"><label for="playerHeight">Height (Optional)</label><input id="playerHeight" class="form-input" type="text" maxlength="40" placeholder="Example: 5'10&quot;"></div>
             <div class="form-group form-wide player-photo-upload-group">
-              <label for="playerPhotoFile">Player Photo — JPEG/JPG (Optional)</label>
+              <label for="playerPhotoFile">Player Photo — JPG, JPEG or PNG (Optional)</label>
               <div class="player-photo-upload-row">
                 <div id="playerPhotoPreview" class="player-photo-preview" aria-label="Player photo preview">
                   <span>2×2</span>
                 </div>
                 <div class="player-photo-upload-controls">
-                  <input id="playerPhotoFile" class="form-input player-photo-file-input" type="file" accept="image/jpeg,.jpg,.jpeg">
-                  <small>Choose a JPEG/JPG. A square 2×2 crop window will open so you can position the player's face correctly. The saved photo is standardized to 600×600 pixels.</small>
+                  <input id="playerPhotoFile" class="form-input player-photo-file-input" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png">
+                  <small>Choose a JPG, JPEG or PNG. A square 2×2 crop window will open so you can position the player's face correctly. The saved photo is standardized to 600×600 pixels.</small>
                   <button id="removePlayerPhotoButton" class="secondary-button player-photo-remove-button" type="button" hidden>Remove Photo</button>
                 </div>
               </div>
@@ -1575,7 +1575,7 @@
               <option value="">Select position</option><option value="point guard">Point Guard</option><option value="shooting guard">Shooting Guard</option><option value="small forward">Small Forward</option><option value="power forward">Power Forward</option><option value="center">Center</option><option value="point guard/shooting guard">Point Guard/Shooting Guard</option><option value="shooting guard/small forward">Shooting Guard/Small Forward</option><option value="small forward/power forward">Small Forward/Power Forward</option><option value="power forward/center">Power Forward/Center</option>
             </select></div>
             <div class="form-group"><label for="editPlayerHeight">Height (Optional)</label><input id="editPlayerHeight" class="form-input" type="text" maxlength="30" placeholder="Example: 5'10&quot;"></div>
-            <div class="form-group"><label for="editPlayerPhotoUrl">Photo URL (Optional)</label><input id="editPlayerPhotoUrl" class="form-input" type="url" maxlength="2000" placeholder="https://example.com/player-photo.jpg"></div>
+            <div class="form-group"><label for="editPlayerPhotoFile">Player Photo — JPG, JPEG or PNG (Optional)</label><input id="editPlayerPhotoFile" class="form-input" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png"><small>Choose a new photo up to 5 MB, or leave empty to keep the current photo.</small></div>
             <div class="form-actions"><button id="savePlayerButton" class="primary-button" type="submit">Save Player</button> <button id="cancelPlayerEditButton" class="secondary-button" type="button">Cancel</button></div>
             <div id="playerEditMessage" class="application-message" role="status" aria-live="polite"></div>
           </form>
@@ -2817,10 +2817,10 @@
       return "We couldn't add this player. Please check the information and try again.";
     }
 
-    function isJpegPlayerPhoto(file) {
+    function isSupportedPlayerPhoto(file) {
       return !!file && (
-        ["image/jpeg", "image/jpg"].includes(String(file.type || "").toLowerCase()) ||
-        /\.jpe?g$/i.test(file.name || "")
+        ["image/jpeg", "image/jpg", "image/png"].includes(String(file.type || "").toLowerCase()) ||
+        /\.(jpe?g|png)$/i.test(file.name || "")
       );
     }
 
@@ -2918,9 +2918,9 @@
     }
 
     function openPlayerPhotoCropModal(file) {
-      if (!isJpegPlayerPhoto(file)) {
+      if (!isSupportedPlayerPhoto(file)) {
         playerPhotoFile.value = "";
-        alert("Please choose a JPEG or JPG image only.");
+        alert("Please choose a JPG, JPEG or PNG image only.");
         return;
       }
 
@@ -3061,6 +3061,19 @@
       } catch (error) {
         console.warn("Unable to remove unused uploaded player photo:", error);
       }
+    }
+
+    async function uploadEditedPlayerPhoto(assignment, file) {
+      const isPng = String(file.type || "").toLowerCase() === "image/png" || /\.png$/i.test(file.name || "");
+      const extension = isPng ? "png" : "jpg";
+      const contentType = isPng ? "image/png" : "image/jpeg";
+      const filePath = `${assignment.team_id}/${currentUser.id}/${crypto.randomUUID()}.${extension}`;
+      const { error: uploadError } = await supabaseClient.storage
+        .from("player-photos")
+        .upload(filePath, file, { contentType, upsert: false });
+      if (uploadError) throw uploadError;
+      const { data } = supabaseClient.storage.from("player-photos").getPublicUrl(filePath);
+      return data?.publicUrl || null;
     }
 
     async function addTeamPlayer(event) {
@@ -4264,7 +4277,7 @@
       document.getElementById("editPlayerJerseyNumber").value = player.jersey_number ?? "";
       document.getElementById("editPlayerPosition").value = String(player.position || "").toLowerCase();
       document.getElementById("editPlayerHeight").value = player.height || "";
-      document.getElementById("editPlayerPhotoUrl").value = player.photo_url || "";
+      document.getElementById("editPlayerPhotoFile").value = "";
       document.getElementById("playerEditForm").hidden = false;
       document.getElementById("playerEditMessage").textContent = "Editing " + [player.first_name, player.last_name].filter(Boolean).join(" ") + ".";
       document.getElementById("playerEditForm").scrollIntoView({ behavior: "smooth", block: "center" });
@@ -4278,33 +4291,52 @@
       const jerseyNumber = jerseyValue === "" ? null : Number(jerseyValue);
       const button = document.getElementById("savePlayerButton");
       const message = document.getElementById("playerEditMessage");
-      if (!assignment || !players.some(item => item.id === playerId && item.team_id === assignment.team_id)) return alert("Select the correct assigned team first.");
+      const currentPlayer = players.find(item => item.id === playerId && item.team_id === assignment?.team_id);
+      const photoFile = document.getElementById("editPlayerPhotoFile").files[0] || null;
+      if (!assignment || !currentPlayer) return alert("Select the correct assigned team first.");
       if (jerseyNumber !== null && (!Number.isInteger(jerseyNumber) || jerseyNumber < 0 || jerseyNumber > 99)) {
         message.className = "application-message error";
         message.textContent = "Jersey number must be a whole number from 0 to 99.";
+        return;
+      }
+      if (photoFile && !isSupportedPlayerPhoto(photoFile)) {
+        message.className = "application-message error";
+        message.textContent = "Please choose a JPG, JPEG or PNG image only.";
+        return;
+      }
+      if (photoFile && photoFile.size > 5 * 1024 * 1024) {
+        message.className = "application-message error";
+        message.textContent = "The player photo must be 5 MB or smaller.";
         return;
       }
       button.disabled = true;
       button.textContent = "Saving...";
       message.className = "application-message";
       message.textContent = "Updating player details...";
-      const { error } = await supabaseClient.rpc("update_coach_team_player", {
-        p_player_id: playerId,
-        p_first_name: document.getElementById("editPlayerFirstName").value.trim(),
-        p_last_name: document.getElementById("editPlayerLastName").value.trim() || null,
-        p_position: document.getElementById("editPlayerPosition").value || null,
-        p_jersey_number: jerseyNumber,
-        p_height: document.getElementById("editPlayerHeight").value.trim() || null,
-        p_photo_url: document.getElementById("editPlayerPhotoUrl").value.trim() || null
-      });
-      if (error) {
-        message.className = "application-message error";
-        message.textContent = /jersey number/i.test(error.message) ? error.message : "Unable to update player: " + error.message;
-      } else {
+      try {
+        let photoUrl = currentPlayer.photo_url || null;
+        if (photoFile) {
+          message.textContent = "Uploading the player photo...";
+          photoUrl = await uploadEditedPlayerPhoto(assignment, photoFile);
+          message.textContent = "Updating player details...";
+        }
+        const { error } = await supabaseClient.rpc("update_coach_team_player", {
+          p_player_id: playerId,
+          p_first_name: document.getElementById("editPlayerFirstName").value.trim(),
+          p_last_name: document.getElementById("editPlayerLastName").value.trim() || null,
+          p_position: document.getElementById("editPlayerPosition").value || null,
+          p_jersey_number: jerseyNumber,
+          p_height: document.getElementById("editPlayerHeight").value.trim() || null,
+          p_photo_url: photoUrl
+        });
+        if (error) throw error;
         await refreshTeamPlayers(assignment.team_id);
         closePlayerEditor();
         renderWorkspace();
         alert("Player details updated successfully.");
+      } catch (error) {
+        message.className = "application-message error";
+        message.textContent = /jersey number/i.test(error.message) ? error.message : "Unable to update player: " + error.message;
       }
       button.disabled = false;
       button.textContent = "Save Player";
