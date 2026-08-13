@@ -627,6 +627,17 @@
       grid-column: 1 / -1;
     }
 
+    .player-correction-history { border-top: 1px solid var(--line); }
+    .player-correction-history-header { padding: 15px 18px 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .player-correction-history-header h3 { font-size: 14px; }
+    .player-correction-history-header p { margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .correction-status { padding: 5px 8px; display: inline-flex; border-radius: 999px; font-size: 9px; font-weight: 900; text-transform: capitalize; }
+    .correction-status.pending { color: #b54708; background: #fff4e5; }
+    .correction-status.approved { color: #067647; background: #ecfdf3; }
+    .correction-status.rejected { color: #b42318; background: #fef3f2; }
+    .correction-status.withdrawn { color: #475467; background: #f2f4f7; }
+    .correction-withdraw-button { min-height: 29px; padding: 0 9px; color: #b42318; background: #fff; border: 1px solid #f2b8b5; border-radius: 7px; font-size: 9px; font-weight: 800; cursor: pointer; }
+
     @media (max-height: 690px) and (min-width: 901px) {
       .sidebar {
         padding: 9px 10px;
@@ -1679,14 +1690,14 @@
         <section id="correctionsPanel" class="panel player-view-section" data-player-section="corrections">
           <header class="panel-header">
             <div>
-              <h2>Correction Request</h2>
-              <p>Prepare a clear request for your coach when one of your official game statistics needs review.</p>
+              <h2>Correction Requests</h2>
+              <p>Submit and track requests when an official finalized-game statistic needs review.</p>
             </div>
             <span class="readonly-note">Stats Stay Protected</span>
           </header>
 
           <div class="player-correction-note">
-            Players cannot directly edit official game statistics. This tool creates a structured correction request you can send to your coach, who can submit it through the official commissioner review workflow.
+            Players cannot directly edit official statistics. Submitting this form sends a protected request into the existing coach and commissioner review workflow.
           </div>
 
           <form id="playerCorrectionForm" class="player-correction-form">
@@ -1729,11 +1740,24 @@
             </div>
 
             <div class="form-actions">
-              <button id="copyCorrectionRequestButton" class="primary-button" type="submit">Copy Request for Coach</button>
+              <button id="submitPlayerCorrectionButton" class="primary-button" type="submit">Submit Correction Request</button>
             </div>
 
             <div id="playerCorrectionMessage" class="tool-message form-wide" aria-live="polite"></div>
           </form>
+
+          <div class="player-correction-history">
+            <div class="player-correction-history-header">
+              <div><h3>Request History</h3><p>Track pending, approved, rejected, and withdrawn requests.</p></div>
+              <button id="refreshPlayerCorrectionsButton" class="secondary-button" type="button">Refresh</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Submitted</th><th>Game</th><th>Statistic</th><th>Requested Change</th><th>Status</th><th>Review / Action</th></tr></thead>
+                <tbody id="playerCorrectionHistoryBody"><tr><td class="empty-state" colspan="6">Loading correction requests...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
         </section>
       </div>
     </main>
@@ -1754,6 +1778,7 @@
     let games = [];
     let currentPlayerView = "dashboard";
     let playerGameCenterLoadToken = 0;
+    let playerCorrectionLoadToken = 0;
     let currentTrendMetric = "points";
 
     const playerViewConfig = {
@@ -2202,7 +2227,57 @@
       input.value = valueMap[field] ?? "";
     }
 
-    async function copyPlayerCorrectionRequest(event) {
+    function playerCorrectionStatusClass(status) {
+      const value = String(status || "pending").toLowerCase();
+      return ["pending", "approved", "rejected", "withdrawn"].includes(value) ? value : "withdrawn";
+    }
+
+    async function loadPlayerCorrectionRequests(player = currentLinkedPlayer()) {
+      const body = document.getElementById("playerCorrectionHistoryBody");
+      const refreshButton = document.getElementById("refreshPlayerCorrectionsButton");
+      const token = ++playerCorrectionLoadToken;
+
+      if (!player) {
+        body.innerHTML = '<tr><td class="empty-state" colspan="6">No linked player record.</td></tr>';
+        refreshButton.disabled = true;
+        return;
+      }
+
+      refreshButton.disabled = true;
+      body.innerHTML = '<tr><td class="empty-state" colspan="6">Loading correction requests...</td></tr>';
+      try {
+        const { data, error } = await supabaseClient.rpc("get_player_correction_requests", {
+          p_player_id: player.id
+        });
+        if (token !== playerCorrectionLoadToken) return;
+        if (error) throw error;
+
+        const requests = data || [];
+        body.innerHTML = requests.length ? requests.map(request => {
+          const status = String(request.request_status || "pending").toLowerCase();
+          const canWithdraw = status === "pending";
+          const submitted = request.submitted_at
+            ? new Date(request.submitted_at).toLocaleString("en-PH", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" })
+            : "—";
+          return `
+            <tr>
+              <td><strong>${escapeHtml(submitted)}</strong></td>
+              <td><strong>Game #${escapeHtml(request.game_id)}</strong><br><span style="color:var(--muted);font-size:9px">vs ${escapeHtml(request.opponent_team_name || "Opponent")}</span></td>
+              <td>${escapeHtml(String(request.stat_field || "—").replace(/_/g, " "))}</td>
+              <td><strong>${escapeHtml(request.current_value ?? "—")} → ${escapeHtml(request.requested_value ?? "—")}</strong><br><span style="color:var(--muted);font-size:9px">${escapeHtml(request.reason || "")}</span></td>
+              <td><span class="correction-status ${playerCorrectionStatusClass(status)}">${escapeHtml(status.replace(/_/g, " "))}</span></td>
+              <td>${escapeHtml(request.review_notes || (canWithdraw ? "Awaiting review." : "No review notes."))}${canWithdraw ? `<br><button class="correction-withdraw-button" type="button" onclick="withdrawPlayerCorrectionRequest('${escapeHtml(request.correction_request_id)}', this)">Withdraw</button>` : ""}</td>
+            </tr>`;
+        }).join("") : '<tr><td class="empty-state" colspan="6">No correction requests submitted yet.</td></tr>';
+      } catch (error) {
+        if (token !== playerCorrectionLoadToken) return;
+        body.innerHTML = `<tr><td class="empty-state" colspan="6">Unable to load correction requests: ${escapeHtml(error?.message || "Unknown error")}</td></tr>`;
+      } finally {
+        if (token === playerCorrectionLoadToken) refreshButton.disabled = false;
+      }
+    }
+
+    async function submitPlayerCorrectionRequest(event) {
       event.preventDefault();
 
       const player = currentLinkedPlayer();
@@ -2222,32 +2297,51 @@
         return;
       }
 
-      const team = teams.find(item => String(item.id) === String(row.team_id || player.team_id));
-      const statLabel = document.getElementById("playerCorrectionStat").selectedOptions[0]?.textContent || statField;
-
-      const text = [
-        "HOOP HUB PH — PLAYER CORRECTION REQUEST",
-        "",
-        `Player: ${fullName(player)}`,
-        `Team: ${team?.name || "Current Team"}`,
-        `Game: ${gameLabelForStat(row)}`,
-        `Statistic: ${statLabel}`,
-        `Current HoopHub value: ${currentValue || "Not available"}`,
-        `Requested value: ${requestedValue}`,
-        `Reason: ${reason}`,
-        "",
-        "Please review this and submit it through the Coach Correction Requests workspace if appropriate."
-      ].join("\n");
-
+      const button = document.getElementById("submitPlayerCorrectionButton");
+      if (!confirm(`Submit this correction request for Game #${row.game_id}?\n\nCurrent value: ${currentValue || "Not available"}\nRequested value: ${requestedValue}\n\nOfficial statistics will not change until the request is reviewed and approved.`)) return;
+      button.disabled = true;
+      button.textContent = "Submitting Request...";
       try {
-        await navigator.clipboard.writeText(text);
+        const { error } = await supabaseClient.rpc("submit_player_correction_request", {
+          p_game_id: Number(row.game_id),
+          p_player_id: player.id,
+          p_stat_field: statField,
+          p_current_value: currentValue || null,
+          p_requested_value: requestedValue,
+          p_reason: reason
+        });
+        if (error) throw error;
+
         message.className = "tool-message success form-wide";
-        message.textContent = "Correction request copied. Send it to your coach for official submission.";
-      } catch {
-        window.prompt("Copy this correction request and send it to your coach:", text);
-        message.className = "tool-message success form-wide";
-        message.textContent = "Correction request prepared.";
+        message.textContent = "Correction request submitted. It is now pending review.";
+        document.getElementById("playerCorrectionStat").value = "";
+        document.getElementById("playerCorrectionCurrent").value = "";
+        document.getElementById("playerCorrectionRequested").value = "";
+        document.getElementById("playerCorrectionReason").value = "";
+        await loadPlayerCorrectionRequests(player);
+      } catch (error) {
+        message.className = "tool-message error form-wide";
+        message.textContent = error?.message || "Unable to submit correction request.";
+      } finally {
+        button.disabled = false;
+        button.textContent = "Submit Correction Request";
       }
+    }
+
+    async function withdrawPlayerCorrectionRequest(requestId, button) {
+      if (!confirm("Withdraw this pending correction request?")) return;
+      button.disabled = true;
+      button.textContent = "Withdrawing...";
+      const { error } = await supabaseClient.rpc("withdraw_player_correction_request", {
+        p_request_id: requestId
+      });
+      if (error) {
+        alert("Unable to withdraw correction request: " + error.message);
+        button.disabled = false;
+        button.textContent = "Withdraw";
+        return;
+      }
+      await loadPlayerCorrectionRequests();
     }
 
     function formatPlayerScheduledGame(value) {
@@ -2954,6 +3048,7 @@
           '<div class="empty-state">No team history is available.</div>';
         populateCorrectionGameOptions([]);
         renderPlayerPerformanceCenter([]);
+        loadPlayerCorrectionRequests(null);
         loadPlayerGameCenter(null);
         return;
       }
@@ -3047,6 +3142,7 @@
       renderPlayerPerformanceCenter(playerStats);
       renderShareProfile(player, team);
       populateCorrectionGameOptions(playerStats);
+      loadPlayerCorrectionRequests(player);
       loadPlayerGameCenter(player);
     }
 
@@ -3090,7 +3186,10 @@
 
     document.getElementById("playerCorrectionGame").addEventListener("change", syncPlayerCorrectionCurrentValue);
     document.getElementById("playerCorrectionStat").addEventListener("change", syncPlayerCorrectionCurrentValue);
-    document.getElementById("playerCorrectionForm").addEventListener("submit", copyPlayerCorrectionRequest);
+    document.getElementById("playerCorrectionForm").addEventListener("submit", submitPlayerCorrectionRequest);
+    document.getElementById("refreshPlayerCorrectionsButton").addEventListener("click", function () {
+      loadPlayerCorrectionRequests();
+    });
 
     document.getElementById("openPublicProfileButton").addEventListener("click", function () {
       const url = publicProfileUrl(currentLinkedPlayer());
