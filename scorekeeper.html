@@ -13110,7 +13110,27 @@ async function undoEasyLastStat(){
                 action.playerId;
         }
 
+        /*
+           REAL-TIME UNDO UI
+
+           updatePlayerStat() already changes the local stat model.
+           Refresh the affected live table row immediately so the
+           scorekeeper never has to reload the page to see the undo.
+        */
+        await refreshPlayerRow(
+            action.playerId
+        );
+
         renderEasyScorekeeper();
+
+        if(
+            hoveredPlayerId&&
+            String(hoveredPlayerId)===String(action.playerId)
+        ){
+            updatePopupContent(
+                action.playerId
+            );
+        }
 
         const savingFeedback=
             document.getElementById(
@@ -13123,6 +13143,29 @@ async function undoEasyLastStat(){
         }
 
         await flushAllPendingStats();
+
+        /*
+           Match the proven specific-stat deduction flow: after the
+           save finishes, read the authoritative Supabase row back
+           into playerStatsMap and refresh the live row/totals again.
+           This prevents stale cached values from remaining visible.
+        */
+        await syncDeductedPlayerStatDisplay(
+            action.playerId
+        );
+
+        /*
+           A scoring undo can also remove a scoring-breakdown event.
+           Re-read that panel after the correction so it never waits
+           for a full page refresh either.
+        */
+        if(
+            action.statKey==="two_pt_made"||
+            action.statKey==="three_pt_made"||
+            action.statKey==="ft_made"
+        ){
+            await loadScoringBreakdown();
+        }
 
         const feedback=
             document.getElementById(
