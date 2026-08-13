@@ -514,7 +514,7 @@ body.auth-pending{overflow:hidden}
 .control-state-badge.locked{color:#b42318;background:#ffebee}
 .clock-permission-note{margin-top:9px;padding:9px 10px;border-left:3px solid #ff6b00;background:#fff8f2;color:#6b4a31;font-size:9px;line-height:1.5}
 .clock-permission-note strong{color:#222}
-.game-clock-controls{grid-template-columns:repeat(6,minmax(0,1fr))}
+.game-clock-controls{grid-template-columns:repeat(7,minmax(0,1fr))}
 @media(max-width:600px){
     header{align-items:flex-start}
     .header-tools{gap:5px}
@@ -522,7 +522,7 @@ body.auth-pending{overflow:hidden}
     .assignment-field{min-width:100%;flex-basis:100%}
     .game-loader>button{flex:1 1 auto}
     .control-state-bar{align-items:flex-start;flex-direction:column}
-    .game-clock-controls{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .game-clock-controls{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 
 </style>
@@ -623,6 +623,7 @@ body.auth-pending{overflow:hidden}
                     <div class="control-grid game-clock-controls">
                         <button id="startClockButton" class="control-button primary" type="button">START</button>
                         <button id="pauseClockButton" class="control-button pause" type="button">PAUSE</button>
+                        <button id="resetGameClockButton" class="control-button reset" type="button">RESET</button>
                         <button id="gameMinusOneButton" class="control-button" type="button">−1</button>
                         <button id="gamePlusOneButton" class="control-button" type="button">+1</button>
                         <button id="gameMinusTenthButton" class="control-button" type="button">−0.1</button>
@@ -920,6 +921,9 @@ function updateControlAvailability(){
 
     document.getElementById("pauseClockButton").disabled =
         locked || !clockRunning;
+
+    document.getElementById("resetGameClockButton").disabled =
+        locked;
 
     [
         "gameMinusOneButton",
@@ -1491,6 +1495,51 @@ async function pauseClock(){
     }
 }
 
+function getGameClockResetSeconds(){
+    const period = String(currentGame?.period || "").trim().toLowerCase();
+
+    const overtime =
+        period.includes("overtime") ||
+        /^ot\s*\d*$/.test(period);
+
+    return overtime ? 300 : 600;
+}
+
+async function resetGameClock(){
+    if(!currentGame || isGameFinalized() || !hasClockControl){
+        return;
+    }
+
+    const resetSeconds = getGameClockResetSeconds();
+    const resetLabel = resetSeconds === 300 ? "5:00" : "10:00";
+
+    if(
+        !window.confirm(
+            `Reset the game clock to ${resetLabel} and the shot clock to 24.0?`
+        )
+    ){
+        return;
+    }
+
+    clockRunning = false;
+    clockEndTime = null;
+    shotClockEndTime = null;
+
+    clockSeconds = resetSeconds;
+    shotClockSeconds = Math.min(DEFAULT_SHOT_CLOCK_SECONDS, clockSeconds);
+
+    updateClockDisplays();
+
+    const saved = await saveClockState();
+
+    if(saved){
+        showStatus(
+            `Game clock reset to ${resetLabel}. Shot clock reset to 24.0 seconds.`,
+            "success"
+        );
+    }
+}
+
 async function adjustGameClock(amount){
     if(!currentGame || isGameFinalized() || !hasClockControl){
         return;
@@ -1599,6 +1648,7 @@ async function logoutClockOperator(){
 
 document.getElementById("startClockButton").addEventListener("click", startClock);
 document.getElementById("pauseClockButton").addEventListener("click", pauseClock);
+document.getElementById("resetGameClockButton").addEventListener("click", resetGameClock);
 document.getElementById("gameMinusOneButton").addEventListener("click", ()=>adjustGameClock(-1));
 document.getElementById("gamePlusOneButton").addEventListener("click", ()=>adjustGameClock(1));
 document.getElementById("gameMinusTenthButton").addEventListener("click", ()=>adjustGameClock(-0.1));
