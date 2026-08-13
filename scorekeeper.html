@@ -162,6 +162,23 @@ nav{
     border:1px solid #eee;
 }
 
+.clock-ownership-indicator{
+    margin:4px 0 6px;
+    padding:3px 6px;
+    border-radius:4px;
+    background:#f3f3f3;
+    color:#666;
+    font-size:8px;
+    font-weight:900;
+    letter-spacing:.4px;
+    text-align:center;
+}
+
+.clock-ownership-indicator.operator-active{
+    background:#e8f5e9;
+    color:#16803c;
+}
+
 .clock-display-row{
     display:grid;
     grid-template-columns:repeat(2,minmax(0,1fr));
@@ -7760,6 +7777,14 @@ LOG OUT
 
 </div>
 
+<div
+    id="clockOperatorOwnershipIndicator"
+    class="clock-ownership-indicator"
+    aria-live="polite"
+>
+CLOCK CONTROL: MAIN SCOREKEEPER
+</div>
+
 <div class="period-buttons">
 <button id="period-1st" onclick="setPeriod('1st Quarter')">1Q</button>
 <button id="period-2nd" onclick="setPeriod('2nd Quarter')">2Q</button>
@@ -8538,6 +8563,11 @@ const externalClockBroadcastChannel=
         :null;
 let applyingExternalClockState=false;
 
+/* Clock Operator ownership */
+let clockOperatorActive=false;
+let clockOperatorStatusTimer=null;
+let clockOperatorStatusCheckInFlight=false;
+
 let playerMinuteBaseSeconds={};
 let playerMinuteLastClockSeconds={};
 let playerMinuteLastPersisted={};
@@ -8583,6 +8613,7 @@ window.addEventListener(
     event=>{
 
         stopExternalClockSync();
+        stopClockOperatorStatusMonitor();
 
         const hasPendingSaves=
             statSaveQueue.size>0||
@@ -9825,9 +9856,17 @@ async function loadGame(){
     gameScoreSaveRetryAfter.clear();
 
 
+    /*
+    Check Clock Operator ownership before loading the persisted
+    clock so this Scorekeeper can never overwrite an active
+    Clock Operator session during game load.
+    */
+    await checkClockOperatorControl();
+
     await loadPersistedClock();
 
     startExternalClockSync();
+    startClockOperatorStatusMonitor();
 
     await initializeSubmittedStartingLineups();
 
@@ -15360,6 +15399,14 @@ function updateShotClockDisplay(){
 
 async function resetShotClock(seconds){
 
+    if(
+        blockScorekeeperClockChangeIfOperatorActive(
+            "shot clock"
+        )
+    ){
+        return;
+    }
+
     if(!currentGame){
 
         showStatus(
@@ -15452,6 +15499,14 @@ async function resetShotClock(seconds){
 
 
 async function adjustShotClock(amount){
+
+    if(
+        blockScorekeeperClockChangeIfOperatorActive(
+            "shot clock"
+        )
+    ){
+        return;
+    }
 
     if(!currentGame){
 
@@ -15561,6 +15616,14 @@ async function adjustShotClock(amount){
 async function saveClockState(){
 
     if(!currentGame){
+        return false;
+    }
+
+    /*
+    Never let the Main Scorekeeper overwrite the clock while
+    an active Clock Operator session owns this game.
+    */
+    if(clockOperatorActive){
         return false;
     }
 
@@ -15906,6 +15969,177 @@ async function loadPersistedClock(){
 
         startClockInternal();
     }
+}
+
+
+/* =========================================================
+   CLOCK OPERATOR OWNERSHIP
+   ========================================================= */
+
+function updateClockOperatorControlState(){
+
+    const locked=
+        typeof isCurrentGameLocked==="function"
+            ?isCurrentGameLocked()
+            :false;
+
+    document
+    .querySelectorAll(
+        ".clock-controls button, .shot-clock-controls button"
+    )
+    .forEach(button=>{
+        button.disabled=
+            Boolean(
+                locked ||
+                clockOperatorActive
+            );
+    });
+
+    const indicator=
+        document.getElementById(
+            "clockOperatorOwnershipIndicator"
+        );
+
+    if(indicator){
+
+        indicator.classList.toggle(
+            "operator-active",
+            clockOperatorActive
+        );
+
+        indicator.textContent=
+            clockOperatorActive
+                ?"CLOCK CONTROL: CLOCK OPERATOR"
+                :"CLOCK CONTROL: MAIN SCOREKEEPER";
+    }
+}
+
+
+async function checkClockOperatorControl(){
+
+    if(
+        !currentGame ||
+        clockOperatorStatusCheckInFlight
+    ){
+        return clockOperatorActive;
+    }
+
+    clockOperatorStatusCheckInFlight=true;
+
+    try{
+
+        const {
+            data,
+            error
+        }=
+        await supabaseClient.rpc(
+            "get_clock_operator_control_status",
+            {
+                p_game_id:
+                    Number(
+                        currentGame.id
+                    )
+            }
+        );
+
+        if(error){
+            throw error;
+        }
+
+        const row=
+            Array.isArray(data)
+                ?data[0]
+                :data;
+
+        const active=
+            row?.clock_operator_active===true;
+
+        const changed=
+            active!==clockOperatorActive;
+
+        clockOperatorActive=active;
+
+        updateClockOperatorControlState();
+
+        if(changed){
+
+            console.log(
+                clockOperatorActive
+                    ?"Clock Operator now controls Game #"+currentGame.id
+                    :"Main Scorekeeper clock control restored for Game #"+currentGame.id
+            );
+        }
+
+        return clockOperatorActive;
+    }
+    catch(error){
+
+        console.error(
+            "Clock Operator status check error:",
+            error
+        );
+
+        /*
+        Fail safe:
+        Keep the last confirmed ownership state if the
+        status request temporarily fails.
+        */
+        updateClockOperatorControlState();
+
+        return clockOperatorActive;
+    }
+    finally{
+
+        clockOperatorStatusCheckInFlight=false;
+    }
+}
+
+
+function stopClockOperatorStatusMonitor(){
+
+    if(clockOperatorStatusTimer){
+
+        clearInterval(
+            clockOperatorStatusTimer
+        );
+
+        clockOperatorStatusTimer=null;
+    }
+}
+
+
+function startClockOperatorStatusMonitor(){
+
+    stopClockOperatorStatusMonitor();
+
+    if(!currentGame){
+        return;
+    }
+
+    clockOperatorStatusTimer=
+        setInterval(
+            ()=>{
+                void checkClockOperatorControl();
+            },
+            3000
+        );
+}
+
+
+function blockScorekeeperClockChangeIfOperatorActive(
+    clockName="game clock"
+){
+
+    if(!clockOperatorActive){
+        return false;
+    }
+
+    showStatus(
+        "The Clock Operator currently controls the "+
+        clockName+"."
+    );
+
+    return true;
 }
 
 
@@ -16277,6 +16511,7 @@ window.addEventListener(
     "focus",
     ()=>{
         void pollExternalClockState();
+        void checkClockOperatorControl();
     }
 );
 
@@ -16286,6 +16521,7 @@ document.addEventListener(
     ()=>{
         if(!document.hidden){
             void pollExternalClockState();
+            void checkClockOperatorControl();
         }
     }
 );
@@ -16369,6 +16605,14 @@ function updateClockDisplay(){
    ========================================================= */
 
 async function startClock(){
+
+    if(
+        blockScorekeeperClockChangeIfOperatorActive(
+            "game clock"
+        )
+    ){
+        return;
+    }
 
     if(clockRunning){
         return;
@@ -16650,6 +16894,14 @@ async function handleClockEnd(){
 
 async function pauseClock(){
 
+    if(
+        blockScorekeeperClockChangeIfOperatorActive(
+            "game clock"
+        )
+    ){
+        return;
+    }
+
     if(!currentGame){
         return;
     }
@@ -16716,6 +16968,14 @@ async function pauseClock(){
    ========================================================= */
 
 async function adjustGameClock(amount){
+
+    if(
+        blockScorekeeperClockChangeIfOperatorActive(
+            "game clock"
+        )
+    ){
+        return;
+    }
 
     if(!currentGame){
 
@@ -16908,6 +17168,22 @@ function getPeriodClockSeconds(){
 }
 
 async function resetClock(options={}){
+
+    /*
+    Normal manual resets are Clock Operator-only while an
+    operator owns the session. A period change is still a
+    Main Scorekeeper responsibility, so setPeriod() may perform
+    its one intentional clock reset after the period changes.
+    */
+    if(
+        clockOperatorActive &&
+        options.allowScorekeeperPeriodReset!==true
+    ){
+        showStatus(
+            "The Clock Operator currently controls the game clock."
+        );
+        return;
+    }
 
     if(!currentGame){
         return;
@@ -17186,6 +17462,22 @@ function setFinalizedLock(locked){
     ).forEach(button=>{
         button.disabled=Boolean(locked);
     });
+
+    /*
+    A Clock Operator ownership lock applies only to the clock
+    buttons and must survive any later finalized-lock refresh.
+    */
+    document.querySelectorAll(
+        ".clock-controls button, .shot-clock-controls button"
+    ).forEach(button=>{
+        button.disabled=
+            Boolean(
+                locked ||
+                clockOperatorActive
+            );
+    });
+
+    updateClockOperatorControlState();
 
     const finalButton=document.getElementById("status-final");
     if(finalButton){
@@ -17766,7 +18058,10 @@ async function setPeriod(period){
     });
 
 
-    await resetClock({skipConfirmation:true});
+    await resetClock({
+        skipConfirmation:true,
+        allowScorekeeperPeriodReset:true
+    });
 }
 
 
