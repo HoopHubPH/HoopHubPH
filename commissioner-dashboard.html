@@ -2405,6 +2405,100 @@
       }
     }
 
+    /* Commissioner account approvals */
+    #commissionerViewAccounts:checked ~ .main-content #accountsPanel {
+      display: block;
+    }
+
+    #commissionerViewAccounts:checked ~ .sidebar [data-commissioner-view="accounts"] {
+      color: #ffffff;
+      background: rgba(255, 107, 0, .16);
+      box-shadow: inset 3px 0 var(--orange);
+    }
+
+    #commissionerViewAccounts:checked ~ .sidebar [data-commissioner-view="accounts"] .nav-icon {
+      background: var(--orange);
+    }
+
+    .account-review-toolbar {
+      padding: 16px 18px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(160px, 1fr)) repeat(3, minmax(110px, .55fr));
+      gap: 10px;
+      align-items: stretch;
+      border-bottom: 1px solid var(--line);
+      background: #fafafa;
+    }
+
+    .account-review-filter label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .account-review-filter select {
+      width: 100%;
+      height: 40px;
+      padding: 0 11px;
+      background: #fff;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .account-review-summary {
+      padding: 10px 12px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .account-review-summary span,
+    .account-review-summary strong {
+      display: block;
+    }
+
+    .account-review-summary span {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .account-review-summary strong {
+      margin-top: 5px;
+      font-size: 18px;
+    }
+
+    .account-role-label {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .4px;
+      text-transform: uppercase;
+    }
+
+    .account-secondary-text {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 900px) {
+      .account-review-toolbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 560px) {
+      .account-review-toolbar {
+        grid-template-columns: 1fr;
+      }
+    }
+
   </style>
 </head>
 
@@ -2422,6 +2516,7 @@
     <input id="commissionerViewCreateTeam" class="commissioner-view-toggle" type="radio" name="commissionerWorkspace">
     <input id="commissionerViewTeams" class="commissioner-view-toggle" type="radio" name="commissionerWorkspace">
     <input id="commissionerViewRoster" class="commissioner-view-toggle" type="radio" name="commissionerWorkspace">
+    <input id="commissionerViewAccounts" class="commissioner-view-toggle" type="radio" name="commissionerWorkspace">
     <input id="commissionerViewSchedule" class="commissioner-view-toggle" type="radio" name="commissionerWorkspace">
     <input id="commissionerViewGames" class="commissioner-view-toggle" type="radio" name="commissionerWorkspace">
     <input id="commissionerViewStandings" class="commissioner-view-toggle" type="radio" name="commissionerWorkspace">
@@ -2459,6 +2554,9 @@
       </label>
       <label class="nav-link commissioner-nav-view" for="commissionerViewRoster" data-commissioner-view="roster">
         <span class="nav-icon">RA</span> Roster Approval
+      </label>
+      <label class="nav-link commissioner-nav-view" for="commissionerViewAccounts" data-commissioner-view="accounts">
+        <span class="nav-icon">AC</span> Accounts
       </label>
       <label class="nav-link commissioner-nav-view" for="commissionerViewSchedule" data-commissioner-view="schedule">
         <span class="nav-icon">SC</span> Schedule
@@ -2772,6 +2870,45 @@
             <div class="roster-summary"><span>Approved</span><strong id="rosterApprovedCount">0</strong></div>
           </div>
           <div class="table-wrap"><table><thead><tr><th>Player</th><th>Jersey</th><th>Position</th><th>Status</th><th>Actions</th></tr></thead><tbody id="rosterReviewBody"><tr><td class="empty-state" colspan="5">Loading roster reviews...</td></tr></tbody></table></div>
+        </section>
+
+        <section id="accountsPanel" class="panel commissioner-view-section">
+          <header class="panel-header">
+            <div>
+              <h2>Coach &amp; Player Accounts</h2>
+              <p>Approve, reject, or suspend only accounts linked to teams in the selected league. Registered roles cannot be changed here.</p>
+            </div>
+            <button id="refreshAccountReviewsButton" class="secondary-button" type="button">REFRESH</button>
+          </header>
+          <div class="account-review-toolbar">
+            <div class="account-review-filter">
+              <label for="accountRoleFilter">Account Type</label>
+              <select id="accountRoleFilter">
+                <option value="all">All coaches and players</option>
+                <option value="coach">Coaches</option>
+                <option value="player">Players</option>
+              </select>
+            </div>
+            <div class="account-review-filter">
+              <label for="accountStatusFilter">Account Status</label>
+              <select id="accountStatusFilter">
+                <option value="all">All statuses</option>
+                <option value="pending">Pending</option>
+                <option value="active">Active</option>
+                <option value="rejected">Rejected</option>
+                <option value="suspended">Suspended</option>
+              </select>
+            </div>
+            <div class="account-review-summary"><span>Total</span><strong id="accountTotalCount">0</strong></div>
+            <div class="account-review-summary"><span>Pending</span><strong id="accountPendingCount">0</strong></div>
+            <div class="account-review-summary"><span>Active</span><strong id="accountActiveCount">0</strong></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Account</th><th>Role</th><th>Team</th><th>Status</th><th>Registered</th><th>Actions</th></tr></thead>
+              <tbody id="accountReviewBody"><tr><td class="empty-state" colspan="6">Loading linked accounts...</td></tr></tbody>
+            </table>
+          </div>
         </section>
 
 
@@ -3222,6 +3359,9 @@
     let editingGameId = null;
     let rosterReviewRows = [];
     let rosterReviewLeagueId = null;
+    let accountReviewRows = [];
+    let accountReviewLeagueId = null;
+    let accountReviewLoadToken = 0;
     let seasons = [];
     let divisions = [];
     let editingSeasonId = null;
@@ -3268,6 +3408,12 @@
         title: "Roster Approval",
         description: "Review submitted team rosters one team at a time.",
         hash: "#rosterApprovalPanel"
+      },
+      accounts: {
+        radioId: "commissionerViewAccounts",
+        title: "Account Approvals",
+        description: "Approve, reject, or suspend linked coach and player accounts without changing their registered roles.",
+        hash: "#accountsPanel"
       },
       schedule: {
         radioId: "commissionerViewSchedule",
@@ -3318,6 +3464,7 @@
       "#createTeamPanel": "create-team",
       "#teamsPanel": "teams",
       "#rosterApprovalPanel": "roster",
+      "#accountsPanel": "accounts",
       "#schedulePanel": "schedule",
       "#gamesDisplayPanel": "games",
       "#standingsPanel": "standings",
@@ -4525,6 +4672,7 @@
         rosterReviewLeagueId = null;
         document.getElementById("rosterTeamSelect").innerHTML = '<option value="">No submitted teams</option>';
         document.getElementById("rosterReviewBody").innerHTML = '<tr><td class="empty-state" colspan="5">No assigned league.</td></tr>';
+        resetAccountReviewPanel("No assigned league.");
         document.getElementById("approvedTeamCount").textContent = "0";
         document.getElementById("pendingTeamCount").textContent = "0";
         setCreateTeamEnabled(false);
@@ -4585,7 +4733,103 @@
       renderReportFilters(league);
       renderCommissionerActionCenter(league);
       loadRosterReviews(league.id);
+      loadCommissionerAccounts(league.id);
       loadCommissionerCorrectionRequests(league.id);
+    }
+
+    function resetAccountReviewPanel(message = "Select an assigned league.") {
+      accountReviewRows = [];
+      accountReviewLeagueId = null;
+      document.getElementById("accountTotalCount").textContent = "0";
+      document.getElementById("accountPendingCount").textContent = "0";
+      document.getElementById("accountActiveCount").textContent = "0";
+      document.getElementById("accountReviewBody").innerHTML = `<tr><td class="empty-state" colspan="6">${escapeHtml(message)}</td></tr>`;
+    }
+
+    async function loadCommissionerAccounts(leagueId) {
+      const loadToken = ++accountReviewLoadToken;
+      accountReviewLeagueId = leagueId;
+      document.getElementById("accountReviewBody").innerHTML = '<tr><td class="empty-state" colspan="6">Loading linked accounts...</td></tr>';
+
+      const { data, error } = await supabaseClient.rpc("get_commissioner_league_accounts", {
+        p_league_id: leagueId
+      });
+
+      if (loadToken !== accountReviewLoadToken || String(leagueSelect.value) !== String(leagueId)) return;
+
+      if (error) {
+        console.error("Unable to load commissioner account reviews:", error);
+        resetAccountReviewPanel("Unable to load linked accounts: " + (error.message || "Unknown error"));
+        return;
+      }
+
+      accountReviewRows = data || [];
+      accountReviewLeagueId = leagueId;
+      renderCommissionerAccountRows();
+    }
+
+    function renderCommissionerAccountRows() {
+      const roleFilter = document.getElementById("accountRoleFilter").value;
+      const statusFilter = document.getElementById("accountStatusFilter").value;
+      const rows = accountReviewRows.filter(row =>
+        (roleFilter === "all" || row.account_role === roleFilter) &&
+        (statusFilter === "all" || row.account_status === statusFilter)
+      );
+
+      document.getElementById("accountTotalCount").textContent = accountReviewRows.length.toLocaleString();
+      document.getElementById("accountPendingCount").textContent = accountReviewRows.filter(row => row.account_status === "pending").length.toLocaleString();
+      document.getElementById("accountActiveCount").textContent = accountReviewRows.filter(row => row.account_status === "active").length.toLocaleString();
+
+      document.getElementById("accountReviewBody").innerHTML = rows.length ? rows.map(row => {
+        const status = String(row.account_status || "pending").toLowerCase();
+        let actions = '<span class="account-secondary-text">No action available</span>';
+        if (status === "pending") {
+          actions = `<button class="review-button approve" type="button" onclick="reviewCommissionerAccount('${row.account_id}','approve',this)">APPROVE</button>
+            <button class="review-button reject" type="button" onclick="reviewCommissionerAccount('${row.account_id}','reject',this)">REJECT</button>`;
+        } else if (status === "rejected") {
+          actions = `<button class="review-button approve" type="button" onclick="reviewCommissionerAccount('${row.account_id}','approve',this)">APPROVE</button>`;
+        } else if (status === "active") {
+          actions = `<button class="review-button reject" type="button" onclick="reviewCommissionerAccount('${row.account_id}','suspend',this)">SUSPEND</button>`;
+        }
+
+        return `<tr>
+          <td><strong>${escapeHtml(row.full_name || "Unnamed account")}</strong><br><span class="account-secondary-text">${escapeHtml(row.email || "—")}</span></td>
+          <td><span class="account-role-label">${escapeHtml(row.account_role || "—")}</span></td>
+          <td>${escapeHtml(row.team_name || "—")}</td>
+          <td><span class="status-badge ${escapeHtml(status)}">${escapeHtml(status)}</span></td>
+          <td>${escapeHtml(formatDate(row.registered_at))}</td>
+          <td><div class="review-actions">${actions}</div></td>
+        </tr>`;
+      }).join("") : '<tr><td class="empty-state" colspan="6">No linked accounts match the selected filters.</td></tr>';
+    }
+
+    async function reviewCommissionerAccount(accountId, action, button) {
+      const leagueId = accountReviewLeagueId;
+      if (!leagueId) return;
+
+      const actionLabel = action === "approve" ? "approve" : action === "reject" ? "reject" : "suspend";
+      const warning = action === "suspend"
+        ? "Suspending this account will block its HoopHub login without deleting its team, roster, or statistics."
+        : `This will ${actionLabel} the selected HoopHub account without changing its registered role.`;
+
+      if (!window.confirm(`${warning}\n\nContinue?`)) return;
+
+      const actionButtons = button.closest(".review-actions")?.querySelectorAll("button") || [button];
+      actionButtons.forEach(item => item.disabled = true);
+
+      const { error } = await supabaseClient.rpc("review_commissioner_league_account", {
+        p_league_id: leagueId,
+        p_target_user_id: accountId,
+        p_action: action
+      });
+
+      if (error) {
+        actionButtons.forEach(item => item.disabled = false);
+        window.alert("Unable to update account: " + (error.message || "Unknown error"));
+        return;
+      }
+
+      await loadCommissionerAccounts(leagueId);
     }
 
     function setFormMessage(id, text, type = "") {
@@ -5716,6 +5960,11 @@
     createTeamForm.addEventListener("submit", createTeam);
     window.addEventListener("hashchange", scrollToRequestedPanel);
     document.getElementById("rosterTeamSelect").addEventListener("change", renderRosterTeam);
+    document.getElementById("accountRoleFilter").addEventListener("change", renderCommissionerAccountRows);
+    document.getElementById("accountStatusFilter").addEventListener("change", renderCommissionerAccountRows);
+    document.getElementById("refreshAccountReviewsButton").addEventListener("click", function () {
+      if (leagueSelect.value) loadCommissionerAccounts(leagueSelect.value);
+    });
     document.getElementById("scheduleGameSearch").addEventListener("input", function () {
       const league = assignedLeagues.find(item => String(item.id) === String(leagueSelect.value));
       renderScheduleGameList(league);
