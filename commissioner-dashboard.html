@@ -4541,10 +4541,7 @@
         return;
       }
 
-      const registrations = leagueTeams.filter(item =>
-        item.league_id === league.id &&
-        (!seasonId || item.season_id === seasonId)
-      );
+      const registrations = leagueTeams.filter(item => item.league_id === league.id);
       const approved = registrations.filter(item => item.registration_status === "approved");
       const pending = registrations.filter(item => item.registration_status === "pending");
 
@@ -5638,7 +5635,10 @@
       const type = document.getElementById("reportTypeSelect").value;
       const seasonId = document.getElementById("reportSeasonSelect").value;
       const selectedSeason = seasons.find(item => item.id === seasonId);
-      const registrations = leagueTeams.filter(item => item.league_id === league.id);
+      const registrations = leagueTeams.filter(item =>
+        item.league_id === league.id &&
+        (!seasonId || item.season_id === seasonId)
+      );
       const teamById = new Map(teams.map(team => [team.id, team]));
       const reportGames = scheduledGames.filter(game => game.league_id === league.id && (!seasonId || game.season_id === seasonId));
       const leagueSeasons = seasons.filter(item => item.league_id === league.id && (!seasonId || item.id === seasonId));
