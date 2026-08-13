@@ -8575,6 +8575,15 @@ let playerMinuteLastPersisted={};
 let minuteSyncTimer=null;
 let minutePersistTimer=null;
 
+/*
+Player-minute writes are serialized and coalesced so a slower
+Supabase request can never finish after a newer request and
+overwrite the newer minute total.
+*/
+let minutePersistWorkerPromise=null;
+let minutePersistPending=false;
+let minutePersistPendingForce=false;
+
 let statSaveQueue=new Map();
 let statSaveTimers=new Map();
 let statSaveInFlight=new Set();
@@ -9093,6 +9102,29 @@ function updateSubstitutionButtons(){
    PLAYER MINUTES
    ========================================================= */
 
+function getPlayerMinuteClockSeconds(){
+
+    if(
+        clockRunning &&
+        clockEndTime
+    ){
+
+        return Math.max(
+            0,
+            (
+                clockEndTime-
+                Date.now()
+            )/1000
+        );
+    }
+
+    return Math.max(
+        0,
+        Number(clockSeconds||0)
+    );
+}
+
+
 function getPlayerTotalSeconds(playerId){
 
     const stats=playerStatsMap[playerId]||{};
@@ -9108,20 +9140,23 @@ function getPlayerTotalSeconds(playerId){
 
     const base=
         playerMinuteBaseSeconds[playerId]!==undefined
-        ? playerMinuteBaseSeconds[playerId]
-        : saved;
+        ?playerMinuteBaseSeconds[playerId]
+        :saved;
+
+    const currentClock=
+        getPlayerMinuteClockSeconds();
 
     const lastClock=
         playerMinuteLastClockSeconds[playerId]!==undefined
-        ? playerMinuteLastClockSeconds[playerId]
-        : clockSeconds;
+        ?playerMinuteLastClockSeconds[playerId]
+        :currentClock;
 
     if(clockRunning){
 
         const elapsed=
             Math.max(
                 0,
-                lastClock-clockSeconds
+                lastClock-currentClock
             );
 
         return base+elapsed;
@@ -9132,6 +9167,9 @@ function getPlayerTotalSeconds(playerId){
 
 
 function synchronizePlayerMinutes(){
+
+    const currentClock=
+        getPlayerMinuteClockSeconds();
 
     for(const playerId of Object.keys(playerOnCourt)){
 
@@ -9160,7 +9198,7 @@ function synchronizePlayerMinutes(){
         ){
 
             playerMinuteLastClockSeconds[playerId]=
-                clockSeconds;
+                currentClock;
         }
 
         if(clockRunning){
@@ -9171,7 +9209,7 @@ function synchronizePlayerMinutes(){
             const elapsed=
                 Math.max(
                     0,
-                    lastClock-clockSeconds
+                    lastClock-currentClock
                 );
 
             if(elapsed>0){
@@ -9180,17 +9218,16 @@ function synchronizePlayerMinutes(){
                     +=elapsed;
 
                 playerMinuteLastClockSeconds[playerId]
-                    =clockSeconds;
+                    =currentClock;
             }
         }
         else{
 
             playerMinuteLastClockSeconds[playerId]
-                =clockSeconds;
+                =currentClock;
         }
     }
 }
-
 
 function updateVisibleMinutes(){
 
@@ -9250,10 +9287,7 @@ async function persistPlayerMinutes(playerId){
         )/1000;
 
     const referenceClock=
-        Math.max(
-            0,
-            Number(clockSeconds||0)
-        );
+        getPlayerMinuteClockSeconds();
 
     const {
         data,
@@ -9437,7 +9471,61 @@ async function reconcileManualMinuteOverrides(playerIds){
 }
 
 
-async function persistAllPlayerMinutes(force=false){
+function persistAllPlayerMinutes(force=false){
+
+    minutePersistPending=true;
+
+    if(force){
+        minutePersistPendingForce=true;
+    }
+
+    if(!minutePersistWorkerPromise){
+
+        minutePersistWorkerPromise=
+            (async()=>{
+
+                while(minutePersistPending){
+
+                    const runForce=
+                        minutePersistPendingForce;
+
+                    minutePersistPending=false;
+                    minutePersistPendingForce=false;
+
+                    await persistAllPlayerMinutesNow(
+                        runForce
+                    );
+                }
+            })()
+            .catch(error=>{
+
+                console.error(
+                    "Player minute persistence worker error:",
+                    error
+                );
+            })
+            .finally(()=>{
+
+                minutePersistWorkerPromise=null;
+
+                /*
+                A request can arrive on the same turn the worker
+                finishes. Restart once if one is waiting.
+                */
+                if(minutePersistPending){
+
+                    void persistAllPlayerMinutes(
+                        minutePersistPendingForce
+                    );
+                }
+            });
+    }
+
+    return minutePersistWorkerPromise;
+}
+
+
+async function persistAllPlayerMinutesNow(force=false){
 
     if(!currentGame){
         return;
@@ -9483,10 +9571,7 @@ async function persistAllPlayerMinutes(force=false){
     }
 
     const referenceClock=
-        Math.max(
-            0,
-            Number(clockSeconds||0)
-        );
+        getPlayerMinuteClockSeconds();
 
     const rows=
         active.map(playerId=>{
@@ -9918,6 +10003,24 @@ async function loadGame(){
 
 function initializePlayerMinuteSynchronization(){
 
+    const currentClock=
+        getPlayerMinuteClockSeconds();
+
+    const gameSnapshotClock=
+        currentGame?.clock_milliseconds!==null &&
+        currentGame?.clock_milliseconds!==undefined
+            ?Math.max(
+                0,
+                Number(currentGame.clock_milliseconds)/1000
+            )
+            :Math.max(
+                0,
+                Number(
+                    currentGame?.clock_seconds??
+                    currentClock
+                )
+            );
+
     for(const playerId of Object.keys(playerOnCourt)){
 
         const stats=
@@ -9931,37 +10034,63 @@ function initializePlayerMinuteSynchronization(){
                 )
             );
 
-
         const savedClock=
             Number(
                 stats.minutes_clock_seconds
             );
 
+        const hasSavedClock=
+            stats.minutes_clock_seconds!==null &&
+            stats.minutes_clock_seconds!==undefined &&
+            Number.isFinite(savedClock);
+
+        /*
+        A valid saved minute anchor for a running countdown must
+        be at or above the current remaining clock. If it is
+        below the current clock, it belongs to an older period
+        before the clock was reset (for example 0.0 at the end
+        of the previous quarter), so use the game's current
+        authoritative running-segment snapshot instead.
+        */
+        const hasUsableSavedClock=
+            hasSavedClock &&
+            (
+                !clockRunning ||
+                savedClock>=currentClock-0.25
+            );
+
+        /*
+        When a page is opened while the external Clock Operator
+        is already running the clock, clock_milliseconds is the
+        authoritative remaining time saved at the start/update
+        of that running segment. Use it as the fallback anchor
+        instead of starting the player's minutes late.
+        */
+        const anchorClock=
+            hasUsableSavedClock
+                ?savedClock
+                :gameSnapshotClock;
 
         if(
-            clockRunning&&
-            playerOnCourt[playerId]===true&&
-            stats.minutes_clock_seconds!==null&&
-            stats.minutes_clock_seconds!==undefined&&
-            Number.isFinite(savedClock)
+            clockRunning &&
+            playerOnCourt[playerId]===true &&
+            Number.isFinite(anchorClock)
         ){
 
             synchronizedTotal+=
                 Math.max(
                     0,
-                    savedClock-clockSeconds
+                    anchorClock-currentClock
                 );
         }
-
 
         playerMinuteBaseSeconds[playerId]=
             synchronizedTotal;
 
         playerMinuteLastClockSeconds[playerId]
-            =clockSeconds;
+            =currentClock;
     }
 }
-
 
 /* =========================================================
    GAME DATABASE UPDATE
@@ -15163,10 +15292,10 @@ function formatMinutes(seconds){
     const total=
         Math.max(
             0,
-            Math.round(
+            Math.floor(
                 Number(
                     seconds||0
-                )
+                )+0.0005
             )
         );
 
@@ -16184,11 +16313,29 @@ function applyExternalClockState(data){
     const wasRunning=
         clockRunning===true;
 
+    /*
+    Capture the Scorekeeper's locally displayed remaining time
+    before applying the external update. If a PAUSE arrives
+    after network delay, this lets us remove the locally
+    over-counted seconds from player minutes.
+    */
+    const localClockBefore=
+        getPlayerMinuteClockSeconds();
+
+    if(wasRunning){
+        synchronizePlayerMinutes();
+    }
+
     const hasMilliseconds=
         data.clock_milliseconds!==null &&
         data.clock_milliseconds!==undefined;
 
-    clockSeconds=
+    /*
+    This is the exact remaining game-clock value persisted by
+    the Clock Operator when START/PAUSE/RESET was committed.
+    It is the authoritative anchor for player minutes.
+    */
+    const authoritativeClockAtUpdate=
         Math.max(
             0,
             hasMilliseconds
@@ -16196,9 +16343,13 @@ function applyExternalClockState(data){
                     data.clock_milliseconds
                 )/1000
                 :Number(
-                    data.clock_seconds??getPeriodClockSeconds()
+                    data.clock_seconds??
+                    getPeriodClockSeconds()
                 )
         );
+
+    clockSeconds=
+        authoritativeClockAtUpdate;
 
     shotClockSeconds=
         Math.max(
@@ -16267,6 +16418,108 @@ function applyExternalClockState(data){
             )
         );
 
+    /*
+    START transition:
+    Anchor every on-court player to the Clock Operator's
+    persisted start clock, not to the delayed time at which
+    this browser happened to receive the event. The first
+    visible minute update therefore catches up immediately.
+    */
+    if(
+        !wasRunning &&
+        clockRunning
+    ){
+
+        for(
+            const playerId of
+            Object.keys(
+                playerOnCourt
+            )
+        ){
+
+            if(
+                playerOnCourt[playerId]===true
+            ){
+
+                if(
+                    playerMinuteBaseSeconds[playerId]===
+                    undefined
+                ){
+
+                    playerMinuteBaseSeconds[playerId]=
+                        Math.max(
+                            0,
+                            Number(
+                                playerStatsMap[playerId]
+                                ?.minutes_played||0
+                            )
+                        );
+                }
+
+                playerMinuteLastClockSeconds[
+                    playerId
+                ]=
+                    authoritativeClockAtUpdate;
+            }
+        }
+    }
+
+    /*
+    PAUSE transition:
+    The local Scorekeeper may have continued animating for
+    1-3 seconds while the PAUSE update travelled over the
+    network. Remove exactly that overrun using the Clock
+    Operator's authoritative paused clock value.
+    */
+    if(
+        wasRunning &&
+        !clockRunning
+    ){
+
+        const networkOverrun=
+            Math.max(
+                0,
+                authoritativeClockAtUpdate-
+                localClockBefore
+            );
+
+        for(
+            const playerId of
+            Object.keys(
+                playerOnCourt
+            )
+        ){
+
+            if(
+                playerOnCourt[playerId]!==true
+            ){
+                continue;
+            }
+
+            const stats=
+                playerStatsMap[playerId]||{};
+
+            const currentBase=
+                playerMinuteBaseSeconds[playerId]!==undefined
+                    ?playerMinuteBaseSeconds[playerId]
+                    :Math.max(
+                        0,
+                        Number(
+                            stats.minutes_played||0
+                        )
+                    );
+
+            playerMinuteBaseSeconds[playerId]=
+                Math.max(
+                    0,
+                    currentBase-networkOverrun
+                );
+
+            playerMinuteLastClockSeconds[playerId]=
+                authoritativeClockAtUpdate;
+        }
+    }
+
     currentGame={
         ...currentGame,
         ...data
@@ -16320,31 +16573,9 @@ function applyExternalClockState(data){
         clockSeconds>0
     ){
 
-        if(!wasRunning){
-
-            for(
-                const playerId of
-                Object.keys(
-                    playerOnCourt
-                )
-            ){
-
-                if(
-                    playerOnCourt[playerId]===true
-                ){
-
-                    playerMinuteLastClockSeconds[
-                        playerId
-                    ]=clockSeconds;
-                }
-            }
-        }
-
         startClockInternal();
     }
     else{
-
-        synchronizePlayerMinutes();
 
         for(
             const playerId of
@@ -16359,9 +16590,21 @@ function applyExternalClockState(data){
 
                 playerMinuteLastClockSeconds[
                     playerId
-                ]=clockSeconds;
+                ]=
+                    authoritativeClockAtUpdate;
             }
         }
+    }
+
+    /*
+    Force an exact checkpoint on every external START/PAUSE
+    transition. The persistence worker serializes these writes,
+    so an older request cannot overwrite a newer minute total.
+    */
+    if(
+        wasRunning!==clockRunning
+    ){
+        void persistAllPlayerMinutes(true);
     }
 
     updateClockDisplay();
@@ -16371,7 +16614,6 @@ function applyExternalClockState(data){
 
     applyingExternalClockState=false;
 }
-
 
 async function pollExternalClockState(){
 
@@ -16476,7 +16718,7 @@ function startExternalClockSync(){
     externalClockSyncPollTimer=
         setInterval(
             pollExternalClockState,
-            500
+            250
         );
 }
 
