@@ -1409,22 +1409,49 @@
           </div>
         </section>
 
-        <section id="coachTeamSnapshot" class="coach-snapshot-panel coach-view-section active" data-coach-section="dashboard" aria-labelledby="coachSnapshotTitle">
-          <div class="coach-snapshot-header">
+        <section id="coachReadinessCenter" class="panel coach-view-section active" data-coach-section="dashboard">
+          <header class="panel-header">
             <div>
-              <h2 id="coachSnapshotTitle">Team Performance Snapshot</h2>
-              <p>Per-game team averages from finalized games only.</p>
+              <h2>Team Readiness Center</h2>
+              <p>Game-preparation status for the currently selected team.</p>
             </div>
-            <button id="viewTeamAnalyticsButton" class="coach-snapshot-button" type="button">View Team Analytics</button>
+            <span id="coachReadinessOverallBadge" class="status-badge pending">Checking</span>
+          </header>
+
+          <div id="coachNextGameHero" class="coach-next-game">
+            <div class="coach-next-game-copy">
+              <span class="coach-dashboard-kicker">Next Game</span>
+              <h3 id="coachNextGameMatchup">No upcoming game scheduled</h3>
+              <p id="coachNextGameMeta">The next scheduled matchup will appear here.</p>
+            </div>
+
+            <div class="coach-next-game-side">
+              <strong id="coachNextGameCountdown">—</strong>
+              <span id="coachNextGameHomeAway">Schedule pending</span>
+            </div>
           </div>
-          <div class="coach-snapshot-grid">
-            <div class="coach-snapshot-stat"><span>PTS</span><strong id="snapshotPTS">0.0</strong></div>
-            <div class="coach-snapshot-stat"><span>REB</span><strong id="snapshotREB">0.0</strong></div>
-            <div class="coach-snapshot-stat"><span>AST</span><strong id="snapshotAST">0.0</strong></div>
-            <div class="coach-snapshot-stat"><span>STL</span><strong id="snapshotSTL">0.0</strong></div>
-            <div class="coach-snapshot-stat"><span>BLK</span><strong id="snapshotBLK">0.0</strong></div>
-            <div class="coach-snapshot-stat"><span>TO</span><strong id="snapshotTO">0.0</strong></div>
-            <div class="coach-snapshot-stat"><span>FG%</span><strong id="snapshotFGPCT">0.0%</strong></div>
+
+          <div class="coach-readiness-grid">
+            <article class="coach-readiness-card" data-readiness-card="roster">
+              <div class="coach-readiness-card-top"><span class="coach-readiness-icon">RO</span><span id="coachRosterStatusBadge" class="coach-mini-status">Checking</span></div>
+              <strong>Roster Status</strong><p id="coachRosterReadinessText">Checking roster submission...</p>
+              <button class="coach-dashboard-action" type="button" data-dashboard-open-view="submit-roster">OPEN ROSTER SUBMISSION</button>
+            </article>
+            <article class="coach-readiness-card" data-readiness-card="lineup">
+              <div class="coach-readiness-card-top"><span class="coach-readiness-icon">LU</span><span id="coachLineupStatusBadge" class="coach-mini-status">Checking</span></div>
+              <strong>Starting Lineup</strong><p id="coachLineupReadinessText">Checking next-game lineup...</p>
+              <button class="coach-dashboard-action" type="button" data-dashboard-open-view="lineup">OPEN LINEUP & ATTENDANCE</button>
+            </article>
+            <article class="coach-readiness-card" data-readiness-card="availability">
+              <div class="coach-readiness-card-top"><span class="coach-readiness-icon">AV</span><span id="coachAvailabilityStatusBadge" class="coach-mini-status">Checking</span></div>
+              <strong>Player Availability</strong><p id="coachAvailabilityText">Checking next-game attendance...</p>
+              <button class="coach-dashboard-action" type="button" data-dashboard-open-view="lineup">REVIEW ATTENDANCE</button>
+            </article>
+            <article class="coach-readiness-card" data-readiness-card="corrections">
+              <div class="coach-readiness-card-top"><span class="coach-readiness-icon">CR</span><span id="coachCorrectionsStatusBadge" class="coach-mini-status">Checking</span></div>
+              <strong>Correction Requests</strong><p id="coachCorrectionsReadinessText">Checking request status...</p>
+              <button class="coach-dashboard-action" type="button" data-dashboard-open-view="corrections">VIEW CORRECTIONS</button>
+            </article>
           </div>
         </section>
 
@@ -1763,68 +1790,22 @@
           </div>
         </section>
 
-        <section id="coachReadinessCenter" class="panel coach-view-section active" data-coach-section="dashboard">
-          <header class="panel-header">
+        <section id="coachTeamSnapshot" class="coach-snapshot-panel coach-view-section active" data-coach-section="dashboard" aria-labelledby="coachSnapshotTitle">
+          <div class="coach-snapshot-header">
             <div>
-              <h2>Team Readiness Center</h2>
-              <p>Game-preparation status for the currently selected team.</p>
+              <h2 id="coachSnapshotTitle">Team Performance Snapshot</h2>
+              <p>Per-game team averages from finalized games only.</p>
             </div>
-            <span id="coachReadinessOverallBadge" class="status-badge pending">Checking</span>
-          </header>
-
-          <div id="coachNextGameHero" class="coach-next-game">
-            <div class="coach-next-game-copy">
-              <span class="coach-dashboard-kicker">Next Game</span>
-              <h3 id="coachNextGameMatchup">No upcoming game scheduled</h3>
-              <p id="coachNextGameMeta">The next scheduled matchup will appear here.</p>
-            </div>
-
-            <div class="coach-next-game-side">
-              <strong id="coachNextGameCountdown">—</strong>
-              <span id="coachNextGameHomeAway">Schedule pending</span>
-            </div>
+            <button id="viewTeamAnalyticsButton" class="coach-snapshot-button" type="button">View Team Analytics</button>
           </div>
-
-          <div class="coach-readiness-grid">
-            <article class="coach-readiness-card" data-readiness-card="roster">
-              <div class="coach-readiness-card-top">
-                <span class="coach-readiness-icon">RO</span>
-                <span id="coachRosterStatusBadge" class="coach-mini-status">Checking</span>
-              </div>
-              <strong>Roster Status</strong>
-              <p id="coachRosterReadinessText">Checking roster submission...</p>
-              <button class="coach-dashboard-action" type="button" data-dashboard-open-view="submit-roster">OPEN ROSTER SUBMISSION</button>
-            </article>
-
-            <article class="coach-readiness-card" data-readiness-card="lineup">
-              <div class="coach-readiness-card-top">
-                <span class="coach-readiness-icon">LU</span>
-                <span id="coachLineupStatusBadge" class="coach-mini-status">Checking</span>
-              </div>
-              <strong>Starting Lineup</strong>
-              <p id="coachLineupReadinessText">Checking next-game lineup...</p>
-              <button class="coach-dashboard-action" type="button" data-dashboard-open-view="lineup">OPEN LINEUP & ATTENDANCE</button>
-            </article>
-
-            <article class="coach-readiness-card" data-readiness-card="availability">
-              <div class="coach-readiness-card-top">
-                <span class="coach-readiness-icon">AV</span>
-                <span id="coachAvailabilityStatusBadge" class="coach-mini-status">Checking</span>
-              </div>
-              <strong>Player Availability</strong>
-              <p id="coachAvailabilityText">Checking next-game attendance...</p>
-              <button class="coach-dashboard-action" type="button" data-dashboard-open-view="lineup">REVIEW ATTENDANCE</button>
-            </article>
-
-            <article class="coach-readiness-card" data-readiness-card="corrections">
-              <div class="coach-readiness-card-top">
-                <span class="coach-readiness-icon">CR</span>
-                <span id="coachCorrectionsStatusBadge" class="coach-mini-status">Checking</span>
-              </div>
-              <strong>Correction Requests</strong>
-              <p id="coachCorrectionsReadinessText">Checking request status...</p>
-              <button class="coach-dashboard-action" type="button" data-dashboard-open-view="corrections">VIEW CORRECTIONS</button>
-            </article>
+          <div class="coach-snapshot-grid">
+            <div class="coach-snapshot-stat"><span>PTS</span><strong id="snapshotPTS">0.0</strong></div>
+            <div class="coach-snapshot-stat"><span>REB</span><strong id="snapshotREB">0.0</strong></div>
+            <div class="coach-snapshot-stat"><span>AST</span><strong id="snapshotAST">0.0</strong></div>
+            <div class="coach-snapshot-stat"><span>STL</span><strong id="snapshotSTL">0.0</strong></div>
+            <div class="coach-snapshot-stat"><span>BLK</span><strong id="snapshotBLK">0.0</strong></div>
+            <div class="coach-snapshot-stat"><span>TO</span><strong id="snapshotTO">0.0</strong></div>
+            <div class="coach-snapshot-stat"><span>FG%</span><strong id="snapshotFGPCT">0.0%</strong></div>
           </div>
         </section>
 
