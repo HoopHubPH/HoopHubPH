@@ -2712,6 +2712,10 @@
         leagueSelect.innerHTML = '<option value="">Select an open league</option>' + openApplicationLeagues.map(league =>
           `<option value="${escapeHtml(league.league_id)}">${escapeHtml(league.league_name)} — ${escapeHtml(league.season || league.league_location || "Open")}</option>`
         ).join("");
+        const requestedLeagueId=new URLSearchParams(window.location.search).get("league_id");
+        if(requestedLeagueId&&openApplicationLeagues.some(league=>String(league.league_id)===requestedLeagueId)){
+          leagueSelect.value=requestedLeagueId;
+        }
       }
 
       if (applicationResult.error) {
