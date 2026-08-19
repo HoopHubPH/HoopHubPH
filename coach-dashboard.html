@@ -2144,7 +2144,8 @@
 
     function coachViewFromHash() {
       const rawHash = decodeURIComponent(String(window.location.hash || "").replace(/^#/, ""));
-      return coachLegacyHashMap[rawHash] || "dashboard";
+      const requestedView = new URLSearchParams(window.location.search).get("view");
+      return coachLegacyHashMap[rawHash] || coachLegacyHashMap[requestedView] || "dashboard";
     }
 
     function updateCoachPageHeading(viewName) {
