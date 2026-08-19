@@ -283,7 +283,7 @@
           }
         }catch(error){console.warn("Unable to check account session:",error);}
         sessionStorage.setItem("hoophub_return_after_login",coachDestination);
-        window.location.href="login.html";
+        window.location.href=`login.html?return_to=${encodeURIComponent(coachDestination)}`;
       }
 
       let seasons=[];
