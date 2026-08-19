@@ -631,7 +631,7 @@
       let destinationLabel = "dashboard";
 
       const queryReturnPath = new URLSearchParams(window.location.search).get("return_to");
-      const savedReturnPath = queryReturnPath || sessionStorage.getItem("hoophub_return_after_login");
+      const savedReturnPath = queryReturnPath || sessionStorage.getItem("hoophub_return_after_login") || localStorage.getItem("hoophub_return_after_login");
       if (savedReturnPath) {
         try {
           const returnUrl = new URL(savedReturnPath, window.location.href);
@@ -642,11 +642,13 @@
             (isPlayerInvitation || isCoachApplication)
           ) {
             sessionStorage.removeItem("hoophub_return_after_login");
+            localStorage.removeItem("hoophub_return_after_login");
             window.location.replace(returnUrl.href);
             return;
           }
         } catch (_) {
           sessionStorage.removeItem("hoophub_return_after_login");
+          localStorage.removeItem("hoophub_return_after_login");
         }
       }
 
