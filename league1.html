@@ -60,6 +60,18 @@
     .filter-field select{width:100%;padding:13px 14px;border:1px solid #d8dce2;border-radius:7px;background:#fff;color:#222;font:inherit}
     .filter-field select:focus{outline:2px solid rgba(255,107,0,.2);border-color:#ff6b00}
     .competition-note{margin:-10px 0 22px;color:#68707d;font-size:12px}
+    .tournament-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    .tournament-card{position:relative;overflow:hidden;padding:24px;border:1px solid #e5e7eb;border-radius:12px;background:linear-gradient(145deg,#fff 0%,#fff8f2 100%)}
+    .tournament-card::before{content:"";position:absolute;inset:0 auto 0 0;width:6px;background:#ff6b00}
+    .tournament-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+    .tournament-icon{width:48px;height:48px;flex:0 0 48px;border-radius:50%;display:grid;place-items:center;background:#111;color:#ff6b00;font-size:23px}
+    .tournament-card h3{margin:0 0 7px;font-size:20px}.tournament-card p{color:#68707d;font-size:13px;line-height:1.55}
+    .tournament-status{display:inline-flex;margin-top:11px;padding:6px 10px;border-radius:999px;background:#fff1e6;color:#a74400;font-size:10px;font-weight:900;text-transform:uppercase}
+    .tournament-status.live{background:#e7f8ed;color:#176b34}.tournament-status.completed{background:#111;color:#fff}
+    .champion-summary{margin-top:17px;padding:15px;border-radius:9px;background:#111;color:#fff}
+    .champion-summary small{display:block;margin-bottom:5px;color:#ffd34d;font-weight:900;letter-spacing:.09em}.champion-summary strong{font-size:18px}
+    .tournament-meta{margin-top:16px;color:#68707d;font-size:12px;line-height:1.7}
+    .tournament-button{display:inline-flex;margin-top:18px;padding:12px 18px;border-radius:7px;background:#ff6b00;color:#fff;text-decoration:none;font-size:12px;font-weight:900}
     footer{background:#111;color:#fff;text-align:center;padding:30px;margin-top:50px}
     footer p{color:#aaa;margin-top:10px}
     @media(max-width:768px){
@@ -69,6 +81,7 @@
       .hero{padding:52px 20px}.hero h1{font-size:32px}
       .container{margin:32px auto}.info-card{padding:24px 18px}
       .games-grid{grid-template-columns:1fr}
+      .tournament-grid{grid-template-columns:1fr}
       .competition-filters{grid-template-columns:1fr}
       .matchup{gap:8px}.matchup-team{font-size:13px}.final-score{font-size:22px}
     }
@@ -139,6 +152,16 @@
       </div>
     </section>
 
+    <section class="info-card" id="league-tournaments">
+      <div class="section-head">
+        <h2>Tournament</h2>
+        <span>Bracket, results, and champion</span>
+      </div>
+      <div id="leagueTournaments" class="tournament-grid">
+        <div class="state-message">Loading tournaments...</div>
+      </div>
+    </section>
+
     <section class="info-card">
       <div class="section-head">
         <h2>Results</h2>
@@ -193,6 +216,8 @@
           year:"numeric",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"
         }).format(date);
       };
+
+      const formatLabel=value=>String(value||"").replaceAll("_"," ").replace(/\b\w/g,char=>char.toUpperCase());
 
       async function loadLeague(){
         const {data,error}=await db.from("leagues").select("*").eq("id",leagueId).maybeSingle();
@@ -362,6 +387,33 @@
           :'<div class="state-message">No finalized game results yet.</div>';
       }
 
+      async function loadTournaments(seasonId,divisionId,requestId){
+        const container=document.getElementById("leagueTournaments");
+        container.innerHTML='<div class="state-message">Loading tournaments...</div>';
+        const {data,error}=await db.rpc("get_public_tournaments");
+        if(error) throw error;
+        if(requestId!==competitionRequest) return;
+        const tournaments=(data||[]).filter(row=>
+          row.league_id===leagueId&&row.season_id===seasonId&&row.division_id===divisionId
+        );
+        container.innerHTML=tournaments.length?tournaments.map(row=>{
+          const status=String(row.tournament_status||"upcoming").toLowerCase();
+          return `<article class="tournament-card">
+            <div class="tournament-top">
+              <div>
+                <h3>${escapeHtml(row.tournament_name||"Tournament")}</h3>
+                <span class="tournament-status ${escapeHtml(status)}">${escapeHtml(formatLabel(status))}</span>
+              </div>
+              <div class="tournament-icon">🏆</div>
+            </div>
+            <p>${escapeHtml(row.tournament_description||"Official league tournament and championship bracket.")}</p>
+            ${row.champion_team_name?`<div class="champion-summary"><small>🏆 TOURNAMENT CHAMPION</small><strong>${escapeHtml(row.champion_team_name)}</strong>${row.runner_up_team_name?`<br><span style="color:#ccc;font-size:12px">Runner-up: ${escapeHtml(row.runner_up_team_name)}</span>`:""}</div>`:""}
+            <div class="tournament-meta">${Number(row.approved_team_count||0)} participating team${Number(row.approved_team_count||0)===1?"":"s"} · ${escapeHtml(formatLabel(row.tournament_format||"Tournament"))}</div>
+            <a class="tournament-button" href="tournament1.html?id=${encodeURIComponent(row.tournament_id)}">VIEW FULL TOURNAMENT →</a>
+          </article>`;
+        }).join(""):'<div class="state-message">No tournament is available for this season and division yet.</div>';
+      }
+
       async function loadSelectedCompetition(){
         const seasonId=document.getElementById("publicSeason").value;
         const divisionId=document.getElementById("publicDivision").value;
@@ -372,17 +424,19 @@
           document.getElementById("standingsTable").hidden=true;
           document.getElementById("upcomingGames").innerHTML='<div class="state-message">Choose a division to view upcoming games.</div>';
           document.getElementById("gameResults").innerHTML='<div class="state-message">Choose a division to view results.</div>';
+          document.getElementById("leagueTournaments").innerHTML='<div class="state-message">Choose a division to view tournaments.</div>';
           return;
         }
         const season=seasons.find(row=>row.id===seasonId),division=divisions.find(row=>row.id===divisionId);
         document.getElementById("competitionNote").textContent=`Showing ${season?.name||"selected season"} · ${division?.name||"selected division"}`;
-        try{await Promise.all([loadStandings(seasonId,divisionId,requestId),loadScheduleAndResults(seasonId,divisionId,requestId)]);}
+        try{await Promise.all([loadStandings(seasonId,divisionId,requestId),loadScheduleAndResults(seasonId,divisionId,requestId),loadTournaments(seasonId,divisionId,requestId)]);}
         catch(error){
           if(requestId!==competitionRequest) return;
           console.error("Competition view error:",error);
           const state=document.getElementById("standingsState");state.hidden=false;state.classList.add("error");state.textContent="Unable to load this division: "+(error.message||"Unknown error");
           document.getElementById("upcomingGames").innerHTML='<div class="state-message error">Unable to load upcoming games.</div>';
           document.getElementById("gameResults").innerHTML='<div class="state-message error">Unable to load game results.</div>';
+          document.getElementById("leagueTournaments").innerHTML='<div class="state-message error">Unable to load tournaments.</div>';
         }
       }
 
@@ -398,6 +452,7 @@
           state.textContent="Unable to load league information: "+(error.message||"Unknown error");
           document.getElementById("upcomingGames").innerHTML='<div class="state-message error">Unable to load upcoming games.</div>';
           document.getElementById("gameResults").innerHTML='<div class="state-message error">Unable to load game results.</div>';
+          document.getElementById("leagueTournaments").innerHTML='<div class="state-message error">Unable to load tournaments.</div>';
         }
       }
 
