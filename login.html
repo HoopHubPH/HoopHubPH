@@ -630,7 +630,8 @@
       let destination;
       let destinationLabel = "dashboard";
 
-      const savedReturnPath = sessionStorage.getItem("hoophub_return_after_login");
+      const queryReturnPath = new URLSearchParams(window.location.search).get("return_to");
+      const savedReturnPath = queryReturnPath || sessionStorage.getItem("hoophub_return_after_login");
       if (savedReturnPath) {
         try {
           const returnUrl = new URL(savedReturnPath, window.location.href);
