@@ -346,7 +346,7 @@ footer p {
 <section class="register">
     <h2>HAVE A BASKETBALL TEAM?</h2>
     <p>Create your team profile and showcase your players and achievements.</p>
-    <a href="login.html">REGISTER YOUR TEAM</a>
+    <a id="registerTeamButton" href="login.html">REGISTER YOUR TEAM</a>
 </section>
 
 <!-- FOOTER -->
@@ -374,6 +374,7 @@ const leagueSelect = document.getElementById("leagueSelect");
 const seasonSelect = document.getElementById("seasonSelect");
 const divisionSelect = document.getElementById("divisionSelect");
 const teamsContainer = document.getElementById("teamsContainer");
+const registerTeamButton = document.getElementById("registerTeamButton");
 let seasons = [];
 let divisions = [];
 let teamsRequest = 0;
@@ -386,6 +387,16 @@ function escapeHtml(value) {
 
 function setState(message) {
     teamsContainer.innerHTML = `<p class="teams-state">${escapeHtml(message)}</p>`;
+}
+
+function updateTeamRegistrationLink() {
+    const selectedLeagueId = leagueSelect.value;
+    const leagueQuery = selectedLeagueId
+        ? `league_id=${encodeURIComponent(selectedLeagueId)}&`
+        : "";
+    const destination = `coach-dashboard.html?${leagueQuery}view=create-team#create-team`;
+    registerTeamButton.href = `login.html?return_to=${encodeURIComponent(destination)}`;
+    registerTeamButton.dataset.destination = destination;
 }
 
 function optionList(rows, placeholder) {
@@ -421,6 +432,7 @@ async function loadCompetitionFilters() {
     }
 
     leagueSelect.value = visibleLeagues[0].id;
+    updateTeamRegistrationLink();
     await loadSeasons();
 }
 
@@ -576,8 +588,15 @@ async function loadTeams() {
 }
 
 leagueSelect.addEventListener("change", loadSeasons);
+leagueSelect.addEventListener("change", updateTeamRegistrationLink);
 seasonSelect.addEventListener("change", loadDivisions);
 divisionSelect.addEventListener("change", loadTeams);
+registerTeamButton.addEventListener("click", function () {
+    const destination = this.dataset.destination || "coach-dashboard.html?view=create-team#create-team";
+    sessionStorage.setItem("hoophub_return_after_login", destination);
+    localStorage.setItem("hoophub_return_after_login", destination);
+});
+updateTeamRegistrationLink();
 loadCompetitionFilters();
 </script>
 
