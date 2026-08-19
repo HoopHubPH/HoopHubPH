@@ -2153,7 +2153,14 @@
     function coachViewFromHash() {
       const rawHash = decodeURIComponent(String(window.location.hash || "").replace(/^#/, ""));
       const requestedView = new URLSearchParams(window.location.search).get("view");
-      return coachLegacyHashMap[rawHash] || coachLegacyHashMap[requestedView] || "dashboard";
+      let savedView="";
+      try{
+        const savedPath=localStorage.getItem("hoophub_return_after_login")||sessionStorage.getItem("hoophub_return_after_login")||"";
+        if(savedPath){
+          savedView=new URL(savedPath,window.location.href).searchParams.get("view")||"";
+        }
+      }catch(error){console.warn("Unable to restore the requested coach view:",error);}
+      return coachLegacyHashMap[rawHash] || coachLegacyHashMap[requestedView] || coachLegacyHashMap[savedView] || "dashboard";
     }
 
     function updateCoachPageHeading(viewName) {
@@ -2650,7 +2657,12 @@
         renderCoachPerformanceDashboard();
         renderCoachScheduleDashboard();
         renderCoachReadinessDashboard();
-        openCoachView(coachViewFromHash(), false);
+        const initialCoachView=coachViewFromHash();
+        openCoachView(initialCoachView, false);
+        if(initialCoachView==="create-team"){
+          sessionStorage.removeItem("hoophub_return_after_login");
+          localStorage.removeItem("hoophub_return_after_login");
+        }
       } catch (error) {
         console.error("Coach authorization failed:", error);
         await returnToLogin(true);
@@ -2721,7 +2733,13 @@
         leagueSelect.innerHTML = '<option value="">Select an open league</option>' + openApplicationLeagues.map(league =>
           `<option value="${escapeHtml(league.league_id)}">${escapeHtml(league.league_name)} — ${escapeHtml(league.season || league.league_location || "Open")}</option>`
         ).join("");
-        const requestedLeagueId=new URLSearchParams(window.location.search).get("league_id");
+        let requestedLeagueId=new URLSearchParams(window.location.search).get("league_id");
+        if(!requestedLeagueId){
+          try{
+            const savedPath=localStorage.getItem("hoophub_return_after_login")||sessionStorage.getItem("hoophub_return_after_login")||"";
+            if(savedPath) requestedLeagueId=new URL(savedPath,window.location.href).searchParams.get("league_id");
+          }catch(error){console.warn("Unable to restore the requested league:",error);}
+        }
         if(requestedLeagueId&&openApplicationLeagues.some(league=>String(league.league_id)===requestedLeagueId)){
           leagueSelect.value=requestedLeagueId;
         }
