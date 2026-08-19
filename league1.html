@@ -21,6 +21,10 @@
     .info-card h2{margin-bottom:20px}
     .info-row{padding:15px 0;border-bottom:1px solid #eee}
     .button{display:inline-block;background:#ff6b00;color:#fff;padding:15px 25px;border-radius:5px;text-decoration:none;font-weight:bold;margin-top:20px}
+    .button-note{display:block;margin-top:10px;color:#68707d;font-size:12px}
+    .organizer-card{display:flex;align-items:center;gap:18px;padding:20px;border:1px solid #e5e7eb;border-radius:10px;background:#fafafa}
+    .organizer-avatar{width:58px;height:58px;flex:0 0 58px;border-radius:50%;display:grid;place-items:center;background:#111;color:#ff6b00;font-size:22px;font-weight:900}
+    .organizer-details h3{margin:0 0 5px}.organizer-details p{margin:0;color:#68707d;line-height:1.55}.organizer-details small{display:block;margin-top:5px;color:#8a8f98}
     .back{display:inline-block;margin-bottom:20px;color:#ff6b00;text-decoration:none;font-weight:bold}
     .table-wrap{width:100%;overflow-x:auto;border:1px solid #eee;border-radius:8px}
     .standings-table{width:100%;min-width:720px;border-collapse:collapse}
@@ -113,7 +117,8 @@
       <div class="info-row"><strong>🏀 Division:</strong> <span id="leagueDivision">—</span></div>
       <div class="info-row"><strong>📅 Season:</strong> <span id="leagueSeason">—</span></div>
       <div class="info-row"><strong>📌 Status:</strong> <span id="leagueStatus">—</span></div>
-      <a href="#" class="button" id="registerButton">REGISTER YOUR TEAM</a>
+      <a href="login.html" class="button" id="registerButton">REGISTER YOUR TEAM</a>
+      <span id="registerNote" class="button-note">Coach or Team Manager account required. Applications are reviewed by the league commissioner.</span>
     </section>
 
     <section class="info-card">
@@ -179,7 +184,14 @@
 
     <section class="info-card">
       <h2>League Organizer</h2>
-      <p>Organizer information will be displayed here.</p>
+      <div class="organizer-card">
+        <div class="organizer-avatar" aria-hidden="true">HH</div>
+        <div class="organizer-details">
+          <h3 id="organizerName">HoopHub PH League Administration</h3>
+          <p id="organizerRole">Official league organizer and commissioner team</p>
+          <small id="organizerMeta">Responsible for team approvals, schedules, results, and league operations.</small>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -232,6 +244,46 @@
         text("leagueSeason",data.season);
         text("leagueStatus",data.status);
         text("leagueDescription",data.description||"League information and updates will be displayed here.");
+        await loadOrganizer(data);
+      }
+
+      async function loadOrganizer(league){
+        const fallbackName=`${league.name||"HoopHub PH"} Administration`;
+        text("organizerName",fallbackName);
+        text("organizerRole","Official league organizer and commissioner team");
+        text("organizerMeta",`Managing ${league.location||"this league"} team approvals, schedules, results, and operations.`);
+        try{
+          const {data:assignments,error}=await db.from("league_commissioners").select("commissioner_id").eq("league_id",leagueId).eq("active",true);
+          if(error||!assignments?.length) return;
+          const commissionerIds=[...new Set(assignments.map(row=>row.commissioner_id).filter(Boolean))];
+          if(!commissionerIds.length) return;
+          const {data:profiles,error:profileError}=await db.from("profiles").select("id,full_name").in("id",commissionerIds);
+          if(profileError) return;
+          const names=(profiles||[]).map(profile=>String(profile.full_name||"").trim()).filter(Boolean);
+          if(names.length){
+            text("organizerName",names.join(", "));
+            text("organizerRole",names.length===1?"League Commissioner":"League Commissioners");
+          }
+        }catch(error){console.warn("Public organizer details unavailable:",error);}
+      }
+
+      async function openTeamRegistration(event){
+        event.preventDefault();
+        const coachDestination=`coach-dashboard.html?league_id=${encodeURIComponent(leagueId)}#create-team`;
+        try{
+          const {data:{session}}=await db.auth.getSession();
+          if(session){
+            const {data:profile}=await db.from("profiles").select("role,status").eq("id",session.user.id).maybeSingle();
+            if(profile?.role==="coach"&&profile?.status==="active"){
+              window.location.href=coachDestination;
+              return;
+            }
+            alert("Team applications require an active Coach or Team Manager account.");
+            return;
+          }
+        }catch(error){console.warn("Unable to check account session:",error);}
+        sessionStorage.setItem("hoophub_return_after_login",coachDestination);
+        window.location.href="login.html";
       }
 
       let seasons=[];
@@ -458,6 +510,7 @@
 
       document.getElementById("publicSeason").addEventListener("change",()=>updateDivisionOptions());
       document.getElementById("publicDivision").addEventListener("change",loadSelectedCompetition);
+      document.getElementById("registerButton").addEventListener("click",openTeamRegistration);
       initialize();
     })();
   </script>
