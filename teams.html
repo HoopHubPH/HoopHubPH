@@ -17,6 +17,7 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     background: #f5f5f5;
     color: #222;
+    overflow-x: hidden;
 }
 
 /* NAVIGATION */
@@ -50,7 +51,7 @@ nav {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 25px;
+    gap: 12px;
     flex-wrap: nowrap;
 }
 
@@ -276,10 +277,11 @@ footer p {
 
 /* MOBILE */
 
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
     header {
         flex-direction: column;
-        gap: 15px;
+        gap: 8px;
+        padding: 14px 8px;
     }
 
     nav a {
@@ -295,11 +297,22 @@ footer p {
 
     nav {
         width: 100%;
-        justify-content: flex-start;
-        gap: 16px;
-        overflow-x: auto;
-        padding-bottom: 4px;
-        scrollbar-width: thin;
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 0;
+        overflow: visible;
+        min-width: 0;
+    }
+
+    nav a {
+        margin: 0;
+        min-width: 0;
+        padding: 8px 0;
+        border: 0;
+        text-align: center;
+        font-size: clamp(7.5px, 2.2vw, 12px);
+        line-height: 1.15;
+        overflow-wrap: anywhere;
     }
 
     .competition-filter { grid-template-columns: 1fr; }
