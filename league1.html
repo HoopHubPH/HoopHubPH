@@ -211,6 +211,8 @@
       // The URL can use league1.html?id=LEAGUE_UUID. The test league is the fallback.
       const DEFAULT_LEAGUE_ID="01daf1b2-84ef-4358-9171-e1d8569f9a39";
       const leagueId=new URLSearchParams(window.location.search).get("id")||DEFAULT_LEAGUE_ID;
+      const teamApplicationDestination=`coach-dashboard.html?league_id=${encodeURIComponent(leagueId)}&view=create-team#create-team`;
+      document.getElementById("registerButton").href=`login.html?return_to=${encodeURIComponent(teamApplicationDestination)}`;
 
       const text=(id,value)=>{document.getElementById(id).textContent=value||"—"};
       const escapeHtml=value=>String(value??"").replace(/[&<>'"]/g,char=>({
@@ -269,7 +271,7 @@
 
       async function openTeamRegistration(event){
         event.preventDefault();
-        const coachDestination=`coach-dashboard.html?league_id=${encodeURIComponent(leagueId)}&view=create-team#create-team`;
+        const coachDestination=teamApplicationDestination;
         try{
           const {data:{session}}=await db.auth.getSession();
           if(session){
@@ -283,6 +285,7 @@
           }
         }catch(error){console.warn("Unable to check account session:",error);}
         sessionStorage.setItem("hoophub_return_after_login",coachDestination);
+        localStorage.setItem("hoophub_return_after_login",coachDestination);
         window.location.href=`login.html?return_to=${encodeURIComponent(coachDestination)}`;
       }
 
