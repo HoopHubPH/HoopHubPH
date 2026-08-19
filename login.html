@@ -634,9 +634,11 @@
       if (savedReturnPath) {
         try {
           const returnUrl = new URL(savedReturnPath, window.location.href);
+          const isPlayerInvitation = returnUrl.pathname.endsWith("/player-invitation.html");
+          const isCoachApplication = profile.role === "coach" && returnUrl.pathname.endsWith("/coach-dashboard.html");
           if (
             returnUrl.origin === window.location.origin &&
-            returnUrl.pathname.endsWith("/player-invitation.html")
+            (isPlayerInvitation || isCoachApplication)
           ) {
             sessionStorage.removeItem("hoophub_return_after_login");
             window.location.replace(returnUrl.href);
