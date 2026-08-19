@@ -269,7 +269,7 @@
 
       async function openTeamRegistration(event){
         event.preventDefault();
-        const coachDestination=`coach-dashboard.html?league_id=${encodeURIComponent(leagueId)}#create-team`;
+        const coachDestination=`coach-dashboard.html?league_id=${encodeURIComponent(leagueId)}&view=create-team#create-team`;
         try{
           const {data:{session}}=await db.auth.getSession();
           if(session){
