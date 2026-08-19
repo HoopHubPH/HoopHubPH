@@ -630,6 +630,23 @@
       let destination;
       let destinationLabel = "dashboard";
 
+      const savedReturnPath = sessionStorage.getItem("hoophub_return_after_login");
+      if (savedReturnPath) {
+        try {
+          const returnUrl = new URL(savedReturnPath, window.location.href);
+          if (
+            returnUrl.origin === window.location.origin &&
+            returnUrl.pathname.endsWith("/player-invitation.html")
+          ) {
+            sessionStorage.removeItem("hoophub_return_after_login");
+            window.location.replace(returnUrl.href);
+            return;
+          }
+        } catch (_) {
+          sessionStorage.removeItem("hoophub_return_after_login");
+        }
+      }
+
       if (profile.role === "scorekeeper") {
         try {
           const scorekeeperRoute =

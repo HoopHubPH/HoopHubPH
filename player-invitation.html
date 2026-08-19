@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Player Invitation | Hoop Hub PH</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f5f7;color:#171717;min-height:100vh}header{background:#111;color:#fff;padding:18px 7%;display:flex;justify-content:space-between;align-items:center}.logo{color:#fff;text-decoration:none;font-size:24px;font-weight:900}.logo span{color:#ff6b00}.home{color:#fff;text-decoration:none;font-weight:700}main{min-height:calc(100vh - 72px);display:grid;place-items:center;padding:32px 18px}.card{width:min(560px,100%);background:#fff;border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.12);overflow:hidden}.accent{height:8px;background:#ff6b00}.content{padding:34px}.eyebrow{color:#ff6b00;font-weight:900;text-transform:uppercase;letter-spacing:.08em;font-size:12px}h1{margin:8px 0 12px;font-size:32px}p{line-height:1.6;color:#555}.details{margin:24px 0;padding:18px;background:#f7f7f7;border-radius:12px}.details div{display:flex;justify-content:space-between;gap:20px;padding:8px 0;border-bottom:1px solid #ddd}.details div:last-child{border:0}.details span:first-child{font-weight:800}.message{padding:14px;border-radius:10px;margin:18px 0;background:#fff4e8;color:#7a3600}.message.error{background:#ffecec;color:#8b1111}.message.success{background:#e9f8ee;color:#12642c}button,.button{display:inline-flex;align-items:center;justify-content:center;width:100%;min-height:48px;border:0;border-radius:10px;background:#ff6b00;color:#fff;text-decoration:none;font-weight:900;cursor:pointer;padding:12px 18px}button:disabled{opacity:.55;cursor:wait}.secondary{margin-top:10px;background:#222}@media(max-width:520px){header{padding:16px 20px}.content{padding:26px 20px}h1{font-size:27px}.details div{display:block}.details span{display:block;margin-bottom:3px}}
+  </style>
+</head>
+<body>
+  <header>
+    <a class="logo" href="index.html">HOOP <span>HUB PH</span></a>
+    <a class="home" href="index.html">Home</a>
+  </header>
+  <main>
+    <section class="card">
+      <div class="accent"></div>
+      <div class="content">
+        <div class="eyebrow">Player account invitation</div>
+        <h1 id="title">Checking your invitation…</h1>
+        <p id="intro">Please wait while HoopHub PH verifies this invitation.</p>
+        <div id="details" class="details" hidden></div>
+        <div id="message" class="message" hidden></div>
+        <button id="acceptButton" type="button" hidden>Accept Invitation</button>
+        <a id="loginButton" class="button secondary" href="login.html" hidden>Sign In to Continue</a>
+      </div>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    (() => {
+      const SUPABASE_URL = "https://tkrsyiwffqkgfyooewsf.supabase.co";
+      const SUPABASE_KEY = "sb_publishable_Ij3LxeO764v43F3VgIDE-g_Ow4Wkhjt";
+      const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      const token = new URLSearchParams(window.location.search).get("token");
+      const title = document.getElementById("title");
+      const intro = document.getElementById("intro");
+      const details = document.getElementById("details");
+      const message = document.getElementById("message");
+      const acceptButton = document.getElementById("acceptButton");
+      const loginButton = document.getElementById("loginButton");
+
+      const escapeHtml = value => String(value ?? "").replace(/[&<>'"]/g, char => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"
+      })[char]);
+
+      function showMessage(text, type = "") {
+        message.textContent = text;
+        message.className = `message ${type}`.trim();
+        message.hidden = false;
+      }
+
+      function valueOf(invitation, names, fallback = "—") {
+        for (const name of names) if (invitation?.[name] != null && invitation[name] !== "") return invitation[name];
+        return fallback;
+      }
+
+      async function initialize() {
+        if (!token) {
+          title.textContent = "Invalid invitation link";
+          intro.textContent = "This link does not contain an invitation token.";
+          showMessage("Ask your coach to create a new player invitation.", "error");
+          return;
+        }
+
+        const { data: { session } } = await db.auth.getSession();
+        if (!session) {
+          title.textContent = "Sign in to claim your player profile";
+          intro.textContent = "Use the same email address that received this invitation.";
+          sessionStorage.setItem("hoophub_return_after_login", window.location.href);
+          loginButton.hidden = false;
+          return;
+        }
+
+        const { data, error } = await db.rpc("get_player_invitation", { p_token: token });
+        if (error) {
+          title.textContent = "Invitation unavailable";
+          intro.textContent = "This invitation may be expired, cancelled, already accepted, or assigned to another account.";
+          showMessage(error.message || "Unable to verify this invitation.", "error");
+          return;
+        }
+
+        const invitation = Array.isArray(data) ? data[0] : data;
+        if (!invitation) {
+          title.textContent = "Invitation not found";
+          intro.textContent = "Ask your coach to send a new invitation.";
+          return;
+        }
+
+        const playerName = valueOf(invitation, ["player_name", "full_name"], `${valueOf(invitation,["first_name"],"")} ${valueOf(invitation,["last_name"],"")}`.trim() || "Player");
+        title.textContent = `Welcome, ${playerName}`;
+        intro.textContent = "Confirm the information below, then connect this player profile to your account.";
+        details.innerHTML = `
+          <div><span>Player</span><span>${escapeHtml(playerName)}</span></div>
+          <div><span>Team</span><span>${escapeHtml(valueOf(invitation,["team_name"]))}</span></div>
+          <div><span>League</span><span>${escapeHtml(valueOf(invitation,["league_name"]))}</span></div>
+          <div><span>Status</span><span>${escapeHtml(valueOf(invitation,["status","invitation_status"],"Pending"))}</span></div>`;
+        details.hidden = false;
+        acceptButton.hidden = false;
+      }
+
+      acceptButton.addEventListener("click", async () => {
+        acceptButton.disabled = true;
+        acceptButton.textContent = "Accepting Invitation…";
+        const { error } = await db.rpc("accept_player_invitation", { p_token: token });
+        if (error) {
+          showMessage(error.message || "Unable to accept this invitation.", "error");
+          acceptButton.disabled = false;
+          acceptButton.textContent = "Accept Invitation";
+          return;
+        }
+        title.textContent = "Invitation accepted";
+        intro.textContent = "Your HoopHub PH account is now connected to this player profile.";
+        details.hidden = true;
+        acceptButton.hidden = true;
+        showMessage("You can now open your Player Dashboard.", "success");
+        loginButton.href = "player-dashboard.html";
+        loginButton.textContent = "Open Player Dashboard";
+        loginButton.hidden = false;
+      });
+
+      initialize().catch(error => {
+        title.textContent = "Unable to load invitation";
+        intro.textContent = "Please try again or ask your coach for assistance.";
+        showMessage(error.message || "Unexpected error.", "error");
+      });
+    })();
+  </script>
+</body>
+</html>

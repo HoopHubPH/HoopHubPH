@@ -343,6 +343,33 @@ document.addEventListener("DOMContentLoaded", () => {
         SUPABASE_URL,
         SUPABASE_KEY
     );
+
+    async function requireSuperAdmin() {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+            window.location.replace("login.html");
+            return false;
+        }
+
+        const { data: profile, error } = await supabaseClient
+            .from("profiles")
+            .select("role,status")
+            .eq("id", session.user.id)
+            .maybeSingle();
+
+        if (
+            error ||
+            !profile ||
+            profile.role !== "super_admin" ||
+            profile.status !== "active"
+        ) {
+            alert("Only an active Super Admin can use this page.");
+            window.location.replace("index.html");
+            return false;
+        }
+
+        return true;
+    }
     async function loadTeams() {
 
     const teamSelect =
@@ -461,7 +488,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* LOAD TEAMS WHEN PAGE OPENS */
 
-    loadTeams();
+    requireSuperAdmin().then(authorized => {
+        if (authorized) loadTeams();
+    });
 
     });
 

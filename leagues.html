@@ -59,7 +59,7 @@
     <section id="organizerCta" class="register" hidden>
       <h2>ARE YOU A LEAGUE ORGANIZER?</h2>
       <p>Register your basketball league and connect with players and teams.</p>
-      <a href="create-league.html">REGISTER YOUR LEAGUE</a>
+      <a href="super-admin.html#league-management">REGISTER YOUR LEAGUE</a>
     </section>
   </main>
 
@@ -125,7 +125,7 @@
           if(error||!profile) return;
           const role=String(profile.role||"").toLowerCase();
           const active=!profile.status||String(profile.status).toLowerCase()==="active";
-          organizerCta.hidden=!(active&&["super_admin","commissioner"].includes(role));
+          organizerCta.hidden=!(active&&role==="super_admin");
         }catch(error){
           console.warn("Organizer access check failed:",error);
         }

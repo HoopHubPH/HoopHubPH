@@ -674,6 +674,27 @@
         player: "player-dashboard.html"
     };
 
+    async function resolveScorekeeperDashboard(userId) {
+        const [scorekeeperResult, clockResult] = await Promise.all([
+            supabaseClient
+                .from("game_scorekeepers")
+                .select("game_id")
+                .eq("scorekeeper_id", userId)
+                .eq("active", true)
+                .limit(1),
+            supabaseClient.rpc("list_my_clock_operator_games")
+        ]);
+
+        if (scorekeeperResult.error) throw scorekeeperResult.error;
+        if (clockResult.error) throw clockResult.error;
+
+        const hasScorekeeperGame = (scorekeeperResult.data || []).length > 0;
+        const hasClockGame = (clockResult.data || []).length > 0;
+        return hasClockGame && !hasScorekeeperGame
+            ? "clock-control.html"
+            : "scorekeeper.html";
+    }
+
     async function showDashboardAccess() {
     const dashboardAccess = document.getElementById("dashboardAccess");
     const loginAccess = document.getElementById("loginAccess");
@@ -694,7 +715,11 @@
                 .eq("id", userData.user.id)
                 .maybeSingle();
 
-            const dashboardUrl = dashboardRoutes[profile?.role];
+            let dashboardUrl = dashboardRoutes[profile?.role];
+
+            if (profile?.role === "scorekeeper" && profile.status === "active") {
+                dashboardUrl = await resolveScorekeeperDashboard(userData.user.id);
+            }
 
             if (profileError || !profile || profile.status !== "active" || !dashboardUrl) {
                 dashboardAccess.hidden = true;
