@@ -2139,6 +2139,14 @@
 
     async function returnToLogin(signOutFirst = false) {
       if (signOutFirst) await supabaseClient.auth.signOut();
+      const requestedView=new URLSearchParams(window.location.search).get("view");
+      if(!signOutFirst&&requestedView==="create-team"){
+        const returnPath=`${window.location.pathname.split("/").pop()}${window.location.search}${window.location.hash}`;
+        sessionStorage.setItem("hoophub_return_after_login",returnPath);
+        localStorage.setItem("hoophub_return_after_login",returnPath);
+        window.location.replace(`login.html?return_to=${encodeURIComponent(returnPath)}`);
+        return;
+      }
       window.location.replace("login.html");
     }
 
