@@ -106,6 +106,21 @@
       const formatDate=value=>{const d=new Date(value);return value&&!Number.isNaN(d.getTime())?new Intl.DateTimeFormat("en-PH",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}).format(d):"TBA"};
       const eventLabels={two_point_made:"made a 2-point field goal",two_point_missed:"missed a 2-point field goal",three_point_made:"made a 3-point field goal",three_point_missed:"missed a 3-point field goal",free_throw_made:"made a free throw",free_throw_missed:"missed a free throw",offensive_rebound:"grabbed an offensive rebound",defensive_rebound:"grabbed a defensive rebound",assist:"recorded an assist",steal:"recorded a steal",block:"blocked a shot",turnover:"committed a turnover",personal_foul:"committed a personal foul"};
 
+      async function applyCurrentTeamNames(gameRows){
+        const rows=Array.isArray(gameRows)?gameRows:[gameRows];
+        const teamIds=[...new Set(rows.flatMap(game=>[game?.home_team_id,game?.away_team_id]).filter(Boolean))];
+        if(!teamIds.length)return gameRows;
+        const {data,error}=await db.from("teams").select("id,name").in("id",teamIds);
+        if(error){console.warn("Unable to load current team names:",error);return gameRows}
+        const namesById=new Map((data||[]).map(team=>[team.id,team.name]));
+        rows.forEach(game=>{
+          if(!game)return;
+          game.home_team=namesById.get(game.home_team_id)||game.home_team;
+          game.away_team=namesById.get(game.away_team_id)||game.away_team;
+        });
+        return gameRows;
+      }
+
       function remainingMilliseconds(game){
         if(game.clock_running&&game.clock_end_time){return Math.max(0,new Date(game.clock_end_time).getTime()-Date.now())}
         if(game.clock_milliseconds!=null)return Math.max(0,Number(game.clock_milliseconds));
@@ -191,15 +206,15 @@
       }
 
       async function fetchGames(){
-        const {data,error}=await db.from("games").select("*").order("created_at",{ascending:false}).limit(50);if(error)throw error;games=(data||[]).filter(game=>String(game.status||"").toLowerCase()!=="cancelled");
+        const {data,error}=await db.from("games").select("*").order("created_at",{ascending:false}).limit(50);if(error)throw error;games=(data||[]).filter(game=>String(game.status||"").toLowerCase()!=="cancelled");await applyCurrentTeamNames(games);
         if(!selectedId){const liveGame=games.find(g=>["live","halftime"].includes(String(g.status).toLowerCase()));selectedId=liveGame?.id||null}
         renderSelector();renderBrowser();const game=games.find(g=>Number(g.id)===Number(selectedId));if(game){renderGame(game);subscribeToGame(game.id);await Promise.all([refreshPlayByPlay(),refreshBoxScore(),refreshTimeouts()])}else{renderNoLiveGame()}
       }
 
       function subscribeToGame(id){
-        if(channel)db.removeChannel(channel);channel=db.channel(`public-game-${id}`).on("postgres_changes",{event:"UPDATE",schema:"public",table:"games",filter:`id=eq.${id}`},payload=>{const index=games.findIndex(g=>Number(g.id)===Number(id));if(index>=0)games[index]=payload.new;renderGame(payload.new);renderSelector();renderBrowser()}).subscribe();
+        if(channel)db.removeChannel(channel);channel=db.channel(`public-game-${id}`).on("postgres_changes",{event:"UPDATE",schema:"public",table:"games",filter:`id=eq.${id}`},async payload=>{await applyCurrentTeamNames(payload.new);const index=games.findIndex(g=>Number(g.id)===Number(id));if(index>=0)games[index]=payload.new;renderGame(payload.new);renderSelector();renderBrowser()}).subscribe();
       }
-      async function refreshSelected(){if(!selectedId)return;const {data,error}=await db.from("games").select("*").eq("id",selectedId).maybeSingle();if(!error&&data){const i=games.findIndex(g=>Number(g.id)===Number(selectedId));if(i>=0)games[i]=data;else games.unshift(data);renderGame(data);renderSelector();renderBrowser()}await Promise.all([refreshPlayByPlay(),refreshBoxScore(),refreshTimeouts()])}
+      async function refreshSelected(){if(!selectedId)return;const {data,error}=await db.from("games").select("*").eq("id",selectedId).maybeSingle();if(!error&&data){await applyCurrentTeamNames(data);const i=games.findIndex(g=>Number(g.id)===Number(selectedId));if(i>=0)games[i]=data;else games.unshift(data);renderGame(data);renderSelector();renderBrowser()}await Promise.all([refreshPlayByPlay(),refreshBoxScore(),refreshTimeouts()])}
 
       document.getElementById("gameSelect").addEventListener("change",event=>{if(!event.target.value)return;selectedId=Number(event.target.value);history.replaceState(null,"",`live-game.html?id=${selectedId}`);const game=games.find(g=>Number(g.id)===selectedId);if(game){renderGame(game);subscribeToGame(selectedId);refreshPlayByPlay();refreshBoxScore();refreshTimeouts()}});
       async function initialize(){try{await fetchGames();pollTimer=setInterval(refreshSelected,3000)}catch(error){console.error("Game center error:",error);document.getElementById("loading").style.display="none";const box=document.getElementById("errorMessage");box.style.display="block";box.textContent="Unable to load games: "+(error.message||"Unknown error")}}
