@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contact Hoop Hub PH support.">
+    <title>Contact Support | Hoop Hub PH</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #f5f5f5; color: #222; line-height: 1.6; }
+        header { background: #111; color: #fff; padding: 18px 8%; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+        .logo { color: #fff; font-size: 24px; font-weight: 700; text-decoration: none; }
+        .logo span { color: #ff6b00; }
+        nav { display: flex; flex-wrap: wrap; gap: 18px; }
+        nav a { color: #fff; font-size: 14px; font-weight: 700; text-decoration: none; }
+        nav a:hover, nav a:focus { color: #ff6b00; }
+        main { width: min(900px, calc(100% - 32px)); margin: 42px auto; }
+        .hero { text-align: center; margin-bottom: 28px; }
+        .eyebrow { margin-bottom: 6px; color: #ff6b00; font-size: 13px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+        h1 { margin: 0; color: #111; font-size: clamp(34px, 5vw, 48px); line-height: 1.15; }
+        .hero p { max-width: 650px; margin: 14px auto 0; color: #555; }
+        .support-card { background: #fff; border-radius: 10px; box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08); padding: clamp(24px, 5vw, 48px); }
+        .email-box { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 18px 0 10px; padding: 18px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; }
+        .email-address { color: #111; font-size: clamp(17px, 3vw, 22px); font-weight: 800; overflow-wrap: anywhere; }
+        .button { display: inline-block; border: 0; border-radius: 6px; background: #ff6b00; color: #fff; padding: 13px 20px; font: inherit; font-weight: 800; text-decoration: none; cursor: pointer; }
+        .button:hover, .button:focus { background: #df5e00; }
+        .copy-status { min-height: 24px; color: #287a38; font-weight: 700; }
+        .actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 14px 0 28px; }
+        .button.secondary { background: #222; }
+        .button.secondary:hover, .button.secondary:focus { background: #000; }
+        h2 { margin-top: 30px; color: #111; font-size: 22px; }
+        ul { padding-left: 22px; }
+        li + li { margin-top: 7px; }
+        .warning { margin-top: 28px; padding: 16px 18px; border-left: 4px solid #ff6b00; background: #fff5ed; color: #444; }
+        a { color: #c95000; }
+        footer { background: #111; color: #fff; text-align: center; padding: 28px 20px; }
+        footer p { margin: 8px 0; color: #aaa; }
+        footer a { color: #ddd; }
+        @media (max-width: 680px) {
+            header { flex-direction: column; padding: 16px 20px; }
+            nav { justify-content: center; gap: 12px; }
+            main { margin: 24px auto; }
+            .email-box { align-items: flex-start; flex-direction: column; }
+            .actions .button { width: 100%; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a class="logo" href="index.html">HOOP <span>HUB PH</span></a>
+        <nav aria-label="Primary navigation">
+            <a href="index.html">Home</a>
+            <a href="leagues.html">Leagues</a>
+            <a href="teams.html">Teams</a>
+            <a href="players.html">Players</a>
+            <a href="live-game.html">Live Games</a>
+            <a href="login.html">Log In</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <p class="eyebrow">Hoop Hub PH</p>
+            <h1>Contact Support</h1>
+            <p>Contact us about accounts, leagues, teams, player records, technical problems, privacy requests, or data deletion.</p>
+        </section>
+
+        <section class="support-card">
+            <h2>Email Hoop Hub PH</h2>
+            <p>Send your request to the address below. If the Email Support button does not open an email app, copy the address and paste it into Gmail, Outlook, or your preferred email service.</p>
+
+            <div class="email-box">
+                <span class="email-address" id="supportEmail">support@hoophub.xyz</span>
+                <button class="button secondary" type="button" id="copyEmail">Copy email</button>
+            </div>
+            <p class="copy-status" id="copyStatus" role="status" aria-live="polite"></p>
+
+            <div class="actions">
+                <a class="button" href="mailto:support@hoophub.xyz?subject=HoopHub%20PH%20Support%20Request">Email Support</a>
+            </div>
+
+            <h2>What to include</h2>
+            <ul>
+                <li>Your name and the email address connected to your Hoop Hub PH account.</li>
+                <li>The relevant league, team, player, game ID, or account role.</li>
+                <li>A clear description of the issue or request.</li>
+                <li>A screenshot when it helps explain a technical problem.</li>
+            </ul>
+
+            <h2>Privacy and data requests</h2>
+            <p>For access, correction, restriction, or deletion requests, identify the account or public record involved. For a request concerning a minor, we may ask for reasonable proof that you are the parent, legal guardian, or authorized representative.</p>
+
+            <div class="warning">
+                <strong>Protect your account:</strong> Never email your password, authentication code, backup code, full payment-card details, or government identification unless Hoop Hub PH has specifically requested a secure verification method.
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <strong>🏀 HOOP HUB PH</strong>
+        <p>Connecting Philippine basketball, one community at a time.</p>
+        <p><a href="privacy-policy.html">Privacy Policy</a> · <a href="terms-of-use.html">Terms of Use</a> · <a href="contact.html">Contact Support</a></p>
+        <p>© 2026 Hoop Hub PH. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const copyButton = document.getElementById("copyEmail");
+        const copyStatus = document.getElementById("copyStatus");
+        const supportEmail = document.getElementById("supportEmail").textContent;
+
+        copyButton.addEventListener("click", async () => {
+            try {
+                await navigator.clipboard.writeText(supportEmail);
+                copyStatus.textContent = "Support email copied.";
+            } catch (error) {
+                copyStatus.textContent = "Copy failed. Select the email address and copy it manually.";
+            }
+        });
+    </script>
+</body>
+</html>
