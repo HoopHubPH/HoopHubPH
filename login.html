@@ -231,6 +231,39 @@
       display: none;
     }
 
+    .legal-agreement {
+      margin: 4px 0 16px;
+      padding: 13px 14px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 9px;
+    }
+
+    .legal-agreement label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 0;
+      color: #4b5563;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.5;
+      cursor: pointer;
+    }
+
+    .legal-agreement input {
+      flex: 0 0 auto;
+      width: 17px;
+      height: 17px;
+      margin-top: 1px;
+      accent-color: var(--orange);
+    }
+
+    .legal-agreement a {
+      color: var(--orange-dark);
+      font-weight: 800;
+    }
+
     .password-wrap {
       position: relative;
     }
@@ -469,6 +502,18 @@
             </div>
           </div>
 
+          <div class="legal-agreement registration-only" hidden>
+            <label for="legalAgreement">
+              <input id="legalAgreement" name="legalAgreement" type="checkbox">
+              <span>
+                I confirm that I am at least 18 years old and agree to the
+                <a href="https://www.hoophub.xyz/terms-of-use.html" target="_blank" rel="noopener noreferrer">Terms of Use</a>
+                and acknowledge the
+                <a href="https://www.hoophub.xyz/privacy-policy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+              </span>
+            </label>
+          </div>
+
           <button id="loginButton" class="login-button" type="submit">
             Sign In
           </button>
@@ -571,6 +616,7 @@
     const fullNameInput = document.getElementById("fullName");
     const roleInput = document.getElementById("accountRole");
     const confirmPasswordInput = document.getElementById("confirmPassword");
+    const legalAgreementInput = document.getElementById("legalAgreement");
     const signInModeButton = document.getElementById("signInModeButton");
     const registerModeButton = document.getElementById("registerModeButton");
     const accountHelp = document.getElementById("accountHelp");
@@ -598,6 +644,7 @@
       fullNameInput.disabled = isLoading;
       roleInput.disabled = isLoading;
       confirmPasswordInput.disabled = isLoading;
+      legalAgreementInput.disabled = isLoading;
       signInModeButton.disabled = isLoading;
       registerModeButton.disabled = isLoading;
       forgotPasswordButton.disabled = isLoading;
@@ -614,6 +661,7 @@
       fullNameInput.required = isRegistering;
       roleInput.required = isRegistering;
       confirmPasswordInput.required = isRegistering;
+      legalAgreementInput.required = isRegistering;
       passwordInput.autocomplete = isRegistering ? "new-password" : "current-password";
       signInModeButton.classList.toggle("active", !isRegistering);
       registerModeButton.classList.toggle("active", isRegistering);
@@ -753,6 +801,12 @@
           return;
         }
 
+        if (!legalAgreementInput.checked) {
+          showMessage("Confirm that you are at least 18 and accept the Terms of Use and Privacy Policy.");
+          legalAgreementInput.focus();
+          return;
+        }
+
         setLoading(true);
 
         try {
@@ -760,7 +814,15 @@
             email,
             password,
             options: {
-              data: { full_name: fullName, role: roleInput.value },
+              data: {
+                full_name: fullName,
+                role: roleInput.value,
+                age_18_confirmed: true,
+                terms_accepted_at: new Date().toISOString(),
+                terms_version: "2026-08-26",
+                privacy_policy_acknowledged: true,
+                privacy_policy_version: "2026-08-26"
+              },
               emailRedirectTo: new URL("login.html", window.location.href).href
             }
           });
