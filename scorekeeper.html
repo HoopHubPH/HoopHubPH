@@ -18129,6 +18129,13 @@ async function recordTeamFoulEvent(playerId,change){
     if(!currentGame||!change){return;}
     const side=playerTeamMap[playerId];
     if(side!=="home"&&side!=="away"){return;}
+
+    /*
+       Save the player's PF before notifying the live page through the game
+       row. This keeps the live box score and team-foul count synchronized.
+    */
+    await flushStatSave(playerId);
+
     const event={
         client_event_id:crypto.randomUUID?crypto.randomUUID():scorekeeperDeviceId+"-"+Date.now()+"-"+Math.random(),
         game_id:currentGame.id,
@@ -18145,6 +18152,32 @@ async function recordTeamFoulEvent(playerId,change){
     await flushPendingTeamFoulEvents();
 }
 
+async function syncCurrentTeamFoulsToGame(){
+    if(!currentGame){return;}
+
+    const period=currentGame.period||"1st Quarter";
+    const changes={
+        home_fouls:getTeamFouls("home",period),
+        away_fouls:getTeamFouls("away",period)
+    };
+
+    const {data,error}=await supabaseClient
+        .from("games")
+        .update(changes)
+        .eq("id",currentGame.id)
+        .select()
+        .single();
+
+    if(error){
+        throw error;
+    }
+
+    currentGame={
+        ...currentGame,
+        ...(data||changes)
+    };
+}
+
 async function flushPendingTeamFoulEvents(){
     if(teamFoulSaveInFlight||!navigator.onLine||!pendingTeamFoulEvents.length){
         updateSaveSafetyIndicator();
@@ -18159,6 +18192,7 @@ async function flushPendingTeamFoulEvents(){
                 .from("game_team_foul_events")
                 .upsert(event,{onConflict:"client_event_id"});
             if(error){throw error;}
+            await syncCurrentTeamFoulsToGame();
             pendingTeamFoulEvents.shift();
             saveSafetyHasFailure=false;
             persistPendingSaveQueues();
@@ -18639,6 +18673,10 @@ async function setPeriod(period){
     await updateGame({
         period
     });
+
+    /* A new period starts with that period's saved team-foul total. */
+    await syncCurrentTeamFoulsToGame();
+    updateTeamFoulDisplay();
 
 
     await resetClock({
