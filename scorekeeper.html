@@ -7704,11 +7704,10 @@ body:-webkit-full-screen {
     body:-webkit-full-screen .hybrid-scorekeeper {
         display: grid !important;
         grid-template-columns: minmax(0, 1.38fr) minmax(340px, .92fr) !important;
-        grid-template-rows: repeat(2, auto) !important;
+        grid-template-rows: auto auto !important;
         grid-template-areas:
             "home controls"
-            "away controls"
-            "breakdown controls" !important;
+            "away controls" !important;
         height: auto !important;
         min-height: 0 !important;
         gap: 7px !important;
@@ -7719,6 +7718,7 @@ body:-webkit-full-screen {
     body:fullscreen .hybrid-scorekeeper > .hybrid-action-panel,
     body:-webkit-full-screen .hybrid-scorekeeper > .hybrid-action-panel {
         grid-area: controls !important;
+        grid-row: 1 / span 2 !important;
         position: sticky !important;
         top: 5px !important;
         align-self: start !important;
@@ -7734,14 +7734,25 @@ body:-webkit-full-screen {
 
     .hybrid-scorekeeper > .hybrid-team-stats:nth-of-type(2) {
         grid-area: home !important;
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
 
     .hybrid-scorekeeper > .hybrid-team-stats:nth-of-type(3) {
         grid-area: away !important;
+        grid-column: 1 !important;
+        grid-row: 2 !important;
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
 
     .hybrid-scorekeeper > .easy-breakdown {
-        grid-area: breakdown !important;
+        grid-column: 1 / -1 !important;
+        grid-row: 3 !important;
     }
 
     .hybrid-action-panel .quick-player-picker {
@@ -7835,6 +7846,7 @@ body:-webkit-full-screen {
     }
 
     .hybrid-team-stats {
+        flex-direction: column !important;
         height: auto !important;
         min-height: 0 !important;
         overflow: hidden !important;
@@ -7845,14 +7857,17 @@ body:-webkit-full-screen {
     .hybrid-team-stats .table-scroll.roster-view.expanded {
         width: 100% !important;
         max-width: 100% !important;
-        overflow-x: hidden !important;
-        touch-action: pan-y !important;
+        overflow-x: auto !important;
+        overflow-y: auto !important;
+        touch-action: pan-x pan-y !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-gutter: auto !important;
     }
 
     .hybrid-team-stats .player-table {
-        width: 100% !important;
-        min-width: 0 !important;
-        max-width: 100% !important;
+        width: 1040px !important;
+        min-width: 1040px !important;
+        max-width: none !important;
         table-layout: fixed !important;
     }
 
@@ -7867,6 +7882,19 @@ body:-webkit-full-screen {
 
     .hybrid-team-stats .player-table td.col-player .player-name {
         font-size: clamp(10px, 1.15vw, 14px) !important;
+    }
+
+    .hybrid-team-stats .table-scroll::-webkit-scrollbar,
+    .hybrid-team-stats .table-scroll.roster-view::-webkit-scrollbar {
+        width: 9px !important;
+        height: 9px !important;
+    }
+
+    .hybrid-team-stats .table-scroll::-webkit-scrollbar-thumb,
+    .hybrid-team-stats .table-scroll.roster-view::-webkit-scrollbar-thumb {
+        border: 2px solid #ededed !important;
+        border-radius: 8px !important;
+        background: #777 !important;
     }
 
     body:fullscreen,
