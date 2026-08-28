@@ -7666,7 +7666,7 @@ body:-webkit-full-screen {
 }
 
 /* =========================================================
-   TABLET LANDSCAPE — FULL-WIDTH SCOREKEEPER CONTROLS
+   TABLET LANDSCAPE — TEAM STATS LEFT, CONTROLS RIGHT
    Presentation only. Existing IDs, handlers, and game logic are unchanged.
    ========================================================= */
 @media (orientation: landscape) and (min-width: 700px) and (max-width: 1366px) and (pointer: coarse) {
@@ -7703,13 +7703,12 @@ body:-webkit-full-screen {
     body:fullscreen .hybrid-scorekeeper,
     body:-webkit-full-screen .hybrid-scorekeeper {
         display: grid !important;
-        grid-template-columns: minmax(0, 1fr) !important;
-        grid-template-rows: auto !important;
+        grid-template-columns: minmax(0, 1.38fr) minmax(340px, .92fr) !important;
+        grid-template-rows: repeat(2, auto) !important;
         grid-template-areas:
-            "controls"
-            "home"
-            "away"
-            "breakdown" !important;
+            "home controls"
+            "away controls"
+            "breakdown controls" !important;
         height: auto !important;
         min-height: 0 !important;
         gap: 7px !important;
@@ -7720,7 +7719,9 @@ body:-webkit-full-screen {
     body:fullscreen .hybrid-scorekeeper > .hybrid-action-panel,
     body:-webkit-full-screen .hybrid-scorekeeper > .hybrid-action-panel {
         grid-area: controls !important;
-        position: static !important;
+        position: sticky !important;
+        top: 5px !important;
+        align-self: start !important;
         display: grid !important;
         grid-template-columns: minmax(0, 1fr) 104px !important;
         grid-template-rows: auto auto auto auto auto !important;
@@ -7746,7 +7747,7 @@ body:-webkit-full-screen {
     .hybrid-action-panel .quick-player-picker {
         grid-column: 1 / -1 !important;
         grid-row: 1 !important;
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        grid-template-columns: minmax(0, 1fr) !important;
         gap: 5px !important;
     }
 
@@ -7757,12 +7758,12 @@ body:-webkit-full-screen {
 
     .hybrid-action-panel .quick-player-team-label,
     .hybrid-action-panel .quick-player-chip {
-        min-height: 48px !important;
+        min-height: 38px !important;
     }
 
     .hybrid-action-panel .quick-player-chip {
         padding: 5px 3px !important;
-        font-size: clamp(9px, 1.15vw, 12px) !important;
+        font-size: clamp(8px, .9vw, 11px) !important;
     }
 
     .hybrid-action-panel .easy-selected-player {
@@ -7794,9 +7795,9 @@ body:-webkit-full-screen {
         grid-column: 1 / -1 !important;
         grid-row: 4 !important;
         display: grid !important;
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        grid-template-rows: auto auto !important;
-        gap: 8px !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+        grid-template-rows: auto auto auto !important;
+        gap: 6px !important;
         overflow: visible !important;
     }
 
@@ -7806,7 +7807,7 @@ body:-webkit-full-screen {
     }
 
     .hybrid-action-panel .hybrid-actions-layout .easy-action-group:nth-child(3) {
-        grid-column: 1 / -1 !important;
+        grid-column: 1 !important;
     }
 
     .hybrid-action-panel .hybrid-actions-layout .easy-action-group:first-child .easy-action-grid {
@@ -7823,9 +7824,9 @@ body:-webkit-full-screen {
 
     .hybrid-action-panel .hybrid-actions-layout .easy-action-button {
         min-width: 0 !important;
-        min-height: 58px !important;
-        padding: 7px 4px !important;
-        font-size: clamp(11px, 1.3vw, 15px) !important;
+        min-height: 48px !important;
+        padding: 5px 3px !important;
+        font-size: clamp(9px, 1vw, 12px) !important;
     }
 
     .hybrid-action-panel .easy-action-feedback {
