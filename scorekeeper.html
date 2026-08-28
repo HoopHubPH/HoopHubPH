@@ -7908,6 +7908,60 @@ body:-webkit-full-screen {
         overflow-y: auto !important;
     }
 }
+
+/* =========================================================
+   RESPONSIVE TEAM-TABLE HORIZONTAL OVERFLOW
+   Activates automatically whenever the complete stats table is wider than
+   its Home/Away panel. Scrolling stays inside each individual team table.
+   ========================================================= */
+.hybrid-team-stats > #homePlayersList > .table-scroll.roster-view,
+.hybrid-team-stats > #homePlayersList > .table-scroll.roster-view.expanded,
+.hybrid-team-stats > #awayPlayersList > .table-scroll.roster-view,
+.hybrid-team-stats > #awayPlayersList > .table-scroll.roster-view.expanded {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+    touch-action: pan-x pan-y !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior-x: contain !important;
+    scrollbar-width: auto !important;
+    scrollbar-color: #777 #ededed !important;
+}
+
+.hybrid-team-stats > #homePlayersList > .table-scroll.roster-view > .player-table,
+.hybrid-team-stats > #homePlayersList > .table-scroll.roster-view.expanded > .player-table,
+.hybrid-team-stats > #awayPlayersList > .table-scroll.roster-view > .player-table,
+.hybrid-team-stats > #awayPlayersList > .table-scroll.roster-view.expanded > .player-table {
+    width: max(100%, 1040px) !important;
+    min-width: 1040px !important;
+    max-width: none !important;
+    table-layout: fixed !important;
+}
+
+.hybrid-team-stats > #homePlayersList > .table-scroll.roster-view::-webkit-scrollbar,
+.hybrid-team-stats > #homePlayersList > .table-scroll.roster-view.expanded::-webkit-scrollbar,
+.hybrid-team-stats > #awayPlayersList > .table-scroll.roster-view::-webkit-scrollbar,
+.hybrid-team-stats > #awayPlayersList > .table-scroll.roster-view.expanded::-webkit-scrollbar {
+    width: 10px !important;
+    height: 12px !important;
+}
+
+.hybrid-team-stats > #homePlayersList > .table-scroll.roster-view::-webkit-scrollbar-track,
+.hybrid-team-stats > #homePlayersList > .table-scroll.roster-view.expanded::-webkit-scrollbar-track,
+.hybrid-team-stats > #awayPlayersList > .table-scroll.roster-view::-webkit-scrollbar-track,
+.hybrid-team-stats > #awayPlayersList > .table-scroll.roster-view.expanded::-webkit-scrollbar-track {
+    background: #ededed !important;
+}
+
+.hybrid-team-stats > #homePlayersList > .table-scroll.roster-view::-webkit-scrollbar-thumb,
+.hybrid-team-stats > #homePlayersList > .table-scroll.roster-view.expanded::-webkit-scrollbar-thumb,
+.hybrid-team-stats > #awayPlayersList > .table-scroll.roster-view::-webkit-scrollbar-thumb,
+.hybrid-team-stats > #awayPlayersList > .table-scroll.roster-view.expanded::-webkit-scrollbar-thumb {
+    border: 2px solid #ededed !important;
+    border-radius: 8px !important;
+    background: #777 !important;
+}
 </style>
 </head>
 
