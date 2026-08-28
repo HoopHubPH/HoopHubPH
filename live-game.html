@@ -212,7 +212,7 @@
       }
 
       function subscribeToGame(id){
-        if(channel)db.removeChannel(channel);channel=db.channel(`public-game-${id}`).on("postgres_changes",{event:"UPDATE",schema:"public",table:"games",filter:`id=eq.${id}`},async payload=>{await applyCurrentTeamNames(payload.new);const index=games.findIndex(g=>Number(g.id)===Number(id));if(index>=0)games[index]=payload.new;renderGame(payload.new);renderSelector();renderBrowser()}).subscribe();
+        if(channel)db.removeChannel(channel);channel=db.channel(`public-game-${id}`).on("postgres_changes",{event:"UPDATE",schema:"public",table:"games",filter:`id=eq.${id}`},async payload=>{await applyCurrentTeamNames(payload.new);const index=games.findIndex(g=>Number(g.id)===Number(id));if(index>=0)games[index]=payload.new;renderGame(payload.new);renderSelector();renderBrowser();await Promise.all([refreshPlayByPlay(),refreshBoxScore(),refreshTimeouts()])}).subscribe();
       }
       async function refreshSelected(){if(!selectedId)return;const {data,error}=await db.from("games").select("*").eq("id",selectedId).maybeSingle();if(!error&&data){await applyCurrentTeamNames(data);const i=games.findIndex(g=>Number(g.id)===Number(selectedId));if(i>=0)games[i]=data;else games.unshift(data);renderGame(data);renderSelector();renderBrowser()}await Promise.all([refreshPlayByPlay(),refreshBoxScore(),refreshTimeouts()])}
 
