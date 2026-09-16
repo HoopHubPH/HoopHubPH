@@ -2944,10 +2944,10 @@
         <span class="nav-icon">LM</span>
         League Management
       </label>
-      <label class="nav-link nav-view-button" for="adminViewTournaments" data-admin-view="tournaments">
+      <a class="nav-link" href="tournament-management.html">
         <span class="nav-icon">TR</span>
         Tournaments
-      </label>
+      </a>
       <label class="nav-link nav-view-button" for="adminViewTeams" data-admin-view="teams">
         <span class="nav-icon">TM</span>
         Teams
@@ -3165,7 +3165,10 @@
               <strong>Database-backed Competition Control</strong>
               <p>Your current public tournaments page is still a static showcase. This Super Admin workspace does not depend on those cards—it uses the real Supabase competition structure already powering leagues, divisions, standings, and games.</p>
             </div>
-            <a class="secondary-button" href="tournaments.html">VIEW PUBLIC TOURNAMENTS</a>
+            <div class="actions">
+              <a class="primary-button" href="tournament-management.html" style="display:inline-flex;align-items:center;text-decoration:none;">CREATE / MANAGE TOURNAMENTS</a>
+              <a class="secondary-button" href="tournaments.html">VIEW PUBLIC TOURNAMENTS</a>
+            </div>
           </section>
 
           <section class="stats-grid" aria-label="Tournament workspace summary">
