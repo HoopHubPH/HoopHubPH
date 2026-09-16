@@ -32,9 +32,9 @@
       document.getElementById("filters").addEventListener("click",e=>{const b=e.target.closest("button[data-filter]");if(!b)return;activeFilter=b.dataset.filter;document.querySelectorAll(".filter").forEach(x=>x.classList.toggle("active",x===b));render()});
 
       async function load(){
-        const {data:leagueRows,error:leagueError}=await db.from("leagues").select("name").eq("is_archived",false);
+        const {data:leagueRows,error:leagueError}=await db.from("leagues").select("name,status");
         if(leagueError){grid.innerHTML=`<div class="state error">Unable to load tournaments: ${esc(leagueError.message)}</div>`;return}
-        const activeLeagueNames=new Set((leagueRows||[]).map(league=>String(league.name||"").trim().toLowerCase()));
+        const activeLeagueNames=new Set((leagueRows||[]).filter(league=>String(league.status||"active").toLowerCase()!=="archived").map(league=>String(league.name||"").trim().toLowerCase()));
         const {data,error}=await db.rpc("get_public_tournaments");
         if(error){grid.innerHTML=`<div class="state error">Unable to load tournaments: ${esc(error.message)}</div>`;return}
         rows=(data||[]).filter(tournament=>activeLeagueNames.has(String(tournament.league_name||"").trim().toLowerCase()));
