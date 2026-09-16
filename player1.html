@@ -166,12 +166,12 @@
         if(!teamId) return {team:null,leagues:[]};
         const [{data:team,error:teamError},{data:links,error:linkError}]=await Promise.all([
           db.from("teams").select("id,name,location,logo_url").eq("id",teamId).maybeSingle(),
-          db.from("league_teams").select("league_id,registration_status").eq("team_id",teamId)
+          db.from("league_teams").select("league_id,registration_status").eq("team_id",teamId).ilike("registration_status","approved")
         ]);
         if(teamError) throw teamError;if(linkError) throw linkError;
         const leagueIds=(links||[]).map(link=>link.league_id);
         if(!leagueIds.length) return {team,leagues:[]};
-        const {data:leagues,error:leagueError}=await db.from("leagues").select("id,name").in("id",leagueIds).order("name");
+        const {data:leagues,error:leagueError}=await db.from("leagues").select("id,name").in("id",leagueIds).eq("status","active").order("name");
         if(leagueError) throw leagueError;
         return {team,leagues:leagues||[]};
       }
@@ -182,7 +182,7 @@
         if(error) throw error;
         const leagueIds=[...new Set((links||[]).map(row=>row.league_id))],seasonIds=[...new Set((links||[]).map(row=>row.season_id))],divisionIds=[...new Set((links||[]).map(row=>row.division_id))];
         const [{data:leagues,error:le},{data:seasons,error:se},{data:divisions,error:de}]=await Promise.all([
-          leagueIds.length?db.from("leagues").select("id,name").in("id",leagueIds):Promise.resolve({data:[]}),
+          leagueIds.length?db.from("leagues").select("id,name").in("id",leagueIds).eq("status","active"):Promise.resolve({data:[]}),
           seasonIds.length?db.from("seasons").select("id,league_id,name,status,created_at").in("id",seasonIds):Promise.resolve({data:[]}),
           divisionIds.length?db.from("divisions").select("id,season_id,name,status").in("id",divisionIds):Promise.resolve({data:[]})
         ]);
@@ -276,7 +276,7 @@
       }
 
       async function initialize(){
-        try{const player=await resolvePlayer();const [{team,leagues},competitionAssignments]=await Promise.all([loadTeamAndLeague(player.team_id),loadCompetitionAssignments(player.team_id)]);currentPlayer=player;currentTeam=team;assignments=competitionAssignments;render(player,team,leagues);setupCompetitionFilters()}
+        try{const player=await resolvePlayer();const [{team,leagues},competitionAssignments]=await Promise.all([loadTeamAndLeague(player.team_id),loadCompetitionAssignments(player.team_id)]);if(!competitionAssignments.length) throw new Error("This player profile is not currently available in an active HoopHub PH league.");currentPlayer=player;currentTeam=team;assignments=competitionAssignments;render(player,team,leagues);setupCompetitionFilters()}
         catch(error){console.error("Player profile error:",error);document.getElementById("playerHero").hidden=true;document.getElementById("mainContent").innerHTML=`<div class="error-card">Unable to load player profile: ${String(error.message||"Unknown error")}</div>`}
       }
       initialize();
