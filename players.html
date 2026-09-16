@@ -158,7 +158,7 @@
 
       async function loadLeagues(){
         list.innerHTML='<p class="empty-state">Loading competition filters...</p>';
-        const {data,error}=await db.from("leagues").select("id,name").order("name");
+        const {data,error}=await db.from("leagues").select("id,name").eq("status","active").order("name");
         if(error){leagueFilter.innerHTML='<option value="">Unable to load leagues</option>';list.innerHTML=`<p class="empty-state error">Unable to load leagues: ${escapeHtml(error.message)}</p>`;return}
         setOptions(leagueFilter,data||[],data?.length?"Select league":"No leagues available");
         if(data?.length){leagueFilter.value=data[0].id;await loadSeasons()}else loadPlayers();
