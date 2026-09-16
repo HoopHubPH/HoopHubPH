@@ -99,7 +99,7 @@
       const db=window.supabase.createClient(LIVE_PAGE_SUPABASE_URL,LIVE_PAGE_SUPABASE_KEY);
       const params=new URLSearchParams(location.search);
       let selectedId=Number(params.get("id")||params.get("game_id")||0)||null;
-      let games=[];let currentGame=null;let channel=null;let localClockTimer=null;let pollTimer=null;
+      let games=[];let visibleLeagueIds=new Set();let currentGame=null;let channel=null;let localClockTimer=null;let pollTimer=null;
       const setText=(id,value)=>document.getElementById(id).textContent=value??"—";
       const escapeHtml=value=>String(value??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[c]);
       const statusRank=status=>({live:0,halftime:1,scheduled:2,final:3}[String(status||"").toLowerCase()]??4);
@@ -206,7 +206,11 @@
       }
 
       async function fetchGames(){
-        const {data,error}=await db.from("games").select("*").order("created_at",{ascending:false}).limit(50);if(error)throw error;games=(data||[]).filter(game=>String(game.status||"").toLowerCase()!=="cancelled");await applyCurrentTeamNames(games);
+        const {data:leagueRows,error:leagueError}=await db.from("leagues").select("id").eq("is_archived",false);if(leagueError)throw leagueError;
+        visibleLeagueIds=new Set((leagueRows||[]).map(league=>String(league.id)));
+        if(!visibleLeagueIds.size){games=[];selectedId=null;renderSelector();renderBrowser();renderNoLiveGame();return}
+        const {data,error}=await db.from("games").select("*").in("league_id",[...visibleLeagueIds]).order("created_at",{ascending:false}).limit(50);if(error)throw error;games=(data||[]).filter(game=>String(game.status||"").toLowerCase()!=="cancelled");await applyCurrentTeamNames(games);
+        if(selectedId&&!games.some(game=>Number(game.id)===Number(selectedId))){selectedId=null;history.replaceState(null,"","live-game.html")}
         if(!selectedId){const liveGame=games.find(g=>["live","halftime"].includes(String(g.status).toLowerCase()));selectedId=liveGame?.id||null}
         renderSelector();renderBrowser();const game=games.find(g=>Number(g.id)===Number(selectedId));if(game){renderGame(game);subscribeToGame(game.id);await Promise.all([refreshPlayByPlay(),refreshBoxScore(),refreshTimeouts()])}else{renderNoLiveGame()}
       }
@@ -214,7 +218,7 @@
       function subscribeToGame(id){
         if(channel)db.removeChannel(channel);channel=db.channel(`public-game-${id}`).on("postgres_changes",{event:"UPDATE",schema:"public",table:"games",filter:`id=eq.${id}`},async payload=>{await applyCurrentTeamNames(payload.new);const index=games.findIndex(g=>Number(g.id)===Number(id));if(index>=0)games[index]=payload.new;renderGame(payload.new);renderSelector();renderBrowser();await Promise.all([refreshPlayByPlay(),refreshBoxScore(),refreshTimeouts()])}).subscribe();
       }
-      async function refreshSelected(){if(!selectedId)return;const {data,error}=await db.from("games").select("*").eq("id",selectedId).maybeSingle();if(!error&&data){await applyCurrentTeamNames(data);const i=games.findIndex(g=>Number(g.id)===Number(selectedId));if(i>=0)games[i]=data;else games.unshift(data);renderGame(data);renderSelector();renderBrowser()}await Promise.all([refreshPlayByPlay(),refreshBoxScore(),refreshTimeouts()])}
+      async function refreshSelected(){if(!selectedId)return;const {data,error}=await db.from("games").select("*").eq("id",selectedId).maybeSingle();if(!error&&data&&visibleLeagueIds.has(String(data.league_id))){await applyCurrentTeamNames(data);const i=games.findIndex(g=>Number(g.id)===Number(selectedId));if(i>=0)games[i]=data;else games.unshift(data);renderGame(data);renderSelector();renderBrowser()}else if(!error&&data){history.replaceState(null,"","live-game.html");renderNoLiveGame();renderSelector();renderBrowser();return}await Promise.all([refreshPlayByPlay(),refreshBoxScore(),refreshTimeouts()])}
 
       document.getElementById("gameSelect").addEventListener("change",event=>{if(!event.target.value)return;selectedId=Number(event.target.value);history.replaceState(null,"",`live-game.html?id=${selectedId}`);const game=games.find(g=>Number(g.id)===selectedId);if(game){renderGame(game);subscribeToGame(selectedId);refreshPlayByPlay();refreshBoxScore();refreshTimeouts()}});
       async function initialize(){try{await fetchGames();pollTimer=setInterval(refreshSelected,3000)}catch(error){console.error("Game center error:",error);document.getElementById("loading").style.display="none";const box=document.getElementById("errorMessage");box.style.display="block";box.textContent="Unable to load games: "+(error.message||"Unknown error")}}
