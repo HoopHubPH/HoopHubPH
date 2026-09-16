@@ -206,8 +206,8 @@
       }
 
       async function fetchGames(){
-        const {data:leagueRows,error:leagueError}=await db.from("leagues").select("id").eq("is_archived",false);if(leagueError)throw leagueError;
-        visibleLeagueIds=new Set((leagueRows||[]).map(league=>String(league.id)));
+        const {data:leagueRows,error:leagueError}=await db.from("leagues").select("id,status");if(leagueError)throw leagueError;
+        visibleLeagueIds=new Set((leagueRows||[]).filter(league=>String(league.status||"active").toLowerCase()!=="archived").map(league=>String(league.id)));
         if(!visibleLeagueIds.size){games=[];selectedId=null;renderSelector();renderBrowser();renderNoLiveGame();return}
         const {data,error}=await db.from("games").select("*").in("league_id",[...visibleLeagueIds]).order("created_at",{ascending:false}).limit(50);if(error)throw error;games=(data||[]).filter(game=>String(game.status||"").toLowerCase()!=="cancelled");await applyCurrentTeamNames(games);
         if(selectedId&&!games.some(game=>Number(game.id)===Number(selectedId))){selectedId=null;history.replaceState(null,"","live-game.html")}
